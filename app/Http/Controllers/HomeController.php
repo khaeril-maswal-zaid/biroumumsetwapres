@@ -11,4 +11,9 @@ class HomeController extends Controller
     {
         return Inertia::render('biroumum/home');
     }
+
+    public function admin()
+    {
+        return Inertia::render('admin/home');
+    }
 }

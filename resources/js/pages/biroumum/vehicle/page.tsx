@@ -17,9 +17,11 @@ import { useState } from 'react';
 
 export default function VehicleRequest() {
     const [formData, setFormData] = useState({
+        name: '',
+        devisi: '',
         vehicleType: '',
-        date: '',
-        time: '',
+        start_datetime: '',
+        end_datetime: '',
         destination: '',
         purpose: '',
         passengers: '',
@@ -56,6 +58,32 @@ export default function VehicleRequest() {
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>
+                                    <Label htmlFor="name">Nama pemesan</Label>
+                                    <Input
+                                        id="name"
+                                        type="text"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        required
+                                        autoFocus
+                                    />
+                                </div>
+                                <div>
+                                    <Label htmlFor="devisi">Unit kerja</Label>
+                                    <Select value={formData.devisi} onValueChange={(value) => setFormData({ ...formData, devisi: value })}>
+                                        <SelectTrigger className="w-[280px]" id="devisi">
+                                            <SelectValue placeholder="Pilih Unit kerja" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Biro 1">Biro 1</SelectItem>
+                                            <SelectItem value="Biro 2">Biro 2</SelectItem>
+                                            <SelectItem value="Biro 3">Biro 3</SelectItem>
+                                            <SelectItem value="Biro 4">Biro 4</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div>
                                     <Label htmlFor="vehicleType">Jenis Kendaraan</Label>
                                     <Select value={formData.vehicleType} onValueChange={(value) => setFormData({ ...formData, vehicleType: value })}>
                                         <SelectTrigger>
@@ -70,27 +98,26 @@ export default function VehicleRequest() {
                                     </Select>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <Label htmlFor="date">Tanggal</Label>
-                                        <Input
-                                            id="date"
-                                            type="date"
-                                            value={formData.date}
-                                            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="time">Jam</Label>
-                                        <Input
-                                            id="time"
-                                            type="time"
-                                            value={formData.time}
-                                            onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                                            required
-                                        />
-                                    </div>
+                                <div>
+                                    <Label htmlFor="start_datetime">Mulai Digunakan (Tanggal & Waktu)</Label>
+                                    <Input
+                                        id="start_datetime"
+                                        type="datetime-local"
+                                        value={formData.start_datetime}
+                                        onChange={(e) => setFormData({ ...formData, start_datetime: e.target.value })}
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="end_datetime">Selesai Digunakan (Tanggal & Waktu)</Label>
+                                    <Input
+                                        id="end_datetime"
+                                        type="datetime-local"
+                                        value={formData.end_datetime}
+                                        onChange={(e) => setFormData({ ...formData, end_datetime: e.target.value })}
+                                        required
+                                    />
                                 </div>
 
                                 <div>
@@ -137,7 +164,7 @@ export default function VehicleRequest() {
                                 </div>
 
                                 <div>
-                                    <Label htmlFor="contact">Kontak Person</Label>
+                                    <Label htmlFor="contact">Narahubung</Label>
                                     <Input
                                         id="contact"
                                         placeholder="Nama dan nomor telepon"

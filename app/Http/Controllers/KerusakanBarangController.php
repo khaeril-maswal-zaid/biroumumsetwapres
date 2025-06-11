@@ -7,14 +7,14 @@ use App\Http\Requests\StoreKerusakanGedungRequest;
 use App\Http\Requests\UpdateKerusakanGedungRequest;
 use Inertia\Inertia;
 
-class KerusakanGedungController extends Controller
+class KerusakanBarangController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return Inertia::render('admin/damages/page');
     }
 
     /**

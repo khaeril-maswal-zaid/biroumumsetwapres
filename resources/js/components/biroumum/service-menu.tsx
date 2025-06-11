@@ -21,7 +21,7 @@ export function ServiceMenu() {
         {
             icon: Wrench,
             label: 'Kerusakan Gedung',
-            href: route('kerusakangedung.create'),
+            href: route('kerusakanbarang.create'),
         },
         {
             icon: Car,

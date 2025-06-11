@@ -17,7 +17,8 @@ import { useState } from 'react';
 
 export default function SuppliesRequest() {
     const [formData, setFormData] = useState({
-        department: '',
+        name: '',
+        devisi: '',
         items: [{ name: '', quantity: '', unit: '' }],
         justification: '',
         urgency: '',
@@ -70,14 +71,30 @@ export default function SuppliesRequest() {
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>
-                                    <Label htmlFor="department">Divisi/Bagian</Label>
+                                    <Label htmlFor="name">Nama pengaju</Label>
                                     <Input
-                                        id="department"
-                                        placeholder="Nama divisi atau bagian"
-                                        value={formData.department}
-                                        onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                                        id="name"
+                                        type="text"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                         required
+                                        autoFocus
                                     />
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="devisi">Unit kerja</Label>
+                                    <Select value={formData.devisi} onValueChange={(value) => setFormData({ ...formData, devisi: value })}>
+                                        <SelectTrigger className="w-[280px]" id="devisi">
+                                            <SelectValue placeholder="Pilih Unit kerja" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Biro 1">Biro 1</SelectItem>
+                                            <SelectItem value="Biro 2">Biro 2</SelectItem>
+                                            <SelectItem value="Biro 3">Biro 3</SelectItem>
+                                            <SelectItem value="Biro 4">Biro 4</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
 
                                 <div>
@@ -163,7 +180,7 @@ export default function SuppliesRequest() {
                                 </div>
 
                                 <div>
-                                    <Label htmlFor="contact">Kontak Person</Label>
+                                    <Label htmlFor="contact">Narahubung</Label>
                                     <Input
                                         id="contact"
                                         placeholder="Nama dan nomor telepon"

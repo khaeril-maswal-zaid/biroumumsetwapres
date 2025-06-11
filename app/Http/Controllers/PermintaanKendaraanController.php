@@ -14,7 +14,7 @@ class PermintaanKendaraanController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('admin/vehicles/page');
     }
 
     /**

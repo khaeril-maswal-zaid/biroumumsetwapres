@@ -15,7 +15,7 @@ class PemesananRuangRapatController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('admin/bookings/page');
     }
 
     /**

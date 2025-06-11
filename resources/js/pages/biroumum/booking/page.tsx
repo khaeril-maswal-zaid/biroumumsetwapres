@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Users } from 'lucide-react';
 import type React from 'react';
@@ -16,6 +17,8 @@ import { useState } from 'react';
 
 export default function RoomBooking() {
     const [formData, setFormData] = useState({
+        name: '',
+        devisi: '',
         room: '',
         date: '',
         startTime: '',
@@ -29,6 +32,8 @@ export default function RoomBooking() {
         e.preventDefault();
         setShowSuccess(true);
         setTimeout(() => {
+            console.log(formData);
+
             setShowSuccess(false);
         }, 3000);
     };
@@ -53,12 +58,35 @@ export default function RoomBooking() {
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>
+                                    <Label htmlFor="name">Nama pemesan</Label>
+                                    <Input
+                                        id="name"
+                                        type="text"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        required
+                                        autoFocus
+                                    />
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="devisi">Unit kerja</Label>
+                                    <Select value={formData.devisi} onValueChange={(value) => setFormData({ ...formData, devisi: value })}>
+                                        <SelectTrigger className="w-[280px]" id="devisi">
+                                            <SelectValue placeholder="Pilih Unit kerja" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Biro 1">Biro 1</SelectItem>
+                                            <SelectItem value="Biro 2">Biro 2</SelectItem>
+                                            <SelectItem value="Biro 3">Biro 3</SelectItem>
+                                            <SelectItem value="Biro 4">Biro 4</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div>
                                     <Label htmlFor="room">Pilih Ruangan</Label>
-                                    <RadioGroup
-                                        value={formData.room}
-                                        onValueChange={(value) => setFormData({ ...formData, room: value })}
-                                        className="mt-2"
-                                    >
+                                    <RadioGroup value={formData.room} onValueChange={(value) => setFormData({ ...formData, room: value })}>
                                         <div className="flex items-center space-x-2 rounded-lg border p-3">
                                             <RadioGroupItem value="holding" id="holding" />
                                             <Label htmlFor="holding" className="flex-1">
@@ -77,7 +105,7 @@ export default function RoomBooking() {
                                 </div>
 
                                 <div>
-                                    <Label htmlFor="date">Tanggal</Label>
+                                    <Label htmlFor="date">Tanggal penggunaan ruangan</Label>
                                     <Input
                                         id="date"
                                         type="date"
@@ -122,7 +150,7 @@ export default function RoomBooking() {
                                 </div>
 
                                 <div>
-                                    <Label htmlFor="contact">Kontak Person</Label>
+                                    <Label htmlFor="contact">Narahubung</Label>
                                     <Input
                                         id="contact"
                                         placeholder="Nama dan nomor telepon"
