@@ -8,6 +8,7 @@ import { FooterIllustration } from '@/components/biroumum/footer-illustration';
 import { HelpDeskCard } from '@/components/biroumum/help-desk-card';
 import { SearchBar } from '@/components/biroumum/search-bar';
 import { ServiceMenu } from '@/components/biroumum/service-menu';
+import { Head } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
 const aktivitas = [
@@ -40,35 +41,38 @@ export default function Dashboard() {
     }, []);
 
     return (
-        <div className="container mx-auto min-h-screen bg-gray-50">
-            {/* Desktop Navigation */}
-            <DesktopNavigation />
+        <>
+            <Head title="Biro Umum - Setwapres" />
+            <div className="container mx-auto min-h-screen bg-gray-50">
+                {/* Desktop Navigation */}
+                <DesktopNavigation />
 
-            {/* Main Content */}
-            <div className="pb-20 md:pb-0">
-                {/* Header with user info */}
-                <DashboardHeader userName="Dani Martinez" currentTime={currentTime} />
+                {/* Main Content */}
+                <div className="pb-20 md:pb-0">
+                    {/* Header with user info */}
+                    <DashboardHeader userName="Dani Martinez" currentTime={currentTime} />
 
-                <div className="space-y-6 p-4">
-                    {/* Search Bar */}
-                    <SearchBar />
+                    <div className="space-y-6 p-4">
+                        {/* Search Bar */}
+                        <SearchBar />
 
-                    {/* Help Desk Card */}
-                    <HelpDeskCard />
+                        {/* Help Desk Card */}
+                        <HelpDeskCard />
 
-                    {/* Layanan Biro Umum */}
-                    <ServiceMenu />
+                        {/* Layanan Biro Umum */}
+                        <ServiceMenu />
 
-                    {/* Aktivitas */}
-                    <ActivityList activities={aktivitas} />
+                        {/* Aktivitas */}
+                        <ActivityList activities={aktivitas} />
 
-                    {/* Footer Illustration (Mobile) */}
-                    <FooterIllustration />
+                        {/* Footer Illustration (Mobile) */}
+                        <FooterIllustration />
+                    </div>
                 </div>
-            </div>
 
-            {/* Bottom Navigation (Mobile) */}
-            <BottomNavigation />
-        </div>
+                {/* Bottom Navigation (Mobile) */}
+                <BottomNavigation />
+            </div>
+        </>
     );
 }
