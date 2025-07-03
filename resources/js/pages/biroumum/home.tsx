@@ -3,7 +3,6 @@
 import { ActivityList } from '@/components/biroumum/activity-list';
 import { BottomNavigation } from '@/components/biroumum/bottom-navigation';
 import { DashboardHeader } from '@/components/biroumum/dashboard-header';
-import { DesktopNavigation } from '@/components/biroumum/desktop-navigation';
 import { FooterIllustration } from '@/components/biroumum/footer-illustration';
 import { HelpDeskCard } from '@/components/biroumum/help-desk-card';
 import { SearchBar } from '@/components/biroumum/search-bar';
@@ -43,9 +42,8 @@ export default function Dashboard() {
     return (
         <>
             <Head title="Biro Umum - Setwapres" />
-            <div className="container mx-auto min-h-screen bg-gray-50">
+            <div className="mx-auto min-h-screen w-full max-w-md bg-gray-50">
                 {/* Desktop Navigation */}
-                <DesktopNavigation />
 
                 {/* Main Content */}
                 <div className="pb-20 md:pb-0">

@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\KerusakanGedung;
 use App\Http\Requests\StoreKerusakanGedungRequest;
 use App\Http\Requests\UpdateKerusakanGedungRequest;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
-class KerusakanBarangController extends Controller
+class KerusakanGedungController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -30,7 +31,17 @@ class KerusakanBarangController extends Controller
      */
     public function store(StoreKerusakanGedungRequest $request)
     {
-        //
+        KerusakanGedung::create([
+            'user_id' => Auth::id(),
+            'lokasi' => $request->location,
+            'item' => $request->damageType,
+            'deskripsi' => $request->description,
+            'picture1' => $request->location,
+            'picture2' => $request->location,
+            'urgensi' => $request->urgency,
+            'no_hp' => $request->contact,
+            'keterangan' => $request->location,
+        ]);
     }
 
     /**

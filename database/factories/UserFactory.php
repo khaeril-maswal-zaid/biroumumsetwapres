@@ -32,12 +32,33 @@ class UserFactory extends Factory
         ];
     }
 
+    // Tambahkan state
+    public function adminKendaraan()
+    {
+        return $this->state([
+            'name' => 'Admin 1',
+            'email' => 'admin1@setwapres.com',
+            'role' => 'admin',
+            'unit_kerja' => 'Kendaraan',
+        ]);
+    }
+
+    public function pegawaiTusdm()
+    {
+        return $this->state([
+            'name' => 'Pegawai 1',
+            'email' => 'pegawai1@setwapres.com',
+            'role' => 'pegawai',
+            'unit_kerja' => 'TUSDM',
+        ]);
+    }
+
     /**
      * Indicate that the model's email address should be unverified.
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }

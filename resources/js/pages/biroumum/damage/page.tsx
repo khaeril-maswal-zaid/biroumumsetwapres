@@ -1,7 +1,6 @@
 'use client';
 
 import { BottomNavigation } from '@/components/biroumum/bottom-navigation';
-import { DesktopNavigation } from '@/components/biroumum/desktop-navigation';
 import { PageHeader } from '@/components/biroumum/page-header';
 import { SuccessAlert } from '@/components/biroumum/success-alert';
 import { Button } from '@/components/ui/button';
@@ -9,16 +8,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Image, ImagePlus, Trash2, Wrench } from 'lucide-react';
+import { type SharedData } from '@/types';
+import { router, usePage } from '@inertiajs/react';
+import { ImagePlus, Trash2, Wrench } from 'lucide-react';
 import type React from 'react';
 import { useRef, useState } from 'react';
 
 export default function DamageReport() {
+    const { auth } = usePage<SharedData>().props;
+
     const [formData, setFormData] = useState({
-        name: '',
-        devisi: '',
         location: '',
         damageType: '',
         description: '',
@@ -26,19 +26,42 @@ export default function DamageReport() {
         contact: '',
     });
 
-    const [photos, setPhotos] = useState<string[]>([]);
+    const [photos, setPhotos] = useState<File[]>([]); // simpan objek File asli
+    const [photoPreviews, setPhotoPreviews] = useState<string[]>([]); // hanya untuk preview
+
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [showSuccess, setShowSuccess] = useState(false);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Form data:', formData);
-        console.log('Photos:', photos);
-
-        setShowSuccess(true);
-        setTimeout(() => {
-            setShowSuccess(false);
-        }, 3000);
+        router.post(
+            route('kerusakangedung.store'),
+            {
+                location: formData.location,
+                damageType: formData.damageType,
+                description: formData.description,
+                urgency: formData.urgency,
+                contact: formData.contact,
+                photos: photos,
+            },
+            {
+                onError: (e) => {
+                    //
+                },
+                onSuccess: () => {
+                    setShowSuccess(true);
+                    setFormData({
+                        location: '',
+                        damageType: '',
+                        description: '',
+                        urgency: '',
+                        contact: '',
+                    });
+                    setPhotos([]);
+                    setPhotoPreviews([]);
+                },
+            },
+        );
     };
 
     const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,20 +72,23 @@ export default function DamageReport() {
             }
 
             const file = e.target.files[0];
+            setPhotos((prev) => [...prev, file]); // Simpan file aslinya
+
             const reader = new FileReader();
-
             reader.onloadend = () => {
-                setPhotos([...photos, reader.result as string]);
+                setPhotoPreviews((prev) => [...prev, reader.result as string]); // Simpan preview base64-nya
             };
-
             reader.readAsDataURL(file);
         }
     };
 
     const removePhoto = (index: number) => {
         const newPhotos = [...photos];
+        const newPreviews = [...photoPreviews];
         newPhotos.splice(index, 1);
+        newPreviews.splice(index, 1);
         setPhotos(newPhotos);
+        setPhotoPreviews(newPreviews);
     };
 
     const triggerFileInput = () => {
@@ -72,12 +98,10 @@ export default function DamageReport() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <DesktopNavigation />
-
-            <div className="pb-20 md:pb-0">
+        <div className="mx-auto min-h-screen w-full max-w-md bg-gray-50">
+            <div className="pb-20">
                 <div className="space-y-6 p-4">
-                    <PageHeader title="Laporan Kerusakan Barang/Alat" backUrl="/" />
+                    <PageHeader title="Laporan Kerusakan Gedung" backUrl="/" />
 
                     <SuccessAlert show={showSuccess} message="Laporan kerusakan berhasil dikirim!" />
 
@@ -91,29 +115,25 @@ export default function DamageReport() {
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>
-                                    <Label htmlFor="name">Nama pelapor</Label>
+                                    <Label htmlFor="name">Nama Pelapor</Label>
                                     <Input
                                         id="name"
                                         type="text"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        required
-                                        autoFocus
+                                        readOnly
+                                        value={auth?.user.name}
+                                        className="cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
                                     />
                                 </div>
+
                                 <div>
-                                    <Label htmlFor="devisi">Unit kerja</Label>
-                                    <Select value={formData.devisi} onValueChange={(value) => setFormData({ ...formData, devisi: value })}>
-                                        <SelectTrigger className="w-[280px]" id="devisi">
-                                            <SelectValue placeholder="Pilih Unit kerja" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Biro 1">Biro 1</SelectItem>
-                                            <SelectItem value="Biro 2">Biro 2</SelectItem>
-                                            <SelectItem value="Biro 3">Biro 3</SelectItem>
-                                            <SelectItem value="Biro 4">Biro 4</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                    <Label htmlFor="unitkerja">Unit Kerja</Label>
+                                    <Input
+                                        id="unitkerja"
+                                        type="text"
+                                        value={auth?.user.unit_kerja}
+                                        readOnly
+                                        className="cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
+                                    />
                                 </div>
 
                                 <div>
@@ -152,13 +172,12 @@ export default function DamageReport() {
                                 <div>
                                     <Label>Foto Kerusakan (Maks. 2 foto)</Label>
                                     <div className="mt-2 grid grid-cols-2 gap-4">
-                                        {photos.map((photo, index) => (
+                                        {photoPreviews.map((preview, index) => (
                                             <div key={index} className="relative">
                                                 <div className="relative aspect-square overflow-hidden rounded-md border">
-                                                    <Image
-                                                        src={photo || '/placeholder.svg'}
+                                                    <img
+                                                        src={preview || '/placeholder.svg'}
                                                         alt={`Foto kerusakan ${index + 1}`}
-                                                        fill
                                                         className="object-cover"
                                                     />
                                                 </div>

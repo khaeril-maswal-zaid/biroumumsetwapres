@@ -8,7 +8,7 @@ export function BottomNavigation() {
     const { url: pathname } = usePage();
 
     return (
-        <div className="fixed right-0 bottom-0 left-0 border-t border-gray-200 bg-white px-4 py-2 md:hidden">
+        <div className="fixed right-0 bottom-0 left-0 mx-auto w-full max-w-md border-t border-gray-200 bg-white px-4 py-2">
             <div className="flex justify-around">
                 <Link href="/">
                     <Button
@@ -30,7 +30,7 @@ export function BottomNavigation() {
                         <span className="text-xs">Booking</span>
                     </Button>
                 </Link>
-                <Link href="/profile">
+                <Link href={route('user.create')}>
                     <Button
                         variant="ghost"
                         size="sm"

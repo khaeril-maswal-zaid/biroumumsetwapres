@@ -1,20 +1,15 @@
 'use client';
 
 import { BottomNavigation } from '@/components/biroumum/bottom-navigation';
-import { DesktopNavigation } from '@/components/biroumum/desktop-navigation';
 import { PageHeader } from '@/components/biroumum/page-header';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Building, Mail, MapPin, Phone, User } from 'lucide-react';
+import { Building, Mail, User } from 'lucide-react';
 
 export default function Profile() {
     return (
         <div className="min-h-screen bg-gray-50">
-            <DesktopNavigation />
-
             <div className="pb-20 md:pb-0">
                 <div className="space-y-6 p-4">
                     <PageHeader title="Profil Pengguna" backUrl="/" />
@@ -48,13 +43,13 @@ export default function Profile() {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center space-x-3">
+                                {/* <div className="flex items-center space-x-3">
                                     <Phone className="h-5 w-5 text-gray-500" />
                                     <div>
                                         <Label className="text-sm text-gray-500">Telepon</Label>
                                         <p className="font-medium">+62 812-3456-7890</p>
                                     </div>
-                                </div>
+                                </div> */}
 
                                 <div className="flex items-center space-x-3">
                                     <Building className="h-5 w-5 text-gray-500" />
@@ -64,19 +59,19 @@ export default function Profile() {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center space-x-3">
+                                {/* <div className="flex items-center space-x-3">
                                     <MapPin className="h-5 w-5 text-gray-500" />
                                     <div>
                                         <Label className="text-sm text-gray-500">Lokasi</Label>
                                         <p className="font-medium">Jakarta, Indonesia</p>
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                         </CardContent>
                     </Card>
 
                     {/* Edit Profile Card */}
-                    <Card>
+                    {/* <Card>
                         <CardHeader>
                             <CardTitle>Edit Profil</CardTitle>
                         </CardHeader>
@@ -103,7 +98,7 @@ export default function Profile() {
 
                             <Button className="w-full">Simpan Perubahan</Button>
                         </CardContent>
-                    </Card>
+                    </Card> */}
                 </div>
             </div>
 

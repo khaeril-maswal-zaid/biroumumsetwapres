@@ -14,6 +14,6 @@ class HomeController extends Controller
 
     public function admin()
     {
-        return Inertia::render('admin/home');
+        // return Inertia::render('admin/home');
     }
 }

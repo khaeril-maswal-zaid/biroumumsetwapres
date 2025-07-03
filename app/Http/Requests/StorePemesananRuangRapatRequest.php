@@ -11,7 +11,7 @@ class StorePemesananRuangRapatRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class StorePemesananRuangRapatRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'date' => 'required|date',
+            'startTime' => 'required|date_format:H:i',
+            'endTime' => 'required|date_format:H:i|after:startTime',
+            'purpose' => 'required|string|max:255',
+            'contact' => 'required|string|max:255',
         ];
     }
 }

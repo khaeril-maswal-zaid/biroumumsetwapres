@@ -7,6 +7,8 @@ use Inertia\Inertia;
 use App\Models\PemesananRuangRapat;
 use App\Http\Requests\StorePemesananRuangRapatRequest;
 use App\Http\Requests\UpdatePemesananRuangRapatRequest;
+use App\Models\DaftarRuangan;
+use Illuminate\Support\Facades\Auth;
 
 class PemesananRuangRapatController extends Controller
 {
@@ -23,7 +25,11 @@ class PemesananRuangRapatController extends Controller
      */
     public function create()
     {
-        return Inertia::render('biroumum/booking/page');
+        $data = [
+            'daftarruangans' => DaftarRuangan::select(['id', 'nama_ruangan', 'kode_ruangan', 'lokasi', 'kapasitas', 'image', 'fasilitas'])->get()
+        ];
+
+        return Inertia::render('biroumum/booking/page', $data);
     }
 
     /**
@@ -31,7 +37,17 @@ class PemesananRuangRapatController extends Controller
      */
     public function store(StorePemesananRuangRapatRequest $request)
     {
-        //
+        PemesananRuangRapat::create([
+            'user_id' => Auth::id(),
+            'tanggal_penggunaan' => $request->date,
+            'jam_mulai' => $request->startTime,
+            'jam_selesai' => $request->endTime,
+            'daftar_ruangan_id' => 1, // $request->room,
+            'deskripsi' => $request->purpose,
+            'no_hp' => $request->contact,
+            'keterangan' => '',
+            'status' => 'Pengajuan',
+        ]);
     }
 
     /**

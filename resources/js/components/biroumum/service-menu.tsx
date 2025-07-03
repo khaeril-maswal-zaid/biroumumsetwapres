@@ -21,7 +21,7 @@ export function ServiceMenu() {
         {
             icon: Wrench,
             label: 'Kerusakan Barang/Alat',
-            href: route('kerusakanbarang.create'),
+            href: route('kerusakangedung.create'),
         },
         {
             icon: Car,
@@ -38,7 +38,7 @@ export function ServiceMenu() {
     return (
         <div>
             <h2 className="mb-4 text-lg font-semibold text-gray-800">Layanan Biro Umum</h2>
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4">
                 {layananItems.map((item, index) => (
                     <Link key={index} href={item.href}>
                         <Card className="cursor-pointer transition-shadow hover:shadow-md">
