@@ -9,4 +9,8 @@ class PermintaanAtk extends Model
 {
     /** @use HasFactory<\Database\Factories\PermintaanAtkFactory> */
     use HasFactory;
+
+    protected $casts = [
+        'daftar_kebutuhan' => 'array'
+    ];
 }

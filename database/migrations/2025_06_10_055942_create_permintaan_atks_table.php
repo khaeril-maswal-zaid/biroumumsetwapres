@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('permintaan_atks', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->json('daftar_kebutuhan')->nullable();
+            $table->string('deskripsi', 255); //from pengadu
+            $table->string('status', 255);
+            $table->string('keterangan', 255); //from admin
+            $table->string('no_hp', 15);
             $table->timestamps();
         });
     }

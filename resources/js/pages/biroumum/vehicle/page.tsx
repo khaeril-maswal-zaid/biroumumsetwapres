@@ -1,7 +1,6 @@
 'use client';
 
 import { BottomNavigation } from '@/components/biroumum/bottom-navigation';
-import { DesktopNavigation } from '@/components/biroumum/desktop-navigation';
 import { PageHeader } from '@/components/biroumum/page-header';
 import { SuccessAlert } from '@/components/biroumum/success-alert';
 import { Button } from '@/components/ui/button';
@@ -11,11 +10,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { type SharedData } from '@/types';
+import { usePage } from '@inertiajs/react';
 import { Car } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
 
 export default function VehicleRequest() {
+    const { auth } = usePage<SharedData>().props;
+
     const [formData, setFormData] = useState({
         name: '',
         devisi: '',
@@ -39,9 +42,7 @@ export default function VehicleRequest() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <DesktopNavigation />
-
+        <div className="mx-auto min-h-screen w-full max-w-md bg-gray-50">
             <div className="pb-20 md:pb-0">
                 <div className="space-y-6 p-4">
                     <PageHeader title="Permintaan Kendaraan" backUrl="/" />
@@ -58,29 +59,24 @@ export default function VehicleRequest() {
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>
-                                    <Label htmlFor="name">Nama pemesan</Label>
+                                    <Label htmlFor="name">Nama Pelapor</Label>
                                     <Input
                                         id="name"
                                         type="text"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        required
-                                        autoFocus
+                                        readOnly
+                                        value={auth?.user.name}
+                                        className="cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
                                     />
                                 </div>
                                 <div>
-                                    <Label htmlFor="devisi">Unit kerja</Label>
-                                    <Select value={formData.devisi} onValueChange={(value) => setFormData({ ...formData, devisi: value })}>
-                                        <SelectTrigger className="w-[280px]" id="devisi">
-                                            <SelectValue placeholder="Pilih Unit kerja" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Biro 1">Biro 1</SelectItem>
-                                            <SelectItem value="Biro 2">Biro 2</SelectItem>
-                                            <SelectItem value="Biro 3">Biro 3</SelectItem>
-                                            <SelectItem value="Biro 4">Biro 4</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                    <Label htmlFor="unitkerja">Unit Kerja</Label>
+                                    <Input
+                                        id="unitkerja"
+                                        type="text"
+                                        value={auth?.user.unit_kerja}
+                                        readOnly
+                                        className="cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
+                                    />
                                 </div>
 
                                 <div>

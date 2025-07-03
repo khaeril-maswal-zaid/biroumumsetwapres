@@ -10,58 +10,58 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { type SharedData } from '@/types';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
-import { Calendar, Clock, Users } from 'lucide-react';
-import type React from 'react';
+import { Calendar, Users } from 'lucide-react';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+const schema = z.object({
+    room: z.string().min(1, 'Ruangan wajib dipilih'),
+    date: z.string().min(1, 'Tanggal wajib diisi'),
+    startTime: z.string().min(1, 'Jam mulai wajib diisi'),
+    endTime: z.string().min(1, 'Jam selesai wajib diisi'),
+    purpose: z.string().min(1, 'Kegiatan wajib diisi'),
+    contact: z.string().min(1, 'Kontak wajib diisi'),
+});
+
+type FormData = z.infer<typeof schema>;
 
 export default function RoomBooking({ daftarruangans }: any) {
     const { auth } = usePage<SharedData>().props;
 
-    const [formData, setFormData] = useState({
-        room: '',
-        date: '',
-        startTime: '',
-        endTime: '',
-        purpose: '',
-        contact: '',
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        watch,
+        formState: { errors },
+        reset,
+    } = useForm<FormData>({
+        resolver: zodResolver(schema),
+        defaultValues: {
+            room: '',
+            date: '',
+            startTime: '',
+            endTime: '',
+            purpose: '',
+            contact: '',
+        },
     });
+
+    const formData = watch();
     const [showSuccess, setShowSuccess] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        router.post(
-            route('ruangrapat.store'),
-            {
-                date: formData.date,
-                startTime: formData.startTime,
-                endTime: formData.endTime,
-                room: formData.room,
-                purpose: formData.purpose,
-                contact: formData.contact,
+    const onSubmit = (data: FormData) => {
+        router.post(route('ruangrapat.store'), data, {
+            onSuccess: () => {
+                setShowSuccess(true);
+                reset();
             },
-            {
-                onError: (e) => {
-                    //
-                },
-                onSuccess: () => {
-                    setShowSuccess(true);
-
-                    setFormData({
-                        room: '',
-                        date: '',
-                        startTime: '',
-                        endTime: '',
-                        purpose: '',
-                        contact: '',
-                    });
-                },
-            },
-        );
+        });
     };
 
-    // Get today's date for min date validation
     const today = new Date().toISOString().split('T')[0];
 
     return (
@@ -82,8 +82,7 @@ export default function RoomBooking({ daftarruangans }: any) {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <form onSubmit={handleSubmit} className="space-y-6">
-                                    {/* Personal Information */}
+                                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                                     <div className="space-y-4">
                                         <h3 className="border-b pb-2 text-lg font-medium text-gray-900">Informasi Pemesan</h3>
 
@@ -110,7 +109,6 @@ export default function RoomBooking({ daftarruangans }: any) {
                                         </div>
                                     </div>
 
-                                    {/* Date and Time Selection */}
                                     <div className="space-y-4">
                                         <h3 className="flex items-center gap-2 border-b pb-2 text-lg font-medium text-gray-900">
                                             <Calendar className="h-5 w-5" />
@@ -118,46 +116,21 @@ export default function RoomBooking({ daftarruangans }: any) {
                                         </h3>
 
                                         <div>
-                                            <Label htmlFor="date" className="mb-1">
-                                                Tanggal penggunaan ruangan
-                                            </Label>
-                                            <Input
-                                                id="date"
-                                                type="date"
-                                                value={formData.date}
-                                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                                min={today}
-                                                required
-                                            />
+                                            <Label htmlFor="date">Tanggal penggunaan ruangan</Label>
+                                            <Input type="date" min={today} {...register('date')} />
+                                            {errors.date && <p className="text-sm text-red-500">{errors.date.message}</p>}
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
-                                                <Label htmlFor="startTime" className="mb-1 flex items-center gap-2">
-                                                    <Clock className="h-4 w-4" />
-                                                    Jam Mulai
-                                                </Label>
-                                                <Input
-                                                    id="startTime"
-                                                    type="time"
-                                                    value={formData.startTime}
-                                                    onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                                                    required
-                                                />
+                                                <Label htmlFor="startTime">Jam Mulai</Label>
+                                                <Input type="time" {...register('startTime')} />
+                                                {errors.startTime && <p className="text-sm text-red-500">{errors.startTime.message}</p>}
                                             </div>
                                             <div>
-                                                <Label htmlFor="endTime" className="mb-1 flex items-center gap-2">
-                                                    <Clock className="h-4 w-4" />
-                                                    Jam Selesai
-                                                </Label>
-                                                <Input
-                                                    id="endTime"
-                                                    type="time"
-                                                    value={formData.endTime}
-                                                    onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                                                    required
-                                                    min={formData.startTime}
-                                                />
+                                                <Label htmlFor="endTime">Jam Selesai</Label>
+                                                <Input type="time" {...register('endTime')} min={formData.startTime} />
+                                                {errors.endTime && <p className="text-sm text-red-500">{errors.endTime.message}</p>}
                                             </div>
                                         </div>
 
@@ -168,50 +141,39 @@ export default function RoomBooking({ daftarruangans }: any) {
                                         )}
                                     </div>
 
-                                    {/* Room Selection */}
                                     <div className="space-y-4">
                                         <h3 className="border-b pb-2 text-lg font-medium text-gray-900">Pilih Ruangan</h3>
                                         <RoomSelection
                                             daftarRuangans={daftarruangans}
                                             selectedRoom={formData.room}
-                                            onRoomChange={(value) => setFormData({ ...formData, room: value })}
+                                            onRoomChange={(value) => setValue('room', value)}
                                             selectedDate={formData.date}
                                             selectedStartTime={formData.startTime}
                                             selectedEndTime={formData.endTime}
                                         />
+                                        {errors.room && <p className="text-sm text-red-500">{errors.room.message}</p>}
                                     </div>
 
-                                    {/* Additional Information */}
                                     <div className="space-y-4">
                                         <h3 className="border-b pb-2 text-lg font-medium text-gray-900">Informasi Tambahan</h3>
 
                                         <div>
                                             <Label htmlFor="purpose">Kegiatan</Label>
-                                            <Textarea
-                                                id="purpose"
-                                                placeholder="Jelaskan kegiatan yang akan dilaksanakan..."
-                                                value={formData.purpose}
-                                                onChange={(e) => setFormData({ ...formData, purpose: e.target.value })}
-                                                required
-                                            />
+                                            <Textarea id="purpose" {...register('purpose')} />
+                                            {errors.purpose && <p className="text-sm text-red-500">{errors.purpose.message}</p>}
                                         </div>
 
                                         <div>
                                             <Label htmlFor="contact">No Handphone</Label>
-                                            <Input
-                                                id="contact"
-                                                placeholder="Lebih baik juga aktif di WhatsApp"
-                                                value={formData.contact}
-                                                onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-                                                required
-                                            />
+                                            <Input id="contact" {...register('contact')} />
+                                            {errors.contact && <p className="text-sm text-red-500">{errors.contact.message}</p>}
                                         </div>
                                     </div>
 
                                     <Button
                                         type="submit"
                                         className="w-full"
-                                        disabled={!formData.room || !formData.contact || !formData.purpose || formData.startTime >= formData.endTime}
+                                        // disabled={!formData.room || !formData.contact || !formData.purpose || formData.startTime >= formData.endTime}
                                     >
                                         Ajukan Pemesanan
                                     </Button>
@@ -220,7 +182,6 @@ export default function RoomBooking({ daftarruangans }: any) {
                         </Card>
                     </div>
                 </div>
-
                 <BottomNavigation />
             </div>
         </>

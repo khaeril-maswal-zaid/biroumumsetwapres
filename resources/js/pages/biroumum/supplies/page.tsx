@@ -1,24 +1,24 @@
 'use client';
 
 import { BottomNavigation } from '@/components/biroumum/bottom-navigation';
-import { DesktopNavigation } from '@/components/biroumum/desktop-navigation';
 import { PageHeader } from '@/components/biroumum/page-header';
 import { SuccessAlert } from '@/components/biroumum/success-alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { PenTool } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import type { SharedData } from '@/types';
+import { usePage } from '@inertiajs/react';
+import { Calendar, Clock, PenTool, Zap } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
 
 export default function SuppliesRequest() {
+    const { auth } = usePage<SharedData>().props;
     const [formData, setFormData] = useState({
-        name: '',
-        devisi: '',
         items: [{ name: '', quantity: '', unit: '' }],
         justification: '',
         urgency: '',
@@ -44,6 +44,8 @@ export default function SuppliesRequest() {
     };
 
     const handleSubmit = (e: React.FormEvent) => {
+        console.log(formData);
+
         e.preventDefault();
         setShowSuccess(true);
         setTimeout(() => {
@@ -51,14 +53,41 @@ export default function SuppliesRequest() {
         }, 3000);
     };
 
-    return (
-        <div className="min-h-screen bg-gray-50">
-            <DesktopNavigation />
+    const urgencyOptions = [
+        {
+            value: 'normal',
+            label: 'Normal',
+            description: '1-2 minggu',
+            icon: Calendar,
+            color: 'bg-green-50 border-green-200 text-green-800',
+            selectedColor: 'bg-green-100 border-green-400',
+            iconColor: 'text-green-600',
+        },
+        {
+            value: 'mendesak',
+            label: 'Mendesak',
+            description: '4-6 hari',
+            icon: Clock,
+            color: 'bg-yellow-50 border-yellow-200 text-yellow-800',
+            selectedColor: 'bg-yellow-100 border-yellow-400',
+            iconColor: 'text-yellow-600',
+        },
+        {
+            value: 'segera',
+            label: 'Segera',
+            description: '1-2 hari',
+            icon: Zap,
+            color: 'bg-red-50 border-red-200 text-red-800',
+            selectedColor: 'bg-red-100 border-red-400',
+            iconColor: 'text-red-600',
+        },
+    ];
 
+    return (
+        <div className="mx-auto min-h-screen w-full max-w-md bg-gray-50">
             <div className="pb-20 md:pb-0">
                 <div className="space-y-6 p-4">
                     <PageHeader title="Permintaan Alat Tulis Kantor" backUrl="/" />
-
                     <SuccessAlert show={showSuccess} message="Permintaan alat tulis kantor berhasil diajukan!" />
 
                     <Card>
@@ -71,30 +100,25 @@ export default function SuppliesRequest() {
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>
-                                    <Label htmlFor="name">Nama pengaju</Label>
+                                    <Label htmlFor="name">Nama Pelapor</Label>
                                     <Input
                                         id="name"
                                         type="text"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        required
-                                        autoFocus
+                                        readOnly
+                                        value={auth?.user.name}
+                                        className="cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
                                     />
                                 </div>
 
                                 <div>
-                                    <Label htmlFor="devisi">Unit kerja</Label>
-                                    <Select value={formData.devisi} onValueChange={(value) => setFormData({ ...formData, devisi: value })}>
-                                        <SelectTrigger className="w-[280px]" id="devisi">
-                                            <SelectValue placeholder="Pilih Unit kerja" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Biro 1">Biro 1</SelectItem>
-                                            <SelectItem value="Biro 2">Biro 2</SelectItem>
-                                            <SelectItem value="Biro 3">Biro 3</SelectItem>
-                                            <SelectItem value="Biro 4">Biro 4</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                    <Label htmlFor="unitkerja">Unit Kerja</Label>
+                                    <Input
+                                        id="unitkerja"
+                                        type="text"
+                                        value={auth?.user.unit_kerja}
+                                        readOnly
+                                        className="cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
+                                    />
                                 </div>
 
                                 <div>
@@ -141,7 +165,7 @@ export default function SuppliesRequest() {
                                             </div>
                                         </div>
                                     ))}
-                                    <Button type="button" variant="outline" size="sm" onClick={addItem} className="mt-2">
+                                    <Button type="button" variant="outline" size="sm" onClick={addItem} className="mt-2 bg-transparent">
                                         + Tambah Barang
                                     </Button>
                                 </div>
@@ -157,26 +181,39 @@ export default function SuppliesRequest() {
                                     />
                                 </div>
 
+                                {/* Creative Urgency Selection - Card Style */}
                                 <div>
-                                    <Label htmlFor="urgency">Tingkat Urgensi</Label>
-                                    <RadioGroup
-                                        value={formData.urgency}
-                                        onValueChange={(value) => setFormData({ ...formData, urgency: value })}
-                                        className="mt-2"
-                                    >
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="normal" id="normal" />
-                                            <Label htmlFor="normal">Normal (1-2 minggu)</Label>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="mendesak" id="mendesak" />
-                                            <Label htmlFor="mendesak">Mendesak (3-5 hari)</Label>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="segera" id="segera" />
-                                            <Label htmlFor="segera">Segera (1-2 hari)</Label>
-                                        </div>
-                                    </RadioGroup>
+                                    <Label className="text-base font-medium">Tingkat Urgensi</Label>
+                                    <div className="mt-3 space-y-3">
+                                        {urgencyOptions.map((option) => {
+                                            const Icon = option.icon;
+                                            const isSelected = formData.urgency === option.value;
+
+                                            return (
+                                                <div
+                                                    key={option.value}
+                                                    onClick={() => setFormData({ ...formData, urgency: option.value })}
+                                                    className={cn(
+                                                        'relative cursor-pointer rounded-lg border-2 p-4 transition-all duration-200 hover:shadow-md',
+                                                        isSelected ? option.selectedColor : option.color,
+                                                    )}
+                                                >
+                                                    <div className="flex items-center space-x-3">
+                                                        <div className={cn('rounded-full p-2', isSelected ? 'bg-white/50' : 'bg-white/30')}>
+                                                            <Icon className={cn('h-5 w-5', option.iconColor)} />
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center justify-between">
+                                                                <h3 className="font-semibold">{option.label}</h3>
+                                                                {isSelected && <div className="h-2 w-2 rounded-full bg-current"></div>}
+                                                            </div>
+                                                            <p className="text-sm opacity-75">{option.description}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
 
                                 <div>
@@ -198,7 +235,6 @@ export default function SuppliesRequest() {
                     </Card>
                 </div>
             </div>
-
             <BottomNavigation />
         </div>
     );

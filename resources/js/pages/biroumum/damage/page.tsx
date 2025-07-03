@@ -10,53 +10,54 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { type SharedData } from '@/types';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { router, usePage } from '@inertiajs/react';
 import { ImagePlus, Trash2, Wrench } from 'lucide-react';
 import type React from 'react';
 import { useRef, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+const schema = z.object({
+    location: z.string().min(5, 'Lokasi wajib diisi'),
+    damageType: z.string().min(3, 'Nama Item wajib diisi'),
+    description: z.string().min(5, 'Deskripsi wajib diisi'),
+    urgency: z.enum(['rendah', 'sedang', 'tinggi'], {
+        required_error: 'Tingkat urgensi wajib dipilih',
+    }),
+    contact: z
+        .string()
+        .min(5, 'No Hp wajib diisi')
+        .regex(/^(.{5,})$/, 'Format No Hp tidak valid'),
+});
+
+type FormData = z.infer<typeof schema>;
 
 export default function DamageReport() {
     const { auth } = usePage<SharedData>().props;
-
-    const [formData, setFormData] = useState({
-        location: '',
-        damageType: '',
-        description: '',
-        urgency: '',
-        contact: '',
-    });
-
-    const [photos, setPhotos] = useState<File[]>([]); // simpan objek File asli
-    const [photoPreviews, setPhotoPreviews] = useState<string[]>([]); // hanya untuk preview
-
+    const [photos, setPhotos] = useState<File[]>([]);
+    const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [showSuccess, setShowSuccess] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const {
+        register,
+        handleSubmit,
+        control,
+        formState: { errors },
+        reset,
+    } = useForm<FormData>({
+        resolver: zodResolver(schema),
+    });
+
+    const onSubmit = (data: FormData) => {
         router.post(
             route('kerusakangedung.store'),
+            { ...data, photos },
             {
-                location: formData.location,
-                damageType: formData.damageType,
-                description: formData.description,
-                urgency: formData.urgency,
-                contact: formData.contact,
-                photos: photos,
-            },
-            {
-                onError: (e) => {
-                    //
-                },
                 onSuccess: () => {
                     setShowSuccess(true);
-                    setFormData({
-                        location: '',
-                        damageType: '',
-                        description: '',
-                        urgency: '',
-                        contact: '',
-                    });
+                    reset();
                     setPhotos([]);
                     setPhotoPreviews([]);
                 },
@@ -72,11 +73,11 @@ export default function DamageReport() {
             }
 
             const file = e.target.files[0];
-            setPhotos((prev) => [...prev, file]); // Simpan file aslinya
+            setPhotos((prev) => [...prev, file]);
 
             const reader = new FileReader();
             reader.onloadend = () => {
-                setPhotoPreviews((prev) => [...prev, reader.result as string]); // Simpan preview base64-nya
+                setPhotoPreviews((prev) => [...prev, reader.result as string]);
             };
             reader.readAsDataURL(file);
         }
@@ -102,9 +103,7 @@ export default function DamageReport() {
             <div className="pb-20">
                 <div className="space-y-6 p-4">
                     <PageHeader title="Laporan Kerusakan Gedung" backUrl="/" />
-
                     <SuccessAlert show={showSuccess} message="Laporan kerusakan berhasil dikirim!" />
-
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center space-x-2">
@@ -113,7 +112,7 @@ export default function DamageReport() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <form onSubmit={handleSubmit} className="space-y-4">
+                            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                                 <div>
                                     <Label htmlFor="name">Nama Pelapor</Label>
                                     <Input
@@ -124,7 +123,6 @@ export default function DamageReport() {
                                         className="cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
                                     />
                                 </div>
-
                                 <div>
                                     <Label htmlFor="unitkerja">Unit Kerja</Label>
                                     <Input
@@ -135,40 +133,21 @@ export default function DamageReport() {
                                         className="cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
                                     />
                                 </div>
-
                                 <div>
                                     <Label htmlFor="location">Lokasi Kerusakan</Label>
-                                    <Input
-                                        id="location"
-                                        placeholder="Contoh: Lantai 2, Ruang 201"
-                                        value={formData.location}
-                                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                        required
-                                    />
+                                    <Input id="location" {...register('location')} className={errors.location && 'border-red-500'} />
+                                    {errors.location && <p className="mt-1 text-sm text-red-500">{errors.location.message}</p>}
                                 </div>
                                 <div>
-                                    <Label htmlFor="damageType">Nama Barang/ Alat</Label>
-                                    <Input
-                                        id="damageType"
-                                        type="text"
-                                        value={formData.damageType}
-                                        onChange={(e) => setFormData({ ...formData, damageType: e.target.value })}
-                                        required
-                                        placeholder="Nama Barang/ Alat yang rusak"
-                                    />
+                                    <Label htmlFor="damageType">Nama Item Rusak</Label>
+                                    <Input id="damageType" {...register('damageType')} className={errors.damageType && 'border-red-500'} />
+                                    {errors.damageType && <p className="mt-1 text-sm text-red-500">{errors.damageType.message}</p>}
                                 </div>
                                 <div>
                                     <Label htmlFor="description">Deskripsi Kerusakan</Label>
-                                    <Textarea
-                                        id="description"
-                                        placeholder="Jelaskan detail kerusakan yang terjadi..."
-                                        value={formData.description}
-                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                        required
-                                    />
+                                    <Textarea id="description" {...register('description')} className={errors.description && 'border-red-500'} />
+                                    {errors.description && <p className="mt-1 text-sm text-red-500">{errors.description.message}</p>}
                                 </div>
-
-                                {/* Photo Upload Section */}
                                 <div>
                                     <Label>Foto Kerusakan (Maks. 2 foto)</Label>
                                     <div className="mt-2 grid grid-cols-2 gap-4">
@@ -192,7 +171,6 @@ export default function DamageReport() {
                                                 </Button>
                                             </div>
                                         ))}
-
                                         {photos.length < 2 && (
                                             <div
                                                 className="flex aspect-square cursor-pointer items-center justify-center rounded-md border border-dashed hover:bg-gray-50"
@@ -207,37 +185,34 @@ export default function DamageReport() {
                                     </div>
                                     <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handlePhotoUpload} />
                                 </div>
-
                                 <div>
                                     <Label htmlFor="urgency">Tingkat Urgensi</Label>
-                                    <RadioGroup
-                                        value={formData.urgency}
-                                        onValueChange={(value) => setFormData({ ...formData, urgency: value })}
-                                        className="mt-2"
-                                    >
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="rendah" id="rendah" />
-                                            <Label htmlFor="rendah">Rendah</Label>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="sedang" id="sedang" />
-                                            <Label htmlFor="sedang">Sedang</Label>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="tinggi" id="tinggi" />
-                                            <Label htmlFor="tinggi">Tinggi</Label>
-                                        </div>
-                                    </RadioGroup>
+                                    <Controller
+                                        name="urgency"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <RadioGroup value={field.value} onValueChange={field.onChange} className="mt-2">
+                                                <div className="flex items-center space-x-2">
+                                                    <RadioGroupItem value="rendah" id="rendah" />
+                                                    <Label htmlFor="rendah">Rendah</Label>
+                                                </div>
+                                                <div className="flex items-center space-x-2">
+                                                    <RadioGroupItem value="sedang" id="sedang" />
+                                                    <Label htmlFor="sedang">Sedang</Label>
+                                                </div>
+                                                <div className="flex items-center space-x-2">
+                                                    <RadioGroupItem value="tinggi" id="tinggi" />
+                                                    <Label htmlFor="tinggi">Tinggi</Label>
+                                                </div>
+                                            </RadioGroup>
+                                        )}
+                                    />
+                                    {errors.urgency && <p className="mt-1 text-sm text-red-500">{errors.urgency.message}</p>}
                                 </div>
                                 <div>
-                                    <Label htmlFor="contact">Narahubung</Label>
-                                    <Input
-                                        id="contact"
-                                        placeholder="Nama dan nomor telepon"
-                                        value={formData.contact}
-                                        onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-                                        required
-                                    />
+                                    <Label htmlFor="contact">No Hp</Label>
+                                    <Input id="contact" {...register('contact')} className={errors.contact && 'border-red-500'} />
+                                    {errors.contact && <p className="mt-1 text-sm text-red-500">{errors.contact.message}</p>}
                                 </div>
                                 <Button type="submit" className="w-full">
                                     Kirim Laporan
@@ -247,7 +222,6 @@ export default function DamageReport() {
                     </Card>
                 </div>
             </div>
-
             <BottomNavigation />
         </div>
     );
