@@ -20,69 +20,9 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-// Mock data for supplies requests
-const supplies = [
-    {
-        id: '1',
-        name: 'Dewi Lestari',
-        devisi: 'Biro 1',
-        items: [
-            { name: 'Kertas A4', quantity: '5', unit: 'rim' },
-            { name: 'Pulpen', quantity: '20', unit: 'pcs' },
-            { name: 'Spidol', quantity: '10', unit: 'pcs' },
-        ],
-        justification: 'Untuk kebutuhan administrasi dan dokumentasi proyek baru',
-        urgency: 'normal',
-        contact: '0812-3456-7894',
-        status: 'pending',
-        createdAt: '2025-06-10T09:15:00',
-    },
-    {
-        id: '2',
-        name: 'Ahmad Fauzi',
-        devisi: 'Biro 2',
-        items: [
-            { name: 'Tinta Printer', quantity: '4', unit: 'pcs' },
-            { name: 'Stapler', quantity: '2', unit: 'pcs' },
-        ],
-        justification: 'Tinta printer habis dan stapler rusak',
-        urgency: 'mendesak',
-        contact: '0812-3456-7895',
-        status: 'approved',
-        createdAt: '2025-06-09T14:30:00',
-    },
-    {
-        id: '3',
-        name: 'Sari Indah',
-        devisi: 'Biro 3',
-        items: [
-            { name: 'Map Plastik', quantity: '50', unit: 'pcs' },
-            { name: 'Klip Kertas', quantity: '5', unit: 'box' },
-            { name: 'Post-it', quantity: '10', unit: 'pack' },
-        ],
-        justification: 'Untuk organisasi dokumen dan arsip divisi',
-        urgency: 'normal',
-        contact: '0812-3456-7896',
-        status: 'completed',
-        createdAt: '2025-06-08T11:20:00',
-    },
-    {
-        id: '4',
-        name: 'Budi Santoso',
-        devisi: 'Biro 2',
-        items: [
-            { name: 'Kertas HVS', quantity: '10', unit: 'rim' },
-            { name: 'Amplop', quantity: '100', unit: 'pcs' },
-        ],
-        justification: 'Untuk surat menyurat dan korespondensi',
-        urgency: 'segera',
-        contact: '0812-3456-7891',
-        status: 'rejected',
-        createdAt: '2025-06-07T16:45:00',
-    },
-];
+export default function SuppliesAdmin({ permintaanAtk }: any) {
+    console.log(permintaanAtk);
 
-export default function SuppliesAdmin() {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedSupply, setSelectedSupply] = useState<any>(null);
@@ -112,10 +52,10 @@ export default function SuppliesAdmin() {
     };
 
     // Filter supplies based on search term and status
-    const filteredSupplies = supplies.filter((supply) => {
+    const filteredSupplies = permintaanAtk.data.filter((supply: any) => {
         const matchesSearch =
-            supply.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            supply.items.some((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
+            supply?.pemesan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            supply.daftar_kebutuhan.some((item: any) => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
         const matchesStatus = statusFilter === 'all' || supply.status === statusFilter;
 
@@ -131,11 +71,11 @@ export default function SuppliesAdmin() {
         switch (status) {
             case 'pending':
                 return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Menunggu</Badge>;
-            case 'approved':
+            case 'confirmed':
                 return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Disetujui</Badge>;
             case 'completed':
                 return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Selesai</Badge>;
-            case 'rejected':
+            case 'cancelled':
                 return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Ditolak</Badge>;
             default:
                 return <Badge variant="outline">Unknown</Badge>;
@@ -144,11 +84,11 @@ export default function SuppliesAdmin() {
 
     const getUrgencyBadge = (urgency: string) => {
         switch (urgency) {
-            case 'normal':
+            case 'Normal':
                 return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">Normal</Badge>;
-            case 'mendesak':
+            case 'Mendesak':
                 return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Mendesak</Badge>;
-            case 'segera':
+            case 'Segera':
                 return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Segera</Badge>;
             default:
                 return <Badge variant="outline">Unknown</Badge>;
@@ -228,21 +168,21 @@ export default function SuppliesAdmin() {
                                                 </TableCell>
                                             </TableRow>
                                         ) : (
-                                            filteredSupplies.map((supply) => (
-                                                <TableRow key={supply.id}>
+                                            filteredSupplies.map((supply: any) => (
+                                                <TableRow key={supply.kode_pelaporan}>
                                                     <TableCell>
-                                                        <div className="font-medium">{supply.name}</div>
-                                                        <div className="text-sm text-gray-500">{supply.devisi}</div>
+                                                        <div className="font-medium">{supply?.pemesan.name}</div>
+                                                        <div className="text-sm text-gray-500">{supply?.pemesan.unit_kerja}</div>
                                                     </TableCell>
                                                     <TableCell>
                                                         <Badge variant="outline" className="flex w-fit items-center gap-1">
                                                             <Package className="h-3 w-3" />
-                                                            <span>{supply.items.length} item</span>
+                                                            <span>{supply.daftar_kebutuhan.length} item</span>
                                                         </Badge>
                                                     </TableCell>
-                                                    <TableCell className="hidden md:table-cell">{getUrgencyBadge(supply.urgency)}</TableCell>
+                                                    <TableCell className="hidden md:table-cell">{getUrgencyBadge(supply.urgensi)}</TableCell>
                                                     <TableCell className="hidden lg:table-cell">
-                                                        {new Date(supply.createdAt).toLocaleDateString('id-ID')}
+                                                        {new Date(supply.created_at).toLocaleDateString('id-ID')}
                                                     </TableCell>
                                                     <TableCell>{getStatusBadge(supply.status)}</TableCell>
                                                     <TableCell className="text-right">
@@ -277,8 +217,8 @@ export default function SuppliesAdmin() {
                                         <div className="flex items-center gap-2">
                                             <User className="h-4 w-4 text-gray-500" />
                                             <div>
-                                                <p className="text-sm font-medium">{selectedSupply.name}</p>
-                                                <p className="text-xs text-gray-500">{selectedSupply.devisi}</p>
+                                                <p className="text-sm font-medium">{selectedSupply?.pemesan.name}</p>
+                                                <p className="text-xs text-gray-500">{selectedSupply?.pemesan.unit_kerja}</p>
                                             </div>
                                         </div>
 
@@ -286,14 +226,14 @@ export default function SuppliesAdmin() {
                                             <PenTool className="h-4 w-4 text-gray-500" />
                                             <div className="flex items-center gap-2">
                                                 <p className="text-sm">Urgensi:</p>
-                                                {getUrgencyBadge(selectedSupply.urgency)}
+                                                {getUrgencyBadge(selectedSupply.urgensi)}
                                             </div>
                                         </div>
 
                                         <div className="pt-2">
                                             <p className="mb-2 text-sm font-medium">Daftar Barang:</p>
                                             <div className="space-y-2">
-                                                {selectedSupply.items.map((item: any, index: number) => (
+                                                {selectedSupply.daftar_kebutuhan.map((item: any, index: number) => (
                                                     <div key={index} className="flex items-center justify-between rounded bg-gray-50 p-2">
                                                         <span className="text-sm">{item.name}</span>
                                                         <span className="text-sm font-medium">
@@ -306,17 +246,17 @@ export default function SuppliesAdmin() {
 
                                         <div className="pt-2">
                                             <p className="text-sm font-medium">Justifikasi:</p>
-                                            <p className="text-sm text-gray-700">{selectedSupply.justification}</p>
+                                            <p className="text-sm text-gray-700">{selectedSupply.deskripsi}</p>
                                         </div>
 
                                         <div>
                                             <p className="text-sm font-medium">Kontak:</p>
-                                            <p className="text-sm text-gray-700">{selectedSupply.contact}</p>
+                                            <p className="text-sm text-gray-700">{selectedSupply.no_hp}</p>
                                         </div>
 
                                         <div>
                                             <p className="text-sm font-medium">Tanggal Pengajuan:</p>
-                                            <p className="text-sm text-gray-700">{formatDate(selectedSupply.createdAt)}</p>
+                                            <p className="text-sm text-gray-700">{formatDate(selectedSupply.created_at)}</p>
                                         </div>
                                     </div>
                                 </div>

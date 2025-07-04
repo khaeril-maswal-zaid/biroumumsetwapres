@@ -13,6 +13,7 @@ Route::middleware(['auth', 'verified', 'ruleUser:pegawai'])->group(function () {
 
     Route::get('/ruang-rapat', [PemesananRuangRapatController::class, 'create'])->name('ruangrapat.create');
     Route::post('/ruang-rapat/store', [PemesananRuangRapatController::class, 'store'])->name('ruangrapat.store');
+    Route::get('/ruang-rapat/tersedia', [PemesananRuangRapatController::class, 'tersedia'])->name('ruangrapat.tersedia');
 
     Route::get('/kerusakan-gedung', [KerusakanGedungController::class, 'create'])->name('kerusakangedung.create');
     Route::post('/kerusakan-gedung/store', [KerusakanGedungController::class, 'store'])->name('kerusakangedung.store');
@@ -20,6 +21,7 @@ Route::middleware(['auth', 'verified', 'ruleUser:pegawai'])->group(function () {
     Route::get('/permintaan-kendaraan', [PermintaanKendaraanController::class, 'create'])->name('permintaankendaraan.create');
 
     Route::get('/permintaan-atk', [PermintaanAtkController::class, 'create'])->name('permintaanatk.create');
+    Route::post('/permintaan-atk/store', [PermintaanAtkController::class, 'store'])->name('permintaanatk.store');
 
     Route::get('/profile', [UserController::class, 'show'])->name('user.create');
 });

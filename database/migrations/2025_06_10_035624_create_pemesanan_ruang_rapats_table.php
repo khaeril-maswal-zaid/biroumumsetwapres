@@ -20,9 +20,10 @@ return new class extends Migration
             $table->time('jam_selesai');
             $table->foreignId('daftar_ruangan_id')->nullable()->constrained()->nullOnDelete();
             $table->string('deskripsi', 255); //from pengadu
+            $table->string('no_hp', 15);
+            $table->string('kode_booking', 50)->unique();
             $table->string('status', 255);
             $table->string('keterangan', 255); //from admin
-            $table->string('no_hp', 15);
 
             $table->timestamps();
         });

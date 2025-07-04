@@ -20,71 +20,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-// Mock data for room bookings
-const bookings = [
-    {
-        id: '1',
-        name: 'Dani Martinez',
-        devisi: 'Biro 1',
-        room: 'Ruang Holding',
-        date: '2025-06-11',
-        startTime: '09:00',
-        endTime: '11:00',
-        purpose: 'Rapat Divisi',
-        contact: '0812-3456-7890',
-        status: 'confirmed',
-    },
-    {
-        id: '2',
-        name: 'Budi Santoso',
-        devisi: 'Biro 2',
-        room: 'Ruang Rapat',
-        date: '2025-06-11',
-        startTime: '13:00',
-        endTime: '14:30',
-        purpose: 'Briefing Mingguan',
-        contact: '0812-3456-7891',
-        status: 'pending',
-    },
-    {
-        id: '3',
-        name: 'Siti Aminah',
-        devisi: 'Biro 3',
-        room: 'Ruang Holding',
-        date: '2025-06-12',
-        startTime: '10:00',
-        endTime: '12:00',
-        purpose: 'Presentasi Proyek',
-        contact: '0812-3456-7892',
-        status: 'confirmed',
-    },
-    {
-        id: '4',
-        name: 'Rudi Hartono',
-        devisi: 'Biro 4',
-        room: 'Ruang Rapat',
-        date: '2025-06-12',
-        startTime: '15:00',
-        endTime: '16:30',
-        purpose: 'Interview Kandidat',
-        contact: '0812-3456-7893',
-        status: 'cancelled',
-    },
-    {
-        id: '5',
-        name: 'Dewi Lestari',
-        devisi: 'Biro 1',
-        room: 'Ruang Holding',
-        date: '2025-06-13',
-        startTime: '09:30',
-        endTime: '11:30',
-        purpose: 'Training Karyawan Baru',
-        contact: '0812-3456-7894',
-        status: 'pending',
-    },
-];
-
-export default function BookingsAdmin() {
+export default function BookingsAdmin({ bookingRooms }: any) {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedBooking, setSelectedBooking] = useState<any>(null);
@@ -114,11 +50,11 @@ export default function BookingsAdmin() {
     };
 
     // Filter bookings based on search term and status
-    const filteredBookings = bookings.filter((booking) => {
+    const filteredBookings = bookingRooms.data.filter((booking: any) => {
         const matchesSearch =
-            booking.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            booking.room.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            booking.purpose.toLowerCase().includes(searchTerm.toLowerCase());
+            booking?.pemesan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            booking?.ruangans.nama_ruangan.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            booking.deskripsi.toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
 
@@ -206,17 +142,17 @@ export default function BookingsAdmin() {
                                             </TableRow>
                                         ) : (
                                             filteredBookings.map((booking) => (
-                                                <TableRow key={booking.id}>
+                                                <TableRow key={booking.kode_booking}>
                                                     <TableCell>
-                                                        <div className="font-medium">{booking.name}</div>
-                                                        <div className="text-sm text-gray-500">{booking.devisi}</div>
+                                                        <div className="font-medium">{booking?.pemesan.name}</div>
+                                                        <div className="text-sm text-gray-500">{booking?.pemesan.unit_kerja}</div>
                                                     </TableCell>
-                                                    <TableCell>{booking.room}</TableCell>
-                                                    <TableCell className="hidden md:table-cell">{booking.date}</TableCell>
+                                                    <TableCell>{booking?.ruangans.nama_ruangan}</TableCell>
+                                                    <TableCell className="hidden md:table-cell">{booking.created_at}</TableCell>
                                                     <TableCell className="hidden md:table-cell">
-                                                        {booking.startTime} - {booking.endTime}
+                                                        {booking.jam_mulai} - {booking.jam_selesai}
                                                     </TableCell>
-                                                    <TableCell className="hidden max-w-[200px] truncate lg:table-cell">{booking.purpose}</TableCell>
+                                                    <TableCell className="hidden max-w-[200px] truncate lg:table-cell">{booking.deskripsi}</TableCell>
                                                     <TableCell>{getStatusBadge(booking.status)}</TableCell>
                                                     <TableCell className="text-right">
                                                         <Button variant="ghost" size="sm" onClick={() => handleViewDetails(booking)}>
@@ -242,7 +178,7 @@ export default function BookingsAdmin() {
                             {selectedBooking && (
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="text-lg font-medium">{selectedBooking.room}</h3>
+                                        <h3 className="text-lg font-medium">{selectedBooking?.ruangans.nama_ruangan}</h3>
                                         {getStatusBadge(selectedBooking.status)}
                                     </div>
 
@@ -250,26 +186,26 @@ export default function BookingsAdmin() {
                                         <div className="flex items-center gap-2">
                                             <Users className="h-4 w-4 text-gray-500" />
                                             <div>
-                                                <p className="text-sm font-medium">{selectedBooking.name}</p>
-                                                <p className="text-xs text-gray-500">{selectedBooking.devisi}</p>
+                                                <p className="text-sm font-medium">{selectedBooking?.pemesan.name}</p>
+                                                <p className="text-xs text-gray-500">{selectedBooking?.pemesan.unit_kerja}</p>
                                             </div>
                                         </div>
 
                                         <div className="flex items-center gap-2">
                                             <Calendar className="h-4 w-4 text-gray-500" />
-                                            <p className="text-sm">{selectedBooking.date}</p>
+                                            <p className="text-sm">{selectedBooking.created_at}</p>
                                         </div>
 
                                         <div className="flex items-center gap-2">
                                             <Clock className="h-4 w-4 text-gray-500" />
                                             <p className="text-sm">
-                                                {selectedBooking.startTime} - {selectedBooking.endTime}
+                                                {selectedBooking.jam_mulai} - {selectedBooking.jam_selesai}
                                             </p>
                                         </div>
 
                                         <div className="pt-2">
                                             <p className="text-sm font-medium">Keperluan:</p>
-                                            <p className="text-sm text-gray-700">{selectedBooking.purpose}</p>
+                                            <p className="text-sm text-gray-700">{selectedBooking.deskripsi}</p>
                                         </div>
 
                                         <div>

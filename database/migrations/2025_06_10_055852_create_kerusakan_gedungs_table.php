@@ -17,10 +17,11 @@ return new class extends Migration
             $table->string('lokasi', 255);
             $table->string('item', 255);
             $table->string('deskripsi', 255);  //from pengadu
-            $table->string('picture1', 255);
-            $table->string('picture2', 255);
+            $table->json('picture', 255);
             $table->string('urgensi', 50);
             $table->string('no_hp', 15);
+            $table->string('kode_pelaporan', 50)->unique();
+            $table->string('status', 50);
             $table->string('keterangan', 255); //from admin
 
             $table->timestamps();

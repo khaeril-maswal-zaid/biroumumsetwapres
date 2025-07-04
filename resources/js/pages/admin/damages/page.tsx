@@ -76,7 +76,7 @@ const damages = [
     },
 ];
 
-export default function DamagesAdmin() {
+export default function DamagesAdmin({ kerusakan }: any) {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedDamage, setSelectedDamage] = useState<any>(null);
@@ -86,11 +86,11 @@ export default function DamagesAdmin() {
     const [isProcessing, setIsProcessing] = useState(false);
 
     // Filter damages based on search term and status
-    const filteredDamages = damages.filter((damage) => {
+    const filteredDamages = kerusakan.data.filter((damage: any) => {
         const matchesSearch =
-            damage.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            damage.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            damage.damageType.toLowerCase().includes(searchTerm.toLowerCase());
+            damage?.pelapor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            damage.lokasi.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            damage.item.toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesStatus = statusFilter === 'all' || damage.status === statusFilter;
 
@@ -146,9 +146,9 @@ export default function DamagesAdmin() {
                 return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Menunggu</Badge>;
             case 'in_progress':
                 return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Diproses</Badge>;
-            case 'completed':
+            case 'confirmed':
                 return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Selesai</Badge>;
-            case 'rejected':
+            case 'cancelled':
                 return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Ditolak</Badge>;
             default:
                 return <Badge variant="outline">Unknown</Badge>;
@@ -157,11 +157,11 @@ export default function DamagesAdmin() {
 
     const getUrgencyBadge = (urgency: string) => {
         switch (urgency) {
-            case 'rendah':
+            case 'Rendah':
                 return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">Rendah</Badge>;
-            case 'sedang':
+            case 'Sedang':
                 return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Sedang</Badge>;
-            case 'tinggi':
+            case 'Tinggi':
                 return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Tinggi</Badge>;
             default:
                 return <Badge variant="outline">Unknown</Badge>;
@@ -243,20 +243,20 @@ export default function DamagesAdmin() {
                                             </TableRow>
                                         ) : (
                                             filteredDamages.map((damage) => (
-                                                <TableRow key={damage.id}>
+                                                <TableRow key={damage.kode_pelaporan}>
                                                     <TableCell>
-                                                        <div className="font-medium">{damage.name}</div>
-                                                        <div className="text-sm text-gray-500">{damage.devisi}</div>
+                                                        <div className="font-medium">{damage?.pelapor.name}</div>
+                                                        <div className="text-sm text-gray-500">{damage?.pelapor.unit_kerja}</div>
                                                     </TableCell>
-                                                    <TableCell>{damage.location}</TableCell>
-                                                    <TableCell className="hidden md:table-cell">{damage.damageType}</TableCell>
-                                                    <TableCell className="hidden lg:table-cell">{getUrgencyBadge(damage.urgency)}</TableCell>
+                                                    <TableCell>{damage.lokasi}</TableCell>
+                                                    <TableCell className="hidden md:table-cell">{damage.item}</TableCell>
+                                                    <TableCell className="hidden lg:table-cell">{getUrgencyBadge(damage.urgensi)}</TableCell>
                                                     <TableCell>{getStatusBadge(damage.status)}</TableCell>
                                                     <TableCell className="hidden md:table-cell">
-                                                        {damage.photos.length > 0 ? (
+                                                        {damage.picture.length > 0 ? (
                                                             <Badge variant="outline" className="flex items-center gap-1">
                                                                 <ImageIcon className="h-3 w-3" />
-                                                                <span>{damage.photos.length}</span>
+                                                                <span>{damage.picture.length}</span>
                                                             </Badge>
                                                         ) : (
                                                             <span className="text-sm text-gray-500">-</span>
@@ -286,7 +286,7 @@ export default function DamagesAdmin() {
                             {selectedDamage && (
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="text-lg font-medium">{selectedDamage.damageType}</h3>
+                                        <h3 className="text-lg font-medium">{selectedDamage.item}</h3>
                                         {getStatusBadge(selectedDamage.status)}
                                     </div>
 
@@ -294,44 +294,44 @@ export default function DamagesAdmin() {
                                         <div className="flex items-center gap-2">
                                             <User className="h-4 w-4 text-gray-500" />
                                             <div>
-                                                <p className="text-sm font-medium">{selectedDamage.name}</p>
-                                                <p className="text-xs text-gray-500">{selectedDamage.devisi}</p>
+                                                <p className="text-sm font-medium">{selectedDamage?.pelapor.name}</p>
+                                                <p className="text-xs text-gray-500">{selectedDamage?.pelapor.unit_kerja}</p>
                                             </div>
                                         </div>
 
                                         <div className="flex items-center gap-2">
                                             <MapPin className="h-4 w-4 text-gray-500" />
-                                            <p className="text-sm">{selectedDamage.location}</p>
+                                            <p className="text-sm">{selectedDamage.lokasi}</p>
                                         </div>
 
                                         <div className="flex items-center gap-2">
                                             <Wrench className="h-4 w-4 text-gray-500" />
                                             <div className="flex items-center gap-2">
                                                 <p className="text-sm">Urgensi:</p>
-                                                {getUrgencyBadge(selectedDamage.urgency)}
+                                                {getUrgencyBadge(selectedDamage.urgensi)}
                                             </div>
                                         </div>
 
                                         <div className="pt-2">
                                             <p className="text-sm font-medium">Deskripsi Kerusakan:</p>
-                                            <p className="text-sm text-gray-700">{selectedDamage.description}</p>
+                                            <p className="text-sm text-gray-700">{selectedDamage.deskripsi}</p>
                                         </div>
 
                                         <div>
                                             <p className="text-sm font-medium">Kontak:</p>
-                                            <p className="text-sm text-gray-700">{selectedDamage.contact}</p>
+                                            <p className="text-sm text-gray-700">{selectedDamage.no_hp}</p>
                                         </div>
 
                                         <div>
                                             <p className="text-sm font-medium">Waktu Laporan:</p>
-                                            <p className="text-sm text-gray-700">{formatDate(selectedDamage.createdAt)}</p>
+                                            <p className="text-sm text-gray-700">{formatDate(selectedDamage.created_at)}</p>
                                         </div>
 
-                                        {selectedDamage.photos.length > 0 && (
+                                        {selectedDamage.picture.length > 0 && (
                                             <div>
                                                 <p className="mb-2 text-sm font-medium">Foto Kerusakan:</p>
                                                 <div className="grid grid-cols-2 gap-2">
-                                                    {selectedDamage.photos.map((photo: string, index: number) => (
+                                                    {selectedDamage.picture.map((photo: string, index: number) => (
                                                         <div
                                                             key={index}
                                                             className="relative aspect-video cursor-pointer overflow-hidden rounded-md border"

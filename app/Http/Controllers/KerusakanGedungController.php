@@ -15,7 +15,11 @@ class KerusakanGedungController extends Controller
      */
     public function index()
     {
-        return Inertia::render('admin/damages/page');
+        $data = [
+            'kerusakan' => KerusakanGedung::with('pelapor')->paginate(15)
+        ];
+
+        return Inertia::render('admin/damages/page', $data);
     }
 
     /**
@@ -36,9 +40,9 @@ class KerusakanGedungController extends Controller
             'lokasi' => $request->location,
             'item' => $request->damageType,
             'deskripsi' => $request->description,
-            'picture1' => $request->location,
-            'picture2' => $request->location,
+            'picture' => $request->location,
             'urgensi' => $request->urgency,
+            'kode_pelaporan' => '123',
             'no_hp' => $request->contact,
             'keterangan' => $request->location,
         ]);

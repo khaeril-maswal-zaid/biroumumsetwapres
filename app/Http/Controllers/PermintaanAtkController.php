@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PermintaanAtk;
 use App\Http\Requests\StorePermintaanAtkRequest;
 use App\Http\Requests\UpdatePermintaanAtkRequest;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class PermintaanAtkController extends Controller
@@ -14,7 +15,11 @@ class PermintaanAtkController extends Controller
      */
     public function index()
     {
-        return Inertia::render('admin/supplies/page');
+        $data = [
+            'permintaanAtk' => PermintaanAtk::with('pemesan')->paginate(15)
+        ];
+
+        return Inertia::render('admin/supplies/page', $data);
     }
 
     /**
@@ -30,7 +35,18 @@ class PermintaanAtkController extends Controller
      */
     public function store(StorePermintaanAtkRequest $request)
     {
-        //
+        // dd($request->all());
+
+        PermintaanAtk::create([
+            'user_id' => Auth::id(),
+            'daftar_kebutuhan' => $request->items,
+            'deskripsi' => $request->justification,
+            'urgensi' => $request->urgency,
+            'no_hp' => $request->contact,
+            'kode_pelaporan' => '123',
+            'status' => 'Pengajuan',
+            'keterangan' => '',
+        ]);
     }
 
     /**

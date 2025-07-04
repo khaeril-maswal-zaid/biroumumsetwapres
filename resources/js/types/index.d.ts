@@ -34,6 +34,8 @@ export interface SharedData {
 export interface User {
     id: number;
     name: string;
+    unit_kerja: string;
+    role: string;
     email: string;
     avatar?: string;
     email_verified_at: string | null;

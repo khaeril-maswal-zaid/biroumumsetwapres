@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PemesananRuangRapat extends Model
 {
@@ -18,7 +19,18 @@ class PemesananRuangRapat extends Model
         'daftar_ruangan_id',
         'deskripsi',
         'no_hp',
+        'kode_booking',
         'status',
         'keterangan',
     ];
+
+    public function ruangans(): BelongsTo
+    {
+        return $this->belongsTo(DaftarRuangan::class, 'daftar_ruangan_id');
+    }
+
+    public function pemesan(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

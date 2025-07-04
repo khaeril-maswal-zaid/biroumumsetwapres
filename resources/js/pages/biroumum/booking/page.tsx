@@ -18,7 +18,8 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const schema = z.object({
-    room: z.string().min(1, 'Ruangan wajib dipilih'),
+    room_code: z.string().min(1, 'Ruangan wajib dipilih'),
+    room_name: z.string().min(1, 'Nama ruangan wajib diisi'),
     date: z.string().min(1, 'Tanggal wajib diisi'),
     startTime: z.string().min(1, 'Jam mulai wajib diisi'),
     endTime: z.string().min(1, 'Jam selesai wajib diisi'),
@@ -28,7 +29,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function RoomBooking({ daftarruangans }: any) {
+export default function RoomBooking() {
     const { auth } = usePage<SharedData>().props;
 
     const {
@@ -41,7 +42,8 @@ export default function RoomBooking({ daftarruangans }: any) {
     } = useForm<FormData>({
         resolver: zodResolver(schema),
         defaultValues: {
-            room: '',
+            room_code: '',
+            room_name: '',
             date: '',
             startTime: '',
             endTime: '',
@@ -144,14 +146,17 @@ export default function RoomBooking({ daftarruangans }: any) {
                                     <div className="space-y-4">
                                         <h3 className="border-b pb-2 text-lg font-medium text-gray-900">Pilih Ruangan</h3>
                                         <RoomSelection
-                                            daftarRuangans={daftarruangans}
-                                            selectedRoom={formData.room}
-                                            onRoomChange={(value) => setValue('room', value)}
+                                            selectedRoom={formData.room_code}
+                                            onRoomChange={(id, name) => {
+                                                setValue('room_code', id);
+                                                setValue('room_name', name);
+                                            }}
                                             selectedDate={formData.date}
                                             selectedStartTime={formData.startTime}
                                             selectedEndTime={formData.endTime}
                                         />
-                                        {errors.room && <p className="text-sm text-red-500">{errors.room.message}</p>}
+
+                                        {errors.room_code && <p className="text-sm text-red-500">{errors.room_code.message}</p>}
                                     </div>
 
                                     <div className="space-y-4">

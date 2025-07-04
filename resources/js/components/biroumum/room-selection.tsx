@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Skeleton } from '@/components/ui/skeleton';
+import { router, usePage } from '@inertiajs/react';
 import { AirVent, Camera, Car, CheckCircle, Clock, Coffee, Info, Monitor, Users, Wifi, X } from 'lucide-react';
 import type React from 'react';
 import { useEffect, useState } from 'react';
@@ -27,9 +28,8 @@ interface Room {
 }
 
 interface RoomSelectionProps {
-    daftarRuangans: object;
     selectedRoom: string;
-    onRoomChange: (roomId: string) => void;
+    onRoomChange: (roomId: string, roomName: string) => void;
     selectedDate: string;
     selectedStartTime: string;
     selectedEndTime: string;
@@ -115,7 +115,9 @@ const getRoomsData = async (date: string, startTime: string, endTime: string): P
     ];
 };
 
-export function RoomSelection({ daftarRuangans, selectedRoom, onRoomChange, selectedDate, selectedStartTime, selectedEndTime }: RoomSelectionProps) {
+export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, selectedStartTime, selectedEndTime }: RoomSelectionProps) {
+    const { tersedia = [] } = usePage().props;
+
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedRoomDetail, setSelectedRoomDetail] = useState<Room | null>(null);
@@ -124,14 +126,28 @@ export function RoomSelection({ daftarRuangans, selectedRoom, onRoomChange, sele
     // Fetch rooms data when date/time changes
     useEffect(() => {
         if (selectedDate && selectedStartTime && selectedEndTime) {
-            setLoading(true);
-            getRoomsData(selectedDate, selectedStartTime, selectedEndTime)
-                .then(setRooms)
-                .finally(() => setLoading(false));
+            router.get(
+                route('ruangrapat.create'),
+                {
+                    tanggal: selectedDate,
+                    jam_mulai: selectedStartTime,
+                    jam_selesai: selectedEndTime,
+                },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                    onStart: () => setLoading(true),
+                    onFinish: () => setLoading(false),
+                },
+            );
         } else {
             setRooms([]);
         }
     }, [selectedDate, selectedStartTime, selectedEndTime]);
+
+    useEffect(() => {
+        setRooms(tersedia as Room[]);
+    }, [tersedia]);
 
     const handleViewDetail = (e: React.MouseEvent, room: Room) => {
         e.stopPropagation(); // Prevent card click from triggering
@@ -139,9 +155,9 @@ export function RoomSelection({ daftarRuangans, selectedRoom, onRoomChange, sele
         setIsDetailOpen(true);
     };
 
-    const handleCardClick = (roomId: string, isDisabled: boolean) => {
+    const handleCardClick = (room: Room, isDisabled: boolean) => {
         if (!isDisabled) {
-            onRoomChange(roomId);
+            onRoomChange(room.id, room.nama_ruangan);
         }
     };
 
@@ -251,7 +267,7 @@ export function RoomSelection({ daftarRuangans, selectedRoom, onRoomChange, sele
                         ))}
                     </div>
                 ) : (
-                    <RadioGroup value={selectedRoom} onValueChange={onRoomChange}>
+                    <RadioGroup value={selectedRoom} onValueChange={() => {}}>
                         <div className="grid gap-4">
                             {rooms.map((room) => {
                                 const hasConflict = isTimeSlotConflict(room);
@@ -263,7 +279,7 @@ export function RoomSelection({ daftarRuangans, selectedRoom, onRoomChange, sele
                                         className={`cursor-pointer py-0 transition-all hover:shadow-md ${
                                             isDisabled ? 'cursor-not-allowed opacity-60' : ''
                                         } ${selectedRoom === room.id ? 'shadow-md ring-2 ring-blue-500' : ''}`}
-                                        onClick={() => handleCardClick(room.id, isDisabled)}
+                                        onClick={() => handleCardClick(room, isTimeSlotConflict(room))}
                                     >
                                         <CardContent className="p-4">
                                             <div className="flex items-start space-x-4">

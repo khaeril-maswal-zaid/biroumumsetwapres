@@ -16,9 +16,11 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->json('daftar_kebutuhan')->nullable();
             $table->string('deskripsi', 255); //from pengadu
-            $table->string('status', 255);
-            $table->string('keterangan', 255); //from admin
+            $table->string('urgensi', 50);
             $table->string('no_hp', 15);
+            $table->string('kode_pelaporan', 50)->unique();
+            $table->string('status', 50);
+            $table->string('keterangan', 255); //from admin
             $table->timestamps();
         });
     }
