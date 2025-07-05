@@ -7,6 +7,7 @@ use App\Http\Requests\StorePermintaanAtkRequest;
 use App\Http\Requests\UpdatePermintaanAtkRequest;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
 
 class PermintaanAtkController extends Controller
 {
@@ -16,7 +17,7 @@ class PermintaanAtkController extends Controller
     public function index()
     {
         $data = [
-            'permintaanAtk' => PermintaanAtk::with('pemesan')->paginate(15)
+            'permintaanAtk' => PermintaanAtk::with('pemesan')->latest()->paginate(15)
         ];
 
         return Inertia::render('admin/supplies/page', $data);
@@ -44,7 +45,7 @@ class PermintaanAtkController extends Controller
             'urgensi' => $request->urgency,
             'no_hp' => $request->contact,
             'kode_pelaporan' => '123',
-            'status' => 'Pengajuan',
+            'status' => 'pending',
             'keterangan' => '',
         ]);
     }
@@ -79,5 +80,23 @@ class PermintaanAtkController extends Controller
     public function destroy(PermintaanAtk $permintaanAtk)
     {
         //
+    }
+
+    public function status(PermintaanAtk $permintaanAtk, Request $request)
+    {
+        $validated = $request->validate([
+            'action' => 'required|in:confirmed,in_progress,cancelled',
+            'message' => 'required_unless:action,confirmed|string|max:255',
+        ]);
+
+        $updateData = collect([
+            'status' => $validated['action'],
+        ]);
+
+        if (isset($validated['message'])) {
+            $updateData->put('keterangan', $validated['message']);
+        }
+
+        $permintaanAtk->update($updateData->all());
     }
 }

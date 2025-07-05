@@ -175,183 +175,174 @@ export default function VehiclesAdmin() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="space-y-6">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Permintaan Kendaraan</h1>
-                        <p className="text-gray-500">Kelola semua permintaan kendaraan.</p>
-                    </div>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Daftar Permintaan Kendaraan</CardTitle>
-                            <CardDescription>Semua permintaan kendaraan yang telah diajukan.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                                <div className="flex w-full max-w-sm items-center space-x-2">
-                                    <Search className="h-4 w-4 text-gray-400" />
-                                    <Input
-                                        placeholder="Cari nama, tujuan, atau jenis kendaraan..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full"
-                                    />
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                        <SelectTrigger className="w-[180px]">
-                                            <SelectValue placeholder="Filter Status" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="all">Semua Status</SelectItem>
-                                            <SelectItem value="confirmed">Terkonfirmasi</SelectItem>
-                                            <SelectItem value="pending">Menunggu</SelectItem>
-                                            <SelectItem value="in_progress">Diproses</SelectItem>
-                                            <SelectItem value="cancelled">Dibatalkan</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Daftar Permintaan Kendaraan</CardTitle>
+                        <CardDescription>Semua permintaan kendaraan yang telah diajukan.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                            <div className="flex w-full max-w-sm items-center space-x-2">
+                                <Search className="h-4 w-4 text-gray-400" />
+                                <Input
+                                    placeholder="Cari nama, tujuan, atau jenis kendaraan..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full"
+                                />
                             </div>
+                            <div className="flex items-center space-x-2">
+                                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                                    <SelectTrigger className="w-[180px]">
+                                        <SelectValue placeholder="Filter Status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Semua Status</SelectItem>
+                                        <SelectItem value="confirmed">Terkonfirmasi</SelectItem>
+                                        <SelectItem value="pending">Menunggu</SelectItem>
+                                        <SelectItem value="in_progress">Diproses</SelectItem>
+                                        <SelectItem value="cancelled">Dibatalkan</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
 
-                            <div className="rounded-md border">
-                                <Table>
-                                    <TableHeader>
+                        <div className="rounded-md border">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Nama</TableHead>
+                                        <TableHead>Kendaraan</TableHead>
+                                        <TableHead className="hidden md:table-cell">Tujuan</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Waktu</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="text-right">Aksi</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {filteredVehicles.length === 0 ? (
                                         <TableRow>
-                                            <TableHead>Nama</TableHead>
-                                            <TableHead>Kendaraan</TableHead>
-                                            <TableHead className="hidden md:table-cell">Tujuan</TableHead>
-                                            <TableHead className="hidden lg:table-cell">Waktu</TableHead>
-                                            <TableHead>Status</TableHead>
-                                            <TableHead className="text-right">Aksi</TableHead>
+                                            <TableCell colSpan={6} className="py-4 text-center text-gray-500">
+                                                Tidak ada permintaan kendaraan yang ditemukan
+                                            </TableCell>
                                         </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {filteredVehicles.length === 0 ? (
-                                            <TableRow>
-                                                <TableCell colSpan={6} className="py-4 text-center text-gray-500">
-                                                    Tidak ada permintaan kendaraan yang ditemukan
+                                    ) : (
+                                        filteredVehicles.map((vehicle) => (
+                                            <TableRow key={vehicle.id}>
+                                                <TableCell>
+                                                    <div className="font-medium">{vehicle.name}</div>
+                                                    <div className="text-sm text-gray-500">{vehicle.devisi}</div>
+                                                </TableCell>
+                                                <TableCell>{getVehicleTypeName(vehicle.vehicleType)}</TableCell>
+                                                <TableCell className="hidden max-w-[200px] truncate md:table-cell">{vehicle.destination}</TableCell>
+                                                <TableCell className="hidden lg:table-cell">
+                                                    <div className="text-sm">{formatDateTime(vehicle.startDateTime)}</div>
+                                                </TableCell>
+                                                <TableCell>{getStatusBadge(vehicle.status)}</TableCell>
+                                                <TableCell className="text-right">
+                                                    <Button variant="ghost" size="sm" onClick={() => handleViewDetails(vehicle)}>
+                                                        Detail
+                                                    </Button>
                                                 </TableCell>
                                             </TableRow>
-                                        ) : (
-                                            filteredVehicles.map((vehicle) => (
-                                                <TableRow key={vehicle.id}>
-                                                    <TableCell>
-                                                        <div className="font-medium">{vehicle.name}</div>
-                                                        <div className="text-sm text-gray-500">{vehicle.devisi}</div>
-                                                    </TableCell>
-                                                    <TableCell>{getVehicleTypeName(vehicle.vehicleType)}</TableCell>
-                                                    <TableCell className="hidden max-w-[200px] truncate md:table-cell">
-                                                        {vehicle.destination}
-                                                    </TableCell>
-                                                    <TableCell className="hidden lg:table-cell">
-                                                        <div className="text-sm">{formatDateTime(vehicle.startDateTime)}</div>
-                                                    </TableCell>
-                                                    <TableCell>{getStatusBadge(vehicle.status)}</TableCell>
-                                                    <TableCell className="text-right">
-                                                        <Button variant="ghost" size="sm" onClick={() => handleViewDetails(vehicle)}>
-                                                            Detail
-                                                        </Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </div>
-                        </CardContent>
-                    </Card>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </CardContent>
+                </Card>
 
-                    {/* Vehicle Details Dialog */}
-                    <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-                        <DialogContent className="sm:max-w-lg">
-                            <DialogHeader>
-                                <DialogTitle>Detail Permintaan Kendaraan</DialogTitle>
-                                <DialogDescription>Informasi lengkap tentang permintaan kendaraan.</DialogDescription>
-                            </DialogHeader>
-                            {selectedVehicle && (
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <h3 className="text-lg font-medium">{getVehicleTypeName(selectedVehicle.vehicleType)}</h3>
-                                        {getStatusBadge(selectedVehicle.status)}
+                {/* Vehicle Details Dialog */}
+                <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+                    <DialogContent className="sm:max-w-lg">
+                        <DialogHeader>
+                            <DialogTitle>Detail Permintaan Kendaraan</DialogTitle>
+                            <DialogDescription>Informasi lengkap tentang permintaan kendaraan.</DialogDescription>
+                        </DialogHeader>
+                        {selectedVehicle && (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-lg font-medium">{getVehicleTypeName(selectedVehicle.vehicleType)}</h3>
+                                    {getStatusBadge(selectedVehicle.status)}
+                                </div>
+
+                                <div className="space-y-3">
+                                    <div className="flex items-center gap-2">
+                                        <User className="h-4 w-4 text-gray-500" />
+                                        <div>
+                                            <p className="text-sm font-medium">{selectedVehicle.name}</p>
+                                            <p className="text-xs text-gray-500">{selectedVehicle.devisi}</p>
+                                        </div>
                                     </div>
 
-                                    <div className="space-y-3">
-                                        <div className="flex items-center gap-2">
-                                            <User className="h-4 w-4 text-gray-500" />
-                                            <div>
-                                                <p className="text-sm font-medium">{selectedVehicle.name}</p>
-                                                <p className="text-xs text-gray-500">{selectedVehicle.devisi}</p>
-                                            </div>
-                                        </div>
+                                    <div className="flex items-center gap-2">
+                                        <MapPin className="h-4 w-4 text-gray-500" />
+                                        <p className="text-sm">{selectedVehicle.destination}</p>
+                                    </div>
 
-                                        <div className="flex items-center gap-2">
-                                            <MapPin className="h-4 w-4 text-gray-500" />
-                                            <p className="text-sm">{selectedVehicle.destination}</p>
-                                        </div>
-
-                                        <div className="flex items-center gap-2">
-                                            <Clock className="h-4 w-4 text-gray-500" />
-                                            <div>
-                                                <p className="text-sm">Mulai: {formatDateTime(selectedVehicle.startDateTime)}</p>
-                                                <p className="text-sm">Selesai: {formatDateTime(selectedVehicle.endDateTime)}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-center gap-2">
-                                            <Car className="h-4 w-4 text-gray-500" />
-                                            <p className="text-sm">Penumpang: {selectedVehicle.passengers} orang</p>
-                                        </div>
-
-                                        <div className="pt-2">
-                                            <p className="text-sm font-medium">Keperluan:</p>
-                                            <p className="text-sm text-gray-700">{selectedVehicle.purpose}</p>
-                                        </div>
-
+                                    <div className="flex items-center gap-2">
+                                        <Clock className="h-4 w-4 text-gray-500" />
                                         <div>
-                                            <p className="text-sm font-medium">Driver:</p>
-                                            <p className="text-sm text-gray-700">
-                                                {selectedVehicle.needDriver ? 'Memerlukan driver' : 'Tidak memerlukan driver'}
-                                            </p>
+                                            <p className="text-sm">Mulai: {formatDateTime(selectedVehicle.startDateTime)}</p>
+                                            <p className="text-sm">Selesai: {formatDateTime(selectedVehicle.endDateTime)}</p>
                                         </div>
+                                    </div>
 
-                                        <div>
-                                            <p className="text-sm font-medium">Kontak:</p>
-                                            <p className="text-sm text-gray-700">{selectedVehicle.contact}</p>
-                                        </div>
+                                    <div className="flex items-center gap-2">
+                                        <Car className="h-4 w-4 text-gray-500" />
+                                        <p className="text-sm">Penumpang: {selectedVehicle.passengers} orang</p>
+                                    </div>
+
+                                    <div className="pt-2">
+                                        <p className="text-sm font-medium">Keperluan:</p>
+                                        <p className="text-sm text-gray-700">{selectedVehicle.purpose}</p>
+                                    </div>
+
+                                    <div>
+                                        <p className="text-sm font-medium">Driver:</p>
+                                        <p className="text-sm text-gray-700">
+                                            {selectedVehicle.needDriver ? 'Memerlukan driver' : 'Tidak memerlukan driver'}
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p className="text-sm font-medium">Kontak:</p>
+                                        <p className="text-sm text-gray-700">{selectedVehicle.contact}</p>
                                     </div>
                                 </div>
+                            </div>
+                        )}
+                        <DialogFooter className="flex justify-between sm:justify-between">
+                            {selectedVehicle && selectedVehicle.status === 'pending' && (
+                                <div className="flex gap-2">
+                                    <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        className="flex items-center gap-1"
+                                        onClick={() => handleReject(selectedVehicle.id)}
+                                        disabled={isProcessing}
+                                    >
+                                        <X className="h-4 w-4" />
+                                        <span>{isProcessing ? 'Memproses...' : 'Tolak'}</span>
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        className="flex items-center gap-1"
+                                        onClick={() => handleApprove(selectedVehicle.id)}
+                                        disabled={isProcessing}
+                                    >
+                                        <CheckCircle className="h-4 w-4" />
+                                        <span>{isProcessing ? 'Memproses...' : 'Setujui'}</span>
+                                    </Button>
+                                </div>
                             )}
-                            <DialogFooter className="flex justify-between sm:justify-between">
-                                {selectedVehicle && selectedVehicle.status === 'pending' && (
-                                    <div className="flex gap-2">
-                                        <Button
-                                            variant="destructive"
-                                            size="sm"
-                                            className="flex items-center gap-1"
-                                            onClick={() => handleReject(selectedVehicle.id)}
-                                            disabled={isProcessing}
-                                        >
-                                            <X className="h-4 w-4" />
-                                            <span>{isProcessing ? 'Memproses...' : 'Tolak'}</span>
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            className="flex items-center gap-1"
-                                            onClick={() => handleApprove(selectedVehicle.id)}
-                                            disabled={isProcessing}
-                                        >
-                                            <CheckCircle className="h-4 w-4" />
-                                            <span>{isProcessing ? 'Memproses...' : 'Setujui'}</span>
-                                        </Button>
-                                    </div>
-                                )}
-                                <Button variant="outline" onClick={() => setIsDetailsOpen(false)}>
-                                    Tutup
-                                </Button>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
-                </div>
+                            <Button variant="outline" onClick={() => setIsDetailsOpen(false)}>
+                                Tutup
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </AppLayout>
     );

@@ -7,6 +7,8 @@ use App\Http\Requests\StoreKerusakanGedungRequest;
 use App\Http\Requests\UpdateKerusakanGedungRequest;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 
 class KerusakanGedungController extends Controller
 {
@@ -16,7 +18,7 @@ class KerusakanGedungController extends Controller
     public function index()
     {
         $data = [
-            'kerusakan' => KerusakanGedung::with('pelapor')->paginate(15)
+            'kerusakan' => KerusakanGedung::with('pelapor')->latest()->paginate(15)
         ];
 
         return Inertia::render('admin/damages/page', $data);
@@ -35,15 +37,22 @@ class KerusakanGedungController extends Controller
      */
     public function store(StoreKerusakanGedungRequest $request)
     {
+        $photoPaths = [];
+
+        foreach ($request->photos as $photo) {
+            $photoPaths[] = $photo->store('image/kerusakan-gedung', 'public');
+        }
+
         KerusakanGedung::create([
             'user_id' => Auth::id(),
             'lokasi' => $request->location,
             'item' => $request->damageType,
             'deskripsi' => $request->description,
-            'picture' => $request->location,
+            'picture' => $photoPaths,
             'urgensi' => $request->urgency,
             'kode_pelaporan' => '123',
             'no_hp' => $request->contact,
+            'status' => 'pending',
             'keterangan' => $request->location,
         ]);
     }
@@ -78,5 +87,24 @@ class KerusakanGedungController extends Controller
     public function destroy(KerusakanGedung $kerusakanGedung)
     {
         //
+    }
+
+    public function status(KerusakanGedung $kerusakanGedung, Request $request)
+    {
+        $validated = $request->validate([
+            'action' => 'required|in:confirmed,in_progress,cancelled',
+            'message' => 'required_unless:action,confirmed|string|max:255',
+        ]);
+
+
+        $updateData = collect([
+            'status' => $validated['action'],
+        ]);
+
+        if (isset($validated['message'])) {
+            $updateData->put('keterangan', $validated['message']);
+        }
+
+        $kerusakanGedung->update($updateData->all());
     }
 }

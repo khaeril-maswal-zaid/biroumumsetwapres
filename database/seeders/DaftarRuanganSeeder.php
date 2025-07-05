@@ -20,7 +20,11 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Gedung A, Lantai 1',
                 'kapasitas' => 30,
                 'image' => 'ruang_rapat_utama.jpg',
-                'fasilitas' => json_encode(['Proyektor', 'AC', 'Whiteboard'])
+                'fasilitas' => [
+                    ['name' => 'Proyektor', 'icon' => 'Projector'],
+                    ['name' => 'AC', 'icon' => 'Snowflake'],
+                    ['name' => 'Whiteboard', 'icon' => 'PenSquare'],
+                ],
             ],
             [
                 'nama_ruangan' => 'Ruang Multimedia',
@@ -28,7 +32,11 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Gedung B, Lantai 2',
                 'kapasitas' => 20,
                 'image' => 'ruang_multimedia.jpg',
-                'fasilitas' => json_encode(['TV LED', 'Sound System', 'Kamera CCTV'])
+                'fasilitas' => [
+                    ['name' => 'TV LED', 'icon' => 'Tv'],
+                    ['name' => 'Sound System', 'icon' => 'Speaker'],
+                    ['name' => 'Kamera CCTV', 'icon' => 'Camera'],
+                ],
             ],
             [
                 'nama_ruangan' => 'Ruang Presentasi',
@@ -36,7 +44,10 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Gedung C, Lantai 3',
                 'kapasitas' => 25,
                 'image' => 'ruang_presentasi.jpg',
-                'fasilitas' => json_encode(['LCD Proyektor', 'Mikrofon'])
+                'fasilitas' => [
+                    ['name' => 'LCD Proyektor', 'icon' => 'Projector'],
+                    ['name' => 'Mikrofon', 'icon' => 'Mic'],
+                ],
             ],
             [
                 'nama_ruangan' => 'Ruang Diskusi',
@@ -44,7 +55,10 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Gedung D, Lantai 1',
                 'kapasitas' => 15,
                 'image' => 'ruang_diskusi.jpg',
-                'fasilitas' => json_encode(['Meja Bundar', 'Papan Tulis'])
+                'fasilitas' => [
+                    ['name' => 'Meja Bundar', 'icon' => 'Table'],
+                    ['name' => 'Papan Tulis', 'icon' => 'PenSquare'],
+                ],
             ],
             [
                 'nama_ruangan' => 'Ruang Pelatihan',
@@ -52,7 +66,11 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Gedung A, Lantai 2',
                 'kapasitas' => 40,
                 'image' => 'ruang_pelatihan.jpg',
-                'fasilitas' => json_encode(['Komputer', 'Proyektor', 'AC'])
+                'fasilitas' => [
+                    ['name' => 'Komputer', 'icon' => 'Computer'],
+                    ['name' => 'Proyektor', 'icon' => 'Projector'],
+                    ['name' => 'AC', 'icon' => 'Snowflake'],
+                ],
             ],
             [
                 'nama_ruangan' => 'Ruang Tunggu',
@@ -60,7 +78,11 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Lobi Utama',
                 'kapasitas' => 10,
                 'image' => 'ruang_tunggu.jpg',
-                'fasilitas' => json_encode(['Sofa', 'Majalah', 'AC'])
+                'fasilitas' => [
+                    ['name' => 'Sofa', 'icon' => 'Sofa'],
+                    ['name' => 'Majalah', 'icon' => 'BookOpen'],
+                    ['name' => 'AC', 'icon' => 'Snowflake'],
+                ],
             ],
             [
                 'nama_ruangan' => 'Ruang Arsip',
@@ -68,9 +90,13 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Gedung B, Basement',
                 'kapasitas' => 5,
                 'image' => 'ruang_arsip.jpg',
-                'fasilitas' => json_encode(['Rak Arsip', 'Lemari Besi'])
+                'fasilitas' => [
+                    ['name' => 'Rak Arsip', 'icon' => 'Folders'],
+                    ['name' => 'Lemari Besi', 'icon' => 'Shield'],
+                ],
             ],
         ];
+
 
         foreach ($data as $key => $value) {
             DaftarRuangan::create([

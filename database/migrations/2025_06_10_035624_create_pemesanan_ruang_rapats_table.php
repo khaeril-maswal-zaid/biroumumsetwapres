@@ -21,8 +21,8 @@ return new class extends Migration
             $table->foreignId('daftar_ruangan_id')->nullable()->constrained()->nullOnDelete();
             $table->string('deskripsi', 255); //from pengadu
             $table->string('no_hp', 15);
-            $table->string('kode_booking', 50)->unique();
-            $table->string('status', 255);
+            $table->enum('status', ['pending', 'confirmed', 'cancelled']);
+            $table->string('kode_booking', 255)->unique();
             $table->string('keterangan', 255); //from admin
 
             $table->timestamps();

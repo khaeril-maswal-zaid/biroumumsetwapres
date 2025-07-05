@@ -20,7 +20,7 @@ export function BottomNavigation() {
                         <span className="text-xs">Beranda</span>
                     </Button>
                 </Link>
-                <Link href="/booking">
+                <Link href={route('history')}>
                     <Button
                         variant="ghost"
                         size="sm"

@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { Calendar, Car, LayoutGrid, PenTool, Wrench } from 'lucide-react';
+import { Building2, Calendar, Car, LayoutGrid, PackageSearch, PenTool, ShieldCheck, Users, Wrench } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -14,38 +14,48 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Pemesanan Ruang',
+        title: 'Pemesanan Ruang Rapat',
         href: route('ruangrapat.index'),
         icon: Calendar,
     },
     {
-        title: 'Kerusakan Barang/Alat',
-        href: route('kerusakanbarang.index'),
+        title: 'Kerusakan Gedung',
+        href: route('kerusakangedung.index'),
         icon: Wrench,
-    },
-    {
-        title: 'Permintaan Kendaraan',
-        href: route('permintaankendaraan.index'),
-        icon: Car,
     },
     {
         title: 'Permintaan ATK',
         href: route('permintaanatk.index'),
         icon: PenTool,
     },
+    {
+        title: 'Permintaan Kendaraan',
+        href: route('permintaankendaraan.index'),
+        icon: Car,
+    },
 ];
 
 const footerNavItems: NavItem[] = [
-    // {
-    //     title: 'Repository',
-    //     href: 'https://github.com/laravel/react-starter-kit',
-    //     icon: Folder,
-    // },
-    // {
-    //     title: 'Documentation',
-    //     href: 'https://laravel.com/docs/starter-kits#react',
-    //     icon: BookOpen,
-    // },
+    {
+        title: 'Manajemen Ruangan',
+        href: '',
+        icon: Building2,
+    },
+    {
+        title: 'Manajemen ATK',
+        href: '',
+        icon: PackageSearch,
+    },
+    {
+        title: 'Manajemen Pengguna',
+        href: '',
+        icon: Users,
+    },
+    {
+        title: 'Pengaturan Akses',
+        href: '',
+        icon: ShieldCheck,
+    },
 ];
 
 export function AppSidebar() {

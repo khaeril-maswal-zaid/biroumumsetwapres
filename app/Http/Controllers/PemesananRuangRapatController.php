@@ -22,7 +22,7 @@ class PemesananRuangRapatController extends Controller
     public function index()
     {
         $data = [
-            'bookingRooms' => PemesananRuangRapat::with('ruangans')->with('pemesan')->paginate(15)
+            'bookingRooms' => PemesananRuangRapat::with('ruangans')->with('pemesan')->latest()->paginate(15)
         ];
 
         return Inertia::render('admin/bookings/page', $data);
@@ -79,10 +79,7 @@ class PemesananRuangRapatController extends Controller
                     'status'       => count($slots) ? 'booked' : 'available',
                     'bookedSlots'  => $slots,
                     'image'        => $r->image,
-                    'facilities'   => collect($r->fasilitas)->map(fn($f) => [
-                        'icon' => null,
-                        'name' => $f,
-                    ])->all(),
+                    'facilities'   => $r->fasilitas,
                 ];
             });
         }
@@ -133,7 +130,7 @@ class PemesananRuangRapatController extends Controller
             'no_hp' => $request->contact,
             'kode_booking' => 'BK-' . now()->format('Ymd') . '-' . strtoupper(Str::random(6)),
             'keterangan' => '',
-            'status' => 'Pengajuan',
+            'status' => 'pending',
         ]);
     }
 
@@ -169,83 +166,16 @@ class PemesananRuangRapatController extends Controller
         //
     }
 
-    public function tersedia(Request $request)
+    public function status(PemesananRuangRapat $pemesananruangrapat, Request $request)
     {
-        // 1. Validasi input
-        $request->validate([
-            'tanggal'     => 'required|date',
-            'jam_mulai'   => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+        $validated = $request->validate([
+            'action' => 'required|in:confirmed,cancelled',
+            'message' => 'required|string|max:255',
         ]);
 
-        $tanggal    = $request->input('tanggal');
-        $jamMulai   = $request->input('jam_mulai');
-        $jamSelesai = $request->input('jam_selesai');
-
-        // 2. Hitung isWeekend & isPeakHour
-        $dayOfWeek  = Carbon::parse($tanggal)->dayOfWeek;
-        // Carbon: 0 = Minggu, 6 = Sabtu
-        $isWeekend  = in_array($dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY]);
-        $hourStart  = Carbon::createFromFormat('H:i', $jamMulai)->hour;
-        $isPeakHour = $hourStart >= 9 && $hourStart <= 16;
-
-        // 3. Ambil semua ruangan
-        $ruangans = DaftarRuangan::all();
-
-        // 4. Jika weekday + peak hour, ambil bookings yang overlap
-        $bookings = collect();
-        if (! $isWeekend && $isPeakHour) {
-            $bookings = PemesananRuangRapat::where('tanggal_penggunaan', $tanggal)
-                ->where('jam_mulai', '<', $jamSelesai)
-                ->where('jam_selesai', '>', $jamMulai)
-                ->get();
-        }
-
-        // 5. Map ke struktur React-like
-        $result = $ruangans->map(function ($r) use ($isWeekend, $isPeakHour, $bookings, $tanggal, $jamMulai, $jamSelesai) {
-            // default untuk weekend / non-peak: available + no slots
-            if ($isWeekend || ! $isPeakHour) {
-                return [
-                    // kamu bisa pakai slug/name atau kode_ruangan sebagai 'id'
-                    'id'           => $r->kode_ruangan,
-                    'nama_ruangan' => $r->nama_ruangan,
-                    'kode_ruangan' => $r->kode_ruangan,
-                    'kapasitas'    => $r->kapasitas,
-                    'lokasi'       => $r->lokasi,
-                    'status'       => 'available',
-                    'bookedSlots'  => [],
-                    'image'        => $r->image,
-                    'facilities'   => collect($r->fasilitas)->map(fn($f) => [
-                        'icon' => null,
-                        'name' => $f,
-                    ])->all(),
-                ];
-            }
-
-            // weekday + peak hour ⇒ cek booking
-            $myBookings = $bookings->filter(fn($b) => $b->daftar_ruangan_id == $r->id);
-            $slots = $myBookings->map(
-                fn($b) =>
-                Carbon::parse($b->jam_mulai)->format('H:i')
-                    . '-' . Carbon::parse($b->jam_selesai)->format('H:i')
-            )->values()->all();
-
-            return [
-                'id'           => $r->kode_ruangan,
-                'nama_ruangan' => $r->nama_ruangan,
-                'kode_ruangan' => $r->kode_ruangan,
-                'kapasitas'    => $r->kapasitas,
-                'lokasi'       => $r->lokasi,
-                'status'       => count($slots) ? 'booked' : 'available',
-                'bookedSlots'  => $slots,
-                'image'        => $r->image,
-                'facilities'   => collect($r->fasilitas)->map(fn($f) => [
-                    'icon' => null,
-                    'name' => $f,
-                ])->all(),
-            ];
-        });
-
-        return $result;
+        $pemesananruangrapat->update([
+            'status' => $validated['action'],
+            'keterangan' => $validated['message'],
+        ]);
     }
 }

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\DaftarRuangan;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PemesananRuangRapat>
@@ -25,8 +26,8 @@ class PemesananRuangRapatFactory extends Factory
             'daftar_ruangan_id' => DaftarRuangan::inRandomOrder()->first()?->id ?? 1,
             'deskripsi' => fake()->sentence(),
             'no_hp' => fake()->phoneNumber(),
-            'kode_booking' => fake()->unique()->bothify('BK-########'),
-            'status' => fake()->randomElement(['confirmed', 'pending', 'cancelled']),
+            'kode_booking' => 'BK-' . now()->format('Ymd') . '-' . strtoupper(Str::random(6)),
+            'status' => fake()->randomElement(['pending', 'confirmed', 'cancelled']),
             'keterangan' => fake()->text(250),
         ];
     }

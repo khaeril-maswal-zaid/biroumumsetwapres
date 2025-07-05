@@ -21,11 +21,11 @@ class KerusakanGedungFactory extends Factory
             'lokasi' => 'Lantai ' . fake()->numberBetween(1, 5) . ', Ruang ' . fake()->numberBetween(101, 599),
             'item' => fake()->word(),
             'deskripsi' => fake()->sentence(),
-            'picture' =>  [fake()->image('public/storage/foto-kerusakan', 640, 480, null, false), fake()->image('public/storage/foto-kerusakan', 640, 480, null, false)],
+            'picture' =>  [fake()->image('public/storage/image/kerusakan-gedung', 640, 480, null, false), fake()->image('public/storage/image/kerusakan-gedung', 640, 480, null, false)],
             'no_hp' => fake()->phoneNumber(),
-            'urgensi' => fake()->randomElement(['Tinggi', 'Sedang', 'Rendah']),
+            'urgensi' => fake()->randomElement(['rendah', 'sedang', 'tinggi']),
             'kode_pelaporan' => fake()->unique()->bothify('LP-########'),
-            'status' => fake()->randomElement(['confirmed', 'pending', 'cancelled']),
+            'status' => fake()->randomElement(['pending', 'in_progress', 'confirmed', 'cancelled']),
             'keterangan' => fake()->text(250),
         ];
     }

@@ -7,12 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
-import { type SharedData } from '@/types';
+import { cn } from '@/lib/utils';
+import type { SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
-import { ImagePlus, Trash2, Wrench } from 'lucide-react';
+import { AlertCircle, AlertOctagon, AlertTriangle, ImagePlus, Trash2, Wrench } from 'lucide-react';
 import type React from 'react';
 import { useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -71,10 +71,8 @@ export default function DamageReport() {
                 alert('Maksimal 2 foto yang dapat diunggah');
                 return;
             }
-
             const file = e.target.files[0];
             setPhotos((prev) => [...prev, file]);
-
             const reader = new FileReader();
             reader.onloadend = () => {
                 setPhotoPreviews((prev) => [...prev, reader.result as string]);
@@ -97,6 +95,42 @@ export default function DamageReport() {
             fileInputRef.current.click();
         }
     };
+
+    const urgencyOptions = [
+        {
+            value: 'rendah' as const,
+            label: 'Prioritas Rendah',
+            description: 'Tidak mengganggu aktivitas',
+            detail: 'Dapat ditangani dalam 1-2 minggu',
+            icon: AlertCircle,
+            color: 'bg-green-50 border-green-200 text-green-800',
+            selectedColor: 'bg-green-100 border-green-400 shadow-green-100',
+            iconColor: 'text-green-600',
+            badgeColor: 'bg-green-500',
+        },
+        {
+            value: 'sedang' as const,
+            label: 'Prioritas Sedang',
+            description: 'Sedikit mengganggu aktivitas',
+            detail: 'Perlu ditangani dalam 3-5 hari',
+            icon: AlertTriangle,
+            color: 'bg-yellow-50 border-yellow-200 text-yellow-800',
+            selectedColor: 'bg-yellow-100 border-yellow-400 shadow-yellow-100',
+            iconColor: 'text-yellow-600',
+            badgeColor: 'bg-yellow-500',
+        },
+        {
+            value: 'tinggi' as const,
+            label: 'Prioritas Tinggi',
+            description: 'Sangat mengganggu aktivitas',
+            detail: 'Harus segera ditangani hari ini/ besok',
+            icon: AlertOctagon,
+            color: 'bg-red-50 border-red-200 text-red-800',
+            selectedColor: 'bg-red-100 border-red-400 shadow-red-100',
+            iconColor: 'text-red-600',
+            badgeColor: 'bg-red-500',
+        },
+    ];
 
     return (
         <>
@@ -159,7 +193,7 @@ export default function DamageReport() {
                                                         <img
                                                             src={preview || '/placeholder.svg'}
                                                             alt={`Foto kerusakan ${index + 1}`}
-                                                            className="object-cover"
+                                                            className="h-full w-full object-cover"
                                                         />
                                                     </div>
                                                     <Button
@@ -187,30 +221,60 @@ export default function DamageReport() {
                                         </div>
                                         <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handlePhotoUpload} />
                                     </div>
+
+                                    {/* Creative Urgency Selection */}
                                     <div>
-                                        <Label htmlFor="urgency">Tingkat Urgensi</Label>
+                                        <Label className="text-base font-medium">Tingkat Urgensi</Label>
                                         <Controller
                                             name="urgency"
                                             control={control}
                                             render={({ field }) => (
-                                                <RadioGroup value={field.value} onValueChange={field.onChange} className="mt-2">
-                                                    <div className="flex items-center space-x-2">
-                                                        <RadioGroupItem value="rendah" id="rendah" />
-                                                        <Label htmlFor="rendah">Rendah</Label>
-                                                    </div>
-                                                    <div className="flex items-center space-x-2">
-                                                        <RadioGroupItem value="sedang" id="sedang" />
-                                                        <Label htmlFor="sedang">Sedang</Label>
-                                                    </div>
-                                                    <div className="flex items-center space-x-2">
-                                                        <RadioGroupItem value="tinggi" id="tinggi" />
-                                                        <Label htmlFor="tinggi">Tinggi</Label>
-                                                    </div>
-                                                </RadioGroup>
+                                                <div className="mt-3 space-y-3">
+                                                    {urgencyOptions.map((option) => {
+                                                        const Icon = option.icon;
+                                                        const isSelected = field.value === option.value;
+
+                                                        return (
+                                                            <div
+                                                                key={option.value}
+                                                                onClick={() => field.onChange(option.value)}
+                                                                className={cn(
+                                                                    'relative cursor-pointer rounded-xl border-2 p-4 transition-all duration-300 hover:shadow-lg',
+                                                                    isSelected ? `${option.selectedColor} shadow-lg` : option.color,
+                                                                )}
+                                                            >
+                                                                <div className="flex items-start space-x-4">
+                                                                    <div
+                                                                        className={cn(
+                                                                            'rounded-full p-2.5',
+                                                                            isSelected ? 'bg-white/60' : 'bg-white/40',
+                                                                        )}
+                                                                    >
+                                                                        <Icon className={cn('h-6 w-6', option.iconColor)} />
+                                                                    </div>
+                                                                    <div className="min-w-0 flex-1">
+                                                                        <div className="mb-1 flex items-center justify-between">
+                                                                            <h3 className="text-sm font-semibold">{option.label}</h3>
+                                                                            {isSelected && (
+                                                                                <div className={cn('h-3 w-3 rounded-full', option.badgeColor)}></div>
+                                                                            )}
+                                                                        </div>
+                                                                        <p className="mb-1 text-xs opacity-80">{option.description}</p>
+                                                                        <p className="text-xs font-medium opacity-60">{option.detail}</p>
+                                                                    </div>
+                                                                </div>
+                                                                {isSelected && (
+                                                                    <div className="pointer-events-none absolute inset-0 rounded-xl border-2 border-current opacity-20"></div>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
                                             )}
                                         />
-                                        {errors.urgency && <p className="mt-1 text-sm text-red-500">{errors.urgency.message}</p>}
+                                        {errors.urgency && <p className="mt-2 text-sm text-red-500">{errors.urgency.message}</p>}
                                     </div>
+
                                     <div>
                                         <Label htmlFor="contact">No Hp</Label>
                                         <Input id="contact" {...register('contact')} className={errors.contact && 'border-red-500'} />

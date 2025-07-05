@@ -1,0 +1,603 @@
+'use client';
+
+import { BottomNavigation } from '@/components/biroumum/bottom-navigation';
+import { PageHeader } from '@/components/biroumum/page-header';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { Head, router } from '@inertiajs/react';
+import { AlertCircle, Calendar, Car, CheckCircle, Clock, Hash, MapPin, MessageSquare, Package, Search, User, Wrench } from 'lucide-react';
+import { useState } from 'react';
+
+// Mock data for user's request history
+const requestHistory = [
+    {
+        id: '1',
+        type: 'booking',
+        code: 'RR-2025-001',
+        title: 'Ruang Holding',
+        description: 'Rapat Divisi',
+        date: '2025-06-11',
+        time: '09:00 - 11:00',
+        status: 'approved',
+        adminMessage: 'Ruangan telah dikonfirmasi. Silakan datang 15 menit sebelum jadwal untuk persiapan.',
+        createdAt: '2025-06-10T10:30:00',
+        details: {
+            room: 'Ruang Holding',
+            purpose: 'Rapat Divisi',
+            contact: '0812-3456-7890',
+        },
+    },
+
+    {
+        id: '3',
+        type: 'supplies',
+        code: 'ATK-2025-003',
+        title: 'Permintaan ATK',
+        description: '5 item',
+        date: '2025-06-10',
+        time: '-',
+        status: 'approved',
+        adminMessage: 'Permintaan disetujui. Barang dapat diambil di gudang ATK lantai 1 mulai besok pagi.',
+        createdAt: '2025-06-10T14:20:00',
+        details: {
+            items: [
+                { name: 'Kertas A4', quantity: '5', unit: 'rim' },
+                { name: 'Pulpen', quantity: '20', unit: 'pcs' },
+                { name: 'Spidol', quantity: '10', unit: 'pcs' },
+                { name: 'Penghapus', quantity: '5', unit: 'pcs' },
+                { name: 'Penggaris', quantity: '3', unit: 'pcs' },
+            ],
+            justification: 'Untuk kebutuhan administrasi dan dokumentasi proyek baru',
+            urgency: 'normal',
+            contact: '0812-3456-7890',
+        },
+    },
+    {
+        id: '4',
+        type: 'damage',
+        code: 'DMG-2025-004',
+        title: 'AC Ruang 201',
+        description: 'Lantai 2, Ruang 201',
+        date: '2025-06-09',
+        time: '-',
+        status: 'completed',
+        adminMessage: 'Perbaikan AC telah selesai. AC sudah berfungsi normal kembali.',
+        createdAt: '2025-06-09T11:45:00',
+        details: {
+            location: 'Lantai 2, Ruang 201',
+            damageType: 'AC',
+            description: 'AC tidak dingin dan mengeluarkan bunyi berisik',
+            urgency: 'tinggi',
+            contact: '0812-3456-7890',
+            photos: ['/placeholder.svg?height=200&width=300', '/placeholder.svg?height=200&width=300'],
+        },
+    },
+    {
+        id: '5',
+        type: 'booking',
+        code: 'RR-2025-005',
+        title: 'Ruang Rapat',
+        description: 'Training Karyawan',
+        date: '2025-06-08',
+        time: '13:00 - 16:00',
+        status: 'rejected',
+        adminMessage: 'Maaf, ruangan sudah dibooking untuk acara lain pada waktu tersebut. Silakan pilih waktu lain.',
+        createdAt: '2025-06-08T08:30:00',
+        details: {
+            room: 'Ruang Rapat',
+            purpose: 'Training Karyawan Baru',
+            contact: '0812-3456-7890',
+        },
+    },
+];
+
+export default function RequestHistory({ requestHistory }: any) {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [typeFilter, setTypeFilter] = useState('all');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [selectedRequest, setSelectedRequest] = useState<any>(null);
+    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
+
+    const handleComplete = async (requestCode: string, type: string) => {
+        setIsProcessing(true);
+
+        const routesMap: Record<string, string> = {
+            supplies: 'permintaanatk.statusconfir',
+            damage: 'kerusakangedung.statusconfir',
+        };
+
+        const nameRoute = routesMap[type];
+
+        if (nameRoute) {
+            router.patch(
+                route(nameRoute, requestCode),
+                { action: 'confirmed' },
+                {
+                    onSuccess: () => {
+                        setIsProcessing(false);
+                        setIsDetailsOpen(false);
+                    },
+                    onError: (errors) => {
+                        console.log('Validation Errors: ', errors);
+                    },
+                },
+            );
+        }
+    };
+
+    // Filter requests based on search term, type, and status
+    const filteredRequests = requestHistory;
+    //  requestHistory.filter((request: any) => {
+    //     console.log(request);
+
+    //     const matchesSearch =
+    //         request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    //         request.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    //         request.code.toLowerCase().includes(searchTerm.toLowerCase());
+
+    //     const matchesType = typeFilter === 'all' || request.type === typeFilter;
+    //     const matchesStatus = statusFilter === 'all' || request.status === statusFilter;
+
+    //     return matchesSearch && matchesType && matchesStatus;
+    // });
+
+    const handleViewDetails = (request: any) => {
+        setSelectedRequest(request);
+        setIsDetailsOpen(true);
+    };
+
+    const handleViewImage = (imageUrl: string) => {
+        setSelectedImage(imageUrl);
+        setIsImageViewerOpen(true);
+    };
+
+    const getStatusBadge = (status: string) => {
+        switch (status) {
+            case 'pending':
+                return <Badge className="mb-1 bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Menunggu</Badge>;
+            case 'in_progress':
+                return <Badge className="mb-1 bg-blue-100 text-blue-800 hover:bg-blue-200">Disetujui</Badge>;
+            case 'confirmed':
+                return <Badge className="mb-1 bg-green-100 text-green-800 hover:bg-green-200">Selesai</Badge>;
+            case 'cancelled':
+                return <Badge className="mb-1 bg-red-100 text-red-800 hover:bg-red-200">Ditolak</Badge>;
+            default:
+                return <Badge variant="outline">Unknown</Badge>;
+        }
+    };
+
+    const getTypeIcon = (type: string) => {
+        switch (type) {
+            case 'booking':
+                return <Calendar className="h-4 w-4" />;
+            case 'vehicle':
+                return <Car className="h-4 w-4" />;
+            case 'supplies':
+                return <Package className="h-4 w-4" />;
+            case 'damage':
+                return <Wrench className="h-4 w-4" />;
+            default:
+                return <Calendar className="h-4 w-4" />;
+        }
+    };
+
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+        }).format(date);
+    };
+
+    const getUrgencyBadge = (urgency: string) => {
+        switch (urgency) {
+            case 'rendah':
+                return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">Rendah</Badge>;
+            case 'sedang':
+                return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Sedang</Badge>;
+            case 'tinggi':
+                return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Tinggi</Badge>;
+            case 'normal':
+                return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">Normal</Badge>;
+            case 'mendesak':
+                return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Mendesak</Badge>;
+            case 'segera':
+                return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Segera</Badge>;
+            default:
+                return <Badge variant="outline">Unknown</Badge>;
+        }
+    };
+
+    return (
+        <>
+            <Head title="Laporan Kerusakan Gedung" />
+            <div className="mx-auto min-h-screen w-full max-w-md bg-gray-50">
+                <div className="pb-20">
+                    <div className="space-y-6 p-4">
+                        <PageHeader title="Riwayat Permintaan" backUrl="/" />
+
+                        {/* Filters */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Filter Riwayat</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex flex-col gap-4">
+                                    <div className="flex w-full max-w-sm items-center space-x-2">
+                                        <Input
+                                            placeholder="Cari permintaan..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="w-full"
+                                        />
+                                        <Search className="h-4 w-4 text-gray-400" />
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Select value={typeFilter} onValueChange={setTypeFilter}>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Jenis" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="all">Semua Jenis</SelectItem>
+                                                <SelectItem value="booking">Ruang Rapat</SelectItem>
+                                                <SelectItem value="vehicle">Kendaraan</SelectItem>
+                                                <SelectItem value="supplies">ATK</SelectItem>
+                                                <SelectItem value="damage">Kerusakan</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <Select value={statusFilter} onValueChange={setStatusFilter}>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Status" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="all">Semua Status</SelectItem>
+                                                <SelectItem value="pending">Menunggu</SelectItem>
+                                                <SelectItem value="approved">Disetujui</SelectItem>
+                                                <SelectItem value="completed">Selesai</SelectItem>
+                                                <SelectItem value="rejected">Ditolak</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Request List */}
+                        <div className="space-y-3">
+                            {filteredRequests.length === 0 ? (
+                                <Card>
+                                    <CardContent className="p-8 text-center">
+                                        <p className="text-gray-500">Tidak ada riwayat permintaan yang ditemukan</p>
+                                    </CardContent>
+                                </Card>
+                            ) : (
+                                filteredRequests.map((request: any) => (
+                                    <Card key={request.code} className="transition-shadow hover:shadow-md">
+                                        <CardContent className="p-4">
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex flex-1 items-start space-x-3">
+                                                    <div className="mt-1 flex-shrink-0">{getTypeIcon(request.id)}</div>
+                                                    <div className="min-w-0 flex-1">
+                                                        <div className="mb-1 flex items-center gap-2">
+                                                            <span className="font-mono text-xs text-gray-500">{request.code}</span>
+                                                            <Badge variant="outline" className="text-xs">
+                                                                {request.type}
+                                                            </Badge>
+                                                        </div>
+                                                        <h3 className="truncate font-semibold text-gray-900">{request.title}</h3>
+                                                        <p className="text-sm text-gray-600">{request?.info}</p>
+                                                        <div className="mt-2 flex items-center gap-4 text-xs text-gray-500">
+                                                            {request ? (
+                                                                request.id !== 'booking' ? (
+                                                                    getUrgencyBadge(request.subtitle)
+                                                                ) : (
+                                                                    <span>{request.subtitle}</span>
+                                                                )
+                                                            ) : null}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex flex-col items-end gap-2">
+                                                    {getStatusBadge(request.status)}
+                                                    <Button variant="ghost" size="sm" onClick={() => handleViewDetails(request)} className="text-xs">
+                                                        Detail
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <BottomNavigation />
+
+                {/* Request Details Dialog */}
+                <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+                    <DialogContent className="max-h-[90vh] overflow-y-auto px-10 pt-12 sm:max-w-2xl">
+                        <DialogHeader className="mb-4">
+                            <DialogTitle className="flex items-center gap-2">
+                                {selectedRequest && getTypeIcon(selectedRequest.type)}
+                                Detail {selectedRequest && selectedRequest.type}
+                            </DialogTitle>
+                            <DialogDescription>
+                                {selectedRequest &&
+                                    selectedRequest.id === 'booking' &&
+                                    'Detail pemesanan ruang rapat Anda, termasuk waktu, tempat, dan status persetujuan dari admin.'}
+
+                                {selectedRequest &&
+                                    selectedRequest.id === 'supplies' &&
+                                    'Detail permintaan Alat Tulis Kantor (ATK) Anda, beserta status dan tanggapan dari admin.'}
+
+                                {selectedRequest &&
+                                    selectedRequest.id === 'damage' &&
+                                    'Detail laporan kerusakan gedung yang Anda sampaikan, termasuk status tindak lanjut oleh petugas.'}
+
+                                {selectedRequest &&
+                                    selectedRequest.id === 'vehicle' &&
+                                    ' Detail permintaan kendaraan dinas Anda, lengkap dengan jadwal penggunaan dan status persetujuan.'}
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        {selectedRequest && (
+                            <div className="space-y-6">
+                                {/* Status and Request Info */}
+                                <div className="flex flex-col gap-4 rounded-lg bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+                                    <div>
+                                        <div className="mb-2 flex items-center gap-1">
+                                            <Clock className="h-4 w-4 text-gray-500" />
+                                            <span className="text-xs text-gray-600">{formatDate(selectedRequest.created_at)}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <Hash className="h-4 w-4 text-gray-500" />
+                                            <span className="font-mono text-sm font-medium text-gray-700">{selectedRequest.code}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">{getStatusBadge(selectedRequest.status)}</div>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                    <div className="space-y-4">
+                                        <div className="flex items-start gap-3">
+                                            <User className="my-auto h-5 w-5 text-blue-600" />
+                                            <div>
+                                                <p className="font-medium text-gray-900">Dani Martinez</p>
+                                                <p className="text-xs text-gray-600">Biro Umum</p>
+                                                <p className="text-xs text-gray-500">{selectedRequest.no_hp}</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Request Details based on type */}
+                                        {selectedRequest.id === 'booking' && (
+                                            <>
+                                                <div className="flex items-center gap-3">
+                                                    <Calendar className="h-5 w-5 text-green-600" />
+                                                    <div>
+                                                        <p className="font-medium text-gray-900">Tanggal kegiatan</p>
+                                                        <p className="text-sm text-gray-600">{selectedRequest.subtitle}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <Clock className="h-5 w-5 text-orange-600" />
+                                                    <div>
+                                                        <p className="font-medium text-gray-900">Waktu kegiatan</p>
+                                                        <p className="text-sm text-gray-600">{selectedRequest.time}</p>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
+
+                                        {selectedRequest.id === 'damage' && (
+                                            <>
+                                                <div className="flex items-start gap-3">
+                                                    <MapPin className="mt-0.5 h-5 w-5 text-green-600" />
+                                                    <div>
+                                                        <p className="font-medium text-gray-900">Lokasi</p>
+                                                        <p className="text-sm text-gray-600">{selectedRequest.info}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center gap-3">
+                                                    <AlertCircle className="h-5 w-5 text-orange-600" />
+                                                    <div>
+                                                        <p className="font-medium text-gray-900">Tingkat Urgensi</p>
+                                                        {getUrgencyBadge(selectedRequest.subtitle)}
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
+
+                                        {selectedRequest.id === 'supplies' && (
+                                            <>
+                                                <div className="flex items-center gap-3">
+                                                    <AlertCircle className="h-5 w-5 text-purple-600" />
+                                                    <div>
+                                                        <p className="font-medium text-gray-900">Tingkat Urgensi</p>
+                                                        {getUrgencyBadge(selectedRequest.subtitle)}
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center gap-3">
+                                                    <Package className="h-5 w-5 text-green-600" />
+                                                    <div>
+                                                        <p className="font-medium text-gray-900">Total Item</p>
+                                                        <p className="text-sm text-gray-600">{selectedRequest.title} jenis barang</p>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        {selectedRequest.id === 'booking' && (
+                                            <div className="flex items-center gap-3">
+                                                <Calendar className="h-5 w-5 text-purple-600" />
+                                                <div>
+                                                    <p className="font-medium text-gray-900">Info Ruangan</p>
+                                                    <p className="text-xs text-gray-600">{selectedRequest.ruangans.nama_ruangan}</p>
+                                                    <p className="text-xs text-gray-600">{selectedRequest.ruangans.lokasi}</p>
+                                                    <p className="text-xs text-gray-600">Kapasitas {selectedRequest.ruangans.kapasitas} Orang</p>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {selectedRequest.id === 'damage' && (
+                                            <div className="flex items-center gap-3">
+                                                <Wrench className="h-5 w-5 text-purple-600" />
+                                                <div>
+                                                    <p className="font-medium text-gray-900">Jenis Kerusakan</p>
+                                                    <p className="text-sm text-gray-600">{selectedRequest.title}</p>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div>
+                                            <p className="mb-2 font-medium text-gray-900">
+                                                {selectedRequest && selectedRequest.id === 'booking' && 'Keperluan/ Kegiatan'}
+                                                {selectedRequest && selectedRequest.id === 'supplies' && 'Justifikasi Permintaan'}
+                                                {selectedRequest && selectedRequest.id === 'damage' && 'Deskripsi Kerusakan'}
+                                            </p>
+                                            <p className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">{selectedRequest.deskripsi}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {selectedRequest.id === 'supplies' && (
+                                    <>
+                                        <p className="mb-3 font-medium text-gray-900">Daftar Barang yang Diminta</p>
+                                        <div className="space-y-2">
+                                            {selectedRequest.daftarkebutuhan.map((item: any, index: number) => (
+                                                <div key={index} className="flex items-center justify-between rounded-lg border bg-gray-50 p-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <Package className="h-4 w-4 text-gray-500" />
+                                                        <span className="text-sm font-medium">{item.name}</span>
+                                                    </div>
+                                                    <Badge variant="outline" className="font-medium">
+                                                        {item.quantity} {item.unit}
+                                                    </Badge>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+
+                                {/* Admin Message Display for Approved/Rejected */}
+                                {selectedRequest.keterangan &&
+                                    selectedRequest.status !== 'pending' &&
+                                    (() => {
+                                        // Mapping warna berdasarkan status
+                                        const colorMap: any = {
+                                            confirmed: {
+                                                border: 'border-green-200',
+                                                bg: 'bg-green-50',
+                                                icon: 'text-green-600',
+                                                title: 'text-green-900',
+                                                text: 'text-green-800',
+                                            },
+                                            in_progress: {
+                                                border: 'border-blue-200',
+                                                bg: 'bg-blue-50',
+                                                icon: 'text-blue-600',
+                                                title: 'text-blue-900',
+                                                text: 'text-blue-800',
+                                            },
+                                            cancelled: {
+                                                border: 'border-red-200',
+                                                bg: 'bg-red-50',
+                                                icon: 'text-red-600',
+                                                title: 'text-red-900',
+                                                text: 'text-red-800',
+                                            },
+                                        };
+
+                                        const color = colorMap[selectedRequest.status] ?? colorMap['in_progress'];
+
+                                        return (
+                                            <div className={`rounded-lg border ${color.border} ${color.bg} p-4`}>
+                                                <div className="mb-2 flex items-center gap-2">
+                                                    <MessageSquare className={`h-4 w-4 ${color.icon}`} />
+                                                    <h4 className={`font-medium ${color.title}`}>Pesan dari Admin</h4>
+                                                </div>
+                                                <p className={`text-sm ${color.text}`}>{selectedRequest.keterangan}</p>
+                                            </div>
+                                        );
+                                    })()}
+
+                                <Separator />
+
+                                {/* User Completion Section for Approved Items */}
+                                {selectedRequest.status === 'in_progress' && (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2">
+                                            <CheckCircle className="h-5 w-5 text-green-600" />
+                                            <h4 className="font-medium text-gray-900">Konfirmasi Selesai</h4>
+                                        </div>
+
+                                        <div className="rounded-lg border bg-green-50 p-4">
+                                            <p className="mb-3 text-sm text-green-800">
+                                                Permintaan Anda telah disetujui. Silakan konfirmasi setelah
+                                                {selectedRequest.type === 'vehicle'
+                                                    ? ' menggunakan kendaraan'
+                                                    : selectedRequest.type === 'supplies'
+                                                      ? ' mendapatkan barang'
+                                                      : ' perbaikan selesai'}
+                                                .
+                                            </p>
+
+                                            <div className="flex gap-2 pt-3">
+                                                <Button
+                                                    onClick={() => handleComplete(selectedRequest.code, selectedRequest.type)}
+                                                    disabled={isProcessing}
+                                                    className="bg-green-600 hover:bg-green-700"
+                                                >
+                                                    <CheckCircle className="mr-2 h-4 w-4" />
+                                                    {isProcessing ? 'Memproses...' : 'Konfirmasi Selesai'}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setIsDetailsOpen(false)} disabled={isProcessing}>
+                                Tutup
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
+                {/* Image Viewer Dialog */}
+                <Dialog open={isImageViewerOpen} onOpenChange={setIsImageViewerOpen}>
+                    <DialogContent className="sm:max-w-3xl">
+                        <DialogHeader>
+                            <DialogTitle>Foto Kerusakan</DialogTitle>
+                        </DialogHeader>
+                        {selectedImage && (
+                            <div className="relative aspect-video w-full">
+                                <img src={selectedImage || '/placeholder.svg'} alt="Foto kerusakan" className="object-contain" />
+                            </div>
+                        )}
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setIsImageViewerOpen(false)}>
+                                Tutup
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            </div>
+        </>
+    );
+}

@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Skeleton } from '@/components/ui/skeleton';
 import { router, usePage } from '@inertiajs/react';
-import { AirVent, Camera, Car, CheckCircle, Clock, Coffee, Info, Monitor, Users, Wifi, X } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
+import { CheckCircle, Clock, Info, Users, X } from 'lucide-react';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -34,86 +35,6 @@ interface RoomSelectionProps {
     selectedStartTime: string;
     selectedEndTime: string;
 }
-
-// Simulasi data backend - akan berubah berdasarkan tanggal dan waktu
-const getRoomsData = async (date: string, startTime: string, endTime: string): Promise<Room[]> => {
-    // Simulasi delay API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    // Simulasi logic backend untuk cek availability
-    const isWeekend = new Date(date).getDay() === 0 || new Date(date).getDay() === 6;
-    const isPeakHour = Number.parseInt(startTime.split(':')[0]) >= 9 && Number.parseInt(startTime.split(':')[0]) <= 16;
-
-    return [
-        {
-            id: 'holding',
-            nama_ruangan: 'Ruang Holding',
-            kode_ruangan: 'RH-001',
-            kapasitas: 16,
-            lokasi: 'Lantai 2, Sayap Timur',
-            status: isWeekend || !isPeakHour ? 'available' : 'booked',
-            bookedSlots: isPeakHour ? ['10:00-12:00', '14:00-16:00'] : [],
-            image: '/placeholder.svg?height=200&width=300',
-            facilities: [
-                { icon: Monitor, name: 'Proyektor' },
-                { icon: Wifi, name: 'WiFi' },
-                { icon: AirVent, name: 'AC' },
-                { icon: Coffee, name: 'Coffee Station' },
-                { icon: Camera, name: 'Video Conference' },
-            ],
-        },
-        {
-            id: 'rapat',
-            nama_ruangan: 'Ruang Rapat',
-            kode_ruangan: 'RR-002',
-            kapasitas: 7,
-            lokasi: 'Lantai 1, Sayap Barat',
-            status: date === new Date().toISOString().split('T')[0] && isPeakHour ? 'booked' : 'available',
-            bookedSlots: date === new Date().toISOString().split('T')[0] && isPeakHour ? ['09:00-11:00', '13:00-15:00'] : [],
-            image: '/placeholder.svg?height=200&width=300',
-            facilities: [
-                { icon: Monitor, name: 'Proyektor' },
-                { icon: Wifi, name: 'WiFi' },
-                { icon: AirVent, name: 'AC' },
-                { icon: Camera, name: 'Video Conference' },
-            ],
-        },
-        {
-            id: 'sinergi',
-            nama_ruangan: 'Ruang Sinergi',
-            kode_ruangan: 'RS-003',
-            kapasitas: 12,
-            lokasi: 'Lantai 3, Sayap Utara',
-            status: 'available',
-            bookedSlots: [],
-            image: '/placeholder.svg?height=200&width=300',
-            facilities: [
-                { icon: Monitor, name: 'Smart TV' },
-                { icon: Wifi, name: 'WiFi' },
-                { icon: AirVent, name: 'AC' },
-                { icon: Coffee, name: 'Mini Bar' },
-            ],
-        },
-        {
-            id: 'executive',
-            nama_ruangan: 'Ruang Executive',
-            kode_ruangan: 'RE-004',
-            kapasitas: 8,
-            lokasi: 'Lantai 4, VIP Area',
-            status: isPeakHour ? 'booked' : 'available',
-            bookedSlots: isPeakHour ? ['08:00-10:00', '14:00-17:00'] : [],
-            image: '/placeholder.svg?height=200&width=300',
-            facilities: [
-                { icon: Monitor, name: 'Smart Board' },
-                { icon: Wifi, name: 'WiFi Premium' },
-                { icon: AirVent, name: 'AC Premium' },
-                { icon: Coffee, name: 'Executive Lounge' },
-                { icon: Camera, name: '4K Video Conference' },
-                { icon: Car, name: 'VIP Parking' },
-            ],
-        },
-    ];
-};
 
 export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, selectedStartTime, selectedEndTime }: RoomSelectionProps) {
     const { tersedia = [] } = usePage().props;
@@ -146,7 +67,23 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
     }, [selectedDate, selectedStartTime, selectedEndTime]);
 
     useEffect(() => {
-        setRooms(tersedia as Room[]);
+        if (!tersedia || !Array.isArray(tersedia)) {
+            setRooms([]);
+            return;
+        }
+
+        // Mapping setiap room
+        const roomsWithIcons: any = (tersedia as Room[]).map((room) => ({
+            ...room,
+            // Mapping setiap fasilitas di room
+            facilities: room.facilities.map((facility) => ({
+                ...facility,
+                // facility.icon adalah string dari BE → kita ganti jadi komponen React
+                icon: LucideIcons[facility.icon as keyof typeof LucideIcons] || LucideIcons.HelpCircleIcon,
+            })),
+        }));
+
+        setRooms(roomsWithIcons);
     }, [tersedia]);
 
     const handleViewDetail = (e: React.MouseEvent, room: Room) => {

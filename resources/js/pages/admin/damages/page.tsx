@@ -7,72 +7,19 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
-import { CheckCircle, Image, ImageIcon, MapPin, Search, User, Wrench, X } from 'lucide-react';
+import { Head, router } from '@inertiajs/react';
+import { Label } from '@radix-ui/react-label';
+import { Separator } from '@radix-ui/react-separator';
+import { AlertCircle, CheckCircle, Hash, ImageIcon, MapPin, MessageSquare, NotebookText, Search, Settings, Users, Wrench, X } from 'lucide-react';
 import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
         href: '/dashboard',
-    },
-];
-
-// Mock data for damage reports
-const damages = [
-    {
-        id: '1',
-        name: 'Budi Santoso',
-        devisi: 'Biro 2',
-        location: 'Lantai 2, Ruang 201',
-        damageType: 'AC',
-        description: 'AC tidak dingin dan mengeluarkan bunyi berisik',
-        urgency: 'tinggi',
-        contact: '0812-3456-7891',
-        status: 'pending',
-        photos: ['/placeholder.svg?height=200&width=300', '/placeholder.svg?height=200&width=300'],
-        createdAt: '2025-06-10T09:30:00',
-    },
-    {
-        id: '2',
-        name: 'Siti Aminah',
-        devisi: 'Biro 3',
-        location: 'Lantai 1, Ruang 105',
-        damageType: 'Lampu',
-        description: 'Lampu berkedip dan terkadang mati sendiri',
-        urgency: 'sedang',
-        contact: '0812-3456-7892',
-        status: 'in_progress',
-        photos: ['/placeholder.svg?height=200&width=300'],
-        createdAt: '2025-06-09T14:15:00',
-    },
-    {
-        id: '3',
-        name: 'Rudi Hartono',
-        devisi: 'Biro 4',
-        location: 'Lantai 3, Toilet Pria',
-        damageType: 'Keran Air',
-        description: 'Keran air bocor dan lantai menjadi basah',
-        urgency: 'tinggi',
-        contact: '0812-3456-7893',
-        status: 'completed',
-        photos: ['/placeholder.svg?height=200&width=300', '/placeholder.svg?height=200&width=300'],
-        createdAt: '2025-06-08T11:45:00',
-    },
-    {
-        id: '4',
-        name: 'Dewi Lestari',
-        devisi: 'Biro 1',
-        location: 'Lantai 2, Ruang Rapat',
-        damageType: 'Proyektor',
-        description: 'Proyektor tidak menyala saat digunakan',
-        urgency: 'rendah',
-        contact: '0812-3456-7894',
-        status: 'pending',
-        photos: [],
-        createdAt: '2025-06-07T16:20:00',
     },
 ];
 
@@ -84,6 +31,8 @@ export default function DamagesAdmin({ kerusakan }: any) {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [adminMessage, setAdminMessage] = useState('');
+    const [actionType, setActionType] = useState<'in_progress' | 'cancelled' | 'confirmed' | null>(null);
 
     // Filter damages based on search term and status
     const filteredDamages = kerusakan.data.filter((damage: any) => {
@@ -102,42 +51,37 @@ export default function DamagesAdmin({ kerusakan }: any) {
         setIsDetailsOpen(true);
     };
 
+    const handleActionClick = (action: 'in_progress' | 'cancelled' | 'confirmed') => {
+        setActionType(action);
+        setAdminMessage('');
+    };
+
     const handleViewImage = (imageUrl: string) => {
         setSelectedImage(imageUrl);
         setIsImageViewerOpen(true);
     };
 
-    const handleProcess = async (damageId: string) => {
+    const handleSubmit = async (raportCode: string) => {
         setIsProcessing(true);
-        // Simulasi API call
-        setTimeout(() => {
-            console.log(`Damage report ${damageId} processed`);
-            setIsProcessing(false);
-            setIsDetailsOpen(false);
-            // Di aplikasi nyata, ini akan update data dari server
-        }, 1000);
-    };
-
-    const handleReject = async (damageId: string) => {
-        setIsProcessing(true);
-        // Simulasi API call
-        setTimeout(() => {
-            console.log(`Damage report ${damageId} rejected`);
-            setIsProcessing(false);
-            setIsDetailsOpen(false);
-            // Di aplikasi nyata, ini akan update data dari server
-        }, 1000);
-    };
-
-    const handleComplete = async (damageId: string) => {
-        setIsProcessing(true);
-        // Simulasi API call
-        setTimeout(() => {
-            console.log(`Damage report ${damageId} completed`);
-            setIsProcessing(false);
-            setIsDetailsOpen(false);
-            // Di aplikasi nyata, ini akan update data dari server
-        }, 1000);
+        router.patch(
+            route('kerusakangedung.status', raportCode),
+            {
+                action: actionType,
+                message: adminMessage,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setIsProcessing(false);
+                    setIsDetailsOpen(false);
+                    setAdminMessage('');
+                    setActionType(null);
+                },
+                onError: (errors) => {
+                    console.log('Validation Errors: ', errors);
+                },
+            },
+        );
     };
 
     const getStatusBadge = (status: string) => {
@@ -157,265 +101,391 @@ export default function DamagesAdmin({ kerusakan }: any) {
 
     const getUrgencyBadge = (urgency: string) => {
         switch (urgency) {
-            case 'Rendah':
+            case 'rendah':
                 return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">Rendah</Badge>;
-            case 'Sedang':
+            case 'sedang':
                 return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Sedang</Badge>;
-            case 'Tinggi':
+            case 'tinggi':
                 return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Tinggi</Badge>;
             default:
                 return <Badge variant="outline">Unknown</Badge>;
         }
     };
 
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
+    const formatTanggalIna = (tanggal: string) => {
         return new Intl.DateTimeFormat('id-ID', {
             day: 'numeric',
             month: 'long',
             year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        }).format(date);
+        }).format(new Date(tanggal));
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="space-y-6">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Laporan Kerusakan Gedung</h1>
-                        <p className="text-gray-500">Kelola semua laporan kerusakan gedung.</p>
-                    </div>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Daftar Laporan Kerusakan</CardTitle>
-                            <CardDescription>Semua laporan kerusakan gedung yang telah diajukan.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                                <div className="flex w-full max-w-sm items-center space-x-2">
-                                    <Search className="h-4 w-4 text-gray-400" />
-                                    <Input
-                                        placeholder="Cari nama, lokasi, atau jenis kerusakan..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full"
-                                    />
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                        <SelectTrigger className="w-[180px]">
-                                            <SelectValue placeholder="Filter Status" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="all">Semua Status</SelectItem>
-                                            <SelectItem value="pending">Menunggu</SelectItem>
-                                            <SelectItem value="in_progress">Diproses</SelectItem>
-                                            <SelectItem value="completed">Selesai</SelectItem>
-                                            <SelectItem value="rejected">Ditolak</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Daftar Laporan Kerusakan</CardTitle>
+                        <CardDescription>Semua laporan kerusakan gedung yang telah diajukan.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                            <div className="flex w-full max-w-sm items-center space-x-2">
+                                <Search className="h-4 w-4 text-gray-400" />
+                                <Input
+                                    placeholder="Cari nama, lokasi, atau jenis kerusakan..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full"
+                                />
                             </div>
+                            <div className="flex items-center space-x-2">
+                                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                                    <SelectTrigger className="w-[180px]">
+                                        <SelectValue placeholder="Filter Status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Semua Status</SelectItem>
+                                        <SelectItem value="pending">Menunggu</SelectItem>
+                                        <SelectItem value="in_progress">Diproses</SelectItem>
+                                        <SelectItem value="confirmed">Selesai</SelectItem>
+                                        <SelectItem value="cancelled">Ditolak</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
 
-                            <div className="rounded-md border">
-                                <Table>
-                                    <TableHeader>
+                        <div className="rounded-md border">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Kode Laporan</TableHead>
+                                        <TableHead>Nama Pelapor</TableHead>
+                                        <TableHead>Lokasi</TableHead>
+                                        <TableHead className="hidden md:table-cell">Jenis Kerusakan</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Urgensi</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="hidden md:table-cell">Foto</TableHead>
+                                        <TableHead className="text-right">Aksi</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {filteredDamages.length === 0 ? (
                                         <TableRow>
-                                            <TableHead>Pelapor</TableHead>
-                                            <TableHead>Lokasi</TableHead>
-                                            <TableHead className="hidden md:table-cell">Jenis Kerusakan</TableHead>
-                                            <TableHead className="hidden lg:table-cell">Urgensi</TableHead>
-                                            <TableHead>Status</TableHead>
-                                            <TableHead className="hidden md:table-cell">Foto</TableHead>
-                                            <TableHead className="text-right">Aksi</TableHead>
+                                            <TableCell colSpan={7} className="py-4 text-center text-gray-500">
+                                                Tidak ada laporan kerusakan yang ditemukan
+                                            </TableCell>
                                         </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {filteredDamages.length === 0 ? (
-                                            <TableRow>
-                                                <TableCell colSpan={7} className="py-4 text-center text-gray-500">
-                                                    Tidak ada laporan kerusakan yang ditemukan
+                                    ) : (
+                                        filteredDamages.map((damage: any) => (
+                                            <TableRow key={damage.kode_pelaporan}>
+                                                <TableCell>{damage.kode_pelaporan}</TableCell>
+                                                <TableCell>
+                                                    <div className="font-medium">{damage?.pelapor.name}</div>
+                                                    <div className="text-sm text-gray-500">{damage?.pelapor.unit_kerja}</div>
+                                                </TableCell>
+                                                <TableCell>{damage.lokasi}</TableCell>
+                                                <TableCell className="hidden md:table-cell">{damage.item}</TableCell>
+                                                <TableCell className="hidden lg:table-cell">{getUrgencyBadge(damage.urgensi)}</TableCell>
+                                                <TableCell>{getStatusBadge(damage.status)}</TableCell>
+                                                <TableCell className="hidden md:table-cell">
+                                                    {damage.picture.length > 0 ? (
+                                                        <Badge variant="outline" className="flex items-center gap-1">
+                                                            <ImageIcon className="h-3 w-3" />
+                                                            <span>{damage.picture.length}</span>
+                                                        </Badge>
+                                                    ) : (
+                                                        <span className="text-sm text-gray-500">-</span>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    <Button variant="ghost" size="sm" onClick={() => handleViewDetails(damage)}>
+                                                        Detail
+                                                    </Button>
                                                 </TableCell>
                                             </TableRow>
-                                        ) : (
-                                            filteredDamages.map((damage) => (
-                                                <TableRow key={damage.kode_pelaporan}>
-                                                    <TableCell>
-                                                        <div className="font-medium">{damage?.pelapor.name}</div>
-                                                        <div className="text-sm text-gray-500">{damage?.pelapor.unit_kerja}</div>
-                                                    </TableCell>
-                                                    <TableCell>{damage.lokasi}</TableCell>
-                                                    <TableCell className="hidden md:table-cell">{damage.item}</TableCell>
-                                                    <TableCell className="hidden lg:table-cell">{getUrgencyBadge(damage.urgensi)}</TableCell>
-                                                    <TableCell>{getStatusBadge(damage.status)}</TableCell>
-                                                    <TableCell className="hidden md:table-cell">
-                                                        {damage.picture.length > 0 ? (
-                                                            <Badge variant="outline" className="flex items-center gap-1">
-                                                                <ImageIcon className="h-3 w-3" />
-                                                                <span>{damage.picture.length}</span>
-                                                            </Badge>
-                                                        ) : (
-                                                            <span className="text-sm text-gray-500">-</span>
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell className="text-right">
-                                                        <Button variant="ghost" size="sm" onClick={() => handleViewDetails(damage)}>
-                                                            Detail
-                                                        </Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </div>
-                        </CardContent>
-                    </Card>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </CardContent>
+                </Card>
 
-                    {/* Damage Details Dialog */}
-                    <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-                        <DialogContent className="sm:max-w-lg">
-                            <DialogHeader>
-                                <DialogTitle>Detail Laporan Kerusakan</DialogTitle>
-                                <DialogDescription>Informasi lengkap tentang laporan kerusakan gedung.</DialogDescription>
-                            </DialogHeader>
-                            {selectedDamage && (
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <h3 className="text-lg font-medium">{selectedDamage.item}</h3>
-                                        {getStatusBadge(selectedDamage.status)}
+                {/* Booking Details Dialog */}
+                <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+                    <DialogContent className="max-h-[90vh] overflow-y-auto px-10 pt-12 sm:max-w-2xl">
+                        <DialogHeader className="mb-4">
+                            <DialogTitle className="flex items-center gap-2">
+                                <Wrench className="h-5 w-5" />
+                                Detail Laporan Kerusakan
+                            </DialogTitle>
+                            <DialogDescription>Tinjau informasi laporan kerusakan dan berikan tindakan dengan pesan untuk pelapor.</DialogDescription>
+                        </DialogHeader>
+
+                        {selectedDamage && (
+                            <div className="space-y-6">
+                                {/* Status and Room Info */}
+                                <div className="flex flex-col gap-4 rounded-lg bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+                                    <div>
+                                        <div className="mb-2 flex items-center gap-1">
+                                            <NotebookText className="h-4 w-4 text-gray-500" />
+                                            <span className="text-xs text-gray-600">{formatTanggalIna(selectedDamage.created_at)}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <Hash className="h-4 w-4 text-gray-500" />
+                                            <span className="font-mono text-sm font-medium text-gray-700">{selectedDamage.kode_pelaporan}</span>
+                                        </div>
                                     </div>
+                                    <div className="text-right">{getStatusBadge(selectedDamage.status)}</div>
+                                </div>
 
-                                    <div className="space-y-3">
-                                        <div className="flex items-center gap-2">
-                                            <User className="h-4 w-4 text-gray-500" />
+                                {/* Booking Details */}
+                                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                    <div className="space-y-4">
+                                        <div className="flex items-start gap-3">
+                                            <Users className="my-auto h-5 w-5 text-blue-600" />
                                             <div>
-                                                <p className="text-sm font-medium">{selectedDamage?.pelapor.name}</p>
-                                                <p className="text-xs text-gray-500">{selectedDamage?.pelapor.unit_kerja}</p>
+                                                <p className="font-medium text-gray-900">{selectedDamage?.pelapor?.name}</p>
+                                                <p className="text-xs text-gray-600">{selectedDamage?.pelapor?.unit_kerja}</p>
+                                                <p className="text-xs text-gray-500">{selectedDamage.no_hp}</p>
                                             </div>
                                         </div>
 
-                                        <div className="flex items-center gap-2">
-                                            <MapPin className="h-4 w-4 text-gray-500" />
-                                            <p className="text-sm">{selectedDamage.lokasi}</p>
+                                        <div className="flex items-start gap-3">
+                                            <MapPin className="mt-0.5 h-5 w-5 text-green-600" />
+                                            <div>
+                                                <p className="font-medium text-gray-900">Lokasi</p>
+                                                <p className="text-sm text-gray-600">{selectedDamage.lokasi}</p>
+                                            </div>
                                         </div>
 
-                                        <div className="flex items-center gap-2">
-                                            <Wrench className="h-4 w-4 text-gray-500" />
-                                            <div className="flex items-center gap-2">
-                                                <p className="text-sm">Urgensi:</p>
+                                        <div className="flex items-center gap-3">
+                                            <AlertCircle className="h-5 w-5 text-orange-600" />
+                                            <div>
+                                                <p className="font-medium text-gray-900">Tingkat Urgensi</p>
                                                 {getUrgencyBadge(selectedDamage.urgensi)}
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <div className="pt-2">
-                                            <p className="text-sm font-medium">Deskripsi Kerusakan:</p>
-                                            <p className="text-sm text-gray-700">{selectedDamage.deskripsi}</p>
-                                        </div>
-
-                                        <div>
-                                            <p className="text-sm font-medium">Kontak:</p>
-                                            <p className="text-sm text-gray-700">{selectedDamage.no_hp}</p>
-                                        </div>
-
-                                        <div>
-                                            <p className="text-sm font-medium">Waktu Laporan:</p>
-                                            <p className="text-sm text-gray-700">{formatDate(selectedDamage.created_at)}</p>
-                                        </div>
-
-                                        {selectedDamage.picture.length > 0 && (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-3">
+                                            <Wrench className="h-5 w-5 text-purple-600" />
                                             <div>
-                                                <p className="mb-2 text-sm font-medium">Foto Kerusakan:</p>
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    {selectedDamage.picture.map((photo: string, index: number) => (
-                                                        <div
-                                                            key={index}
-                                                            className="relative aspect-video cursor-pointer overflow-hidden rounded-md border"
-                                                            onClick={() => handleViewImage(photo)}
+                                                <p className="font-medium text-gray-900">Jenis Kerusakan</p>
+                                                <p className="text-sm text-gray-600">{selectedDamage.item}</p>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <p className="mb-2 font-medium text-gray-900">Deskripsi Kerusakan</p>
+                                            <p className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">{selectedDamage.deskripsi}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Photos Section */}
+                                {selectedDamage.picture.length > 0 && (
+                                    <div>
+                                        <p className="mb-3 font-medium text-gray-900">Foto Kerusakan ({selectedDamage.picture.length})</p>
+                                        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+                                            {selectedDamage.picture.map((photo: string, index: number) => (
+                                                <div
+                                                    key={index}
+                                                    className="relative aspect-video cursor-pointer overflow-hidden rounded-lg border transition-colors hover:border-blue-300"
+                                                    onClick={() => handleViewImage(photo)}
+                                                >
+                                                    <img
+                                                        src={photo || '/placeholder.svg'}
+                                                        alt={`Foto kerusakan ${index + 1}`}
+                                                        className="object-cover"
+                                                    />
+                                                    <div className="bg-opacity-0 hover:bg-opacity-10 absolute inset-0 flex items-center justify-center bg-black transition-all">
+                                                        <ImageIcon className="h-6 w-6 text-white opacity-0 transition-opacity hover:opacity-100" />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Admin Message Display for Approved/Rejected */}
+                                {selectedDamage.keterangan &&
+                                    selectedDamage.status !== 'pending' &&
+                                    (() => {
+                                        // Mapping warna berdasarkan status
+                                        const colorMap: any = {
+                                            confirmed: {
+                                                border: 'border-green-200',
+                                                bg: 'bg-green-50',
+                                                icon: 'text-green-600',
+                                                title: 'text-green-900',
+                                                text: 'text-green-800',
+                                            },
+                                            in_progress: {
+                                                border: 'border-blue-200',
+                                                bg: 'bg-blue-50',
+                                                icon: 'text-blue-600',
+                                                title: 'text-blue-900',
+                                                text: 'text-blue-800',
+                                            },
+                                            cancelled: {
+                                                border: 'border-red-200',
+                                                bg: 'bg-red-50',
+                                                icon: 'text-red-600',
+                                                title: 'text-red-900',
+                                                text: 'text-red-800',
+                                            },
+                                        };
+
+                                        const color = colorMap[selectedDamage.status] ?? colorMap['in_progress'];
+
+                                        return (
+                                            <div className={`rounded-lg border ${color.border} ${color.bg} p-4`}>
+                                                <div className="mb-2 flex items-center gap-2">
+                                                    <MessageSquare className={`h-4 w-4 ${color.icon}`} />
+                                                    <h4 className={`font-medium ${color.title}`}>Pesan dari Admin</h4>
+                                                </div>
+                                                <p className={`text-sm ${color.text}`}>{selectedDamage.keterangan}</p>
+                                            </div>
+                                        );
+                                    })()}
+
+                                <Separator />
+
+                                {/* Action Section */}
+                                {selectedDamage.status === 'pending' && (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2">
+                                            <MessageSquare className="h-5 w-5 text-blue-600" />
+                                            <h4 className="font-medium text-gray-900">Tindakan Admin</h4>
+                                        </div>
+
+                                        {!actionType && (
+                                            <div className="flex gap-2">
+                                                {selectedDamage.status === 'pending' && (
+                                                    <>
+                                                        <Button
+                                                            variant="outline"
+                                                            className="flex-1 border-red-200 bg-transparent text-red-700 hover:bg-red-50"
+                                                            onClick={() => handleActionClick('cancelled')}
                                                         >
-                                                            <Image
-                                                                src={photo || '/placeholder.svg'}
-                                                                alt={`Foto kerusakan ${index + 1}`}
-                                                                fill
-                                                                className="object-cover"
-                                                            />
-                                                        </div>
-                                                    ))}
+                                                            <X className="mr-2 h-4 w-4" />
+                                                            Tolak Laporan
+                                                        </Button>
+                                                        <Button
+                                                            variant="outline"
+                                                            className="flex-1 border-blue-200 bg-transparent text-blue-700 hover:bg-blue-50"
+                                                            onClick={() => handleActionClick('in_progress')}
+                                                        >
+                                                            <Settings className="mr-2 h-4 w-4" />
+                                                            Proses Laporan
+                                                        </Button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {actionType && (
+                                            <div className="space-y-4 rounded-lg border bg-gray-50 p-4">
+                                                <div className="flex items-center gap-2">
+                                                    {actionType === 'in_progress' && <Settings className="h-5 w-5 text-blue-600" />}
+                                                    {actionType === 'confirmed' && <CheckCircle className="h-5 w-5 text-green-600" />}
+                                                    {actionType === 'cancelled' && <AlertCircle className="h-5 w-5 text-red-600" />}
+                                                    <h5 className="font-medium">
+                                                        {actionType === 'in_progress' && 'Memproses Laporan'}
+                                                        {actionType === 'confirmed' && 'Menyelesaikan Perbaikan'}
+                                                        {actionType === 'cancelled' && 'Menolak Laporan'}
+                                                    </h5>
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="admin-message">
+                                                        Pesan untuk Pelapor {actionType === 'cancelled' && <span className="text-red-500">*</span>}
+                                                    </Label>
+                                                    <Textarea
+                                                        id="admin-message"
+                                                        placeholder={
+                                                            actionType === 'in_progress'
+                                                                ? 'Informasikan bahwa laporan sedang diproses, estimasi waktu perbaikan, atau instruksi sementara...'
+                                                                : actionType === 'confirmed'
+                                                                  ? 'Konfirmasi bahwa perbaikan telah selesai dan berikan informasi terkait...'
+                                                                  : 'Jelaskan alasan penolakan laporan kerusakan...'
+                                                        }
+                                                        value={adminMessage}
+                                                        onChange={(e) => setAdminMessage(e.target.value)}
+                                                        rows={3}
+                                                        className="mt-0.5 resize-none"
+                                                    />
+                                                    {actionType === 'cancelled' && !adminMessage.trim() && (
+                                                        <p className="text-sm text-red-600">Pesan wajib diisi untuk penolakan</p>
+                                                    )}
+                                                </div>
+
+                                                <div className="flex gap-2 pt-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        onClick={() => {
+                                                            setActionType(null);
+                                                            setAdminMessage('');
+                                                        }}
+                                                        disabled={isProcessing}
+                                                    >
+                                                        Batal
+                                                    </Button>
+                                                    <Button
+                                                        onClick={() => {
+                                                            handleSubmit(selectedDamage.kode_pelaporan);
+                                                        }}
+                                                        disabled={isProcessing || (actionType === 'cancelled' && !adminMessage.trim())}
+                                                        className={
+                                                            actionType === 'in_progress'
+                                                                ? 'bg-blue-600 hover:bg-blue-700'
+                                                                : 'bg-red-600 hover:bg-red-700'
+                                                        }
+                                                    >
+                                                        {isProcessing
+                                                            ? 'Memproses...'
+                                                            : actionType === 'in_progress'
+                                                              ? 'Konfirmasi Proses'
+                                                              : 'Konfirmasi Tolak'}
+                                                    </Button>
                                                 </div>
                                             </div>
                                         )}
                                     </div>
-                                </div>
-                            )}
-                            <DialogFooter className="flex justify-between sm:justify-between">
-                                {selectedDamage && (
-                                    <div className="flex gap-2">
-                                        {selectedDamage.status === 'pending' && (
-                                            <>
-                                                <Button
-                                                    variant="destructive"
-                                                    size="sm"
-                                                    className="flex items-center gap-1"
-                                                    onClick={() => handleReject(selectedDamage.id)}
-                                                    disabled={isProcessing}
-                                                >
-                                                    <X className="h-4 w-4" />
-                                                    <span>{isProcessing ? 'Memproses...' : 'Tolak'}</span>
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    className="flex items-center gap-1"
-                                                    onClick={() => handleProcess(selectedDamage.id)}
-                                                    disabled={isProcessing}
-                                                >
-                                                    <CheckCircle className="h-4 w-4" />
-                                                    <span>{isProcessing ? 'Memproses...' : 'Proses'}</span>
-                                                </Button>
-                                            </>
-                                        )}
-                                        {selectedDamage.status === 'in_progress' && (
-                                            <Button
-                                                size="sm"
-                                                className="flex items-center gap-1"
-                                                onClick={() => handleComplete(selectedDamage.id)}
-                                                disabled={isProcessing}
-                                            >
-                                                <CheckCircle className="h-4 w-4" />
-                                                <span>{isProcessing ? 'Memproses...' : 'Selesai'}</span>
-                                            </Button>
-                                        )}
-                                    </div>
                                 )}
-                                <Button variant="outline" onClick={() => setIsDetailsOpen(false)}>
-                                    Tutup
-                                </Button>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
+                            </div>
+                        )}
 
-                    {/* Image Viewer Dialog */}
-                    <Dialog open={isImageViewerOpen} onOpenChange={setIsImageViewerOpen}>
-                        <DialogContent className="sm:max-w-3xl">
-                            <DialogHeader>
-                                <DialogTitle>Foto Kerusakan</DialogTitle>
-                            </DialogHeader>
-                            {selectedImage && (
-                                <div className="relative aspect-video w-full">
-                                    <Image src={selectedImage || '/placeholder.svg'} alt="Foto kerusakan" fill className="object-contain" />
-                                </div>
-                            )}
-                            <DialogFooter>
-                                <Button variant="outline" onClick={() => setIsImageViewerOpen(false)}>
-                                    Tutup
-                                </Button>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
-                </div>
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setIsDetailsOpen(false)} disabled={isProcessing}>
+                                Tutup
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
+                {/* Image Viewer Dialog */}
+                <Dialog open={isImageViewerOpen} onOpenChange={setIsImageViewerOpen}>
+                    <DialogContent className="sm:max-w-3xl">
+                        <DialogHeader>
+                            <DialogTitle>Foto Kerusakan</DialogTitle>
+                        </DialogHeader>
+                        {selectedImage && (
+                            <div className="relative aspect-video w-full">
+                                <img src={selectedImage || '/placeholder.svg'} alt="Foto kerusakan" className="object-contain" />
+                            </div>
+                        )}
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setIsImageViewerOpen(false)}>
+                                Tutup
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </AppLayout>
     );
