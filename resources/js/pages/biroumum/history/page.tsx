@@ -10,91 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Head, router } from '@inertiajs/react';
-import { AlertCircle, Calendar, Car, CheckCircle, Clock, Hash, MapPin, MessageSquare, Package, Search, User, Wrench } from 'lucide-react';
+import { AlertCircle, Calendar, Car, CheckCircle, Clock, Hash, ImageIcon, MapPin, MessageSquare, Package, Search, User, Wrench } from 'lucide-react';
 import { useState } from 'react';
-
-// Mock data for user's request history
-const requestHistory = [
-    {
-        id: '1',
-        type: 'booking',
-        code: 'RR-2025-001',
-        title: 'Ruang Holding',
-        description: 'Rapat Divisi',
-        date: '2025-06-11',
-        time: '09:00 - 11:00',
-        status: 'approved',
-        adminMessage: 'Ruangan telah dikonfirmasi. Silakan datang 15 menit sebelum jadwal untuk persiapan.',
-        createdAt: '2025-06-10T10:30:00',
-        details: {
-            room: 'Ruang Holding',
-            purpose: 'Rapat Divisi',
-            contact: '0812-3456-7890',
-        },
-    },
-
-    {
-        id: '3',
-        type: 'supplies',
-        code: 'ATK-2025-003',
-        title: 'Permintaan ATK',
-        description: '5 item',
-        date: '2025-06-10',
-        time: '-',
-        status: 'approved',
-        adminMessage: 'Permintaan disetujui. Barang dapat diambil di gudang ATK lantai 1 mulai besok pagi.',
-        createdAt: '2025-06-10T14:20:00',
-        details: {
-            items: [
-                { name: 'Kertas A4', quantity: '5', unit: 'rim' },
-                { name: 'Pulpen', quantity: '20', unit: 'pcs' },
-                { name: 'Spidol', quantity: '10', unit: 'pcs' },
-                { name: 'Penghapus', quantity: '5', unit: 'pcs' },
-                { name: 'Penggaris', quantity: '3', unit: 'pcs' },
-            ],
-            justification: 'Untuk kebutuhan administrasi dan dokumentasi proyek baru',
-            urgency: 'normal',
-            contact: '0812-3456-7890',
-        },
-    },
-    {
-        id: '4',
-        type: 'damage',
-        code: 'DMG-2025-004',
-        title: 'AC Ruang 201',
-        description: 'Lantai 2, Ruang 201',
-        date: '2025-06-09',
-        time: '-',
-        status: 'completed',
-        adminMessage: 'Perbaikan AC telah selesai. AC sudah berfungsi normal kembali.',
-        createdAt: '2025-06-09T11:45:00',
-        details: {
-            location: 'Lantai 2, Ruang 201',
-            damageType: 'AC',
-            description: 'AC tidak dingin dan mengeluarkan bunyi berisik',
-            urgency: 'tinggi',
-            contact: '0812-3456-7890',
-            photos: ['/placeholder.svg?height=200&width=300', '/placeholder.svg?height=200&width=300'],
-        },
-    },
-    {
-        id: '5',
-        type: 'booking',
-        code: 'RR-2025-005',
-        title: 'Ruang Rapat',
-        description: 'Training Karyawan',
-        date: '2025-06-08',
-        time: '13:00 - 16:00',
-        status: 'rejected',
-        adminMessage: 'Maaf, ruangan sudah dibooking untuk acara lain pada waktu tersebut. Silakan pilih waktu lain.',
-        createdAt: '2025-06-08T08:30:00',
-        details: {
-            room: 'Ruang Rapat',
-            purpose: 'Training Karyawan Baru',
-            contact: '0812-3456-7890',
-        },
-    },
-];
 
 export default function RequestHistory({ requestHistory }: any) {
     const [searchTerm, setSearchTerm] = useState('');
@@ -294,7 +211,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                             </Badge>
                                                         </div>
                                                         <h3 className="truncate font-semibold text-gray-900">{request.title}</h3>
-                                                        <p className="text-sm text-gray-600">{request?.info}</p>
+                                                        <p className="line-clamp-1 text-sm text-gray-600">{request?.info}</p>
                                                         <div className="mt-2 flex items-center gap-4 text-xs text-gray-500">
                                                             {request ? (
                                                                 request.id !== 'booking' ? (
@@ -372,8 +289,8 @@ export default function RequestHistory({ requestHistory }: any) {
                                         <div className="flex items-start gap-3">
                                             <User className="my-auto h-5 w-5 text-blue-600" />
                                             <div>
-                                                <p className="font-medium text-gray-900">Dani Martinez</p>
-                                                <p className="text-xs text-gray-600">Biro Umum</p>
+                                                <p className="font-medium text-gray-900">{selectedRequest.user.name}</p>
+                                                <p className="text-xs text-gray-600">{selectedRequest.user.unit_kerja}</p>
                                                 <p className="text-xs text-gray-500">{selectedRequest.no_hp}</p>
                                             </div>
                                         </div>
@@ -490,6 +407,31 @@ export default function RequestHistory({ requestHistory }: any) {
                                             ))}
                                         </div>
                                     </>
+                                )}
+
+                                {/* Photos Section */}
+                                {selectedRequest.id === 'damage' && selectedRequest.picture.length > 0 && (
+                                    <div>
+                                        <p className="mb-3 font-medium text-gray-900">Foto Kerusakan ({selectedRequest.picture.length})</p>
+                                        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+                                            {selectedRequest.picture.map((photo: string, index: number) => (
+                                                <div
+                                                    key={index}
+                                                    className="relative aspect-video cursor-pointer overflow-hidden rounded-lg border transition-colors hover:border-blue-300"
+                                                    onClick={() => handleViewImage(photo)}
+                                                >
+                                                    <img
+                                                        src={photo || '/placeholder.svg'}
+                                                        alt={`Foto kerusakan ${index + 1}`}
+                                                        className="object-cover"
+                                                    />
+                                                    <div className="bg-opacity-0 hover:bg-opacity-10 absolute inset-0 flex items-center justify-center bg-black transition-all">
+                                                        <ImageIcon className="h-6 w-6 text-white opacity-0 transition-opacity hover:opacity-100" />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
                                 )}
 
                                 {/* Admin Message Display for Approved/Rejected */}

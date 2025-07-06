@@ -32,13 +32,13 @@ class DaftarRuanganController extends Controller
         $path = $request->photo->store('image/rooms', 'public');
 
         DaftarRuangan::create([
-            'nama_ruangan' => $request['nama_ruangan'],
-            'kode_ruangan' => $request['kode_ruangan'],
-            'lokasi' => $request['lokasi'],
-            'kapasitas' => $request['kapasitas'],
+            'nama_ruangan' => $request->nama_ruangan,
+            'kode_ruangan' => $request->kode_ruangan,
+            'lokasi' => $request->lokasi,
+            'kapasitas' => $request->kapasitas,
             'image' => $path,
-            'status' => $request['status'],
-            'fasilitas' => $request['fasilitas'],
+            'status' => $request->status,
+            'fasilitas' => $request->fasilitas,
         ]);
 
         return to_route('rooms.index');

@@ -25,8 +25,8 @@ class DatabaseSeeder extends Seeder
             DaftarRuanganSeeder::class,
         ]);
 
-        PemesananRuangRapat::factory(50)->create();
-        KerusakanGedung::factory(50)->create();
-        PermintaanAtk::factory(50)->create();
+        PermintaanAtk::factory(3)->create();
+        PemesananRuangRapat::factory(2)->create();
+        KerusakanGedung::factory(2)->create();
     }
 }

@@ -288,7 +288,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
 
                                 {/* Photos Section */}
                                 {selectedDamage.picture.length > 0 && (
-                                    <div>
+                                    <>
                                         <p className="mb-3 font-medium text-gray-900">Foto Kerusakan ({selectedDamage.picture.length})</p>
                                         <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
                                             {selectedDamage.picture.map((photo: string, index: number) => (
@@ -308,7 +308,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                 </div>
                                             ))}
                                         </div>
-                                    </div>
+                                    </>
                                 )}
 
                                 {/* Admin Message Display for Approved/Rejected */}

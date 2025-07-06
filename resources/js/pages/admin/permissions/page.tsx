@@ -359,7 +359,7 @@ export default function PermissionsPage() {
                             </Button>
                         </div>
 
-                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                             {filteredRoles.map((role) => (
                                 <Card key={role.id}>
                                     <CardHeader className="pb-3">
@@ -374,7 +374,7 @@ export default function PermissionsPage() {
                                     <CardContent className="space-y-4">
                                         <div className="space-y-2">
                                             <p className="text-sm font-medium">Permissions ({role.permissions.length}):</p>
-                                            <div className="flex max-h-20 flex-wrap gap-1 overflow-y-auto">
+                                            <div className="flex flex-wrap gap-1 overflow-y-auto">
                                                 {role.permissions.slice(0, 6).map((permission) => (
                                                     <Badge key={permission} variant="outline" className="text-xs">
                                                         {getPermissionLabel(permission)}

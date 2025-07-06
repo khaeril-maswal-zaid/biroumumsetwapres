@@ -7,6 +7,7 @@ use App\Http\Requests\StorePermintaanAtkRequest;
 use App\Http\Requests\UpdatePermintaanAtkRequest;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class PermintaanAtkController extends Controller
@@ -36,15 +37,13 @@ class PermintaanAtkController extends Controller
      */
     public function store(StorePermintaanAtkRequest $request)
     {
-        // dd($request->all());
-
         PermintaanAtk::create([
             'user_id' => Auth::id(),
-            'daftar_kebutuhan' => $request->items,
+            'daftar_kebutuhan' => $request->items ?? [],
             'deskripsi' => $request->justification,
             'urgensi' => $request->urgency,
             'no_hp' => $request->contact,
-            'kode_pelaporan' => '123',
+            'kode_pelaporan' => 'Atk-' . now()->format('Ymd') . '-' . strtoupper(Str::random(5)),
             'status' => 'pending',
             'keterangan' => '',
         ]);

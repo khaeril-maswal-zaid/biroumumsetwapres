@@ -12,20 +12,14 @@ use Carbon\Carbon;
 
 class HomeController extends Controller
 {
-    public function index()
-    {
-        return Inertia::render('biroumum/home');
-    }
+    private $queryRapat;
+    private $queryKerusakan;
+    private $queryAtk;
 
-    public function admin()
-    {
-        return Inertia::render('admin/home');
-    }
-
-    public function history()
+    public function __construct()
     {
         // Ambil Booking Rapat + relasi pemesan dan ruangans
-        $rapat = PemesananRuangRapat::with(['pemesan', 'ruangans'])
+        $this->queryRapat = PemesananRuangRapat::with(['pemesan', 'ruangans'])
             ->orderByDesc('created_at')
             ->get()
             ->map(fn($r) => [
@@ -42,12 +36,13 @@ class HomeController extends Controller
                 'user'              => $r->pemesan,
                 'no_hp'             => $r->no_hp,
                 'deskripsi'         => $r->deskripsi,
+                'picture'           => null,
                 'keterangan'        => $r->keterangan,
                 'time'              => $r->jam_mulai . ' - ' . $r->jam_selesai,
             ]);
 
         // Ambil data kerusakan + relasi pemesan
-        $kerusakan = KerusakanGedung::with('pelapor')
+        $this->queryKerusakan = KerusakanGedung::with('pelapor')
             ->orderByDesc('created_at')
             ->get()
             ->map(fn($k) => [
@@ -64,12 +59,13 @@ class HomeController extends Controller
                 'user'               => $k->pelapor,
                 'no_hp'              => $k->no_hp,
                 'deskripsi'          => $k->deskripsi,
+                'picture'            => $k->picture,
                 'keterangan'         => $k->keterangan,
                 'time'               => null,
             ]);
 
         // Ambil data permintaan ATK + relasi pemesan
-        $atk = PermintaanAtk::with('pemesan')
+        $this->queryAtk = PermintaanAtk::with('pemesan')
             ->orderByDesc('created_at')
             ->get()
             ->map(fn($a) => [
@@ -86,16 +82,38 @@ class HomeController extends Controller
                 'user'               => $a->pemesan,
                 'no_hp'              => $a->no_hp,
                 'deskripsi'          => $a->deskripsi,
+                'picture'            => null,
                 'keterangan'         => $a->keterangan,
                 'time'               => null,
             ]);
 
         // Gabungkan semuanya, urutkan, batasi 10
-        $requestHistory = $rapat
-            ->concat($kerusakan)
-            ->concat($atk)
+    }
+
+    public function index()
+    {
+        $requestHistory = $this->queryRapat
+            ->concat($this->queryKerusakan)
+            ->concat($this->queryAtk)
             ->sortByDesc('created_at')
-            ->take(10)
+            ->take(3)
+            ->values();
+
+        return Inertia::render('biroumum/home', compact('requestHistory'));
+    }
+
+    public function admin()
+    {
+        return Inertia::render('admin/home');
+    }
+
+    public function history()
+    {
+        $requestHistory = $this->queryRapat
+            ->concat($this->queryKerusakan)
+            ->concat($this->queryAtk)
+            ->sortByDesc('created_at')
+            ->take(7)
             ->values();
 
         return Inertia::render('biroumum/history/page', compact('requestHistory'));
@@ -103,6 +121,8 @@ class HomeController extends Controller
 
     public function sementara()
     {
+
+
         return Inertia::render('admin/permissions/page');
     }
 }

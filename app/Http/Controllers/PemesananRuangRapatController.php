@@ -28,9 +28,6 @@ class PemesananRuangRapatController extends Controller
         return Inertia::render('admin/bookings/page', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(Request $request): Response
     {
         $result = [];
@@ -39,36 +36,43 @@ class PemesananRuangRapatController extends Controller
             $validated = $request->validate([
                 'tanggal'     => 'required|date',
                 'jam_mulai'   => 'required|date_format:H:i',
-                'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+                'jam_selesai' => 'required|date_format:H:i',
             ]);
 
             $tanggal    = $validated['tanggal'];
             $jamMulai   = $validated['jam_mulai'];
             $jamSelesai = $validated['jam_selesai'];
 
-            // Deteksi hari & jam sibuk
-            $dayOfWeek  = Carbon::parse($tanggal)->dayOfWeek;
-            $isWeekend  = in_array($dayOfWeek, [Carbon::SATURDAY, Carbon::SUNDAY]);
-            $hourStart  = Carbon::createFromFormat('H:i', $jamMulai)->hour;
-            $isPeakHour = $hourStart >= 9 && $hourStart <= 16;
-
-            // Ambil ruangan
-            $ruangans = DaftarRuangan::select(['id', 'nama_ruangan', 'kode_ruangan', 'lokasi', 'kapasitas', 'image', 'fasilitas'])->get();
-
-            // Ambil booking hanya jika weekday & peak
-            $bookings = collect();
-            if (! $isWeekend && $isPeakHour) {
-                $bookings = PemesananRuangRapat::where('tanggal_penggunaan', $tanggal)
-                    ->where('jam_mulai', '<', $jamSelesai)
-                    ->where('jam_selesai', '>', $jamMulai)
-                    ->get();
+            // Cek apakah jam_mulai < jam_selesai
+            if (Carbon::parse($jamMulai)->gte(Carbon::parse($jamSelesai))) {
+                return Inertia::render('biroumum/booking/page', [
+                    'tersedia' => $result,
+                ]);
             }
 
-            $result = $ruangans->map(function ($r) use ($isWeekend, $isPeakHour, $bookings) {
-                $myBookings = $bookings->filter(fn($b) => $b->daftar_ruangan_id == $r->id);
-                $slots = $myBookings->map(
-                    fn($b) => Carbon::parse($b->jam_mulai)->format('H:i') . '-' . Carbon::parse($b->jam_selesai)->format('H:i')
-                )->values()->all();
+            // Ambil semua ruangan
+            $ruangans = DaftarRuangan::select([
+                'id',
+                'nama_ruangan',
+                'kode_ruangan',
+                'lokasi',
+                'kapasitas',
+                'image',
+                'fasilitas',
+            ])->get();
+
+            // Ambil booking yang bentrok
+            $bookings = PemesananRuangRapat::where('tanggal_penggunaan', $tanggal)
+                ->where('jam_mulai', '<', $jamSelesai)
+                ->where('jam_selesai', '>', $jamMulai)
+                ->get();
+
+            // Proses ketersediaan tiap ruangan
+            $result = $ruangans->map(function ($r) use ($bookings) {
+                $myBookings = $bookings->where('daftar_ruangan_id', $r->id);
+                $slots = $myBookings->map(function ($b) {
+                    return Carbon::parse($b->jam_mulai)->format('H:i') . ' - ' . Carbon::parse($b->jam_selesai)->format('H:i');
+                })->values()->all();
 
                 return [
                     'id'           => $r->kode_ruangan,
@@ -88,6 +92,7 @@ class PemesananRuangRapatController extends Controller
             'tersedia' => $result,
         ]);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -128,7 +133,7 @@ class PemesananRuangRapatController extends Controller
             'daftar_ruangan_id' => $room->id,
             'deskripsi' => $request->purpose,
             'no_hp' => $request->contact,
-            'kode_booking' => 'BK-' . now()->format('Ymd') . '-' . strtoupper(Str::random(6)),
+            'kode_booking' => 'Rpt-' . now()->format('Ymd') . '-' . strtoupper(Str::random(5)),
             'keterangan' => '',
             'status' => 'pending',
         ]);

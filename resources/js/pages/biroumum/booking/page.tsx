@@ -3,16 +3,16 @@
 import { BottomNavigation } from '@/components/biroumum/bottom-navigation';
 import { PageHeader } from '@/components/biroumum/page-header';
 import { RoomSelection } from '@/components/biroumum/room-selection';
-import { SuccessAlert } from '@/components/biroumum/success-alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { type SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
-import { Calendar, Users } from 'lucide-react';
+import { Calendar, CheckCircle2, Users } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -53,13 +53,18 @@ export default function RoomBooking() {
     });
 
     const formData = watch();
-    const [showSuccess, setShowSuccess] = useState(false);
+
+    const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+    const handleConfirm = () => {
+        setShowSuccessDialog(false);
+        router.visit(route('history'));
+    };
 
     const onSubmit = (data: FormData) => {
         router.post(route('ruangrapat.store'), data, {
             onSuccess: () => {
-                setShowSuccess(true);
                 reset();
+                setShowSuccessDialog(true);
             },
         });
     };
@@ -73,8 +78,6 @@ export default function RoomBooking() {
                 <div className="pb-20">
                     <div className="space-y-6 p-4">
                         <PageHeader title="Pemesanan Ruang Rapat" backUrl="/" />
-
-                        <SuccessAlert show={showSuccess} message="Pemesanan ruang rapat berhasil diajukan!" />
 
                         <Card>
                             <CardHeader>
@@ -188,6 +191,25 @@ export default function RoomBooking() {
                     </div>
                 </div>
                 <BottomNavigation />
+
+                <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+                    <DialogContent className="sm:max-w-md">
+                        <DialogHeader className="text-center">
+                            <div className="flex flex-col items-center justify-center">
+                                <CheckCircle2 className="mb-3.5 h-10 w-10 text-green-600" />
+                                <DialogTitle className="text-xl font-semibold text-green-700">Data Berhasil Disimpan</DialogTitle>
+                            </div>
+                        </DialogHeader>
+                        <div className="text-center text-sm text-muted-foreground">
+                            Klik tombol "Ok" untuk melihat aktivitas dan detail pemesanan.
+                        </div>
+                        <DialogFooter className="mt-4 flex justify-center">
+                            <Button onClick={handleConfirm} className="w-full sm:w-auto">
+                                OK
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </>
     );

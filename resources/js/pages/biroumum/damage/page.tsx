@@ -2,9 +2,9 @@
 
 import { BottomNavigation } from '@/components/biroumum/bottom-navigation';
 import { PageHeader } from '@/components/biroumum/page-header';
-import { SuccessAlert } from '@/components/biroumum/success-alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 import type { SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
-import { AlertCircle, AlertOctagon, AlertTriangle, ImagePlus, Trash2, Wrench } from 'lucide-react';
+import { AlertCircle, AlertOctagon, AlertTriangle, CheckCircle2, ImagePlus, Trash2, Wrench } from 'lucide-react';
 import type React from 'react';
 import { useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -38,7 +38,6 @@ export default function DamageReport() {
     const [photos, setPhotos] = useState<File[]>([]);
     const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [showSuccess, setShowSuccess] = useState(false);
 
     const {
         register,
@@ -50,13 +49,22 @@ export default function DamageReport() {
         resolver: zodResolver(schema),
     });
 
+    const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+    const handleConfirm = () => {
+        setShowSuccessDialog(false);
+        router.visit(route('history'));
+    };
+
     const onSubmit = (data: FormData) => {
         router.post(
             route('kerusakangedung.store'),
             { ...data, photos },
             {
+                onError: (errors) => {
+                    console.log(errors);
+                },
                 onSuccess: () => {
-                    setShowSuccess(true);
+                    setShowSuccessDialog(true);
                     reset();
                     setPhotos([]);
                     setPhotoPreviews([]);
@@ -139,7 +147,6 @@ export default function DamageReport() {
                 <div className="pb-20">
                     <div className="space-y-6 p-4">
                         <PageHeader title="Laporan Kerusakan Gedung" backUrl="/" />
-                        <SuccessAlert show={showSuccess} message="Laporan kerusakan berhasil dikirim!" />
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center space-x-2">
@@ -289,6 +296,23 @@ export default function DamageReport() {
                     </div>
                 </div>
                 <BottomNavigation />
+
+                <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+                    <DialogContent className="sm:max-w-md">
+                        <DialogHeader className="text-center">
+                            <div className="flex flex-col items-center justify-center">
+                                <CheckCircle2 className="mb-3.5 h-10 w-10 text-green-600" />
+                                <DialogTitle className="text-xl font-semibold text-green-700">Laporan kerusakan berhasil dikirim!</DialogTitle>
+                            </div>
+                        </DialogHeader>
+                        <div className="text-center text-sm text-muted-foreground">Klik tombol "Ok" untuk melihat aktivitas dan detail laporan.</div>
+                        <DialogFooter className="mt-4 flex justify-center">
+                            <Button onClick={handleConfirm} className="w-full sm:w-auto">
+                                OK
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </>
     );

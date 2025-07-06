@@ -1,5 +1,4 @@
 'use client';
-
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,8 +7,30 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Skeleton } from '@/components/ui/skeleton';
 import { router, usePage } from '@inertiajs/react';
-import * as LucideIcons from 'lucide-react';
-import { CheckCircle, Clock, Info, Users, X } from 'lucide-react';
+import {
+    BookOpen,
+    Camera,
+    Car,
+    CheckCircle,
+    Clock,
+    Computer,
+    Edit,
+    Folders,
+    Info,
+    Mic,
+    Monitor,
+    PenSquare,
+    Projector,
+    Shield,
+    Snowflake,
+    Sofa,
+    Speaker,
+    Table,
+    Tv,
+    Users,
+    Wifi,
+    X,
+} from 'lucide-react';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -22,10 +43,7 @@ interface Room {
     status: 'available' | 'booked';
     bookedSlots?: string[];
     image: string;
-    facilities: {
-        icon: React.ElementType;
-        name: string;
-    }[];
+    facilities: string[];
 }
 
 interface RoomSelectionProps {
@@ -36,15 +54,34 @@ interface RoomSelectionProps {
     selectedEndTime: string;
 }
 
+const facilityOptions = [
+    { id: 'wifi', label: 'WiFi', icon: Wifi },
+    { id: 'projector', label: 'Proyektor', icon: Projector },
+    { id: 'lcd-proyektor', label: 'LCD Proyektor', icon: Projector },
+    { id: 'tv-led', label: 'TV LED', icon: Tv },
+    { id: 'sound-system', label: 'Sound System', icon: Speaker },
+    { id: 'kamera-cctv', label: 'Kamera CCTV', icon: Camera },
+    { id: 'mikrofon', label: 'Mikrofon', icon: Mic },
+    { id: 'meja-bundar', label: 'Meja Bundar', icon: Table },
+    { id: 'papan-tulis', label: 'Papan Tulis', icon: PenSquare },
+    { id: 'whiteboard', label: 'Whiteboard', icon: Edit },
+    { id: 'ac', label: 'AC', icon: Snowflake },
+    { id: 'parking', label: 'Parkir', icon: Car },
+    { id: 'komputer', label: 'Komputer', icon: Computer },
+    { id: 'sofa', label: 'Sofa', icon: Sofa },
+    { id: 'majalah', label: 'Majalah', icon: BookOpen },
+    { id: 'rak-arsip', label: 'Rak Arsip', icon: Folders },
+    { id: 'lemari-besi', label: 'Lemari Besi', icon: Shield },
+];
+
 export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, selectedStartTime, selectedEndTime }: RoomSelectionProps) {
-    const { tersedia = [] } = usePage().props;
+    const { tersedia } = usePage<{ tersedia: Room[] }>().props;
 
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedRoomDetail, setSelectedRoomDetail] = useState<Room | null>(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
 
-    // Fetch rooms data when date/time changes
     useEffect(() => {
         if (selectedDate && selectedStartTime && selectedEndTime) {
             router.get(
@@ -67,23 +104,7 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
     }, [selectedDate, selectedStartTime, selectedEndTime]);
 
     useEffect(() => {
-        if (!tersedia || !Array.isArray(tersedia)) {
-            setRooms([]);
-            return;
-        }
-
-        // Mapping setiap room
-        const roomsWithIcons: any = (tersedia as Room[]).map((room) => ({
-            ...room,
-            // Mapping setiap fasilitas di room
-            facilities: room.facilities.map((facility) => ({
-                ...facility,
-                // facility.icon adalah string dari BE → kita ganti jadi komponen React
-                icon: LucideIcons[facility.icon as keyof typeof LucideIcons] || LucideIcons.HelpCircleIcon,
-            })),
-        }));
-
-        setRooms(roomsWithIcons);
+        setRooms(tersedia);
     }, [tersedia]);
 
     const handleViewDetail = (e: React.MouseEvent, room: Room) => {
@@ -142,6 +163,16 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                 return requestStart < slotEnd && requestEnd > slotStart;
             }) || false
         );
+    };
+
+    const getFacilityIcon = (facilityLabel: string) => {
+        const facility = facilityOptions.find((f) => f.id === facilityLabel);
+        return facility ? facility.icon : Monitor;
+    };
+
+    const getFacilityLabel = (facilityLabel: string) => {
+        const facility = facilityOptions.find((f) => f.id === facilityLabel);
+        return facility ? facility.label : facilityLabel;
     };
 
     if (!selectedDate || !selectedStartTime || !selectedEndTime) {
@@ -323,12 +354,15 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                                 <div>
                                     <h4 className="mb-2 font-medium">Fasilitas Ruangan:</h4>
                                     <div className="grid grid-cols-2 gap-2">
-                                        {selectedRoomDetail.facilities.map((facility, index) => (
-                                            <div key={index} className="flex items-center gap-2 text-sm">
-                                                <facility.icon className="h-4 w-4 text-blue-600" />
-                                                <span>{facility.name}</span>
-                                            </div>
-                                        ))}
+                                        {selectedRoomDetail.facilities.map((facility) => {
+                                            const Icon = getFacilityIcon(facility);
+                                            return (
+                                                <div key={facility} className="flex items-center gap-2 text-sm">
+                                                    <Icon className="h-4 w-4 text-blue-600" />
+                                                    {getFacilityLabel(facility)}
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
 

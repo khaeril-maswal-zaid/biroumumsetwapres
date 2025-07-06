@@ -22,11 +22,32 @@ class StorePemesananRuangRapatRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'date' => 'required|date',
-            'startTime' => 'required|date_format:H:i',
-            'endTime' => 'required|date_format:H:i|after:startTime',
-            'purpose' => 'required|string|max:255',
-            'contact' => 'required|string|max:255',
+            'room_code'   => 'required|string|exists:daftar_ruangans,kode_ruangan',
+            'room_name'   => 'required|string',
+            'date'        => 'required|date',
+            'startTime'   => 'required|date_format:H:i',
+            'endTime'     => 'required|date_format:H:i|after_or_equal:startTime',
+            'purpose'     => 'required|string|max:255',
+            'contact'     => 'required|string|max:15',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'room_code.required'    => 'Kode ruangan wajib diisi.',
+            'room_code.exists'      => 'Kode ruangan tidak ditemukan.',
+            'room_name.required'    => 'Nama ruangan wajib diisi.',
+            'date.required'         => 'Tanggal penggunaan wajib diisi.',
+            'date.date'             => 'Tanggal tidak valid.',
+            'startTime.required'    => 'Jam mulai wajib diisi.',
+            'startTime.date_format' => 'Format jam mulai harus HH:MM.',
+            'endTime.required'      => 'Jam selesai wajib diisi.',
+            'endTime.date_format'   => 'Format jam selesai harus HH:MM.',
+            'endTime.after_or_equal' => 'Jam selesai harus sama atau setelah jam mulai.',
+            'purpose.required'      => 'Tujuan pemesanan wajib diisi.',
+            'contact.required'      => 'Nomor kontak wajib diisi.',
+            'contact.max'           => 'Nomor kontak maksimal 15 karakter.',
         ];
     }
 }

@@ -10,20 +10,7 @@ import { ServiceMenu } from '@/components/biroumum/service-menu';
 import { Head } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
-const aktivitas = [
-    {
-        waktu: '10.00 – 12.00',
-        ruang: 'Ruang Rapat Sinergi 10 orang',
-        keterangan: 'Untuk Keperluan Rapat Divisi',
-    },
-    {
-        waktu: '12.00 – 13.00',
-        ruang: 'Ruang Rapat Sinergi 12 orang',
-        keterangan: 'Untuk Keperluan Briefing Divisi',
-    },
-];
-
-export default function Dashboard() {
+export default function Dashboard({ requestHistory }: any) {
     const [currentTime, setCurrentTime] = useState('07:00');
 
     useEffect(() => {
@@ -46,7 +33,7 @@ export default function Dashboard() {
                 {/* Desktop Navigation */}
 
                 {/* Main Content */}
-                <div className="pb-20 md:pb-0">
+                <div className="pb-20">
                     {/* Header with user info */}
                     <DashboardHeader userName="Dani Martinez" currentTime={currentTime} />
 
@@ -61,7 +48,7 @@ export default function Dashboard() {
                         <ServiceMenu />
 
                         {/* Aktivitas */}
-                        <ActivityList activities={aktivitas} />
+                        <ActivityList activities={requestHistory} />
 
                         {/* Footer Illustration (Mobile) */}
                         <FooterIllustration />

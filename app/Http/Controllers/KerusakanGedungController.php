@@ -7,6 +7,7 @@ use App\Http\Requests\StoreKerusakanGedungRequest;
 use App\Http\Requests\UpdateKerusakanGedungRequest;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
@@ -50,7 +51,7 @@ class KerusakanGedungController extends Controller
             'deskripsi' => $request->description,
             'picture' => $photoPaths,
             'urgensi' => $request->urgency,
-            'kode_pelaporan' => '123',
+            'kode_pelaporan' => 'Kgd-' . now()->format('Ymd') . '-' . strtoupper(Str::random(5)),
             'no_hp' => $request->contact,
             'status' => 'pending',
             'keterangan' => $request->location,
