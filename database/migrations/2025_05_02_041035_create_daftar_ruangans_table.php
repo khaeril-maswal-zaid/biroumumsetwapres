@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('lokasi')->nullable();
             $table->integer('kapasitas')->nullable();
             $table->string('image')->nullable();
+            $table->enum('status', ['aktif', 'maintenance', 'nonaktif'])->nullable();
             $table->json('fasilitas')->nullable();
 
             $table->timestamps();

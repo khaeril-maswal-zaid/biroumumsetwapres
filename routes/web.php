@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\DaftarRuanganController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KerusakanGedungController;
 use App\Http\Controllers\PemesananRuangRapatController;
 use App\Http\Controllers\PermintaanAtkController;
 use App\Http\Controllers\PermintaanKendaraanController;
 use App\Http\Controllers\UserController;
+use App\Models\DaftarRuangan;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified', 'ruleUser:pegawai'])->group(function () {
@@ -42,6 +44,13 @@ Route::middleware(['auth', 'verified', 'ruleUser:admin'])->group(function () {
 
     Route::get('/dashboard/permintaan-atk', [PermintaanAtkController::class, 'index'])->name('permintaanatk.index');
     Route::patch('/dashboard/permintaan-atk/{permintaanAtk:kode_pelaporan}', [PermintaanAtkController::class, 'status'])->name('permintaanatk.status');
+
+    Route::get('/dashboard/manajemen-ruangan', [DaftarRuanganController::class, 'index'])->name('rooms.index');
+    Route::post('/dashboard/manajemen-ruangan/store', [DaftarRuanganController::class, 'store'])->name('rooms.store');
+    Route::put('/dashboard/manajemen-ruangan/update/{daftarRuangan:kode_ruangan}', [DaftarRuanganController::class, 'update'])->name('rooms.update');
+    Route::delete('/dashboard/manajemen-ruangan/delete/{daftarRuangan:kode_ruangan}', [DaftarRuanganController::class, 'destroy'])->name('rooms.delete');
+
+    Route::get('/dashboard/manajemen-permissions', [HomeController::class, 'sementara'])->name('permissions.index');
 });
 
 require __DIR__ . '/settings.php';

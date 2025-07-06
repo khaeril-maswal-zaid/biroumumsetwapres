@@ -21,7 +21,11 @@ class DaftarRuanganSeeder extends Seeder
                 'kapasitas' => 30,
                 'image' => 'ruang_rapat_utama.jpg',
                 'status' => 'aktif',
-                'fasilitas' => ['proyektor', 'ac', 'whiteboard'],
+                'fasilitas' => [
+                    ['name' => 'Proyektor', 'icon' => 'Projector'],
+                    ['name' => 'AC', 'icon' => 'Snowflake'],
+                    ['name' => 'Whiteboard', 'icon' => 'PenSquare'],
+                ],
             ],
             [
                 'nama_ruangan' => 'Ruang Multimedia',
@@ -30,7 +34,11 @@ class DaftarRuanganSeeder extends Seeder
                 'kapasitas' => 20,
                 'image' => 'ruang_multimedia.jpg',
                 'status' => 'aktif',
-                'fasilitas' => ['tv-led', 'sound-system', 'kamera-cctv'],
+                'fasilitas' => [
+                    ['name' => 'TV LED', 'icon' => 'Tv'],
+                    ['name' => 'Sound System', 'icon' => 'Speaker'],
+                    ['name' => 'Kamera CCTV', 'icon' => 'Camera'],
+                ],
             ],
             [
                 'nama_ruangan' => 'Ruang Presentasi',
@@ -39,7 +47,10 @@ class DaftarRuanganSeeder extends Seeder
                 'kapasitas' => 25,
                 'image' => 'ruang_presentasi.jpg',
                 'status' => 'aktif',
-                'fasilitas' => ['lcd-proyektor', 'mikrofon'],
+                'fasilitas' => [
+                    ['name' => 'LCD Proyektor', 'icon' => 'Projector'],
+                    ['name' => 'Mikrofon', 'icon' => 'Mic'],
+                ],
             ],
             [
                 'nama_ruangan' => 'Ruang Diskusi',
@@ -48,7 +59,10 @@ class DaftarRuanganSeeder extends Seeder
                 'kapasitas' => 15,
                 'image' => 'ruang_diskusi.jpg',
                 'status' => 'aktif',
-                'fasilitas' => ['meja-bundar', 'papan-tulis'],
+                'fasilitas' => [
+                    ['name' => 'Meja Bundar', 'icon' => 'Table'],
+                    ['name' => 'Papan Tulis', 'icon' => 'PenSquare'],
+                ],
             ],
             [
                 'nama_ruangan' => 'Ruang Pelatihan',
@@ -57,7 +71,11 @@ class DaftarRuanganSeeder extends Seeder
                 'kapasitas' => 40,
                 'image' => 'ruang_pelatihan.jpg',
                 'status' => 'aktif',
-                'fasilitas' => ['komputer', 'proyektor', 'ac'],
+                'fasilitas' => [
+                    ['name' => 'Komputer', 'icon' => 'Computer'],
+                    ['name' => 'Proyektor', 'icon' => 'Projector'],
+                    ['name' => 'AC', 'icon' => 'Snowflake'],
+                ],
             ],
             [
                 'nama_ruangan' => 'Ruang Tunggu',
@@ -66,7 +84,11 @@ class DaftarRuanganSeeder extends Seeder
                 'kapasitas' => 10,
                 'image' => 'ruang_tunggu.jpg',
                 'status' => 'aktif',
-                'fasilitas' => ['sofa', 'majalah', 'ac'],
+                'fasilitas' => [
+                    ['name' => 'Sofa', 'icon' => 'Sofa'],
+                    ['name' => 'Majalah', 'icon' => 'BookOpen'],
+                    ['name' => 'AC', 'icon' => 'Snowflake'],
+                ],
             ],
             [
                 'nama_ruangan' => 'Ruang Arsip',
@@ -75,7 +97,10 @@ class DaftarRuanganSeeder extends Seeder
                 'kapasitas' => 5,
                 'image' => 'ruang_arsip.jpg',
                 'status' => 'aktif',
-                'fasilitas' => ['rak-arsip', 'lemari-besi'],
+                'fasilitas' => [
+                    ['name' => 'Rak Arsip', 'icon' => 'Folders'],
+                    ['name' => 'Lemari Besi', 'icon' => 'Shield'],
+                ],
             ],
         ];
 
