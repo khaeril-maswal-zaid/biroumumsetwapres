@@ -25,7 +25,8 @@ class UserFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'unit_kerja' => 'Kendaraan',
+            'email' => 'pegawai1@setwapres.com',
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
@@ -33,25 +34,25 @@ class UserFactory extends Factory
     }
 
     // Tambahkan state
-    public function adminKendaraan()
-    {
-        return $this->state([
-            'name' => 'Admin 1',
-            'email' => 'admin1@setwapres.com',
-            'role' => 'admin',
-            'unit_kerja' => 'Kendaraan',
-        ]);
-    }
+    // public function adminKendaraan()
+    // {
+    //     return $this->state([
+    //         'name' => 'Admin 1',
+    //         'email' => 'admin1@setwapres.com',
+    //         'role' => 'admin',
+    //         'unit_kerja' => 'Kendaraan',
+    //     ]);
+    // }
 
-    public function pegawaiTusdm()
-    {
-        return $this->state([
-            'name' => 'Pegawai 1',
-            'email' => 'pegawai1@setwapres.com',
-            'role' => 'pegawai',
-            'unit_kerja' => 'TUSDM',
-        ]);
-    }
+    // public function pegawaiTusdm()
+    // {
+    //     return $this->state([
+    //         'name' => 'Pegawai 1',
+    //         'email' => 'pegawai1@setwapres.com',
+    //         'role' => 'pegawai',
+    //         'unit_kerja' => 'TUSDM',
+    //     ]);
+    // }
 
     /**
      * Indicate that the model's email address should be unverified.

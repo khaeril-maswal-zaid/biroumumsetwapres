@@ -10,7 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Models\DaftarRuangan;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'verified', 'ruleUser:pegawai'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
     Route::get('/ruang-rapat', [PemesananRuangRapatController::class, 'create'])->name('ruangrapat.create');
@@ -31,7 +31,7 @@ Route::middleware(['auth', 'verified', 'ruleUser:pegawai'])->group(function () {
     Route::get('/history', [HomeController::class, 'history'])->name('history');
 });
 
-Route::middleware(['auth', 'verified', 'ruleUser:admin'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [HomeController::class, 'admin'])->name('dashboard');
 
     Route::get('/dashboard/ruang-rapat', [PemesananRuangRapatController::class, 'index'])->name('ruangrapat.index');
