@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PermintaanAtk;
 use App\Http\Requests\StorePermintaanAtkRequest;
 use App\Http\Requests\UpdatePermintaanAtkRequest;
+use App\Models\DaftarAtk;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
@@ -29,7 +30,9 @@ class PermintaanAtkController extends Controller
      */
     public function create()
     {
-        return Inertia::render('biroumum/supplies/page');
+        return Inertia::render('biroumum/supplies/page', [
+            'availableATK' => DaftarAtk::select(['id', 'name', 'unit'])->get()
+        ]);
     }
 
     /**
@@ -83,19 +86,25 @@ class PermintaanAtkController extends Controller
 
     public function status(PermintaanAtk $permintaanAtk, Request $request)
     {
-        $validated = $request->validate([
-            'action' => 'required|in:confirmed,in_progress,cancelled',
-            'message' => 'required_unless:action,confirmed|string|max:255',
+        $inputItems = $request->input('item'); // array: id => approved
+
+        // Ambil data asli dari kolom JSON
+        $originalItems = collect($permintaanAtk->daftar_kebutuhan);
+
+        // Lakukan update hanya pada field 'approved' sesuai id
+        $updatedItems = $originalItems->map(function ($item) use ($inputItems) {
+            $itemId = (int) $item['id']; // pastikan integer agar cocok
+            if (isset($inputItems[$itemId])) {
+                $item['approved'] = $inputItems[$itemId];
+            }
+            return $item;
+        });
+
+        // Simpan hasil
+        $permintaanAtk->update([
+            'daftar_kebutuhan' => $updatedItems,
+            'status' => $request->input('status'),
+            'keterangan' => $request->input('message'),
         ]);
-
-        $updateData = collect([
-            'status' => $validated['action'],
-        ]);
-
-        if (isset($validated['message'])) {
-            $updateData->put('keterangan', $validated['message']);
-        }
-
-        $permintaanAtk->update($updateData->all());
     }
 }

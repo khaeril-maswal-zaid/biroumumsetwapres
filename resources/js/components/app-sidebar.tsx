@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { Building2, Calendar, Car, LayoutGrid, PenTool, ShieldCheck, Wrench } from 'lucide-react';
+import { Boxes, Building2, Calendar, Car, LayoutGrid, PenTool, ShieldCheck, Users, Wrench } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -41,15 +41,24 @@ const footerNavItems: NavItem[] = [
         href: route('rooms.index'),
         icon: Building2,
     },
-
-    // {
-    //     title: 'Manajemen Pengguna',
-    //     href: route('permissions.index'),
-    //     icon: Users,
-    // },
+    {
+        title: 'Manajemen ATK',
+        href: route('daftaratk.index'),
+        icon: Boxes,
+    },
+    {
+        title: 'Kategori Kerusakan',
+        href: route('daftarkerusakan.index'),
+        icon: Wrench,
+    },
+    {
+        title: 'Manajemen Pengguna',
+        href: '',
+        icon: Users,
+    },
     {
         title: 'Pengaturan Akses',
-        href: route('permissions.index'),
+        href: route('roles.index'),
         icon: ShieldCheck,
     },
 ];

@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import type { SharedData } from '@/types';
@@ -15,8 +14,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
 import { Calendar, CheckCircle2, Clock, PenTool, Zap } from 'lucide-react';
 import { useState } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Check, ChevronsUpDown } from 'lucide-react';
 
 const urgencyOptions = [
     {
@@ -53,9 +56,10 @@ const FormSchema = z.object({
     items: z
         .array(
             z.object({
-                name: z.string().min(1, 'Nama barang wajib diisi'),
-                quantity: z.string().min(1, 'Jumlah wajib diisi'),
-                unit: z.string().min(1, 'Satuan wajib dipilih'),
+                id: z.string().min(1, 'Nama barang wajib diisi'),
+                name: z.string().min(3, 'Nama barang wajib diisi'),
+                quantity: z.string().min(3, 'Jumlah wajib diisi'),
+                unit: z.string().min(3, 'Satuan wajib dipilih'),
             }),
         )
         .min(1),
@@ -64,7 +68,7 @@ const FormSchema = z.object({
     contact: z.string().min(1, 'Narahubung wajib diisi'),
 });
 
-export default function SuppliesRequest() {
+export default function SuppliesRequest({ availableATK }: any) {
     const { auth } = usePage<SharedData>().props;
 
     const {
@@ -78,16 +82,11 @@ export default function SuppliesRequest() {
     } = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            items: [{ name: '', quantity: '', unit: '' }],
+            items: [{ id: '', name: '', quantity: '', unit: '' }],
             justification: '',
             urgency: '',
             contact: '',
         },
-    });
-
-    const { fields, append, remove } = useFieldArray({
-        control,
-        name: 'items',
     });
 
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
@@ -110,6 +109,66 @@ export default function SuppliesRequest() {
                 },
             },
         );
+    };
+
+    const [formData, setFormData] = useState({
+        name: '',
+        devisi: '',
+        items: [{ itemId: '', quantity: '', unit: '' }],
+        justification: '',
+        urgency: '',
+        contact: '',
+    });
+
+    const [openComboboxes, setOpenComboboxes] = useState<{ [key: number]: boolean }>({});
+
+    const addItem = () => {
+        setFormData({
+            ...formData,
+            items: [...formData.items, { itemId: '', quantity: '', unit: '' }],
+        });
+    };
+
+    const removeItem = (index: number) => {
+        const newItems = formData.items.filter((_, i) => i !== index);
+        setFormData({ ...formData, items: newItems });
+    };
+
+    const updateItem = (index: number, field: string, value: string) => {
+        const newItems = formData.items.map((item, i) => {
+            if (i === index) {
+                if (field === 'itemId') {
+                    // When item is selected, auto-fill the unit
+                    const selectedATK = availableATK.find((atk: any) => atk.id === value);
+                    return {
+                        ...item,
+                        [field]: value,
+                        unit: selectedATK?.unit || '',
+                    };
+                }
+                return { ...item, [field]: value };
+            }
+            return item;
+        });
+        setFormData({ ...formData, items: newItems });
+    };
+
+    const getSelectedATK = (itemId: string) => {
+        return availableATK.find((atk: any) => atk.id === itemId);
+    };
+
+    const getAvailableATK = (currentIndex: number) => {
+        // Filter out already selected items (except current item)
+        const selectedIds = formData.items.map((item, index) => (index !== currentIndex ? item.itemId : null)).filter(Boolean);
+
+        return availableATK.filter((atk: any) => !selectedIds.includes(atk.id));
+    };
+
+    const toggleCombobox = (index: number, isOpen: boolean) => {
+        setOpenComboboxes((prev) => ({
+            ...prev,
+            [index]: isOpen,
+        }));
     };
 
     const selectedUrgency = watch('urgency');
@@ -156,58 +215,110 @@ export default function SuppliesRequest() {
                                     {/* Items */}
                                     <div>
                                         <Label>Daftar Barang</Label>
-                                        {fields.map((field, index) => (
-                                            <div key={field.id} className="mt-2 grid grid-cols-12 gap-2">
-                                                <div className="col-span-5">
-                                                    <Input
-                                                        placeholder="Nama barang"
-                                                        {...register(`items.${index}.name`)}
-                                                        className={cn(errors.items?.[index]?.name && 'border-red-500')}
-                                                    />
+                                        {formData.items.map((item, index) => {
+                                            const availableOptions = getAvailableATK(index);
+                                            const selectedATK = getSelectedATK(item.itemId);
+
+                                            return (
+                                                <div key={index} className="mt-2 space-y-2">
+                                                    <div className="grid grid-cols-12 gap-2">
+                                                        <div className="col-span-6">
+                                                            <Popover
+                                                                open={openComboboxes[index] || false}
+                                                                onOpenChange={(isOpen) => toggleCombobox(index, isOpen)}
+                                                            >
+                                                                <PopoverTrigger asChild>
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        role="combobox"
+                                                                        aria-expanded={openComboboxes[index] || false}
+                                                                        className="w-full justify-between bg-transparent"
+                                                                    >
+                                                                        {selectedATK ? selectedATK.name : 'Pilih ATK...'}
+                                                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                                    </Button>
+                                                                </PopoverTrigger>
+                                                                <PopoverContent className="w-full p-0" align="start">
+                                                                    <Command>
+                                                                        <CommandInput placeholder="Cari ATK..." />
+                                                                        <CommandList>
+                                                                            <CommandEmpty>Tidak ada ATK yang ditemukan.</CommandEmpty>
+                                                                            <CommandGroup>
+                                                                                {availableOptions.map((atk: any) => (
+                                                                                    <CommandItem
+                                                                                        key={atk.id}
+                                                                                        value={atk.name}
+                                                                                        onSelect={() => {
+                                                                                            updateItem(index, 'itemId', atk.id);
+                                                                                            toggleCombobox(index, false);
+                                                                                        }}
+                                                                                    >
+                                                                                        <Check
+                                                                                            className={cn(
+                                                                                                'mr-2 h-4 w-4',
+                                                                                                item.itemId === atk.id ? 'opacity-100' : 'opacity-0',
+                                                                                            )}
+                                                                                        />
+                                                                                        <div className="flex flex-col">
+                                                                                            <span>{atk.name}</span>
+                                                                                            <span className="text-xs text-gray-500">
+                                                                                                Satuan: {atk.unit}
+                                                                                            </span>
+                                                                                        </div>
+                                                                                    </CommandItem>
+                                                                                ))}
+                                                                            </CommandGroup>
+                                                                        </CommandList>
+                                                                    </Command>
+                                                                </PopoverContent>
+                                                            </Popover>
+                                                        </div>
+                                                        <div className="col-span-3">
+                                                            <Input
+                                                                type="number"
+                                                                placeholder="Jumlah"
+                                                                value={item.quantity}
+                                                                onChange={(e) => updateItem(index, 'quantity', e.target.value)}
+                                                                min="1"
+                                                                required
+                                                                disabled={!item.itemId}
+                                                            />
+                                                        </div>
+                                                        <div className="col-span-2">
+                                                            <Input value={item.unit} placeholder="Satuan" disabled className="bg-gray-50" />
+                                                        </div>
+                                                        <div className="col-span-1">
+                                                            {formData.items.length > 1 && (
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    onClick={() => removeItem(index)}
+                                                                    className="h-full"
+                                                                >
+                                                                    ×
+                                                                </Button>
+                                                            )}
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className="col-span-3">
-                                                    <Input
-                                                        type="number"
-                                                        placeholder="Jumlah"
-                                                        {...register(`items.${index}.quantity`)}
-                                                        className={cn(errors.items?.[index]?.quantity && 'border-red-500')}
-                                                    />
-                                                </div>
-                                                <div className="col-span-3">
-                                                    <Select
-                                                        onValueChange={(value) => setValue(`items.${index}.unit`, value)}
-                                                        value={watch(`items.${index}.unit`)}
-                                                    >
-                                                        <SelectTrigger className={cn(errors.items?.[index]?.unit && 'border-red-500')}>
-                                                            <SelectValue placeholder="Satuan" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="pcs">Pcs</SelectItem>
-                                                            <SelectItem value="box">Box</SelectItem>
-                                                            <SelectItem value="pack">Pack</SelectItem>
-                                                            <SelectItem value="rim">Rim</SelectItem>
-                                                            <SelectItem value="lusin">Lusin</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                                <div className="col-span-1">
-                                                    {fields.length > 1 && (
-                                                        <Button type="button" variant="outline" size="sm" onClick={() => remove(index)}>
-                                                            ×
-                                                        </Button>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
+
                                         <Button
                                             type="button"
                                             variant="outline"
                                             size="sm"
-                                            onClick={() => append({ name: '', quantity: '', unit: '' })}
+                                            onClick={addItem}
                                             className="mt-2 bg-transparent"
+                                            disabled={formData.items.length >= availableATK.length}
                                         >
                                             + Tambah Barang
                                         </Button>
+
+                                        {formData.items.length >= availableATK.length && (
+                                            <p className="mt-1 text-sm text-gray-500">Semua ATK yang tersedia sudah dipilih</p>
+                                        )}
                                     </div>
 
                                     <div>

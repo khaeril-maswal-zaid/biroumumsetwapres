@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import type { SharedData } from '@/types';
@@ -18,9 +19,15 @@ import { useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+type KategoriKerusakan = {
+    kode_kerusakan: string;
+    name: string;
+};
+
 const schema = z.object({
     location: z.string().min(5, 'Lokasi wajib diisi'),
     damageType: z.string().min(3, 'Nama Item wajib diisi'),
+    kategori: z.string().min(3, 'Nama Item wajib diisi'),
     description: z.string().min(5, 'Deskripsi wajib diisi'),
     urgency: z.enum(['rendah', 'sedang', 'tinggi'], {
         required_error: 'Tingkat urgensi wajib dipilih',
@@ -33,7 +40,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function DamageReport() {
+export default function DamageReport({ kategoriKerusakan }: any) {
     const { auth } = usePage<SharedData>().props;
     const [photos, setPhotos] = useState<File[]>([]);
     const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
@@ -57,7 +64,7 @@ export default function DamageReport() {
 
     const onSubmit = (data: FormData) => {
         router.post(
-            route('kerusakangedung.store'),
+            route('kerusakangedung.store', data.kategori),
             { ...data, photos },
             {
                 onError: (errors) => {
@@ -185,6 +192,29 @@ export default function DamageReport() {
                                         <Label htmlFor="damageType">Nama Item Rusak</Label>
                                         <Input id="damageType" {...register('damageType')} className={errors.damageType && 'border-red-500'} />
                                         {errors.damageType && <p className="mt-1 text-sm text-red-500">{errors.damageType.message}</p>}
+                                    </div>
+                                    <div className="w-full">
+                                        <Label htmlFor="kategori">Kategori Kerusakan</Label>
+                                        <Controller
+                                            control={control}
+                                            name="kategori"
+                                            render={({ field }) => (
+                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Pilih" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {kategoriKerusakan.map((item: KategoriKerusakan, index: number) => (
+                                                            <SelectItem key={index} value={item.kode_kerusakan}>
+                                                                {item.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            )}
+                                        />
+
+                                        {errors.kategori && <p className="mt-1 text-sm text-red-500">{errors.kategori.message}</p>}
                                     </div>
                                     <div>
                                         <Label htmlFor="description">Deskripsi Kerusakan</Label>

@@ -32,4 +32,10 @@ class KerusakanGedung extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+
+    public function kategori(): BelongsTo
+    {
+        return $this->belongsTo(KategoriKerusakan::class, 'kategori_kerusakan_id');
+    }
 }

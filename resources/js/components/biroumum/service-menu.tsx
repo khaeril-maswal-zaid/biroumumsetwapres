@@ -20,7 +20,7 @@ export function ServiceMenu() {
         },
         {
             icon: Wrench,
-            label: 'Kerusakan Barang/Alat',
+            label: 'Kerusakan Gedung',
             href: route('kerusakangedung.create'),
         },
         {

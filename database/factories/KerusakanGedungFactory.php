@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\KategoriKerusakan;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,6 +20,7 @@ class KerusakanGedungFactory extends Factory
         return [
             'user_id' => 1,
             'lokasi' => 'Lantai ' . fake()->numberBetween(1, 5) . ', Ruang ' . fake()->numberBetween(101, 599),
+            'kategori_kerusakan_id' => KategoriKerusakan::inRandomOrder()->first()?->id ?? 1,
             'item' => fake()->word(),
             'deskripsi' => fake()->sentence(),
             'picture' =>  [fake()->image('public/storage/image/kerusakan-gedung', 640, 480, null, false), fake()->image('public/storage/image/kerusakan-gedung', 640, 480, null, false)],

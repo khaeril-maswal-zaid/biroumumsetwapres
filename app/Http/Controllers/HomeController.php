@@ -39,10 +39,11 @@ class HomeController extends Controller
                 'picture'           => null,
                 'keterangan'        => $r->keterangan,
                 'time'              => $r->jam_mulai . ' - ' . $r->jam_selesai,
+                'kategori'           => null,
             ]);
 
         // Ambil data kerusakan + relasi pemesan
-        $this->queryKerusakan = KerusakanGedung::with('pelapor')
+        $this->queryKerusakan = KerusakanGedung::with(['pelapor', 'kategori'])
             ->orderByDesc('created_at')
             ->get()
             ->map(fn($k) => [
@@ -62,6 +63,7 @@ class HomeController extends Controller
                 'picture'            => $k->picture,
                 'keterangan'         => $k->keterangan,
                 'time'               => null,
+                'kategori'           => $k->kategori,
             ]);
 
         // Ambil data permintaan ATK + relasi pemesan
@@ -74,7 +76,7 @@ class HomeController extends Controller
                 'code'               => $a->kode_pelaporan,
                 'title'              => count($a->daftar_kebutuhan) . ' item',
                 'ruangans'           => null,
-                'info'               => collect($a->daftar_kebutuhan)->map(fn($item) => "{$item['name']} {$item['quantity']} {$item['unit']}")->join(', '),
+                'info'               => collect($a->daftar_kebutuhan)->map(fn($item) => "{$item['name']} {$item['requested']} {$item['unit']}")->join(', '),
                 'daftarkebutuhan'    => $a->daftar_kebutuhan,
                 'subtitle'           => $a->urgensi,
                 'created_at'         => $a->created_at,
@@ -85,6 +87,7 @@ class HomeController extends Controller
                 'picture'            => null,
                 'keterangan'         => $a->keterangan,
                 'time'               => null,
+                'kategori'           => null,
             ]);
 
         // Gabungkan semuanya, urutkan, batasi 10
@@ -117,12 +120,5 @@ class HomeController extends Controller
             ->values();
 
         return Inertia::render('biroumum/history/page', compact('requestHistory'));
-    }
-
-    public function sementara()
-    {
-
-
-        return Inertia::render('admin/permissions/page');
     }
 }

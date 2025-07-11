@@ -24,6 +24,7 @@ class StoreKerusakanGedungRequest extends FormRequest
         return [
             'location'      => 'required|string|max:255',
             'damageType'    => 'required|string|max:255',
+            'kategori'      => 'required|string|exists:kategori_kerusakans,kode_kerusakan',
             'description'   => 'required|string|max:255',
             'photos'         => 'required|array',
             'photos.*'       => 'file|image|mimes:jpeg,png,jpg,gif,svg|max:4096',

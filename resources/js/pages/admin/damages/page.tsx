@@ -13,7 +13,21 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { Label } from '@radix-ui/react-label';
 import { Separator } from '@radix-ui/react-separator';
-import { AlertCircle, CheckCircle, Hash, ImageIcon, MapPin, MessageSquare, NotebookText, Search, Settings, Users, Wrench, X } from 'lucide-react';
+import {
+    AlertCircle,
+    AlertTriangle,
+    CheckCircle,
+    Hash,
+    ImageIcon,
+    MapPin,
+    MessageSquare,
+    NotebookText,
+    Search,
+    Settings,
+    Users,
+    Wrench,
+    X,
+} from 'lucide-react';
 import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -134,7 +148,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                             <div className="flex w-full max-w-sm items-center space-x-2">
                                 <Search className="h-4 w-4 text-gray-400" />
                                 <Input
-                                    placeholder="Cari nama, lokasi, atau jenis kerusakan..."
+                                    placeholder="Cari nama, lokasi, atau nama  item rusak..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="w-full"
@@ -163,7 +177,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                         <TableHead>Kode Laporan</TableHead>
                                         <TableHead>Nama Pelapor</TableHead>
                                         <TableHead>Lokasi</TableHead>
-                                        <TableHead className="hidden md:table-cell">Jenis Kerusakan</TableHead>
+                                        <TableHead className="hidden md:table-cell">Nama Item Rusak</TableHead>
                                         <TableHead className="hidden lg:table-cell">Urgensi</TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead className="hidden md:table-cell">Foto</TableHead>
@@ -274,8 +288,16 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                         <div className="flex items-center gap-3">
                                             <Wrench className="h-5 w-5 text-purple-600" />
                                             <div>
-                                                <p className="font-medium text-gray-900">Jenis Kerusakan</p>
+                                                <p className="font-medium text-gray-900">Nama Item Rusak</p>
                                                 <p className="text-sm text-gray-600">{selectedDamage.item}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-3">
+                                            <AlertTriangle className="h-5 w-5 text-purple-600" />
+                                            <div>
+                                                <p className="font-medium text-gray-900">Nama Item Rusak</p>
+                                                <p className="text-sm text-gray-600">{selectedDamage?.kategori.name}</p>
                                             </div>
                                         </div>
 

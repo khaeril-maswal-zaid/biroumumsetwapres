@@ -15,4 +15,9 @@ class UserController extends Controller
     {
         return Inertia::render('biroumum/profile/page');
     }
+
+    public function role(Request $request, User $user)
+    {
+        $user->syncRoles([$request->selectedUserRole]);
+    }
 }

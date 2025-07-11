@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\DaftarAtk;
 use App\Models\KerusakanGedung;
 use App\Models\PemesananRuangRapat;
 use App\Models\PermintaanAtk;
@@ -16,14 +17,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory(1)->create();
-
-        // User::factory()->pegawaiTusdm()->create();
-        // User::factory()->adminKendaraan()->create();
-
         $this->call([
+            RolePermissionSeeder::class,
             DaftarRuanganSeeder::class,
+            KategoriKerusakanSeeder::class,
+            DaftarAtkSeeder::class,
         ]);
+
+        User::factory(1)->create();
+        User::factory()->admin()->create();
+        User::factory()->pegawai()->create();
 
         PermintaanAtk::factory(3)->create();
         PemesananRuangRapat::factory(2)->create();

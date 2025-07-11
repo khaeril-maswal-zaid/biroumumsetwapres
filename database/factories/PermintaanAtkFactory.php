@@ -51,15 +51,17 @@ class PermintaanAtkFactory extends Factory
             'user_id' => 1,
             'daftar_kebutuhan' =>
             collect(range(1, rand(1, 5)))->map(fn() => [
+                'id' => (string) fake()->unique()->numberBetween(1, 100),
                 'name' => fake()->randomElement($atkItems),
-                'quantity' => (string) fake()->numberBetween(1, 100),
+                'requested' => fake()->numberBetween(1, 25),
+                'approved' => 0,
                 'unit' => fake()->randomElement(['rim', 'pak', 'lusin', 'buah']),
             ]),
             'deskripsi' => fake()->sentence(),
             'urgensi' => fake()->randomElement(['normal', 'mendesak', 'segera']),
             'no_hp' => fake()->phoneNumber(),
             'kode_pelaporan' => fake()->unique()->bothify('PL-########'),
-            'status' => fake()->randomElement(['pending', 'in_progress', 'confirmed', 'cancelled']),
+            'status' => fake()->randomElement(['pending', 'approved', 'partial', 'rejected']),
             'keterangan' => fake()->text(250),
         ];
     }

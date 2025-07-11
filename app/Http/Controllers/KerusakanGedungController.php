@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\KerusakanGedung;
 use App\Http\Requests\StoreKerusakanGedungRequest;
 use App\Http\Requests\UpdateKerusakanGedungRequest;
+use App\Models\KategoriKerusakan;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
 class KerusakanGedungController extends Controller
@@ -19,7 +19,7 @@ class KerusakanGedungController extends Controller
     public function index()
     {
         $data = [
-            'kerusakan' => KerusakanGedung::with('pelapor')->latest()->paginate(15)
+            'kerusakan' => KerusakanGedung::with('pelapor')->with('kategori')->latest()->paginate(15)
         ];
 
         return Inertia::render('admin/damages/page', $data);
@@ -30,13 +30,15 @@ class KerusakanGedungController extends Controller
      */
     public function create()
     {
-        return Inertia::render('biroumum/damage/page');
+        return Inertia::render('biroumum/damage/page', [
+            'kategoriKerusakan' => KategoriKerusakan::all()
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreKerusakanGedungRequest $request)
+    public function store(StoreKerusakanGedungRequest $request, KategoriKerusakan $kategoriKerusakan)
     {
         $photoPaths = [];
 
@@ -44,10 +46,14 @@ class KerusakanGedungController extends Controller
             $photoPaths[] = $photo->store('image/kerusakan-gedung', 'public');
         }
 
+        $idKat  = KategoriKerusakan::where('kode_kerusakan', $request->kategori)->value('id');
+
         KerusakanGedung::create([
             'user_id' => Auth::id(),
+            'kategori_kerusakan_id' => $kategoriKerusakan->id,
             'lokasi' => $request->location,
             'item' => $request->damageType,
+            'kategori' =>  $idKat,
             'deskripsi' => $request->description,
             'picture' => $photoPaths,
             'urgensi' => $request->urgency,

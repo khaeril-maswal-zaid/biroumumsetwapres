@@ -10,7 +10,22 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Head, router } from '@inertiajs/react';
-import { AlertCircle, Calendar, Car, CheckCircle, Clock, Hash, ImageIcon, MapPin, MessageSquare, Package, Search, User, Wrench } from 'lucide-react';
+import {
+    AlertCircle,
+    AlertTriangle,
+    Calendar,
+    Car,
+    CheckCircle,
+    Clock,
+    Hash,
+    ImageIcon,
+    MapPin,
+    MessageSquare,
+    Package,
+    Search,
+    User,
+    Wrench,
+} from 'lucide-react';
 import { useState } from 'react';
 
 export default function RequestHistory({ requestHistory }: any) {
@@ -370,13 +385,23 @@ export default function RequestHistory({ requestHistory }: any) {
                                         )}
 
                                         {selectedRequest.id === 'damage' && (
-                                            <div className="flex items-center gap-3">
-                                                <Wrench className="h-5 w-5 text-purple-600" />
-                                                <div>
-                                                    <p className="font-medium text-gray-900">Jenis Kerusakan</p>
-                                                    <p className="text-sm text-gray-600">{selectedRequest.title}</p>
+                                            <>
+                                                <div className="flex items-center gap-3">
+                                                    <Wrench className="h-5 w-5 text-purple-600" />
+                                                    <div>
+                                                        <p className="font-medium text-gray-900">Jenis Kerusakan</p>
+                                                        <p className="text-sm text-gray-600">{selectedRequest.title}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
+
+                                                <div className="flex items-center gap-3">
+                                                    <AlertTriangle className="h-5 w-5 text-purple-600" />
+                                                    <div>
+                                                        <p className="font-medium text-gray-900">Nama Item Rusak</p>
+                                                        <p className="text-sm text-gray-600">{selectedRequest?.kategori.name}</p>
+                                                    </div>
+                                                </div>
+                                            </>
                                         )}
 
                                         <div>

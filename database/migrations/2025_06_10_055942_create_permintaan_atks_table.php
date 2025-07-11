@@ -19,7 +19,7 @@ return new class extends Migration
             $table->enum('urgensi', ['normal', 'mendesak', 'segera']);
             $table->string('no_hp', 15);
             $table->string('kode_pelaporan', 50)->unique();
-            $table->enum('status', ['pending', 'in_progress', 'confirmed', 'cancelled']);
+            $table->enum('status', ['pending', 'approved', 'partial', 'rejected']);
             $table->string('keterangan', 255); //from admin
             $table->timestamps();
         });

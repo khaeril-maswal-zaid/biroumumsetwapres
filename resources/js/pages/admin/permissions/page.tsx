@@ -23,9 +23,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { Edit, Plus, Search, Shield, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -40,7 +40,6 @@ interface Role {
     description: string;
     permissions: string[];
     user_count: number;
-    created_at: string;
 }
 
 interface User {
@@ -52,111 +51,13 @@ interface User {
     last_login: string;
 }
 
-const availablePermissions = [
-    { id: 'dashboard_view', label: 'Lihat Dashboard', category: 'Dashboard' },
-    { id: 'bookings_view', label: 'Lihat Pemesanan Ruang', category: 'Pemesanan' },
-    { id: 'bookings_manage', label: 'Kelola Pemesanan Ruang', category: 'Pemesanan' },
-    { id: 'damages_view', label: 'Lihat Laporan Kerusakan', category: 'Kerusakan' },
-    { id: 'damages_manage', label: 'Kelola Laporan Kerusakan', category: 'Kerusakan' },
-    { id: 'vehicles_view', label: 'Lihat Permintaan Kendaraan', category: 'Kendaraan' },
-    { id: 'vehicles_manage', label: 'Kelola Permintaan Kendaraan', category: 'Kendaraan' },
-    { id: 'supplies_view', label: 'Lihat Permintaan ATK', category: 'ATK' },
-    { id: 'supplies_manage', label: 'Kelola Permintaan ATK', category: 'ATK' },
-    { id: 'rooms_view', label: 'Lihat Data Ruangan', category: 'Manajemen' },
-    { id: 'rooms_manage', label: 'Kelola Data Ruangan', category: 'Manajemen' },
-    { id: 'users_view', label: 'Lihat Data Pengguna', category: 'Manajemen' },
-    { id: 'users_manage', label: 'Kelola Data Pengguna', category: 'Manajemen' },
-    { id: 'permissions_view', label: 'Lihat Hak Akses', category: 'Manajemen' },
-    { id: 'permissions_manage', label: 'Kelola Hak Akses', category: 'Manajemen' },
-];
+interface Permission {
+    name: string;
+    label: string;
+    category: string;
+}
 
-const mockRoles: Role[] = [
-    {
-        id: '1',
-        name: 'Super Admin',
-        description: 'Akses penuh ke semua fitur sistem',
-        permissions: availablePermissions.map((p) => p.id),
-        user_count: 2,
-        created_at: '2024-01-01',
-    },
-    {
-        id: '2',
-        name: 'Admin Ruangan',
-        description: 'Mengelola pemesanan ruang dan data ruangan',
-        permissions: ['dashboard_view', 'bookings_view', 'bookings_manage', 'rooms_view', 'rooms_manage'],
-        user_count: 3,
-        created_at: '2024-01-05',
-    },
-    {
-        id: '3',
-        name: 'Admin Kendaraan',
-        description: 'Mengelola permintaan kendaraan',
-        permissions: ['dashboard_view', 'vehicles_view', 'vehicles_manage'],
-        user_count: 2,
-        created_at: '2024-01-10',
-    },
-    {
-        id: '4',
-        name: 'Staff ATK',
-        description: 'Mengelola permintaan alat tulis kantor',
-        permissions: ['dashboard_view', 'supplies_view', 'supplies_manage'],
-        user_count: 1,
-        created_at: '2024-01-15',
-    },
-    {
-        id: '5',
-        name: 'Viewer',
-        description: 'Hanya dapat melihat data tanpa aksi',
-        permissions: ['dashboard_view', 'bookings_view', 'damages_view', 'vehicles_view', 'supplies_view'],
-        user_count: 5,
-        created_at: '2024-01-20',
-    },
-];
-
-const mockUsers: User[] = [
-    {
-        id: '1',
-        name: 'Admin Utama',
-        email: 'admin@biroumum.com',
-        role: 'Super Admin',
-        status: 'aktif',
-        last_login: '2024-01-25 10:30',
-    },
-    {
-        id: '2',
-        name: 'Budi Santoso',
-        email: 'budi@biroumum.com',
-        role: 'Admin Ruangan',
-        status: 'aktif',
-        last_login: '2024-01-25 09:15',
-    },
-    {
-        id: '3',
-        name: 'Siti Nurhaliza',
-        email: 'siti@biroumum.com',
-        role: 'Admin Kendaraan',
-        status: 'aktif',
-        last_login: '2024-01-24 16:45',
-    },
-    {
-        id: '4',
-        name: 'Ahmad Wijaya',
-        email: 'ahmad@biroumum.com',
-        role: 'Staff ATK',
-        status: 'aktif',
-        last_login: '2024-01-25 08:20',
-    },
-    {
-        id: '5',
-        name: 'Maya Sari',
-        email: 'maya@biroumum.com',
-        role: 'Viewer',
-        status: 'nonaktif',
-        last_login: '2024-01-20 14:30',
-    },
-];
-
-export default function PermissionsPage() {
+export default function PermissionsPage({ mockRoles, availablePermissions, mockUsers }: any) {
     const [roles, setRoles] = useState<Role[]>(mockRoles);
     const [users, setUsers] = useState<User[]>(mockUsers);
     const [searchTerm, setSearchTerm] = useState('');
@@ -164,10 +65,16 @@ export default function PermissionsPage() {
     const [isEditRoleDialogOpen, setIsEditRoleDialogOpen] = useState(false);
     const [selectedRole, setSelectedRole] = useState<Role | null>(null);
     const [roleFormData, setRoleFormData] = useState({
+        id: '',
         name: '',
         description: '',
         permissions: [] as string[],
     });
+
+    useEffect(() => {
+        setRoles(mockRoles);
+        setUsers(mockUsers);
+    }, [mockRoles, mockUsers]);
 
     const [isEditUserRoleDialogOpen, setIsEditUserRoleDialogOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -186,6 +93,7 @@ export default function PermissionsPage() {
 
     const resetRoleForm = () => {
         setRoleFormData({
+            id: '',
             name: '',
             description: '',
             permissions: [],
@@ -209,22 +117,27 @@ export default function PermissionsPage() {
             return;
         }
 
-        const newRole: Role = {
-            id: Date.now().toString(),
+        const newRole = {
             name: roleFormData.name,
             description: roleFormData.description,
             permissions: roleFormData.permissions,
-            user_count: 0,
-            created_at: new Date().toISOString().split('T')[0],
         };
-        setRoles([...roles, newRole]);
-        setIsAddRoleDialogOpen(false);
-        resetRoleForm();
+
+        router.post(route('roles.store'), newRole, {
+            onSuccess() {
+                setIsAddRoleDialogOpen(false);
+                resetRoleForm();
+            },
+            onError(e) {
+                console.log(e);
+            },
+        });
     };
 
     const handleEditRole = (role: Role) => {
         setSelectedRole(role);
         setRoleFormData({
+            id: role.id,
             name: role.name,
             description: role.description,
             permissions: role.permissions,
@@ -246,24 +159,29 @@ export default function PermissionsPage() {
             return;
         }
 
-        const updatedRoles = roles.map((role) =>
-            role.id === selectedRole.id
-                ? {
-                      ...role,
-                      name: roleFormData.name,
-                      description: roleFormData.description,
-                      permissions: roleFormData.permissions,
-                  }
-                : role,
-        );
-        setRoles(updatedRoles);
-        setIsEditRoleDialogOpen(false);
-        setSelectedRole(null);
-        resetRoleForm();
+        router.put(route('roles.update', roleFormData.id), roleFormData, {
+            onSuccess: () => {
+                setIsEditRoleDialogOpen(false);
+                setSelectedRole(null);
+                resetRoleForm();
+            },
+            onError: (errors) => {
+                console.log('Validation Errors: ', errors);
+            },
+        });
     };
 
     const handleDeleteRole = (id: string) => {
-        setRoles(roles.filter((role) => role.id !== id));
+        router.delete(route('roles.destroy', id), {
+            onSuccess: () => {
+                setIsEditRoleDialogOpen(false);
+                setSelectedRole(null);
+                resetRoleForm();
+            },
+            onError: (errors) => {
+                console.log('Validation Errors: ', errors);
+            },
+        });
     };
 
     const handlePermissionChange = (permissionId: string, checked: boolean) => {
@@ -281,7 +199,7 @@ export default function PermissionsPage() {
     };
 
     const getPermissionLabel = (permissionId: string) => {
-        const permission = availablePermissions.find((p) => p.id === permissionId);
+        const permission = availablePermissions.find((p: any) => p.name === permissionId);
         return permission ? permission.label : permissionId;
     };
 
@@ -297,7 +215,7 @@ export default function PermissionsPage() {
     };
 
     const groupedPermissions = availablePermissions.reduce(
-        (acc, permission) => {
+        (acc: any, permission: Permission) => {
             if (!acc[permission.category]) {
                 acc[permission.category] = [];
             }
@@ -315,12 +233,20 @@ export default function PermissionsPage() {
 
     const handleUpdateUserRole = () => {
         if (!selectedUser) return;
-
-        const updatedUsers = users.map((user) => (user.id === selectedUser.id ? { ...user, role: selectedUserRole } : user));
-        setUsers(updatedUsers);
-        setIsEditUserRoleDialogOpen(false);
-        setSelectedUser(null);
-        setSelectedUserRole('');
+        router.patch(
+            route('users.role', selectedUser.id),
+            { selectedUserRole },
+            {
+                onSuccess: () => {
+                    setIsEditUserRoleDialogOpen(false);
+                    setSelectedUser(null);
+                    setSelectedUserRole('');
+                },
+                onError: (e) => {
+                    console.log(e);
+                },
+            },
+        );
     };
 
     return (
@@ -365,7 +291,7 @@ export default function PermissionsPage() {
                                     <CardHeader className="pb-3">
                                         <div className="flex items-start justify-between">
                                             <div>
-                                                <CardTitle className="text-lg">{role.name}</CardTitle>
+                                                <CardTitle className="text-lg capitalize">{role.name}</CardTitle>
                                                 <p className="mt-1 text-sm text-muted-foreground">{role.description}</p>
                                             </div>
                                             <Badge variant="secondary">{role.user_count} user</Badge>
@@ -456,16 +382,16 @@ export default function PermissionsPage() {
                                             <div key={category} className="space-y-2">
                                                 <h4 className="text-sm font-medium text-gray-700">{category}</h4>
                                                 <div className="grid grid-cols-2 gap-2 pl-4">
-                                                    {permissions.map((permission) => (
-                                                        <div key={permission.id} className="flex items-center space-x-2">
+                                                    {permissions.map((permission: Permission) => (
+                                                        <div key={permission.name} className="flex items-center space-x-2">
                                                             <Checkbox
-                                                                id={permission.id}
-                                                                checked={roleFormData.permissions.includes(permission.id)}
+                                                                id={permission.name}
+                                                                checked={roleFormData.permissions.includes(permission.name)}
                                                                 onCheckedChange={(checked) =>
-                                                                    handlePermissionChange(permission.id, checked as boolean)
+                                                                    handlePermissionChange(permission.name, checked as boolean)
                                                                 }
                                                             />
-                                                            <Label htmlFor={permission.id} className="text-sm">
+                                                            <Label htmlFor={permission.name} className="text-sm">
                                                                 {permission.label}
                                                             </Label>
                                                         </div>
@@ -522,16 +448,16 @@ export default function PermissionsPage() {
                                             <div key={category} className="space-y-2">
                                                 <h4 className="text-sm font-medium text-gray-700">{category}</h4>
                                                 <div className="grid grid-cols-2 gap-2 pl-4">
-                                                    {permissions.map((permission) => (
-                                                        <div key={permission.id} className="flex items-center space-x-2">
+                                                    {permissions.map((permission: Permission) => (
+                                                        <div key={permission.name} className="flex items-center space-x-2">
                                                             <Checkbox
-                                                                id={`edit_${permission.id}`}
-                                                                checked={roleFormData.permissions.includes(permission.id)}
+                                                                id={`edit_${permission.name}`}
+                                                                checked={roleFormData.permissions.includes(permission.name)}
                                                                 onCheckedChange={(checked) =>
-                                                                    handlePermissionChange(permission.id, checked as boolean)
+                                                                    handlePermissionChange(permission.name, checked as boolean)
                                                                 }
                                                             />
-                                                            <Label htmlFor={`edit_${permission.id}`} className="text-sm">
+                                                            <Label htmlFor={`edit_${permission.name}`} className="text-sm">
                                                                 {permission.label}
                                                             </Label>
                                                         </div>
