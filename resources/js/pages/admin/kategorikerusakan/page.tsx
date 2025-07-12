@@ -1,5 +1,6 @@
 'use client';
 
+import ButtonKatKerusakan from '@/components/buttonnavbar/button-kat-kerusakan';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -14,13 +15,13 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { Edit, Plus, Search, Trash2 } from 'lucide-react';
+import { Edit, Search, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -39,7 +40,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
     const [searchTerm, setSearchTerm] = useState('');
-    const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [editingCategory, setEditingCategory] = useState<DamageCategory | null>(null);
     const [formData, setFormData] = useState({ name: '', kode_kerusakan: '' });
@@ -49,30 +50,6 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
             category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             category.kode_kerusakan.toLowerCase().includes(searchTerm.toLowerCase()),
     );
-
-    const handleAdd = () => {
-        if (!formData.name || !formData.kode_kerusakan) {
-            toast.error('Semua field harus diisi!');
-            return;
-        }
-
-        // Check if code already exists
-        if (filteredCategories.some((cat: any) => cat.kode_kerusakan === formData.kode_kerusakan)) {
-            toast.error('Kode kerusakan sudah ada!');
-            return;
-        }
-
-        router.post(route('daftarkerusakan.store'), formData, {
-            onSuccess: () => {
-                setFormData({ name: '', kode_kerusakan: '' });
-                setIsAddDialogOpen(false);
-                toast.success('Kategori kerusakan berhasil ditambahkan!');
-            },
-            onError: (er) => {
-                console.log(er);
-            },
-        });
-    };
 
     const handleEdit = (category: DamageCategory) => {
         setEditingCategory(category);
@@ -121,7 +98,7 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <AppLayout breadcrumbs={breadcrumbs} Button={ButtonKatKerusakan}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
@@ -129,52 +106,6 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
                         <h1 className="text-2xl font-bold text-gray-900">Manajemen Kategori Kerusakan</h1>
                         <p className="mt-1 text-gray-600">Kelola kategori kerusakan untuk sistem pelaporan</p>
                     </div>
-
-                    <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                        <DialogTrigger asChild>
-                            <Button className="bg-blue-600 hover:bg-blue-700">
-                                <Plus className="mr-2 h-4 w-4" />
-                                Tambah Kategori
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Tambah Kategori Kerusakan</DialogTitle>
-                            </DialogHeader>
-                            <div className="space-y-4 pt-4">
-                                <div>
-                                    <Label htmlFor="name">Nama Kategori</Label>
-                                    <Input
-                                        id="name"
-                                        placeholder="Masukkan nama kategori"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    />
-                                </div>
-                                <div>
-                                    <Label htmlFor="code">Kode Kerusakan</Label>
-                                    <Input
-                                        id="code"
-                                        placeholder="Contoh: ELK001"
-                                        value={formData.kode_kerusakan}
-                                        onChange={(e) => setFormData({ ...formData, kode_kerusakan: e.target.value.toUpperCase() })}
-                                    />
-                                </div>
-                                <div className="flex justify-end gap-2 pt-4">
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => {
-                                            setIsAddDialogOpen(false);
-                                            resetForm();
-                                        }}
-                                    >
-                                        Batal
-                                    </Button>
-                                    <Button onClick={handleAdd}>Tambah</Button>
-                                </div>
-                            </div>
-                        </DialogContent>
-                    </Dialog>
                 </div>
 
                 {/* Search & Stats Row */}

@@ -6,6 +6,7 @@ import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { Boxes, Building2, Calendar, Car, LayoutGrid, PenTool, ShieldCheck, Users, Wrench } from 'lucide-react';
 import AppLogo from './app-logo';
+import { NavReports } from './nav-reports';
 
 const mainNavItems: NavItem[] = [
     {
@@ -32,6 +33,24 @@ const mainNavItems: NavItem[] = [
         title: 'Permintaan Kendaraan',
         href: route('permintaankendaraan.index'),
         icon: Car,
+    },
+];
+
+const reportsNavItems: NavItem[] = [
+    {
+        title: 'Pemesanan Ruang Rapat',
+        href: route('ruangrapat.reports'),
+        icon: Calendar,
+    },
+    {
+        title: 'Kerusakan Gedung',
+        href: route('kerusakangedung.reports'),
+        icon: Wrench,
+    },
+    {
+        title: 'Permintaan ATK',
+        href: route('permintaanatk.reports'),
+        icon: PenTool,
     },
 ];
 
@@ -80,6 +99,10 @@ export function AppSidebar() {
 
             <SidebarContent>
                 <NavMain items={mainNavItems} />
+            </SidebarContent>
+
+            <SidebarContent>
+                <NavReports items={reportsNavItems} />
             </SidebarContent>
 
             <SidebarFooter>

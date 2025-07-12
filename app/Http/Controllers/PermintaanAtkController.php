@@ -107,4 +107,21 @@ class PermintaanAtkController extends Controller
             'keterangan' => $request->input('message'),
         ]);
     }
+
+    public function reports()
+    {
+        $reportsData = new PermintaanAtk();
+
+        $data = [
+            'summaryData' => $reportsData->summaryData(),
+            'itemComparison' => $reportsData->itemComparison(),
+            'monthlyTrend' => $reportsData->monthlyTrends()['monthlyTrend'],
+            'approvalRateTrend' => $reportsData->monthlyTrends()['approvalRateTrend'],
+            'topUsers' => $reportsData->topUsersStats(),
+            'divisionStats' => $reportsData->divisionStats(),
+            'statusDistribution' => $reportsData->statusDistribution(),
+        ];
+
+        return Inertia::render('admin/reportssupplies/page', $data);
+    }
 }

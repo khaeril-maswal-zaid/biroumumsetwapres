@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->pegawai()->create();
 
         PermintaanAtk::factory(3)->create();
-        PemesananRuangRapat::factory(2)->create();
+        PemesananRuangRapat::factory(30)->create();
         KerusakanGedung::factory(2)->create();
     }
 }

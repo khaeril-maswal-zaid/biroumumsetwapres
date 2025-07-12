@@ -183,4 +183,21 @@ class PemesananRuangRapatController extends Controller
             'keterangan' => $validated['message'],
         ]);
     }
+
+    public function reports()
+    {
+        $reportsData = new PemesananRuangRapat();
+
+        // Kirim ke Inertia
+        return Inertia::render('admin/reportsbooking/page', [
+            'summaryData'        => $reportsData->summaryData(),
+            'peakHours'          => $reportsData->peakHours(),
+            'weeklyPattern'      => $reportsData->weeklyPattern(),
+            'monthlyTrend'       => $reportsData->monthlyTrend(),
+            'topUsers'           => $reportsData->topUsers(),
+            'divisionUsage'      => $reportsData->divisionUsage(),
+            'penggunaanRuangan'  => $reportsData->penggunaanRuangan(),
+            'statusDistribution' => $reportsData->statusDistribution(),
+        ]);
+    }
 }

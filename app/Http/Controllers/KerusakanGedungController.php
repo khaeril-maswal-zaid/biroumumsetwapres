@@ -114,4 +114,13 @@ class KerusakanGedungController extends Controller
 
         $kerusakanGedung->update($updateData->all());
     }
+
+    public function reports()
+    {
+        $data = [
+            //
+        ];
+
+        return Inertia::render('admin/reportsdamages/page', $data);
+    }
 }

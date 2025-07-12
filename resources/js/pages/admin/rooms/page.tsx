@@ -1,4 +1,5 @@
 'use client';
+import ButtonRooms from '@/components/buttonnavbar/button-ruangan';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -10,6 +11,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -33,7 +35,6 @@ import {
     Mic,
     Monitor,
     PenSquare,
-    Plus,
     Projector,
     Search,
     Shield,
@@ -88,53 +89,6 @@ const facilityOptions = [
     { id: 'lemari-besi', label: 'Lemari Besi', icon: Shield },
 ];
 
-const mockRooms: Room[] = [
-    {
-        id: '1',
-        nama_ruangan: 'Ruang Rapat Utama',
-        kode_ruangan: 'RU-001',
-        lokasi: 'Lantai 2, Gedung A',
-        kapasitas: 20,
-        image: '/placeholder.svg?height=200&width=300',
-        fasilitas: ['wifi', 'projector', 'ac', 'whiteboard'],
-        status: 'aktif',
-        created_at: '2024-01-15',
-    },
-    {
-        id: '2',
-        nama_ruangan: 'Ruang Diskusi Kecil',
-        kode_ruangan: 'RD-002',
-        lokasi: 'Lantai 1, Gedung B',
-        kapasitas: 8,
-        image: '/placeholder.svg?height=200&width=300',
-        fasilitas: ['wifi', 'ac', 'whiteboard'],
-        status: 'aktif',
-        created_at: '2024-01-10',
-    },
-    {
-        id: '3',
-        nama_ruangan: 'Aula Serbaguna',
-        kode_ruangan: 'AS-003',
-        lokasi: 'Lantai 1, Gedung C',
-        kapasitas: 100,
-        image: '/placeholder.svg?height=200&width=300',
-        fasilitas: ['wifi', 'projector', 'ac', 'sound_system', 'parking'],
-        status: 'maintenance',
-        created_at: '2024-01-05',
-    },
-    {
-        id: '4',
-        nama_ruangan: 'Ruang Meeting Eksekutif',
-        kode_ruangan: 'RE-004',
-        lokasi: 'Lantai 3, Gedung A',
-        kapasitas: 12,
-        image: '/placeholder.svg?height=200&width=300',
-        fasilitas: ['wifi', 'projector', 'ac', 'whiteboard', 'sound_system'],
-        status: 'aktif',
-        created_at: '2024-01-20',
-    },
-];
-
 export default function RoomsPage({ ruangans }: any) {
     const [rooms, setRooms] = useState<Room[]>(ruangans.data);
     const [searchTerm, setSearchTerm] = useState('');
@@ -177,11 +131,6 @@ export default function RoomsPage({ ruangans }: any) {
         });
 
         setImagePreview('');
-    };
-
-    const openAddDialog = () => {
-        resetForm();
-        setIsAddDialogOpen(true);
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -335,21 +284,15 @@ export default function RoomsPage({ ruangans }: any) {
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <AppLayout breadcrumbs={breadcrumbs} Button={ButtonRooms}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Manajemen Ruangan</h1>
+                        <h1 className="text-2xl font-bold tracking-tight">Manajemen Ruangan</h1>
                         <p className="text-muted-foreground">Kelola data ruangan dan fasilitas</p>
                     </div>
-                    <Button onClick={openAddDialog}>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Tambah Ruangan
-                    </Button>
-                </div>
 
-                <div className="flex items-center space-x-2">
                     <div className="relative max-w-sm flex-1">
                         <Search className="absolute top-2.5 left-2 h-4 w-4 text-muted-foreground" />
                         <Input placeholder="Cari ruangan..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-8" />

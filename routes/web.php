@@ -146,6 +146,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::delete('/dashboard/daftar-kategori-kerusakan/destroy/{kategoriKerusakan}', [KategoriKerusakanController::class, 'destroy'])
         ->name('daftarkerusakan.destroy')->middleware('permission:view_admin_dashboard');
+
+
+    Route::get('/dashboard/ruang-rapat/reports', [PemesananRuangRapatController::class, 'reports'])
+        ->name('ruangrapat.reports')
+        ->middleware('permission:view_admin_dashboard');
+
+
+    Route::get('/dashboard/permintaan-atk/reports', [PermintaanAtkController::class, 'reports'])
+        ->name('permintaanatk.reports')
+        ->middleware('permission:view_admin_dashboard');
+
+
+    Route::get('/dashboard/kerusakan-gedung/reports', [KerusakanGedungController::class, 'reports'])
+        ->name('kerusakangedung.reports')
+        ->middleware('permission:view_admin_dashboard');
 });
 
 

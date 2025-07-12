@@ -5,22 +5,23 @@ namespace Database\Factories;
 use App\Models\DaftarRuangan;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PemesananRuangRapat>
- */
 class PemesananRuangRapatFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
             'user_id' => 1,
-            'tanggal_penggunaan' => fake()->date(),
+            'tanggal_penggunaan' => function () {
+
+                $bulanIni = Carbon::now()->startOfMonth();
+                $duaBulanLalu = Carbon::now()->subMonths(2)->startOfMonth();
+
+                $startDate = fake()->randomElement([$bulanIni, $duaBulanLalu]);
+
+                return fake()->dateTimeBetween($startDate, $startDate->copy()->endOfMonth())->format('Y-m-d');
+            },
             'jam_mulai' => fake()->time('H:i'),
             'jam_selesai' => fake()->time('H:i'),
             'daftar_ruangan_id' => DaftarRuangan::inRandomOrder()->first()?->id ?? 1,

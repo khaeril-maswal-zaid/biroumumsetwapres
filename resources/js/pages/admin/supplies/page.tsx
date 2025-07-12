@@ -498,10 +498,10 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                                         <p className="mb-2 text-sm text-blue-800">
                                                             <strong>Status Permintaan:</strong>
                                                             {calculateRequestStatus() === 'approved'
-                                                                ? 'Disetujui Penuh'
+                                                                ? ' Disetujui Penuh'
                                                                 : calculateRequestStatus() === 'partial'
-                                                                  ? 'Disetujui Sebagian'
-                                                                  : 'Ditolak'}
+                                                                  ? ' Disetujui Sebagian'
+                                                                  : ' Ditolak'}
                                                         </p>
                                                         <p className="text-xs text-blue-600">
                                                             Pastikan jumlah yang disetujui sudah sesuai dengan ketersediaan stok.
