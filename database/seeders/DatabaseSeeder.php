@@ -24,12 +24,13 @@ class DatabaseSeeder extends Seeder
             DaftarAtkSeeder::class,
         ]);
 
-        User::factory(1)->create();
+        User::factory(30)->create();
         User::factory()->admin()->create();
         User::factory()->pegawai()->create();
+        User::factory()->atasan()->create();
 
-        PermintaanAtk::factory(3)->create();
-        PemesananRuangRapat::factory(30)->create();
-        KerusakanGedung::factory(2)->create();
+        PermintaanAtk::factory(50)->create();
+        PemesananRuangRapat::factory(50)->create();
+        KerusakanGedung::factory(50)->create();
     }
 }

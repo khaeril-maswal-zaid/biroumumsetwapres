@@ -19,7 +19,7 @@ class KerusakanGedungController extends Controller
     public function index()
     {
         $data = [
-            'kerusakan' => KerusakanGedung::with('pelapor')->with('kategori')->latest()->paginate(15)
+            'kerusakan' => KerusakanGedung::with('pelapor')->with('kategori')->latest()->paginate(50)
         ];
 
         return Inertia::render('admin/damages/page', $data);
@@ -117,8 +117,18 @@ class KerusakanGedungController extends Controller
 
     public function reports()
     {
+        $reportsData = new KerusakanGedung();
+
         $data = [
-            //
+            'summaryData' =>  $reportsData->summaryData(),
+            'locationData' =>  $reportsData->locationData(),
+            'statusDistribution' =>  $reportsData->statusDistribution(),
+            'damageTypeData' =>  $reportsData->damageTypeData(),
+            'urgencyData' =>  $reportsData->urgencyData(),
+            'topReportersData' =>  $reportsData->reporterStats()['topReportersData'],
+            'divisionReports' =>  $reportsData->reporterStats()['divisionReports'],
+            'monthlyTrend' => $reportsData->monthlyTrends()['monthlyTrend'],
+            'approvalRateTrend' => $reportsData->monthlyTrends()['approvalRateTrend'],
         ];
 
         return Inertia::render('admin/reportsdamages/page', $data);

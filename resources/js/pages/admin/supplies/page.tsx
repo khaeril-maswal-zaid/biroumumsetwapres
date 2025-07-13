@@ -74,42 +74,13 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
         switch (urgency) {
             case 'normal':
                 return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">Normal</Badge>;
-            case 'mendesak':
-                return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Mendesak</Badge>;
             case 'segera':
-                return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Segera</Badge>;
+                return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Segera</Badge>;
+            case 'mendesak':
+                return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Mendesak</Badge>;
             default:
                 return <Badge variant="outline">Unknown</Badge>;
         }
-    };
-
-    const handleApprove = async (requestId: string) => {
-        setIsProcessing(true);
-        // Simulasi API call
-        setTimeout(() => {
-            console.log(`ATK request ${requestId} processed with quantities:`, approvedQuantities);
-            console.log(`Admin message: ${adminMessage}`);
-            setIsProcessing(false);
-            setIsDetailsOpen(false);
-            setAdminMessage('');
-            setActionType(null);
-            setApprovedQuantities({});
-            // Di aplikasi nyata, ini akan update data dari server
-        }, 1000);
-    };
-
-    const handleReject = async (requestId: string) => {
-        setIsProcessing(true);
-        // Simulasi API call
-        setTimeout(() => {
-            // console.log(`ATK request ${requestId} rejected with message: ${adminMessage}`);
-            setIsProcessing(false);
-            setIsDetailsOpen(false);
-            setAdminMessage('');
-            setActionType(null);
-            setApprovedQuantities({});
-            // Di aplikasi nyata, ini akan update data dari server
-        }, 1000);
     };
 
     const handleViewDetails = (request: any) => {
@@ -153,7 +124,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
             case 'approved':
                 return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">100%</Badge>;
             case 'partial':
-                return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">{percentage}%</Badge>;
+                return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">{percentage}%</Badge>;
             case 'rejected':
                 return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">0%</Badge>;
             default:
@@ -163,12 +134,12 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
 
     const getStatusBadge = (status: string) => {
         switch (status) {
+            case 'pending':
+                return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Menunggu</Badge>;
             case 'approved':
                 return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Disetujui</Badge>;
             case 'partial':
-                return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Sebagian</Badge>;
-            case 'pending':
-                return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Menunggu</Badge>;
+                return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Sebagian</Badge>;
             case 'rejected':
                 return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Ditolak</Badge>;
             default:
@@ -188,8 +159,6 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
     };
 
     const calculateRequestStatus = () => {
-        if (!selectedRequest || actionType !== 'approve') return 'pending';
-
         const items = selectedRequest.daftar_kebutuhan;
         let approvedCount = 0;
         let partialCount = 0;
@@ -242,7 +211,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                         <SelectItem value="all">Semua Status</SelectItem>
                                         <SelectItem value="pending">Menunggu</SelectItem>
                                         <SelectItem value="approved">Disetujui</SelectItem>
-                                        <SelectItem value="confirmed">Selesai</SelectItem>
+                                        <SelectItem value="partial">Sebagian</SelectItem>
                                         <SelectItem value="rejected">Ditolak</SelectItem>
                                     </SelectContent>
                                 </Select>
@@ -378,7 +347,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                                         status === 'approved'
                                                             ? 'border-green-200 bg-green-50'
                                                             : status === 'partial'
-                                                              ? 'border-yellow-200 bg-yellow-50'
+                                                              ? 'border-blue-200 bg-blue-50'
                                                               : status === 'rejected'
                                                                 ? 'border-red-200 bg-red-50'
                                                                 : 'border-gray-200 bg-white'
@@ -439,16 +408,49 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                     </div>
                                 </div>
 
-                                {/* Admin Message Display for Processed Requests */}
-                                {selectedRequest.adminMessage && selectedRequest.status !== 'pending' && (
-                                    <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                                        <div className="mb-2 flex items-center gap-2">
-                                            <MessageSquare className="h-4 w-4 text-blue-600" />
-                                            <h4 className="font-medium text-blue-900">Pesan dari Admin</h4>
-                                        </div>
-                                        <p className="text-sm text-blue-800">{selectedRequest.adminMessage}</p>
-                                    </div>
-                                )}
+                                {/* Admin Message Display for Approved/Rejected */}
+                                {selectedRequest.keterangan &&
+                                    selectedRequest.status !== 'pending' &&
+                                    (() => {
+                                        // Mapping warna berdasarkan status
+                                        const colorMap: any = {
+                                            confirmed: {
+                                                border: 'border-green-200',
+                                                bg: 'bg-green-50',
+                                                icon: 'text-green-600',
+                                                title: 'text-green-900',
+                                                text: 'text-green-800',
+                                            },
+
+                                            rejected: {
+                                                border: 'border-red-200',
+                                                bg: 'bg-red-50',
+                                                icon: 'text-red-600',
+                                                title: 'text-red-900',
+                                                text: 'text-red-800',
+                                            },
+
+                                            partial: {
+                                                border: 'border-blue-200',
+                                                bg: 'bg-blue-50',
+                                                icon: 'text-blue-600',
+                                                title: 'text-blue-900',
+                                                text: 'text-blue-800',
+                                            },
+                                        };
+
+                                        const color = colorMap[selectedRequest.status] ?? colorMap['confirmed'];
+
+                                        return (
+                                            <div className={`rounded-lg border ${color.border} ${color.bg} p-4`}>
+                                                <div className="mb-2 flex items-center gap-2">
+                                                    <MessageSquare className={`h-4 w-4 ${color.icon}`} />
+                                                    <h4 className={`font-medium ${color.title}`}>Pesan dari Admin</h4>
+                                                </div>
+                                                <p className={`text-sm ${color.text}`}>{selectedRequest.keterangan}</p>
+                                            </div>
+                                        );
+                                    })()}
 
                                 <Separator />
 
@@ -525,9 +527,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                                         rows={3}
                                                         className="resize-none"
                                                     />
-                                                    {actionType === 'reject' && !adminMessage.trim() && (
-                                                        <p className="text-sm text-red-600">Pesan wajib diisi untuk penolakan</p>
-                                                    )}
+                                                    <p className="text-sm text-red-600">Pesan wajib diisi</p>
                                                 </div>
 
                                                 <div className="flex gap-2 pt-2">
@@ -549,13 +549,9 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                                     </Button>
                                                     <Button
                                                         onClick={() => {
-                                                            if (actionType === 'approve') {
-                                                                handleSubmit(selectedRequest.kode_pelaporan);
-                                                            } else {
-                                                                handleSubmit(selectedRequest.kode_pelaporan);
-                                                            }
+                                                            handleSubmit(selectedRequest.kode_pelaporan);
                                                         }}
-                                                        disabled={isProcessing || (actionType === 'reject' && !adminMessage.trim())}
+                                                        disabled={isProcessing || adminMessage === ''}
                                                         className={
                                                             actionType === 'approve'
                                                                 ? 'bg-green-600 hover:bg-green-700'

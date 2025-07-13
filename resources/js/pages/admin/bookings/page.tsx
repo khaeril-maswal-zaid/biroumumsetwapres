@@ -129,8 +129,8 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">Semua Status</SelectItem>
-                                        <SelectItem value="pengajuan">Pengajuan</SelectItem>
-                                        <SelectItem value="approved">Approved</SelectItem>
+                                        <SelectItem value="pending">Pengajuan</SelectItem>
+                                        <SelectItem value="confirmed">Approved</SelectItem>
                                         <SelectItem value="cancelled">Dibatalkan</SelectItem>
                                     </SelectContent>
                                 </Select>
@@ -146,7 +146,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                         <TableHead>Ruangan</TableHead>
                                         <TableHead className="hidden md:table-cell">Tanggal</TableHead>
                                         <TableHead className="hidden md:table-cell">Waktu</TableHead>
-                                        <TableHead className="hidden lg:table-cell">Keperluan</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Kegiatan/ Keperluan</TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead className="text-right">Aksi</TableHead>
                                     </TableRow>

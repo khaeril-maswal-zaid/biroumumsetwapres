@@ -35,6 +35,54 @@ class PemesananRuangRapat extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function weeklySchedule()
+    {
+        $daysMap = [
+            'monday' => 1,
+            'tuesday' => 2,
+            'wednesday' => 3,
+            'thursday' => 4,
+            'friday' => 5,
+            'saturday' => 6,
+            'sunday' => 7,
+        ];
+
+        $startOfWeek = Carbon::now()->startOfWeek(Carbon::MONDAY);
+        $endOfWeek = Carbon::now()->endOfWeek(Carbon::SUNDAY);
+
+        $bookings = $this->with(['pemesan', 'ruangans'])
+            ->where('status', 'confirmed')
+            ->whereBetween('tanggal_penggunaan', [$startOfWeek, $endOfWeek])
+            ->get();
+
+        $rooms = $bookings->groupBy('ruangans.nama_ruangan');
+
+        $result = [];
+
+        foreach ($rooms as $roomName => $roomBookings) {
+            $weeklyData = collect($daysMap)->mapWithKeys(fn($v, $day) => [$day => []]);
+
+            foreach ($roomBookings as $booking) {
+                $dayKey = array_search(Carbon::parse($booking->tanggal_penggunaan)->dayOfWeekIso, $daysMap);
+
+                $dayBookings = $weeklyData->get($dayKey, []);
+                $dayBookings[] = [
+                    'time' => Carbon::parse($booking->jam_mulai)->format('H:i') . '-' . Carbon::parse($booking->jam_selesai)->format('H:i'),
+                    'user' => $booking->pemesan?->name ?? '-',
+                    'purpose' => $booking->deskripsi,
+                ];
+                $weeklyData->put($dayKey, $dayBookings);
+            }
+
+            $result[] = [
+                'room' => $roomName,
+                'bookings' => $weeklyData,
+            ];
+        }
+
+        return $result;
+    }
+
     public function summaryData(): array
     {
         $now = Carbon::now();
@@ -93,7 +141,7 @@ class PemesananRuangRapat extends Model
     {
         // Pakai array biasa
         $hours = [];
-        foreach (range(8, 16) as $h) {
+        foreach (range(7, 17) as $h) {
             $hours[str_pad($h, 2, '0', STR_PAD_LEFT) . ':00'] = 0;
         }
 

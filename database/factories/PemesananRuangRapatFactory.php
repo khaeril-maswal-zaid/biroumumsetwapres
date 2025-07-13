@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\DaftarRuangan;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
@@ -11,19 +12,22 @@ class PemesananRuangRapatFactory extends Factory
 {
     public function definition(): array
     {
+        $startLimit = Carbon::createFromTime(7, 0);
+        $endLimit = Carbon::createFromTime(17, 0);
+
+        $jamMulai = Carbon::instance(fake()->dateTimeBetween($startLimit, $endLimit->copy()->subMinutes(30)));
+        $jamSelesai = (clone $jamMulai)->addMinutes(rand(30, $endLimit->diffInMinutes($jamMulai)));
+
+        $bulanIni = Carbon::now()->startOfMonth();
+        $duaBulanLalu = Carbon::now()->subMonths(2)->startOfMonth();
+        $startDate = fake()->randomElement([$bulanIni, $duaBulanLalu]);
+        $tanggalPenggunaan = fake()->dateTimeBetween($startDate, $startDate->copy()->endOfMonth())->format('Y-m-d');
+
         return [
-            'user_id' => 1,
-            'tanggal_penggunaan' => function () {
-
-                $bulanIni = Carbon::now()->startOfMonth();
-                $duaBulanLalu = Carbon::now()->subMonths(2)->startOfMonth();
-
-                $startDate = fake()->randomElement([$bulanIni, $duaBulanLalu]);
-
-                return fake()->dateTimeBetween($startDate, $startDate->copy()->endOfMonth())->format('Y-m-d');
-            },
-            'jam_mulai' => fake()->time('H:i'),
-            'jam_selesai' => fake()->time('H:i'),
+            'user_id' => User::inRandomOrder()->first()?->id ?? 1,
+            'tanggal_penggunaan' => $tanggalPenggunaan,
+            'jam_mulai' => $jamMulai->format('H:i'),
+            'jam_selesai' => $jamSelesai->format('H:i'),
             'daftar_ruangan_id' => DaftarRuangan::inRandomOrder()->first()?->id ?? 1,
             'deskripsi' => fake()->sentence(),
             'no_hp' => fake()->phoneNumber(),

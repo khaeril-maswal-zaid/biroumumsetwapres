@@ -17,17 +17,22 @@ class KategoriKerusakanController extends Controller
 
     public function store(Request $request)
     {
-        KategoriKerusakan::create([
-            'name' => $request->input('name'),
-            'kode_kerusakan' => $request->input('kode_kerusakan'),
+        $validated = $request->validate([
+            'name' => 'required|string|max:250',
+            'kode_kerusakan' => 'required|string|max:50|unique:kategori_kerusakans,kode_kerusakan',
         ]);
+
+        KategoriKerusakan::create($validated);
     }
+
 
     public function update(KategoriKerusakan $kategoriKerusakan, Request $request)
     {
-        $kategoriKerusakan->update([
-            'name' => $request->input('name'),
+        $validated = $request->validate([
+            'name' => 'required|string|max:250',
         ]);
+
+        $kategoriKerusakan->update($validated);
     }
 
     public function destroy(KategoriKerusakan $kategoriKerusakan)

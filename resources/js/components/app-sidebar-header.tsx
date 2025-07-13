@@ -13,7 +13,7 @@ export function AppSidebarHeader({ Button, breadcrumbs = [] }: { Button?: React.
             </div>
 
             {/* Kanan */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
                 <Notification />
                 {Button && <Button />}
             </div>

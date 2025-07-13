@@ -46,7 +46,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
     const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [adminMessage, setAdminMessage] = useState('');
-    const [actionType, setActionType] = useState<'in_progress' | 'cancelled' | 'confirmed' | null>(null);
+    const [actionType, setActionType] = useState<'cancelled' | 'confirmed' | null>(null);
 
     // Filter damages based on search term and status
     const filteredDamages = kerusakan.data.filter((damage: any) => {
@@ -65,7 +65,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
         setIsDetailsOpen(true);
     };
 
-    const handleActionClick = (action: 'in_progress' | 'cancelled' | 'confirmed') => {
+    const handleActionClick = (action: 'cancelled' | 'confirmed') => {
         setActionType(action);
         setAdminMessage('');
     };
@@ -102,8 +102,6 @@ export default function DamagesAdmin({ kerusakan }: any) {
         switch (status) {
             case 'pending':
                 return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Menunggu</Badge>;
-            case 'in_progress':
-                return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Diproses</Badge>;
             case 'confirmed':
                 return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Selesai</Badge>;
             case 'cancelled':
@@ -162,7 +160,6 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                     <SelectContent>
                                         <SelectItem value="all">Semua Status</SelectItem>
                                         <SelectItem value="pending">Menunggu</SelectItem>
-                                        <SelectItem value="in_progress">Diproses</SelectItem>
                                         <SelectItem value="confirmed">Selesai</SelectItem>
                                         <SelectItem value="cancelled">Ditolak</SelectItem>
                                     </SelectContent>
@@ -346,13 +343,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                 title: 'text-green-900',
                                                 text: 'text-green-800',
                                             },
-                                            in_progress: {
-                                                border: 'border-blue-200',
-                                                bg: 'bg-blue-50',
-                                                icon: 'text-blue-600',
-                                                title: 'text-blue-900',
-                                                text: 'text-blue-800',
-                                            },
+
                                             cancelled: {
                                                 border: 'border-red-200',
                                                 bg: 'bg-red-50',
@@ -362,7 +353,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                             },
                                         };
 
-                                        const color = colorMap[selectedDamage.status] ?? colorMap['in_progress'];
+                                        const color = colorMap[selectedDamage.status] ?? colorMap['confirmed'];
 
                                         return (
                                             <div className={`rounded-lg border ${color.border} ${color.bg} p-4`}>
@@ -381,7 +372,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                 {selectedDamage.status === 'pending' && (
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2">
-                                            <MessageSquare className="h-5 w-5 text-blue-600" />
+                                            <MessageSquare className="h-5 w-5 text-green-600" />
                                             <h4 className="font-medium text-gray-900">Tindakan Admin</h4>
                                         </div>
 
@@ -399,11 +390,11 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                         </Button>
                                                         <Button
                                                             variant="outline"
-                                                            className="flex-1 border-blue-200 bg-transparent text-blue-700 hover:bg-blue-50"
-                                                            onClick={() => handleActionClick('in_progress')}
+                                                            className="flex-1 border-green-200 bg-transparent text-green-700 hover:bg-green-50"
+                                                            onClick={() => handleActionClick('confirmed')}
                                                         >
                                                             <Settings className="mr-2 h-4 w-4" />
-                                                            Proses Laporan
+                                                            Terima Laporan
                                                         </Button>
                                                     </>
                                                 )}
@@ -413,11 +404,9 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                         {actionType && (
                                             <div className="space-y-4 rounded-lg border bg-gray-50 p-4">
                                                 <div className="flex items-center gap-2">
-                                                    {actionType === 'in_progress' && <Settings className="h-5 w-5 text-blue-600" />}
                                                     {actionType === 'confirmed' && <CheckCircle className="h-5 w-5 text-green-600" />}
                                                     {actionType === 'cancelled' && <AlertCircle className="h-5 w-5 text-red-600" />}
                                                     <h5 className="font-medium">
-                                                        {actionType === 'in_progress' && 'Memproses Laporan'}
                                                         {actionType === 'confirmed' && 'Menyelesaikan Perbaikan'}
                                                         {actionType === 'cancelled' && 'Menolak Laporan'}
                                                     </h5>
@@ -430,20 +419,17 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                     <Textarea
                                                         id="admin-message"
                                                         placeholder={
-                                                            actionType === 'in_progress'
-                                                                ? 'Informasikan bahwa laporan sedang diproses, estimasi waktu perbaikan, atau instruksi sementara...'
-                                                                : actionType === 'confirmed'
-                                                                  ? 'Konfirmasi bahwa perbaikan telah selesai dan berikan informasi terkait...'
-                                                                  : 'Jelaskan alasan penolakan laporan kerusakan...'
+                                                            actionType === 'confirmed'
+                                                                ? 'Konfirmasi bahwa perbaikan telah selesai dan berikan informasi terkait...'
+                                                                : 'Jelaskan alasan penolakan laporan kerusakan...'
                                                         }
                                                         value={adminMessage}
                                                         onChange={(e) => setAdminMessage(e.target.value)}
                                                         rows={3}
                                                         className="mt-0.5 resize-none"
                                                     />
-                                                    {actionType === 'cancelled' && !adminMessage.trim() && (
-                                                        <p className="text-sm text-red-600">Pesan wajib diisi untuk penolakan</p>
-                                                    )}
+
+                                                    <p className="text-sm text-red-600">Pesan wajib diisi</p>
                                                 </div>
 
                                                 <div className="flex gap-2 pt-2">
@@ -461,18 +447,18 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                         onClick={() => {
                                                             handleSubmit(selectedDamage.kode_pelaporan);
                                                         }}
-                                                        disabled={isProcessing || (actionType === 'cancelled' && !adminMessage.trim())}
+                                                        disabled={isProcessing || adminMessage === ''}
                                                         className={
-                                                            actionType === 'in_progress'
-                                                                ? 'bg-blue-600 hover:bg-blue-700'
+                                                            actionType === 'confirmed'
+                                                                ? 'bg-green-600 hover:bg-green-700'
                                                                 : 'bg-red-600 hover:bg-red-700'
                                                         }
                                                     >
                                                         {isProcessing
                                                             ? 'Memproses...'
-                                                            : actionType === 'in_progress'
-                                                              ? 'Konfirmasi Proses'
-                                                              : 'Konfirmasi Tolak'}
+                                                            : actionType === 'confirmed'
+                                                              ? 'Konfirmasi Penyetujuan'
+                                                              : 'Konfirmasi Penolakan'}
                                                     </Button>
                                                 </div>
                                             </div>

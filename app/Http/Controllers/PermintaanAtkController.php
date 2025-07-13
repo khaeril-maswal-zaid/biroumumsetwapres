@@ -19,7 +19,7 @@ class PermintaanAtkController extends Controller
     public function index()
     {
         $data = [
-            'permintaanAtk' => PermintaanAtk::with('pemesan')->latest()->paginate(15)
+            'permintaanAtk' => PermintaanAtk::with('pemesan')->latest()->paginate(50)
         ];
 
         return Inertia::render('admin/supplies/page', $data);
@@ -86,27 +86,35 @@ class PermintaanAtkController extends Controller
 
     public function status(PermintaanAtk $permintaanAtk, Request $request)
     {
-        $inputItems = $request->input('item'); // array: id => approved
+        $validated = $request->validate([
+            'status' => 'required|in:partial,approved,rejected',
+            'message' => 'nullable|string|max:255',
+            'item' => 'array',
+        ], [
+            'status.required' => 'Status wajib diisi.',
+            'status.in' => 'Status harus salah satu dari: pending, approved, rejected.',
+            'item.required' => 'Item tidak boleh kosong.',
+        ]);
 
-        // Ambil data asli dari kolom JSON
+        $inputItems = $validated['item'];
+
         $originalItems = collect($permintaanAtk->daftar_kebutuhan);
 
-        // Lakukan update hanya pada field 'approved' sesuai id
         $updatedItems = $originalItems->map(function ($item) use ($inputItems) {
-            $itemId = (int) $item['id']; // pastikan integer agar cocok
+            $itemId = (int) $item['id'];
             if (isset($inputItems[$itemId])) {
                 $item['approved'] = $inputItems[$itemId];
             }
             return $item;
         });
 
-        // Simpan hasil
         $permintaanAtk->update([
             'daftar_kebutuhan' => $updatedItems,
-            'status' => $request->input('status'),
-            'keterangan' => $request->input('message'),
+            'status' => $validated['status'],
+            'keterangan' => $validated['message'],
         ]);
     }
+
 
     public function reports()
     {
@@ -120,6 +128,7 @@ class PermintaanAtkController extends Controller
             'topUsers' => $reportsData->topUsersStats(),
             'divisionStats' => $reportsData->divisionStats(),
             'statusDistribution' => $reportsData->statusDistribution(),
+            'urgencyData' => $reportsData->urgencyData(),
         ];
 
         return Inertia::render('admin/reportssupplies/page', $data);

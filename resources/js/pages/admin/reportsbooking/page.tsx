@@ -10,11 +10,113 @@ import { Head } from '@inertiajs/react';
 import { Calendar, Clock, MapPin, TrendingDown, TrendingUp, User } from 'lucide-react';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-const iconMap = {
+const iconMap: any = {
     totalBookings: Calendar,
     approved: User,
     rejected: Clock,
     pending: MapPin,
+};
+
+// Mock data for weekly booking schedule
+const weeklySchedule = [
+    {
+        room: 'Ruang Rapat A',
+        bookings: {
+            monday: [{ time: '09:00-11:00', user: 'Dani Martinez', purpose: 'Rapat Koordinasi' }],
+            tuesday: [
+                { time: '10:00-12:00', user: 'Siti Aminah', purpose: 'Presentasi' },
+                { time: '14:00-16:00', user: 'Budi Santoso', purpose: 'Training' },
+            ],
+            wednesday: [],
+            thursday: [{ time: '13:00-15:00', user: 'Dewi Lestari', purpose: 'Meeting Klien' }],
+            friday: [{ time: '09:00-10:30', user: 'Rudi Hartono', purpose: 'Workshop' }],
+            saturday: [],
+            sunday: [],
+        },
+    },
+    {
+        room: 'Ruang Rapat B',
+        bookings: {
+            monday: [{ time: '14:00-16:00', user: 'Ahmad Fauzi', purpose: 'Rapat Koordinasi' }],
+            tuesday: [],
+            wednesday: [
+                { time: '09:00-11:00', user: 'Lisa Permata', purpose: 'Presentasi' },
+                { time: '13:00-14:30', user: 'Eko Prasetyo', purpose: 'Training' },
+            ],
+            thursday: [],
+            friday: [{ time: '10:00-12:00', user: 'Maya Sari', purpose: 'Meeting Klien' }],
+            saturday: [{ time: '09:00-12:00', user: 'Toni Wijaya', purpose: 'Workshop' }],
+            sunday: [],
+        },
+    },
+    {
+        room: 'Ruang Rapat C',
+        bookings: {
+            monday: [],
+            tuesday: [{ time: '09:00-10:00', user: 'Rina Kusuma', purpose: 'Rapat Koordinasi' }],
+            wednesday: [{ time: '14:00-17:00', user: 'Hadi Nugroho', purpose: 'Training' }],
+            thursday: [
+                { time: '09:00-11:00', user: 'Sari Indah', purpose: 'Presentasi' },
+                { time: '13:00-15:00', user: 'Joko Susilo', purpose: 'Meeting Klien' },
+            ],
+            friday: [],
+            saturday: [],
+            sunday: [],
+        },
+    },
+    {
+        room: 'Ruang Rapat D',
+        bookings: {
+            monday: [{ time: '10:00-12:00', user: 'Fitri Handayani', purpose: 'Workshop' }],
+            tuesday: [],
+            wednesday: [],
+            thursday: [{ time: '14:00-16:00', user: 'Agus Setiawan', purpose: 'Rapat Koordinasi' }],
+            friday: [{ time: '09:00-11:00', user: 'Nita Sari', purpose: 'Presentasi' }],
+            saturday: [],
+            sunday: [],
+        },
+    },
+    {
+        room: 'Ruang Rapat E',
+        bookings: {
+            monday: [{ time: '13:00-15:00', user: 'Bambang Tri', purpose: 'Training' }],
+            tuesday: [{ time: '10:00-12:00', user: 'Wati Lestari', purpose: 'Meeting Klien' }],
+            wednesday: [],
+            thursday: [],
+            friday: [{ time: '14:00-16:00', user: 'Dedi Kurnia', purpose: 'Workshop' }],
+            saturday: [],
+            sunday: [],
+        },
+    },
+    {
+        room: 'Aula Utama',
+        bookings: {
+            monday: [],
+            tuesday: [],
+            wednesday: [{ time: '09:00-17:00', user: 'Tim HR', purpose: 'Training Besar' }],
+            thursday: [],
+            friday: [],
+            saturday: [{ time: '08:00-12:00', user: 'Divisi IT', purpose: 'Workshop' }],
+            sunday: [],
+        },
+    },
+];
+
+const daysOfWeek = [
+    { key: 'monday', label: 'Senin', short: 'Sen' },
+    { key: 'tuesday', label: 'Selasa', short: 'Sel' },
+    { key: 'wednesday', label: 'Rabu', short: 'Rab' },
+    { key: 'thursday', label: 'Kamis', short: 'Kam' },
+    { key: 'friday', label: 'Jumat', short: 'Jum' },
+    { key: 'saturday', label: 'Sabtu', short: 'Sab' },
+    { key: 'sunday', label: 'Minggu', short: 'Min' },
+];
+
+// Get current day for highlighting
+const getCurrentDay = () => {
+    const today = new Date().getDay();
+    const dayMap = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    return dayMap[today];
 };
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -33,6 +135,7 @@ export default function BookingReports({
     peakHours,
     monthlyTrend,
     weeklyPattern,
+    weeklySchedule,
 }: any) {
     const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
 
@@ -128,17 +231,17 @@ export default function BookingReports({
                             <Card>
                                 <CardHeader>
                                     <CardTitle>Jam Sibuk Pemesanan</CardTitle>
-                                    <CardDescription>Distribusi pemesanan berdasarkan jam</CardDescription>
+                                    <CardDescription>Distribusi jumlah pemesanan berdasarkan jam operasional</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="h-[300px]">
+                                    <div className="h-[350px]">
                                         <ResponsiveContainer width="100%" height="100%">
-                                            <BarChart data={peakHours}>
+                                            <BarChart data={peakHours} margin={{ top: 20, right: 30, left: 0, bottom: 40 }}>
                                                 <CartesianGrid strokeDasharray="3 3" />
-                                                <XAxis dataKey="hour" />
-                                                <YAxis />
+                                                <XAxis dataKey="hour" interval={0} angle={-45} textAnchor="end" tick={{ fontSize: 12 }} />
+                                                <YAxis tick={{ fontSize: 12 }} />
                                                 <Tooltip />
-                                                <Bar dataKey="bookings" fill="#3b82f6" name="Jumlah Pemesanan" />
+                                                <Bar dataKey="bookings" fill="#3b82f6" name="Jumlah Pemesanan" radius={[4, 4, 0, 0]} />
                                             </BarChart>
                                         </ResponsiveContainer>
                                     </div>
@@ -239,26 +342,105 @@ export default function BookingReports({
                             </Card>
                         </div>
 
-                        {/* Duration Analysis */}
-                        <Card className="">
+                        {/* Weekly Booking Schedule */}
+                        <Card>
                             <CardHeader>
-                                <CardTitle>Analisis Durasi Penggunaan</CardTitle>
-                                <CardDescription>Rata-rata durasi penggunaan ruangan per hari</CardDescription>
+                                <CardTitle>Pemantauan Jadwal Pemesanan Mingguan</CardTitle>
+                                <CardDescription>Jadwal pemesanan ruangan yang telah disetujui untuk minggu ini</CardDescription>
                             </CardHeader>
+
                             <CardContent>
                                 <div className="space-y-4">
-                                    {weeklyPattern.map((day: any) => (
-                                        <div key={day.day} className="flex items-center justify-between rounded-lg border p-3">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-16 font-medium">{day.day}</div>
-                                                <div className="text-sm text-gray-600">{day.bookings} pemesanan</div>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="font-medium">{day.avgDuration} jam</p>
-                                                <p className="text-sm text-gray-500">rata-rata</p>
-                                            </div>
+                                    {/* Desktop View */}
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full border-collapse">
+                                            <thead>
+                                                <tr>
+                                                    <th className="w-32 border-b p-3 text-left font-medium">Ruangan</th>
+                                                    {daysOfWeek.map((day) => (
+                                                        <th
+                                                            key={day.key}
+                                                            className={`min-w-[120px] border-b p-3 text-center font-medium ${
+                                                                getCurrentDay() === day.key ? 'border-blue-200 bg-blue-50 text-blue-900' : ''
+                                                            }`}
+                                                        >
+                                                            {day.label}
+                                                        </th>
+                                                    ))}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {weeklySchedule.map((room) => (
+                                                    <tr key={room.room} className="hover:bg-gray-50">
+                                                        <td className="border-b p-3 text-sm font-medium">{room.room}</td>
+                                                        {daysOfWeek.map((day) => {
+                                                            const bookings = room.bookings[day.key as keyof typeof room.bookings];
+                                                            const isToday = getCurrentDay() === day.key;
+
+                                                            return (
+                                                                <td
+                                                                    key={day.key}
+                                                                    className={`border-b p-2 text-center ${isToday ? 'border-blue-200 bg-blue-50' : ''}`}
+                                                                >
+                                                                    {bookings.length > 0 ? (
+                                                                        <div className="space-y-1">
+                                                                            {bookings.map((booking, index) => (
+                                                                                <div key={index} className="group relative">
+                                                                                    <Badge
+                                                                                        variant="secondary"
+                                                                                        className={`cursor-pointer px-2 py-1 text-xs ${
+                                                                                            isToday
+                                                                                                ? 'bg-blue-200 text-blue-800 hover:bg-blue-300'
+                                                                                                : 'bg-green-100 text-green-800 hover:bg-green-200'
+                                                                                        }`}
+                                                                                    >
+                                                                                        {booking.time}
+                                                                                    </Badge>
+                                                                                    {/* Tooltip */}
+                                                                                    <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 transform rounded-lg bg-gray-900 px-3 py-2 text-xs whitespace-nowrap text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                                                                                        <div className="font-medium">{booking.user}</div>
+                                                                                        <div>{booking.purpose}</div>
+                                                                                        <div className="absolute top-full left-1/2 -translate-x-1/2 transform border-4 border-transparent border-t-gray-900"></div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            ))}
+                                                                            {bookings.length > 1 && (
+                                                                                <div className="mt-1 text-xs text-gray-500">
+                                                                                    {bookings.length} pemesanan
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div className="text-xs text-gray-300">-</div>
+                                                                    )}
+                                                                </td>
+                                                            );
+                                                        })}
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    {/* Legend */}
+                                    <div className="flex flex-wrap items-center gap-4 border-t pt-4">
+                                        <div className="flex items-center gap-2">
+                                            <Badge variant="secondary" className="bg-green-100 text-green-800">
+                                                09:00-11:00
+                                            </Badge>
+                                            <span className="text-sm text-gray-600">Pemesanan Terjadwal</span>
                                         </div>
-                                    ))}
+                                        <div className="flex items-center gap-2">
+                                            <Badge variant="secondary" className="bg-blue-200 text-blue-800">
+                                                09:00-11:00
+                                            </Badge>
+                                            <span className="text-sm text-gray-600">Pemesanan Hari Ini</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="h-4 w-4 rounded border bg-gray-100"></div>
+                                            <span className="text-sm text-gray-600">Tidak Ada Pemesanan</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>

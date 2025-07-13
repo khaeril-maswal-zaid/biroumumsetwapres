@@ -15,6 +15,7 @@ import {
     BarChart,
     CartesianGrid,
     Cell,
+    Legend,
     Line,
     LineChart,
     Pie,
@@ -24,8 +25,6 @@ import {
     XAxis,
     YAxis,
 } from 'recharts';
-
-// Mock data for reports
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -42,10 +41,11 @@ export default function SuppliesReports({
     approvalRateTrend,
     summaryData,
     itemComparison,
+    urgencyData,
 }: any) {
     const COLORS = ['#10b981', '#f59e0b', '#3b82f6', '#ef4444'];
 
-    const iconMap = {
+    const iconMap: any = {
         approved: CheckCircle,
         pending: Clock,
         rejected: XCircle,
@@ -70,8 +70,8 @@ export default function SuppliesReports({
                     <TabsList className="grid w-full grid-cols-4">
                         <TabsTrigger value="summary">Ringkasan</TabsTrigger>
                         <TabsTrigger value="items">Analisis Item</TabsTrigger>
-                        <TabsTrigger value="users">Pengguna</TabsTrigger>
                         <TabsTrigger value="trends">Tren</TabsTrigger>
+                        <TabsTrigger value="users">Analisa Pengguna</TabsTrigger>
                     </TabsList>
 
                     {/* Summary Tab */}
@@ -104,7 +104,7 @@ export default function SuppliesReports({
                         {/* Charts Row */}
                         <div className="grid gap-6 md:grid-cols-2">
                             {/* Status Distribution */}
-                            <Card className="gap-0">
+                            <Card>
                                 <CardHeader>
                                     <CardTitle>Distribusi Status Permintaan</CardTitle>
                                     <CardDescription>Persentase status permintaan ATK</CardDescription>
@@ -135,7 +135,7 @@ export default function SuppliesReports({
                             </Card>
 
                             {/* Top 5 Items */}
-                            <Card className="gap-0">
+                            <Card>
                                 <CardHeader>
                                     <CardTitle>Top 5 Item Paling Diminta</CardTitle>
                                     <CardDescription>Item ATK dengan permintaan tertinggi</CardDescription>
@@ -164,8 +164,61 @@ export default function SuppliesReports({
 
                     {/* Items Analysis Tab */}
                     <TabsContent value="items" className="space-y-6">
-                        {/* Item Comparison Chart */}
-                        <Card className="gap-0">
+                        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Tingkat Urgensi Laporan</CardTitle>
+                                    <CardDescription>Distribusi laporan berdasarkan tingkat urgensi</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <PieChart>
+                                            <Pie
+                                                data={urgencyData}
+                                                cx="50%"
+                                                cy="50%"
+                                                innerRadius={60}
+                                                outerRadius={100}
+                                                dataKey="value"
+                                                nameKey="name"
+                                                paddingAngle={3}
+                                                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                            >
+                                                {urgencyData.map((entry: any, index: number) => (
+                                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip />
+                                            <Legend verticalAlign="bottom" height={36} />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                </CardContent>
+                            </Card>
+
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Tingkat Persetujuan per Item</CardTitle>
+                                    <CardDescription>Persentase persetujuan untuk setiap jenis item ATK</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4">
+                                        {itemComparison.map((item: any) => (
+                                            <div key={item.name} className="space-y-2">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="font-medium">{item.name}</span>
+                                                    <span className="text-sm text-gray-500">
+                                                        {item.approved}/{item.requested} ({item.approvalRate}%)
+                                                    </span>
+                                                </div>
+                                                <Progress value={item.approvalRate} className="h-2" />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        <Card>
                             <CardHeader>
                                 <CardTitle>Perbandingan Permintaan vs Persetujuan per Item</CardTitle>
                                 <CardDescription>Analisis tingkat persetujuan untuk setiap jenis item ATK</CardDescription>
@@ -185,26 +238,80 @@ export default function SuppliesReports({
                                 </div>
                             </CardContent>
                         </Card>
+                    </TabsContent>
 
-                        {/* Approval Rate by Item */}
-                        <Card className="gap-0">
+                    {/* Trends Tab */}
+                    <TabsContent value="trends" className="space-y-6">
+                        {/* Monthly Trend */}
+                        <Card>
                             <CardHeader>
-                                <CardTitle>Tingkat Persetujuan per Item</CardTitle>
-                                <CardDescription>Persentase persetujuan untuk setiap jenis item ATK</CardDescription>
+                                <CardTitle>Tren Permintaan Bulanan</CardTitle>
+                                <CardDescription>Perkembangan jumlah permintaan ATK dalam 6 bulan terakhir</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="space-y-4">
-                                    {itemComparison.map((item: any) => (
-                                        <div key={item.name} className="space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <span className="font-medium">{item.name}</span>
-                                                <span className="text-sm text-gray-500">
-                                                    {item.approved}/{item.requested} ({item.approvalRate}%)
-                                                </span>
-                                            </div>
-                                            <Progress value={item.approvalRate} className="h-2" />
-                                        </div>
-                                    ))}
+                                <div className="h-[300px]">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <AreaChart data={monthlyTrend}>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="month" />
+                                            <YAxis />
+                                            <Tooltip />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="requests"
+                                                stackId="1"
+                                                stroke="#3b82f6"
+                                                fill="#3b82f6"
+                                                fillOpacity={0.6}
+                                                name="Total Permintaan"
+                                            />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="approved"
+                                                stackId="2"
+                                                stroke="#10b981"
+                                                fill="#10b981"
+                                                fillOpacity={0.6}
+                                                name="Disetujui"
+                                            />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="partial"
+                                                stackId="2"
+                                                stroke="#b87333"
+                                                fill="#b87333"
+                                                fillOpacity={0.6}
+                                                name="Sebagian"
+                                            />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Approval Rate Trend */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Tren Tingkat Persetujuan</CardTitle>
+                                <CardDescription>Persentase tingkat persetujuan permintaan ATK per bulan</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="h-[300px]">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <LineChart data={approvalRateTrend}>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="month" />
+                                            <YAxis domain={[75, 90]} />
+                                            <Tooltip formatter={(value) => [`${value}%`, 'Tingkat Persetujuan']} />
+                                            <Line
+                                                type="monotone"
+                                                dataKey="rate"
+                                                stroke="#10b981"
+                                                strokeWidth={3}
+                                                dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
+                                            />
+                                        </LineChart>
+                                    </ResponsiveContainer>
                                 </div>
                             </CardContent>
                         </Card>
@@ -214,7 +321,7 @@ export default function SuppliesReports({
                     <TabsContent value="users" className="space-y-6">
                         <div className="grid gap-6 md:grid-cols-2">
                             {/* Top Users */}
-                            <Card className="gap-0">
+                            <Card>
                                 <CardHeader>
                                     <CardTitle>Top 5 Pengguna Paling Aktif</CardTitle>
                                     <CardDescription>Pengguna dengan permintaan ATK terbanyak</CardDescription>
@@ -253,7 +360,7 @@ export default function SuppliesReports({
                             </Card>
 
                             {/* Division Statistics */}
-                            <Card className="gap-0">
+                            <Card>
                                 <CardHeader>
                                     <CardTitle>Statistik per Divisi</CardTitle>
                                     <CardDescription>Tingkat permintaan dan persetujuan per divisi</CardDescription>
@@ -276,74 +383,6 @@ export default function SuppliesReports({
                                 </CardContent>
                             </Card>
                         </div>
-                    </TabsContent>
-
-                    {/* Trends Tab */}
-                    <TabsContent value="trends" className="space-y-6">
-                        {/* Monthly Trend */}
-                        <Card className="gap-0">
-                            <CardHeader>
-                                <CardTitle>Tren Permintaan Bulanan</CardTitle>
-                                <CardDescription>Perkembangan jumlah permintaan ATK dalam 6 bulan terakhir</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="h-[300px]">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <AreaChart data={monthlyTrend}>
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="month" />
-                                            <YAxis />
-                                            <Tooltip />
-                                            <Area
-                                                type="monotone"
-                                                dataKey="requests"
-                                                stackId="1"
-                                                stroke="#3b82f6"
-                                                fill="#3b82f6"
-                                                fillOpacity={0.6}
-                                                name="Total Permintaan"
-                                            />
-                                            <Area
-                                                type="monotone"
-                                                dataKey="approved"
-                                                stackId="2"
-                                                stroke="#10b981"
-                                                fill="#10b981"
-                                                fillOpacity={0.6}
-                                                name="Disetujui"
-                                            />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* Approval Rate Trend */}
-                        <Card className="gap-0">
-                            <CardHeader>
-                                <CardTitle>Tren Tingkat Persetujuan</CardTitle>
-                                <CardDescription>Persentase tingkat persetujuan permintaan ATK per bulan</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="h-[300px]">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <LineChart data={approvalRateTrend}>
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="month" />
-                                            <YAxis domain={[75, 90]} />
-                                            <Tooltip formatter={(value) => [`${value}%`, 'Tingkat Persetujuan']} />
-                                            <Line
-                                                type="monotone"
-                                                dataKey="rate"
-                                                stroke="#10b981"
-                                                strokeWidth={3}
-                                                dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
-                                            />
-                                        </LineChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </CardContent>
-                        </Card>
                     </TabsContent>
                 </Tabs>
             </div>

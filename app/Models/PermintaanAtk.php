@@ -134,12 +134,14 @@ class PermintaanAtk extends Model
             $total = $query->count();
             $approved = $query->where('status', 'approved')->count();
             $rejected = $query->where('status', 'rejected')->count();
+            $partial = $query->where('status', 'partial')->count();
 
             $monthlyData[] = [
                 'month' => $monthLabel,
                 'requests' => $total,
                 'approved' => $approved,
                 'rejected' => $rejected,
+                'partial' => $partial,
                 'rate' => $total > 0 ? round(($approved / $total) * 100) : 0,
             ];
         }
@@ -152,6 +154,7 @@ class PermintaanAtk extends Model
                     'requests' => $item['requests'],
                     'approved' => $item['approved'],
                     'rejected' => $item['rejected'],
+                    'partial'  => $item['partial'],
                 ];
             }),
 
@@ -232,5 +235,25 @@ class PermintaanAtk extends Model
                 'color' => $label['color'],
             ];
         })->values(); // ubah ke array biasa
+    }
+
+    public function urgencyData()
+    {
+        $colors = [
+            'normal' => '#10b981',   // green
+            'mendesak' => '#f59e0b',   // yellow
+            'segera' => '#ef4444',   // red
+        ];
+
+        return $this->get()
+            ->groupBy('urgensi')
+            ->map(function ($group, $urgensi) use ($colors) {
+                return [
+                    'name' => ucfirst($urgensi),
+                    'value' => $group->count(),
+                    'color' => $colors[$urgensi] ?? '#999999',
+                ];
+            })
+            ->values();
     }
 }

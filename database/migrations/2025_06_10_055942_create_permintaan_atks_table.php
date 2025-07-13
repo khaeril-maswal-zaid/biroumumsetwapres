@@ -17,7 +17,7 @@ return new class extends Migration
             $table->json('daftar_kebutuhan')->nullable();
             $table->string('deskripsi', 255); //from pengadu
             $table->enum('urgensi', ['normal', 'mendesak', 'segera']);
-            $table->string('no_hp', 15);
+            $table->string('no_hp', 25);
             $table->string('kode_pelaporan', 50)->unique();
             $table->enum('status', ['pending', 'approved', 'partial', 'rejected']);
             $table->string('keterangan', 255); //from admin

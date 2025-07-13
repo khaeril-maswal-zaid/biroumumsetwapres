@@ -22,7 +22,7 @@ class PemesananRuangRapatController extends Controller
     public function index()
     {
         $data = [
-            'bookingRooms' => PemesananRuangRapat::with('ruangans')->with('pemesan')->latest()->paginate(15)
+            'bookingRooms' => PemesananRuangRapat::with('ruangans')->with('pemesan')->latest()->paginate(50)
         ];
 
         return Inertia::render('admin/bookings/page', $data);
@@ -198,6 +198,7 @@ class PemesananRuangRapatController extends Controller
             'divisionUsage'      => $reportsData->divisionUsage(),
             'penggunaanRuangan'  => $reportsData->penggunaanRuangan(),
             'statusDistribution' => $reportsData->statusDistribution(),
+            'weeklySchedule' => $reportsData->weeklySchedule(),
         ]);
     }
 }

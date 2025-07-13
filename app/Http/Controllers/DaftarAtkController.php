@@ -20,21 +20,25 @@ class DaftarAtkController extends Controller
 
     public function update(DaftarAtk $daftarAtk, Request $request)
     {
-        $daftarAtk->update([
-            'name' => $request->input('name'),
-            'category' => $request->input('category'),
-            'unit' => $request->input('unit'),
+        $validated = $request->validate([
+            'name' => 'required|string|max:250',
+            'category' => 'required|string|max:250',
+            'unit' => 'required|string|max:250',
         ]);
+
+        $daftarAtk->update($validated);
     }
 
     public function store(Request $request)
     {
-        DaftarAtk::create([
-            'kode_atk' => $request->input('kode_atk'),
-            'name' => $request->input('name'),
-            'category' => $request->input('category'),
-            'unit' => $request->input('unit'),
+        $validated = $request->validate([
+            'kode_atk' => 'required|string|max:250|unique:daftar_atks,kode_atk',
+            'name' => 'required|string|max:250',
+            'category' => 'required|string|max:250',
+            'unit' => 'required|string|max:250',
         ]);
+
+        DaftarAtk::create($validated);
     }
 
     public function destroy(DaftarAtk $daftarAtk)

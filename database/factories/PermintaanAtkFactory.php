@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -48,10 +49,10 @@ class PermintaanAtkFactory extends Factory
 
 
         return [
-            'user_id' => 1,
+            'user_id' => User::inRandomOrder()->first()?->id ?? 1,
             'daftar_kebutuhan' =>
             collect(range(1, rand(1, 5)))->map(fn() => [
-                'id' => (string) fake()->unique()->numberBetween(1, 100),
+                'id' => (string) fake()->numberBetween(1, 100),
                 'name' => fake()->randomElement($atkItems),
                 'requested' => fake()->numberBetween(1, 25),
                 'approved' => 0,

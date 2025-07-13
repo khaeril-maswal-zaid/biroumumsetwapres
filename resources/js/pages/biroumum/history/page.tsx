@@ -213,7 +213,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                 </Card>
                             ) : (
                                 filteredRequests.map((request: any) => (
-                                    <Card key={request.code} className="transition-shadow hover:shadow-md">
+                                    <Card key={request.code} className="gap-0 py-2 transition-shadow hover:shadow-md">
                                         <CardContent className="p-4">
                                             <div className="flex items-start justify-between">
                                                 <div className="flex flex-1 items-start space-x-3">
