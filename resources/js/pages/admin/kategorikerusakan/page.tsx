@@ -133,7 +133,7 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
                 </div>
 
                 {/* Categories Grid */}
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-5">
                     {filteredCategories.map((category: any) => (
                         <Card key={category.id} className="gap-0 border-l-4 border-l-red-500 py-0 transition-shadow duration-200 hover:shadow-md">
                             <CardContent className="p-4">

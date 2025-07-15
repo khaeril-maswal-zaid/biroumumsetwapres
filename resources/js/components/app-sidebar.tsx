@@ -4,53 +4,66 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { Boxes, Building2, Calendar, Car, LayoutGrid, PenTool, ShieldCheck, Users, Wrench } from 'lucide-react';
+import {
+    Building2,
+    CalendarClock,
+    CarFront,
+    ClipboardList,
+    FileBarChart2,
+    FileText,
+    FileWarning,
+    Hammer,
+    LayoutDashboard,
+    LockKeyhole,
+    PackageCheck,
+    Users2,
+} from 'lucide-react';
 import AppLogo from './app-logo';
-import { NavReports } from './nav-reports';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
-        icon: LayoutGrid,
+        href: route('dashboard.index'),
+        icon: LayoutDashboard, // ✅ lebih spesifik dari LayoutGrid
     },
     {
         title: 'Pemesanan Ruang Rapat',
         href: route('ruangrapat.index'),
-        icon: Calendar,
+        icon: CalendarClock, // ✅ lebih menggambarkan pemesanan + waktu
     },
     {
         title: 'Kerusakan Gedung',
         href: route('kerusakangedung.index'),
-        icon: Wrench,
+        icon: Hammer, // ✅ lebih cocok untuk “kerusakan”
     },
     {
         title: 'Permintaan ATK',
         href: route('permintaanatk.index'),
-        icon: PenTool,
+        icon: ClipboardList, // ✅ menggambarkan permintaan / daftar barang
     },
     {
         title: 'Permintaan Kendaraan',
         href: route('permintaankendaraan.index'),
-        icon: Car,
+        icon: CarFront, // ✅ lebih modern dan umum untuk kendaraan
     },
 ];
 
+//Laporan---
 const reportsNavItems: NavItem[] = [
     {
-        title: 'Pemesanan Ruang Rapat',
+        title: 'Pemesanan Ruangan',
         href: route('ruangrapat.reports'),
-        icon: Calendar,
+        icon: FileBarChart2, // ✅ laporan bentuk chart
     },
     {
-        title: 'Kerusakan Gedung',
+        title: 'Laporan Kerusakan',
         href: route('kerusakangedung.reports'),
-        icon: Wrench,
+        icon: FileWarning, // ✅ laporan + indikasi kerusakan
     },
     {
         title: 'Permintaan ATK',
         href: route('permintaanatk.reports'),
-        icon: PenTool,
+        icon: FileText, // ✅ laporan umum
     },
 ];
 
@@ -58,27 +71,27 @@ const footerNavItems: NavItem[] = [
     {
         title: 'Manajemen Ruangan',
         href: route('rooms.index'),
-        icon: Building2,
+        icon: Building2, // sudah tepat
     },
     {
         title: 'Manajemen ATK',
         href: route('daftaratk.index'),
-        icon: Boxes,
+        icon: PackageCheck, // ✅ barang + stok
     },
     {
         title: 'Kategori Kerusakan',
         href: route('daftarkerusakan.index'),
-        icon: Wrench,
+        icon: Hammer, // sama seperti atas
     },
     {
         title: 'Manajemen Pengguna',
-        href: '',
-        icon: Users,
+        href: route('user.index'),
+        icon: Users2, // lebih modern variasi
     },
     {
         title: 'Pengaturan Akses',
         href: route('roles.index'),
-        icon: ShieldCheck,
+        icon: LockKeyhole, // ✅ lebih representatif untuk akses
     },
 ];
 
@@ -98,12 +111,12 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={mainNavItems} itemsReport={reportsNavItems} />
             </SidebarContent>
 
-            <SidebarContent>
+            {/* <SidebarContent>
                 <NavReports items={reportsNavItems} />
-            </SidebarContent>
+            </SidebarContent> */}
 
             <SidebarFooter>
                 <NavFooter items={footerNavItems} className="mt-auto" />

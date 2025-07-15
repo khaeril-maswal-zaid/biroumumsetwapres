@@ -284,7 +284,7 @@ export default function DamageReport({ kategoriKerusakan }: any) {
                                                                 key={option.value}
                                                                 onClick={() => field.onChange(option.value)}
                                                                 className={cn(
-                                                                    'relative cursor-pointer rounded-xl border-2 p-4 transition-all duration-300 hover:shadow-lg',
+                                                                    'relative cursor-pointer rounded-xl border-2 p-3 transition-all duration-300 hover:shadow-lg',
                                                                     isSelected ? `${option.selectedColor} shadow-lg` : option.color,
                                                                 )}
                                                             >
@@ -298,14 +298,14 @@ export default function DamageReport({ kategoriKerusakan }: any) {
                                                                         <Icon className={cn('h-6 w-6', option.iconColor)} />
                                                                     </div>
                                                                     <div className="min-w-0 flex-1">
-                                                                        <div className="mb-1 flex items-center justify-between">
+                                                                        <div className="flex items-center justify-between">
                                                                             <h3 className="text-sm font-semibold">{option.label}</h3>
                                                                             {isSelected && (
                                                                                 <div className={cn('h-3 w-3 rounded-full', option.badgeColor)}></div>
                                                                             )}
                                                                         </div>
                                                                         <p className="mb-1 text-xs opacity-80">{option.description}</p>
-                                                                        <p className="text-xs font-medium opacity-60">{option.detail}</p>
+                                                                        {/* <p className="text-xs font-medium opacity-60">{option.detail}</p> */}
                                                                     </div>
                                                                 </div>
                                                                 {isSelected && (

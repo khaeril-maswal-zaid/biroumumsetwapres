@@ -57,8 +57,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard admin (view_admin_dashboard)
-    Route::get('/dashboard', [HomeController::class, 'admin'])
-        ->name('dashboard')
+    Route::get('/dashboard/data', [HomeController::class, 'admin'])
+        ->name('dashboard.index')
         ->middleware('permission:view_admin_dashboard');
 
     // Manajemen Booking (view_bookings & change_booking_status)
@@ -160,6 +160,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard/kerusakan-gedung/reports', [KerusakanGedungController::class, 'reports'])
         ->name('kerusakangedung.reports')
+        ->middleware('permission:view_admin_dashboard');
+
+    Route::get('/dashboard/manajemen-pengguna', [HomeController::class, 'users'])
+        ->name('user.index')
         ->middleware('permission:view_admin_dashboard');
 });
 

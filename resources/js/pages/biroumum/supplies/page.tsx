@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 import type { SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
-import { Calendar, CheckCircle2, Clock, PenTool, Zap } from 'lucide-react';
+import { AlertCircle, AlertOctagon, AlertTriangle, CheckCircle2, PenTool } from 'lucide-react';
 import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -41,31 +41,37 @@ const FormSchema = z.object({
 
 const urgencyOptions = [
     {
-        value: 'normal',
+        value: 'normal' as const,
         label: 'Normal',
-        description: '1-2 minggu',
-        icon: Calendar,
+        description: 'Kebutuhan biasa',
+        detail: 'Dapat ditangani dalam 1-2 minggu',
+        icon: AlertCircle,
         color: 'bg-green-50 border-green-200 text-green-800',
-        selectedColor: 'bg-green-100 border-green-400',
+        selectedColor: 'bg-green-100 border-green-400 shadow-green-100',
         iconColor: 'text-green-600',
+        badgeColor: 'bg-green-500',
     },
     {
-        value: 'mendesak',
-        label: 'Mendesak',
-        description: '4-6 hari',
-        icon: Clock,
-        color: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-        selectedColor: 'bg-yellow-100 border-yellow-400',
-        iconColor: 'text-yellow-600',
-    },
-    {
-        value: 'segera',
+        value: 'segera' as const,
         label: 'Segera',
-        description: '1-2 hari',
-        icon: Zap,
+        description: 'Kebutuhan cukup penting',
+        detail: 'Perlu ditangani dalam 3-5 hari',
+        icon: AlertTriangle,
+        color: 'bg-yellow-50 border-yellow-200 text-yellow-800',
+        selectedColor: 'bg-yellow-100 border-yellow-400 shadow-yellow-100',
+        iconColor: 'text-yellow-600',
+        badgeColor: 'bg-yellow-500',
+    },
+    {
+        value: 'mendesak' as const,
+        label: 'Mendesak',
+        description: 'Prioritas sangat tinggi',
+        detail: 'Harus segera ditangani hari ini/ besok',
+        icon: AlertOctagon,
         color: 'bg-red-50 border-red-200 text-red-800',
-        selectedColor: 'bg-red-100 border-red-400',
+        selectedColor: 'bg-red-100 border-red-400 shadow-red-100',
         iconColor: 'text-red-600',
+        badgeColor: 'bg-red-500',
     },
 ];
 
@@ -105,6 +111,8 @@ export default function SuppliesRequest({ availableATK }: any) {
     };
 
     const onSubmit = (data: FormData) => {
+        console.log(data);
+
         router.post(route('permintaanatk.store'), data, {
             onError: (e) => console.log(e),
             onSuccess: () => {
@@ -270,7 +278,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                     key={opt.value}
                                                     onClick={() => setValue('urgency', opt.value)}
                                                     className={cn(
-                                                        'cursor-pointer rounded-lg border-2 p-4 transition-all',
+                                                        'cursor-pointer rounded-lg border-2 p-3 transition-all',
                                                         isSel ? opt.selectedColor : opt.color,
                                                     )}
                                                 >
@@ -278,12 +286,14 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                         <div className={cn('rounded-full p-2', isSel ? 'bg-white/50' : 'bg-white/30')}>
                                                             <Icon className={cn('h-5 w-5', opt.iconColor)} />
                                                         </div>
-                                                        <div className="flex-1">
+
+                                                        <div className="min-w-0 flex-1">
                                                             <div className="flex items-center justify-between">
-                                                                <h3 className="font-semibold">{opt.label}</h3>
-                                                                {isSel && <div className="h-2 w-2 rounded-full bg-current" />}
+                                                                <h3 className="text-sm font-semibold">{opt.label}</h3>
+                                                                {isSel && <div className={cn('h-3 w-3 rounded-full', opt.badgeColor)}></div>}
                                                             </div>
-                                                            <p className="text-sm opacity-75">{opt.description}</p>
+                                                            <p className="mb-1 text-xs opacity-80">{opt.description}</p>
+                                                            {/* <p className="text-xs font-medium opacity-60">{opt.detail}</p> */}
                                                         </div>
                                                     </div>
                                                 </div>
