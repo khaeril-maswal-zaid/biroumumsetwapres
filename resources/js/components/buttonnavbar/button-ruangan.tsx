@@ -189,6 +189,7 @@ export default function ButtonRooms() {
                             <div className="space-y-2">
                                 <Label htmlFor="nama_ruangan">Nama Ruangan</Label>
                                 <Input
+                                    className="mt-1"
                                     id="nama_ruangan"
                                     value={formData.nama_ruangan}
                                     onChange={(e) => setFormData((prev) => ({ ...prev, nama_ruangan: e.target.value }))}
@@ -198,6 +199,7 @@ export default function ButtonRooms() {
                             <div className="space-y-2">
                                 <Label htmlFor="kode_ruangan">Kode Ruangan</Label>
                                 <Input
+                                    className="mt-1"
                                     id="kode_ruangan"
                                     value={formData.kode_ruangan}
                                     onChange={(e) => setFormData((prev) => ({ ...prev, kode_ruangan: e.target.value }))}
@@ -208,6 +210,7 @@ export default function ButtonRooms() {
                         <div className="space-y-2">
                             <Label htmlFor="lokasi">Lokasi</Label>
                             <Input
+                                className="mt-1"
                                 id="lokasi"
                                 value={formData.lokasi}
                                 onChange={(e) => setFormData((prev) => ({ ...prev, lokasi: e.target.value }))}
@@ -216,7 +219,7 @@ export default function ButtonRooms() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="image">Foto Ruangan</Label>
-                            <Input id="image" type="file" accept="image/*" onChange={handleImageChange} className="cursor-pointer" />
+                            <Input id="image" type="file" accept="image/*" onChange={handleImageChange} className="mt-1 cursor-pointer" />
                             {imagePreview && (
                                 <div className="mt-2">
                                     <img
@@ -231,6 +234,7 @@ export default function ButtonRooms() {
                             <div className="space-y-2">
                                 <Label htmlFor="kapasitas">Kapasitas</Label>
                                 <Input
+                                    className="mt-1"
                                     id="kapasitas"
                                     type="number"
                                     value={formData.kapasitas}
@@ -246,7 +250,7 @@ export default function ButtonRooms() {
                                         setFormData((prev) => ({ ...prev, status: value }))
                                     }
                                 >
-                                    <SelectTrigger>
+                                    <SelectTrigger className="mt-1">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>

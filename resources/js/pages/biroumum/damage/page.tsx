@@ -170,7 +170,7 @@ export default function DamageReport({ kategoriKerusakan }: any) {
                                             type="text"
                                             readOnly
                                             value={auth?.user.name}
-                                            className="cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
+                                            className="mt-1 cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
                                         />
                                     </div>
                                     <div>
@@ -180,17 +180,21 @@ export default function DamageReport({ kategoriKerusakan }: any) {
                                             type="text"
                                             value={auth?.user.unit_kerja}
                                             readOnly
-                                            className="cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
+                                            className="mt-1 cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
                                         />
                                     </div>
                                     <div>
                                         <Label htmlFor="location">Lokasi Kerusakan</Label>
-                                        <Input id="location" {...register('location')} className={errors.location && 'border-red-500'} />
+                                        <Input id="location" {...register('location')} className={`mt-1 ${errors.location && 'border-red-500'}`} />
                                         {errors.location && <p className="mt-1 text-sm text-red-500">{errors.location.message}</p>}
                                     </div>
                                     <div>
                                         <Label htmlFor="damageType">Nama Item Rusak</Label>
-                                        <Input id="damageType" {...register('damageType')} className={errors.damageType && 'border-red-500'} />
+                                        <Input
+                                            id="damageType"
+                                            {...register('damageType')}
+                                            className={`mt-1 ${errors.damageType && 'border-red-500'}`}
+                                        />
                                         {errors.damageType && <p className="mt-1 text-sm text-red-500">{errors.damageType.message}</p>}
                                     </div>
                                     <div className="w-full">
@@ -200,7 +204,7 @@ export default function DamageReport({ kategoriKerusakan }: any) {
                                             name="kategori"
                                             render={({ field }) => (
                                                 <Select onValueChange={field.onChange} value={field.value}>
-                                                    <SelectTrigger>
+                                                    <SelectTrigger className="mt-1">
                                                         <SelectValue placeholder="Pilih" />
                                                     </SelectTrigger>
                                                     <SelectContent>
@@ -218,7 +222,11 @@ export default function DamageReport({ kategoriKerusakan }: any) {
                                     </div>
                                     <div>
                                         <Label htmlFor="description">Deskripsi Kerusakan</Label>
-                                        <Textarea id="description" {...register('description')} className={errors.description && 'border-red-500'} />
+                                        <Textarea
+                                            id="description"
+                                            {...register('description')}
+                                            className={`mt-1 ${errors.description && 'border-red-500'}`}
+                                        />
                                         {errors.description && <p className="mt-1 text-sm text-red-500">{errors.description.message}</p>}
                                     </div>
                                     <div>
@@ -314,7 +322,7 @@ export default function DamageReport({ kategoriKerusakan }: any) {
 
                                     <div>
                                         <Label htmlFor="contact">No Hp</Label>
-                                        <Input id="contact" {...register('contact')} className={errors.contact && 'border-red-500'} />
+                                        <Input id="contact" {...register('contact')} className={`mt-1 ${errors.contact && 'border-red-500'}`} />
                                         {errors.contact && <p className="mt-1 text-sm text-red-500">{errors.contact.message}</p>}
                                     </div>
                                     <Button type="submit" className="w-full">

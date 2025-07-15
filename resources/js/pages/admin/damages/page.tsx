@@ -28,7 +28,7 @@ import {
     Wrench,
     X,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -38,6 +38,16 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function DamagesAdmin({ kerusakan }: any) {
+    useEffect(() => {
+        const interval = setInterval(() => {
+            router.reload({
+                only: ['kerusakan'],
+            });
+        }, 60 * 1000); // 60 detik
+
+        return () => clearInterval(interval);
+    }, []);
+
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedDamage, setSelectedDamage] = useState<any>(null);

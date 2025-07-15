@@ -92,7 +92,6 @@ const facilityOptions = [
 export default function RoomsPage({ ruangans }: any) {
     const [rooms, setRooms] = useState<Room[]>(ruangans.data);
     const [searchTerm, setSearchTerm] = useState('');
-    const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
@@ -144,49 +143,6 @@ export default function RoomsPage({ ruangans }: any) {
             };
             reader.readAsDataURL(file);
         }
-    };
-
-    const handleAdd = () => {
-        // Validate required fields
-        if (!formData.nama_ruangan || !formData.kode_ruangan || !formData.lokasi || !formData.kapasitas) {
-            alert('Mohon lengkapi semua field yang wajib diisi');
-            return;
-        }
-
-        const newRoom: Room = {
-            id: Date.now().toString(),
-            nama_ruangan: formData.nama_ruangan,
-            kode_ruangan: formData.kode_ruangan,
-            lokasi: formData.lokasi,
-            kapasitas: Number.parseInt(formData.kapasitas),
-            image: formData.image || '/placeholder.svg?height=200&width=300',
-            fasilitas: formData.fasilitas,
-            status: formData.status,
-            created_at: new Date().toISOString().split('T')[0],
-        };
-
-        router.post(
-            route('rooms.store'),
-            {
-                nama_ruangan: formData.nama_ruangan,
-                kode_ruangan: formData.kode_ruangan,
-                lokasi: formData.lokasi,
-                kapasitas: Number.parseInt(formData.kapasitas),
-                fasilitas: formData.fasilitas,
-                status: formData.status,
-                photo: imageFile,
-            },
-            {
-                onSuccess() {
-                    setIsAddDialogOpen(false);
-                    setRooms([...rooms, newRoom]);
-                    resetForm();
-                },
-                onError: (errors) => {
-                    console.log('Validation Errors: ', errors);
-                },
-            },
-        );
     };
 
     const handleEdit = (room: Room) => {
@@ -377,118 +333,6 @@ export default function RoomsPage({ ruangans }: any) {
                     ))}
                 </div>
 
-                {/* Add Dialog */}
-                <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                    <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
-                        <DialogHeader>
-                            <DialogTitle>Tambah Ruangan Baru</DialogTitle>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="nama_ruangan">Nama Ruangan</Label>
-                                    <Input
-                                        id="nama_ruangan"
-                                        value={formData.nama_ruangan}
-                                        onChange={(e) => setFormData((prev) => ({ ...prev, nama_ruangan: e.target.value }))}
-                                        placeholder="Masukkan nama ruangan"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="kode_ruangan">Kode Ruangan</Label>
-                                    <Input
-                                        id="kode_ruangan"
-                                        value={formData.kode_ruangan}
-                                        onChange={(e) => setFormData((prev) => ({ ...prev, kode_ruangan: e.target.value }))}
-                                        placeholder="Contoh: RU-001"
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="lokasi">Lokasi</Label>
-                                <Input
-                                    id="lokasi"
-                                    value={formData.lokasi}
-                                    onChange={(e) => setFormData((prev) => ({ ...prev, lokasi: e.target.value }))}
-                                    placeholder="Contoh: Lantai 2, Gedung A"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="image">Foto Ruangan</Label>
-                                <Input id="image" type="file" accept="image/*" onChange={handleImageChange} className="cursor-pointer" />
-                                {imagePreview && (
-                                    <div className="mt-2">
-                                        <img
-                                            src={imagePreview || '/placeholder.svg'}
-                                            alt="Preview"
-                                            className="h-32 w-full rounded-md border object-cover"
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="kapasitas">Kapasitas</Label>
-                                    <Input
-                                        id="kapasitas"
-                                        type="number"
-                                        value={formData.kapasitas}
-                                        onChange={(e) => setFormData((prev) => ({ ...prev, kapasitas: e.target.value }))}
-                                        placeholder="Jumlah orang"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="status">Status</Label>
-                                    <Select
-                                        value={formData.status}
-                                        onValueChange={(value: 'aktif' | 'maintenance' | 'nonaktif') =>
-                                            setFormData((prev) => ({ ...prev, status: value }))
-                                        }
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="aktif">Aktif</SelectItem>
-                                            <SelectItem value="maintenance">Maintenance</SelectItem>
-                                            <SelectItem value="nonaktif">Non-aktif</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Fasilitas</Label>
-                                <div className="grid grid-cols-2 gap-2">
-                                    {facilityOptions.map((facility) => (
-                                        <div key={facility.id} className="flex items-center space-x-2">
-                                            <Checkbox
-                                                id={facility.id}
-                                                checked={formData.fasilitas.includes(facility.id)}
-                                                onCheckedChange={(checked) => handleFacilityChange(facility.id, checked as boolean)}
-                                            />
-                                            <Label htmlFor={facility.id} className="flex items-center gap-2">
-                                                <facility.icon className="h-4 w-4" />
-                                                {facility.label}
-                                            </Label>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
-                                Batal
-                            </Button>
-                            <Button
-                                onClick={handleAdd}
-                                disabled={!formData.nama_ruangan || !formData.kode_ruangan || !formData.lokasi || !formData.kapasitas}
-                            >
-                                Simpan
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-
                 {/* Edit Dialog */}
                 <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                     <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
@@ -500,6 +344,7 @@ export default function RoomsPage({ ruangans }: any) {
                                 <div className="space-y-2">
                                     <Label htmlFor="edit_nama_ruangan">Nama Ruangan</Label>
                                     <Input
+                                        className="mt-1"
                                         id="edit_nama_ruangan"
                                         value={formData.nama_ruangan}
                                         onChange={(e) => setFormData((prev) => ({ ...prev, nama_ruangan: e.target.value }))}
@@ -512,13 +357,14 @@ export default function RoomsPage({ ruangans }: any) {
                                         id="edit_kode_ruangan"
                                         value={formData.kode_ruangan}
                                         readOnly
-                                        className="cursor-not-allowed bg-gray-100 text-gray-500"
+                                        className="mt-1 cursor-not-allowed bg-gray-100 text-gray-500"
                                     />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="edit_lokasi">Lokasi</Label>
                                 <Input
+                                    className="mt-1"
                                     id="edit_lokasi"
                                     value={formData.lokasi}
                                     onChange={(e) => setFormData((prev) => ({ ...prev, lokasi: e.target.value }))}
@@ -527,7 +373,7 @@ export default function RoomsPage({ ruangans }: any) {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="edit_image">Foto Ruangan</Label>
-                                <Input id="edit_image" type="file" accept="image/*" onChange={handleImageChange} className="cursor-pointer" />
+                                <Input id="edit_image" type="file" accept="image/*" onChange={handleImageChange} className="mt-1 cursor-pointer" />
                                 {imagePreview && (
                                     <div className="mt-2">
                                         <img
@@ -542,6 +388,7 @@ export default function RoomsPage({ ruangans }: any) {
                                 <div className="space-y-2">
                                     <Label htmlFor="edit_kapasitas">Kapasitas</Label>
                                     <Input
+                                        className="mt-1"
                                         id="edit_kapasitas"
                                         type="number"
                                         value={formData.kapasitas}

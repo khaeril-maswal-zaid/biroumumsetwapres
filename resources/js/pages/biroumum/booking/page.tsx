@@ -98,7 +98,7 @@ export default function RoomBooking() {
                                                 type="text"
                                                 readOnly
                                                 value={auth?.user.name}
-                                                className="cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
+                                                className="mt-1 cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
                                             />
                                         </div>
 
@@ -109,7 +109,7 @@ export default function RoomBooking() {
                                                 type="text"
                                                 value={auth?.user.unit_kerja}
                                                 readOnly
-                                                className="cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
+                                                className="mt-1 cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
                                             />
                                         </div>
                                     </div>
@@ -122,19 +122,19 @@ export default function RoomBooking() {
 
                                         <div>
                                             <Label htmlFor="date">Tanggal penggunaan ruangan</Label>
-                                            <Input type="date" min={today} {...register('date')} />
+                                            <Input className="mt-1" type="date" min={today} {...register('date')} />
                                             {errors.date && <p className="text-sm text-red-500">{errors.date.message}</p>}
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <Label htmlFor="startTime">Jam Mulai</Label>
-                                                <Input type="time" {...register('startTime')} />
+                                                <Input className="mt-1" type="time" {...register('startTime')} />
                                                 {errors.startTime && <p className="text-sm text-red-500">{errors.startTime.message}</p>}
                                             </div>
                                             <div>
                                                 <Label htmlFor="endTime">Jam Selesai</Label>
-                                                <Input type="time" {...register('endTime')} min={formData.startTime} />
+                                                <Input className="mt-1" type="time" {...register('endTime')} min={formData.startTime} />
                                                 {errors.endTime && <p className="text-sm text-red-500">{errors.endTime.message}</p>}
                                             </div>
                                         </div>
@@ -167,13 +167,13 @@ export default function RoomBooking() {
 
                                         <div>
                                             <Label htmlFor="purpose">Kegiatan</Label>
-                                            <Textarea id="purpose" {...register('purpose')} />
+                                            <Textarea className="mt-1" id="purpose" {...register('purpose')} />
                                             {errors.purpose && <p className="text-sm text-red-500">{errors.purpose.message}</p>}
                                         </div>
 
                                         <div>
                                             <Label htmlFor="contact">No Handphone</Label>
-                                            <Input id="contact" {...register('contact')} />
+                                            <Input className="mt-1" id="contact" {...register('contact')} />
                                             {errors.contact && <p className="text-sm text-red-500">{errors.contact.message}</p>}
                                         </div>
                                     </div>

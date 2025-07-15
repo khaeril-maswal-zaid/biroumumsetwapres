@@ -27,7 +27,7 @@ export function BottomNavigation() {
                         className={`flex flex-col items-center space-y-1 ${pathname === '/booking' ? 'text-blue-600' : 'text-gray-600'}`}
                     >
                         <Calendar className="h-5 w-5" />
-                        <span className="text-xs">Booking</span>
+                        <span className="text-xs">History</span>
                     </Button>
                 </Link>
                 <Link href={route('user.create')}>

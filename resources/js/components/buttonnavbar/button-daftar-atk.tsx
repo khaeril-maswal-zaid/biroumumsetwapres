@@ -67,6 +67,7 @@ export default function ButtonAtk() {
                         <div>
                             <Label htmlFor="name">Kode ATK</Label>
                             <Input
+                                className="mt-1"
                                 id="kode_atk"
                                 value={formData.kode_atk}
                                 onChange={(e) => setFormData({ ...formData, kode_atk: e.target.value })}
@@ -77,13 +78,19 @@ export default function ButtonAtk() {
 
                         <div>
                             <Label htmlFor="name">Nama ATK</Label>
-                            <Input id="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+                            <Input
+                                className="mt-1"
+                                id="name"
+                                value={formData.name}
+                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                required
+                            />
                         </div>
 
                         <div>
                             <Label htmlFor="category">Kategori</Label>
                             <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                                <SelectTrigger>
+                                <SelectTrigger className="mt-1">
                                     <SelectValue placeholder="Pilih kategori" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -98,7 +105,7 @@ export default function ButtonAtk() {
                         <div>
                             <Label htmlFor="unit">Satuan</Label>
                             <Select value={formData.unit} onValueChange={(value) => setFormData({ ...formData, unit: value })}>
-                                <SelectTrigger>
+                                <SelectTrigger className="mt-1">
                                     <SelectValue placeholder="Pilih satuan" />
                                 </SelectTrigger>
                                 <SelectContent>

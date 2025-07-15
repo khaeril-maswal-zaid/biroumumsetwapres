@@ -26,9 +26,17 @@ import {
     User,
     Wrench,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function RequestHistory({ requestHistory }: any) {
+    useEffect(() => {
+        const interval = setInterval(() => {
+            router.reload({ only: ['requestHistory'] });
+        }, 1000); // setiap 1 detik
+
+        return () => clearInterval(interval);
+    }, []);
+
     const [searchTerm, setSearchTerm] = useState('');
     const [typeFilter, setTypeFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
@@ -95,17 +103,20 @@ export default function RequestHistory({ requestHistory }: any) {
         switch (status) {
             case 'pending':
                 return <Badge className="mb-1 bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Menunggu</Badge>;
-            case 'in_progress':
-                return <Badge className="mb-1 bg-blue-100 text-blue-800 hover:bg-blue-200">Disetujui</Badge>;
+            case 'approved':
+                return <Badge className="mb-1 bg-green-100 text-green-800 hover:bg-green-200">Selesai</Badge>;
             case 'confirmed':
                 return <Badge className="mb-1 bg-green-100 text-green-800 hover:bg-green-200">Selesai</Badge>;
+            case 'partial':
+                return <Badge className="mb-1 bg-blue-100 text-blue-800 hover:bg-blue-200">Selesai</Badge>;
             case 'cancelled':
+                return <Badge className="mb-1 bg-red-100 text-red-800 hover:bg-red-200">Ditolak</Badge>;
+            case 'rejected':
                 return <Badge className="mb-1 bg-red-100 text-red-800 hover:bg-red-200">Ditolak</Badge>;
             default:
                 return <Badge variant="outline">Unknown</Badge>;
         }
     };
-
     const getTypeIcon = (type: string) => {
         switch (type) {
             case 'booking':

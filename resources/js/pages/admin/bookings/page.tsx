@@ -14,7 +14,7 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { AlertCircle, Calendar, CheckCircle, Clock, Hash, MessageSquare, NotebookText, Search, Users, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -24,6 +24,16 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function BookingsAdmin({ bookingRooms }: any) {
+    useEffect(() => {
+        const interval = setInterval(() => {
+            router.reload({
+                only: ['bookingRooms'],
+            });
+        }, 1 * 1000); // 60 detik
+
+        return () => clearInterval(interval);
+    }, []);
+
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedBooking, setSelectedBooking] = useState<any>(null);

@@ -220,6 +220,7 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
                             <div>
                                 <Label htmlFor="edit-name">Nama Kategori</Label>
                                 <Input
+                                    className="mt-1"
                                     id="edit-name"
                                     placeholder="Masukkan nama kategori"
                                     value={formData.name}
@@ -233,7 +234,7 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
                                     placeholder="Contoh: ELK001"
                                     value={formData.kode_kerusakan}
                                     readOnly
-                                    className="cursor-default bg-gray-100 text-gray-600"
+                                    className="mt-1 cursor-default bg-gray-100 text-gray-600"
                                 />
                             </div>
                             <div className="flex justify-end gap-2 pt-4">

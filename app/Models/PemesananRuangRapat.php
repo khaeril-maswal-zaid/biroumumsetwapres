@@ -372,10 +372,10 @@ class PemesananRuangRapat extends Model
     {
 
         $today = Carbon::today();
-        $fiveDaysLater = Carbon::today()->addDays(5);
+        $daysLater = Carbon::today()->addDays(3);
 
         $upcomingBookings = PemesananRuangRapat::with(['ruangans', 'pemesan'])
-            ->whereBetween('tanggal_penggunaan', [$today, $fiveDaysLater])
+            ->whereBetween('tanggal_penggunaan', [$today, $daysLater])
             ->where('status', 'confirmed') // Optional: hanya ambil yang sudah dikonfirmasi
             ->orderBy('tanggal_penggunaan')
             ->orderBy('jam_mulai')

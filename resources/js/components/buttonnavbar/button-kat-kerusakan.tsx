@@ -58,6 +58,7 @@ export default function ButtonKatKerusakan() {
                         <div>
                             <Label htmlFor="name">Nama Kategori</Label>
                             <Input
+                                className="mt-1"
                                 id="name"
                                 placeholder="Masukkan nama kategori"
                                 value={formData.name}
@@ -67,6 +68,7 @@ export default function ButtonKatKerusakan() {
                         <div>
                             <Label htmlFor="code">Kode Kerusakan</Label>
                             <Input
+                                className="mt-1"
                                 id="code"
                                 placeholder="Contoh: ELK001"
                                 value={formData.kode_kerusakan}

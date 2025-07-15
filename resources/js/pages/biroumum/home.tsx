@@ -7,22 +7,15 @@ import { FooterIllustration } from '@/components/biroumum/footer-illustration';
 import { HelpDeskCard } from '@/components/biroumum/help-desk-card';
 import { SearchBar } from '@/components/biroumum/search-bar';
 import { ServiceMenu } from '@/components/biroumum/service-menu';
-import { Head } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { Head, router } from '@inertiajs/react';
+import { useEffect } from 'react';
 
 export default function Dashboard({ requestHistory }: any) {
-    const [currentTime, setCurrentTime] = useState('07:00');
-
     useEffect(() => {
-        const updateTime = () => {
-            const now = new Date();
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            setCurrentTime(`${hours}:${minutes}`);
-        };
+        const interval = setInterval(() => {
+            router.reload({ only: ['requestHistory'] });
+        }, 1000); // setiap 1 detik
 
-        updateTime();
-        const interval = setInterval(updateTime, 60000);
         return () => clearInterval(interval);
     }, []);
 
@@ -35,7 +28,7 @@ export default function Dashboard({ requestHistory }: any) {
                 {/* Main Content */}
                 <div className="pb-20">
                     {/* Header with user info */}
-                    <DashboardHeader userName="Dani Martinez" currentTime={currentTime} />
+                    <DashboardHeader userName="Dani Martinez" />
 
                     <div className="space-y-6 p-4">
                         {/* Search Bar */}

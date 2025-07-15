@@ -132,11 +132,11 @@ export default function SuppliesRequest({ availableATK }: any) {
                                 {/* Nama & Unit Kerja */}
                                 <div>
                                     <Label>Nama Pelapor</Label>
-                                    <Input readOnly value={auth.user.name} className="cursor-not-allowed bg-gray-100 text-gray-500" />
+                                    <Input readOnly value={auth.user.name} className="mt-1 cursor-not-allowed bg-gray-100 text-gray-500" />
                                 </div>
                                 <div>
                                     <Label>Unit Kerja</Label>
-                                    <Input readOnly value={auth.user.unit_kerja} className="cursor-not-allowed bg-gray-100 text-gray-500" />
+                                    <Input readOnly value={auth.user.unit_kerja} className="mt-1 cursor-not-allowed bg-gray-100 text-gray-500" />
                                 </div>
 
                                 {/* Daftar Barang */}
@@ -147,7 +147,7 @@ export default function SuppliesRequest({ availableATK }: any) {
 
                                         const opts = getAvailableOptions(index);
                                         return (
-                                            <div key={field.id} className="mt-2 space-y-2">
+                                            <div key={field.id} className="mt-1 space-y-2">
                                                 <div className="grid grid-cols-12 gap-2">
                                                     {/* Pilih ATK */}
                                                     <div className="col-span-6">
@@ -254,7 +254,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                     <Textarea
                                         {...register('justification')}
                                         placeholder="Jelaskan alasan kebutuhan..."
-                                        className={cn(errors.justification && 'border-red-500')}
+                                        className={`mt-1 ${cn(errors.justification && 'border-red-500')}`}
                                     />
                                 </div>
 
@@ -299,7 +299,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                     <Input
                                         {...register('contact')}
                                         placeholder="Nama dan nomor telepon"
-                                        className={cn(errors.contact && 'border-red-500')}
+                                        className={`mt-1 ${cn(errors.contact && 'border-red-500')}`}
                                     />
                                 </div>
 

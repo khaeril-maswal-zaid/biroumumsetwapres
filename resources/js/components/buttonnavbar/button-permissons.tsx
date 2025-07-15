@@ -109,6 +109,7 @@ export default function ButtonPermission({ availablePermissions }: any) {
                             <div className="space-y-2">
                                 <Label htmlFor="role_name">Nama Role</Label>
                                 <Input
+                                    className="mt-1"
                                     id="role_name"
                                     value={roleFormData.name}
                                     onChange={(e) => setRoleFormData((prev) => ({ ...prev, name: e.target.value }))}
@@ -118,6 +119,7 @@ export default function ButtonPermission({ availablePermissions }: any) {
                             <div className="space-y-2">
                                 <Label htmlFor="role_description">Deskripsi</Label>
                                 <Input
+                                    className="mt-1"
                                     id="role_description"
                                     value={roleFormData.description}
                                     onChange={(e) => setRoleFormData((prev) => ({ ...prev, description: e.target.value }))}
@@ -126,9 +128,9 @@ export default function ButtonPermission({ availablePermissions }: any) {
                             </div>
                         </div>
                         <div className="space-y-4">
-                            <Label>Permissions</Label>
+                            <Label className="text-1xl">Permissions:</Label>
                             {Object.entries(groupedPermissions).map(([category, permissions]) => (
-                                <div key={category} className="space-y-2">
+                                <div key={category} className="mt-2 space-y-2">
                                     <h4 className="text-sm font-medium text-gray-700">{category}</h4>
                                     <div className="grid grid-cols-2 gap-2 pl-4">
                                         {permissions.map((permission: Permission) => (

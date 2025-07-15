@@ -220,7 +220,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Manajemen Hak Akses</h1>
+                        <h1 className="text-2xl font-bold tracking-tight">Manajemen Hak Akses</h1>
                         <p className="text-muted-foreground">Kelola role dan permission pengguna sistem</p>
                     </div>
                 </div>
@@ -321,6 +321,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                                         <div className="space-y-2">
                                             <Label htmlFor="edit_role_name">Nama Role</Label>
                                             <Input
+                                                className="mt-1"
                                                 id="edit_role_name"
                                                 value={roleFormData.name}
                                                 onChange={(e) => setRoleFormData((prev) => ({ ...prev, name: e.target.value }))}
@@ -330,6 +331,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                                         <div className="space-y-2">
                                             <Label htmlFor="edit_role_description">Deskripsi</Label>
                                             <Input
+                                                className="mt-1"
                                                 id="edit_role_description"
                                                 value={roleFormData.description}
                                                 onChange={(e) => setRoleFormData((prev) => ({ ...prev, description: e.target.value }))}
@@ -338,9 +340,9 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                                         </div>
                                     </div>
                                     <div className="space-y-4">
-                                        <Label>Permissions</Label>
+                                        <Label className="text-1xl">Permissions:</Label>
                                         {Object.entries(groupedPermissions).map(([category, permissions]) => (
-                                            <div key={category} className="space-y-2">
+                                            <div key={category} className="mt-1 space-y-2">
                                                 <h4 className="text-sm font-medium text-gray-700">{category}</h4>
                                                 <div className="grid grid-cols-2 gap-2 pl-4">
                                                     {permissions.map((permission: Permission) => (
@@ -450,16 +452,16 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                         <div className="grid gap-4 py-4">
                             <div className="space-y-2">
                                 <Label>Pengguna</Label>
-                                <Input value={selectedUser?.name || ''} disabled />
+                                <Input className="mt-1" value={selectedUser?.name || ''} disabled />
                             </div>
                             <div className="space-y-2">
                                 <Label>Email</Label>
-                                <Input value={selectedUser?.email || ''} disabled />
+                                <Input className="mt-1" value={selectedUser?.email || ''} disabled />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="user_role">Role</Label>
                                 <Select value={selectedUserRole} onValueChange={setSelectedUserRole}>
-                                    <SelectTrigger>
+                                    <SelectTrigger className="mt-1">
                                         <SelectValue placeholder="Pilih role" />
                                     </SelectTrigger>
                                     <SelectContent>

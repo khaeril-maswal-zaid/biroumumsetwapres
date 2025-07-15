@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -18,10 +19,14 @@ class HomeController extends Controller
 
     public function __construct()
     {
+        $user = Auth::id();
+
         // Ambil Booking Rapat + relasi pemesan dan ruangans
         $this->queryRapat = PemesananRuangRapat::with(['pemesan', 'ruangans'])
             ->orderByDesc('created_at')
             ->get()
+            ->where('user_id', $user)
+            ->take(7)
             ->map(fn($r) => [
                 'id'                => 'booking',
                 'type'              => 'Ruangan Rapat',
@@ -46,6 +51,8 @@ class HomeController extends Controller
         $this->queryKerusakan = KerusakanGedung::with(['pelapor', 'kategori'])
             ->orderByDesc('created_at')
             ->get()
+            ->where('user_id', $user)
+            ->take(7)
             ->map(fn($k) => [
                 'id'                 => 'damage',
                 'type'               => 'Kerusakan',
@@ -70,6 +77,8 @@ class HomeController extends Controller
         $this->queryAtk = PermintaanAtk::with('pemesan')
             ->orderByDesc('created_at')
             ->get()
+            ->where('user_id', $user)
+            ->take(7)
             ->map(fn($a) => [
                 'id'                 => 'supplies',
                 'type'               => 'ATK',

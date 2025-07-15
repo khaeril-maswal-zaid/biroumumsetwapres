@@ -4,35 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { AlertTriangle, Calendar, Car, Clock, Home, Package, TrendingUp } from 'lucide-react';
-
-const upcomingBookings = [
-    {
-        id: 1,
-        room: 'Ruang Meeting Aa',
-        user: 'Tim Marketing',
-        date: 'Besok',
-        time: '09:00 - 11:00',
-        purpose: 'Rapat Bulanan',
-    },
-    {
-        id: 2,
-        room: 'Auditorium',
-        user: 'HR Department',
-        date: '15 Jan 2025',
-        time: '14:00 - 16:00',
-        purpose: 'Training Karyawan',
-    },
-    {
-        id: 3,
-        room: 'Ruang Meeting B',
-        user: 'Tim IT',
-        date: '16 Jan 2025',
-        time: '10:00 - 12:00',
-        purpose: 'Review Sistem',
-    },
-];
+import { useEffect } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -48,6 +22,16 @@ const iconMap = {
 };
 
 export default function AdminDashboard({ dashboardStats, recentActivities, upcomingBookings }: any) {
+    useEffect(() => {
+        const interval = setInterval(() => {
+            router.reload({
+                only: ['dashboardStats', 'recentActivities', 'upcomingBookings'],
+            });
+        }, 60 * 1000); // 60 detik
+
+        return () => clearInterval(interval);
+    }, []);
+
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'pending':
@@ -129,7 +113,7 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
                         <CardContent>
                             <div className="space-y-4">
                                 {recentActivities.map((activity) => (
-                                    <div key={activity.id} className="flex items-center justify-between rounded-lg border p-3">
+                                    <div key={activity.id} className="mb-2 flex items-center justify-between rounded-lg border p-3">
                                         <div className="flex items-center gap-3">
                                             {getActivityIcon(activity.type)}
                                             <div>
@@ -148,8 +132,8 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
                     {/* Upcoming Bookings */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Booking Mendatang</CardTitle>
-                            <CardDescription>Ruangan yang akan digunakan dalam 2 hari ke depan</CardDescription>
+                            <CardTitle>Jadwal Pemesanan Terdekat</CardTitle>
+                            <CardDescription>Ruangan yang akan digunakan dalam 3 hari ke depan</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
