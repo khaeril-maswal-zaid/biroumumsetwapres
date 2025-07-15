@@ -367,4 +367,32 @@ class PemesananRuangRapat extends Model
             ],
         ];
     }
+
+    public function upcomingBookings()
+    {
+
+        $today = Carbon::today();
+        $fiveDaysLater = Carbon::today()->addDays(5);
+
+        $upcomingBookings = PemesananRuangRapat::with(['ruangans', 'pemesan'])
+            ->whereBetween('tanggal_penggunaan', [$today, $fiveDaysLater])
+            ->where('status', 'confirmed') // Optional: hanya ambil yang sudah dikonfirmasi
+            ->orderBy('tanggal_penggunaan')
+            ->orderBy('jam_mulai')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'room' => $item->ruangans->nama_ruangan ?? '-',
+                    'user' => $item->pemesan->unit_kerja ?? '-',
+                    'date' => Carbon::parse($item->tanggal_penggunaan)->isTomorrow()
+                        ? 'Besok'
+                        : Carbon::parse($item->tanggal_penggunaan)->translatedFormat('d M Y'),
+                    'time' => Carbon::parse($item->jam_mulai)->format('H:i') . ' - ' . Carbon::parse($item->jam_selesai)->format('H:i'),
+                    'purpose' => $item->deskripsi,
+                ];
+            });
+
+        return $upcomingBookings;
+    }
 }
