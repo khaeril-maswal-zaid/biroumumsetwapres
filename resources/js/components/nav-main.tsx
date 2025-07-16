@@ -23,10 +23,15 @@ function isPathActive(currentPath: string, href: string, exact = false): boolean
     return exact ? current === base : current === base || current.startsWith(base + '/');
 }
 
-export function NavMain({ items = [], itemsReport = [] }: { items: NavItem[] }) {
+type NavMainProps = {
+    items: NavItem[];
+    itemsReport: NavItem[];
+};
+
+export function NavMain({ items, itemsReport }: NavMainProps) {
     const { url: pathname } = usePage();
 
-    const [isManagementOpen, setIsManagementOpen] = useState(itemsReport.some((item) => isPathActive(pathname, item.href)));
+    const [isManagementOpen, setIsManagementOpen] = useState(itemsReport.some((item: any) => isPathActive(pathname, item.href)));
 
     console.log('DAFTAR items:', items);
     console.log('DAFTAR itemsReport:', itemsReport);
@@ -62,7 +67,7 @@ export function NavMain({ items = [], itemsReport = [] }: { items: NavItem[] }) 
                             variant="ghost"
                             className={cn(
                                 'w-full justify-start rounded-md text-sm font-medium transition-colors',
-                                itemsReport.some((item) => isPathActive(pathname, item.href))
+                                itemsReport.some((item: any) => isPathActive(pathname, item.href))
                                     ? 'bg-blue-50 text-blue-700'
                                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
                             )}
