@@ -57,7 +57,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard admin (view_admin_dashboard)
-    Route::get('/dashboard/data', [HomeController::class, 'admin'])
+    Route::get('/dashboard', [HomeController::class, 'admin'])
         ->name('dashboard.index')
         ->middleware('permission:view_admin_dashboard');
 
@@ -164,6 +164,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard/manajemen-pengguna', [HomeController::class, 'users'])
         ->name('user.index')
+        ->middleware('permission:view_admin_dashboard');
+
+
+
+    Route::patch('/dashboard/isread-notfikasi/{notification}', [HomeController::class, 'isReadNotfif'])
+        ->name('notif.isread')
+        ->middleware('permission:view_admin_dashboard');
+
+    Route::patch('/dashboard/isread-notfikasi-all', [HomeController::class, 'isReadAllNotfif'])
+        ->name('notif.isreadall')
         ->middleware('permission:view_admin_dashboard');
 });
 

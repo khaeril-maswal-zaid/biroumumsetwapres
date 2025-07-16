@@ -23,6 +23,12 @@ class NotificationService
         $this->checkRoomReminders();
     }
 
+    public function destroyOldNotifications()
+    {
+        $this->deleteOldReadNotifications();
+    }
+
+
     protected function checkPendingRooms()
     {
         $threshold = Carbon::now()->subHours(20);
@@ -30,6 +36,8 @@ class NotificationService
             ->where('status', 'pending')
             ->where('created_at', '<=', $threshold)
             ->get();
+
+        //dd()
 
         foreach ($bookings as $booking) {
             $this->createNotification([
@@ -124,5 +132,14 @@ class NotificationService
                 'is_read' => false,
             ]);
         }
+    }
+
+    protected function deleteOldReadNotifications()
+    {
+        $threshold = Carbon::now()->subDays(3);
+
+        Notification::where('is_read', true)
+            // ->where('created_at', '<=', $threshold)
+            ->delete();
     }
 }

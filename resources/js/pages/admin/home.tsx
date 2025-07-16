@@ -132,7 +132,7 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
                     {/* Upcoming Bookings */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Jadwal Pemesanan Terdekat</CardTitle>
+                            <CardTitle>Jadwal Pemesanan Ruangan Terdekat</CardTitle>
                             <CardDescription>Ruangan yang akan digunakan dalam 3 hari ke depan</CardDescription>
                         </CardHeader>
                         <CardContent>

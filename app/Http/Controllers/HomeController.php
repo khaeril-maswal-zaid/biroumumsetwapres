@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\KerusakanGedung;
+use App\Models\Notification;
 use App\Models\PemesananRuangRapat;
 use App\Models\PermintaanAtk;
 use Illuminate\Http\Request;
@@ -224,5 +225,17 @@ class HomeController extends Controller
         return Inertia::render('admin/users/page', [
             //,
         ]);
+    }
+
+    public function isReadNotfif(Notification $notification)
+    {
+        $notification->update([
+            'is_read' => true,
+        ]);
+    }
+
+    public function isReadAllNotfif()
+    {
+        Notification::query()->update(['is_read' => true]);
     }
 }

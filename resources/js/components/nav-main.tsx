@@ -33,9 +33,6 @@ export function NavMain({ items, itemsReport }: NavMainProps) {
 
     const [isManagementOpen, setIsManagementOpen] = useState(itemsReport.some((item: any) => isPathActive(pathname, item.href)));
 
-    console.log('DAFTAR items:', items);
-    console.log('DAFTAR itemsReport:', itemsReport);
-
     return (
         <SidebarGroup className="px-2 py-0">
             <SidebarGroupLabel>Platform</SidebarGroupLabel>
