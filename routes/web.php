@@ -58,7 +58,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard admin (view_admin_dashboard)
     Route::get('/dashboard/data', [HomeController::class, 'admin'])
-        ->name('dashboard.index')
+        ->name('dashboard')
         ->middleware('permission:view_admin_dashboard');
 
     // Manajemen Booking (view_bookings & change_booking_status)

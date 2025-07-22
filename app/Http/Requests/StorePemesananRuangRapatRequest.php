@@ -23,7 +23,7 @@ class StorePemesananRuangRapatRequest extends FormRequest
     {
         return [
             'room_code'   => 'required|string|exists:daftar_ruangans,kode_ruangan',
-            'room_name'   => 'required|string',
+            'room_nameX'   => 'required|string',
             'date'        => 'required|date',
             'startTime'   => 'required|date_format:H:i',
             'endTime'     => 'required|date_format:H:i|after_or_equal:startTime',

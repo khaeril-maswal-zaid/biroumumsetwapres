@@ -113,12 +113,6 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
         setIsDetailOpen(true);
     };
 
-    const handleCardClick = (room: Room, isDisabled: boolean) => {
-        if (!isDisabled) {
-            onRoomChange(room.id, room.nama_ruangan);
-        }
-    };
-
     const getStatusBadge = (room: Room) => {
         if (room.status === 'available') {
             return (
@@ -151,20 +145,6 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
         return `${dayName}, ${dateStr} • ${startTime} - ${endTime}`;
     };
 
-    const isTimeSlotConflict = (room: Room) => {
-        if (!selectedStartTime || !selectedEndTime || room.status === 'available') return false;
-
-        const requestStart = Number.parseInt(selectedStartTime.replace(':', ''));
-        const requestEnd = Number.parseInt(selectedEndTime.replace(':', ''));
-
-        return (
-            room.bookedSlots?.some((slot) => {
-                const [slotStart, slotEnd] = slot.split('-').map((time) => Number.parseInt(time.replace(':', '')));
-                return requestStart < slotEnd && requestEnd > slotStart;
-            }) || false
-        );
-    };
-
     const getFacilityIcon = (facilityLabel: string) => {
         const facility = facilityOptions.find((f) => f.id === facilityLabel);
         return facility ? facility.icon : Monitor;
@@ -186,6 +166,27 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
             </div>
         );
     }
+
+    const handleCardClick = (room: Room, isDisabled: boolean) => {
+        console.log('handleCardClick:', room.nama_ruangan, 'Disabled:', isDisabled);
+        if (!isDisabled) {
+            onRoomChange(room.id, room.nama_ruangan);
+        }
+    };
+
+    const isTimeSlotConflict = (room: Room) => {
+        if (!selectedStartTime || !selectedEndTime) return false;
+
+        const requestStart = Number.parseInt(selectedStartTime.replace(':', ''));
+        const requestEnd = Number.parseInt(selectedEndTime.replace(':', ''));
+
+        return (
+            room.bookedSlots?.some((slot) => {
+                const [slotStart, slotEnd] = slot.split('-').map((time) => Number.parseInt(time.replace(':', '')));
+                return requestStart < slotEnd && requestEnd > slotStart;
+            }) || false
+        );
+    };
 
     return (
         <>
@@ -235,7 +236,15 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                         ))}
                     </div>
                 ) : (
-                    <RadioGroup value={selectedRoom} onValueChange={() => {}}>
+                    <RadioGroup
+                        value={selectedRoom}
+                        onValueChange={(value) => {
+                            const room = rooms.find((r) => r.id === value);
+                            if (room) {
+                                handleCardClick(room);
+                            }
+                        }}
+                    >
                         <div className="grid gap-4">
                             {rooms.map((room) => {
                                 const hasConflict = isTimeSlotConflict(room);
@@ -247,7 +256,7 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                                         className={`cursor-pointer py-0 transition-all hover:shadow-md ${
                                             isDisabled ? 'cursor-not-allowed opacity-60' : ''
                                         } ${selectedRoom === room.id ? 'shadow-md ring-2 ring-blue-500' : ''}`}
-                                        onClick={() => handleCardClick(room, isTimeSlotConflict(room))}
+                                        onClick={() => handleCardClick(room)}
                                     >
                                         <CardContent className="p-4">
                                             <div className="flex items-start space-x-4">
@@ -268,13 +277,11 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                                                     </div>
 
                                                     <div className="flex items-center justify-between text-sm text-gray-600">
-                                                        {/* Kiri - Kapasitas */}
                                                         <div className="flex items-center gap-1">
                                                             <Users className="h-4 w-4" />
                                                             <span>Kapasitas: {room.kapasitas} Orang</span>
                                                         </div>
 
-                                                        {/* Kanan - Tombol Detail */}
                                                         <Button
                                                             variant="ghost"
                                                             size="sm"

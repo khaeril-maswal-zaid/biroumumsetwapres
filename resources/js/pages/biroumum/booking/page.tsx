@@ -1,6 +1,7 @@
 'use client';
 
 import { BottomNavigation } from '@/components/biroumum/bottom-navigation';
+import { DangerAlert } from '@/components/biroumum/danger-alert';
 import { PageHeader } from '@/components/biroumum/page-header';
 import { RoomSelection } from '@/components/biroumum/room-selection';
 import { Button } from '@/components/ui/button';
@@ -55,6 +56,8 @@ export default function RoomBooking() {
     const formData = watch();
 
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+    const [showDangerDialog, setShowDangerDialog] = useState<Errors | null>(null);
+
     const handleConfirm = () => {
         setShowSuccessDialog(false);
         router.visit(route('history'));
@@ -65,6 +68,10 @@ export default function RoomBooking() {
             onSuccess: () => {
                 reset();
                 setShowSuccessDialog(true);
+                setShowDangerDialog(null);
+            },
+            onError: (err) => {
+                setShowDangerDialog(err);
             },
         });
     };
@@ -90,6 +97,8 @@ export default function RoomBooking() {
                                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                                     <div className="space-y-4">
                                         <h3 className="border-b pb-2 text-lg font-medium text-gray-900">Informasi Pemesan</h3>
+
+                                        {showDangerDialog && <DangerAlert message={showDangerDialog} show={true} />}
 
                                         <div>
                                             <Label htmlFor="name">Nama pemesan</Label>
