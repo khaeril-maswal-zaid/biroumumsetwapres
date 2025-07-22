@@ -52,9 +52,8 @@ class HandleInertiaRequests extends Middleware
                 'location' => $request->url(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-            'notifFromServer' => Notification::where('is_read', false)
-                ->latest()
-                ->take(10)
+            'notifFromServer' => Notification::latest()
+                // ->take(10)
                 ->get(),
         ];
     }

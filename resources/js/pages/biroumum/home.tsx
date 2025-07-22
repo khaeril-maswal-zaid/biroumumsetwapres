@@ -7,10 +7,13 @@ import { FooterIllustration } from '@/components/biroumum/footer-illustration';
 import { HelpDeskCard } from '@/components/biroumum/help-desk-card';
 import { SearchBar } from '@/components/biroumum/search-bar';
 import { ServiceMenu } from '@/components/biroumum/service-menu';
-import { Head, router } from '@inertiajs/react';
+import { SharedData } from '@/types';
+import { Head, router, usePage } from '@inertiajs/react';
 import { useEffect } from 'react';
 
 export default function Dashboard({ requestHistory }: any) {
+    const { auth } = usePage<SharedData>().props;
+
     useEffect(() => {
         const interval = setInterval(() => {
             router.reload({ only: ['requestHistory'] });
@@ -28,7 +31,7 @@ export default function Dashboard({ requestHistory }: any) {
                 {/* Main Content */}
                 <div className="pb-20">
                     {/* Header with user info */}
-                    <DashboardHeader userName="Dani Martinez" />
+                    <DashboardHeader userName={auth.user.name} />
 
                     <div className="space-y-6 p-4">
                         {/* Search Bar */}

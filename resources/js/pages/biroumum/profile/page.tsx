@@ -3,14 +3,28 @@
 import { BottomNavigation } from '@/components/biroumum/bottom-navigation';
 import { PageHeader } from '@/components/biroumum/page-header';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { type SharedData } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
-import { Building, Mail, User } from 'lucide-react';
+import { Head, router, usePage } from '@inertiajs/react';
+import { Building, LogOut, Mail, User } from 'lucide-react';
 
 export default function Profile() {
     const { auth } = usePage<SharedData>().props;
+
+    const handleLogout = () => {
+        router.post(
+            route('logout'),
+            {},
+            {
+                onSuccess: () => {
+                    //
+                },
+            },
+        );
+    };
+
     return (
         <>
             <Head title={auth?.user.name} />
@@ -48,14 +62,6 @@ export default function Profile() {
                                         </div>
                                     </div>
 
-                                    {/* <div className="flex items-center space-x-3">
-                                    <Phone className="h-5 w-5 text-gray-500" />
-                                    <div>
-                                        <Label className="text-sm text-gray-500">Telepon</Label>
-                                        <p className="font-medium">+62 812-3456-7890</p>
-                                    </div>
-                                </div> */}
-
                                     <div className="flex items-center space-x-3">
                                         <Building className="h-5 w-5 text-gray-500" />
                                         <div>
@@ -63,47 +69,19 @@ export default function Profile() {
                                             <p className="font-medium">{auth?.user?.unit_kerja}</p>
                                         </div>
                                     </div>
-
-                                    {/* <div className="flex items-center space-x-3">
-                                    <MapPin className="h-5 w-5 text-gray-500" />
-                                    <div>
-                                        <Label className="text-sm text-gray-500">Lokasi</Label>
-                                        <p className="font-medium">Jakarta, Indonesia</p>
-                                    </div>
-                                </div> */}
                                 </div>
                             </CardContent>
+                            <CardFooter className="flex justify-center">
+                                <Button
+                                    variant="outline"
+                                    onClick={handleLogout}
+                                    className="flex items-center space-x-2 border-red-200 bg-red-50 text-red-600"
+                                >
+                                    <LogOut className="h-4 w-4" />
+                                    <span>Logout</span>
+                                </Button>
+                            </CardFooter>
                         </Card>
-
-                        {/* Edit Profile Card */}
-                        {/* <Card>
-                        <CardHeader>
-                            <CardTitle>Edit Profil</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div>
-                                <Label htmlFor="name">Nama Lengkap</Label>
-                                <Input id="name" defaultValue="{auth?.user.name}" />
-                            </div>
-
-                            <div>
-                                <Label htmlFor="email">Email</Label>
-                                <Input id="email" type="email" defaultValue="dani.martinez@company.com" />
-                            </div>
-
-                            <div>
-                                <Label htmlFor="phone">Nomor Telepon</Label>
-                                <Input id="phone" defaultValue="+62 812-3456-7890" />
-                            </div>
-
-                            <div>
-                                <Label htmlFor="division">Divisi</Label>
-                                <Input id="division" defaultValue="Biro Umum" />
-                            </div>
-
-                            <Button className="w-full">Simpan Perubahan</Button>
-                        </CardContent>
-                    </Card> */}
                     </div>
                 </div>
 

@@ -8,11 +8,6 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
+Schedule::command('notifications:generate')->dailyAt('06:00');
 
-
-// Schedule::command('notifications:generate')
-//     ->dailyAt('11:28')
-//     ->withoutOverlapping();
-// ->onOneServer();
-
-Schedule::command('notifications:generate')->everyMinute();
+// Schedule::command('notifications:generate')->everyMinute();

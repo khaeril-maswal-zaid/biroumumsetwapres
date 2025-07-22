@@ -332,9 +332,9 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                             {/* Room Image */}
                             <div className="relative aspect-video w-full overflow-hidden rounded-lg">
                                 <img
-                                    src={selectedRoomDetail.image || '/placeholder.svg'}
+                                    src={`/storage/${selectedRoomDetail.image}` || '/placeholder.svg'}
                                     alt={selectedRoomDetail.nama_ruangan}
-                                    className="object-cover"
+                                    className="h-full w-full object-cover"
                                 />
                                 <div className="absolute top-2 right-2">{getStatusBadge(selectedRoomDetail)}</div>
                             </div>

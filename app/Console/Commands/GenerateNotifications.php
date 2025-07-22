@@ -19,7 +19,8 @@ class GenerateNotifications extends Command
     {
         $notificationService->generateOverdueNotifications();
         $notificationService->generateReminderNotifications();
+        $notificationService->destroyOldNotifications();
 
-        $this->info('Notifications generated successfully.');
+        $this->info('Notifications generated & old read notifications cleaned up.');
     }
 }
