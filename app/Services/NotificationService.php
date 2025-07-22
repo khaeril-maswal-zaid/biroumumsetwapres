@@ -136,10 +136,6 @@ class NotificationService
 
     protected function deleteOldReadNotifications()
     {
-        $threshold = Carbon::now()->subDays(3);
-
-        Notification::where('is_read', true)
-            // ->where('created_at', '<=', $threshold)
-            ->delete();
+        Notification::truncate();
     }
 }

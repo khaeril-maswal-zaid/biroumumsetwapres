@@ -1,5 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Bell } from 'lucide-react';
 
 interface DashboardHeaderProps {
     userName: string;
@@ -23,9 +22,9 @@ export function DashboardHeader({ userName }: DashboardHeaderProps) {
                     <p className="font-semibold">{userName}</p>
                 </div>
             </div>
-            <div className="flex items-center space-x-2">
+            {/* <div className="flex items-center space-x-2">
                 <Bell className="h-5 w-5 text-gray-600" />
-            </div>
+            </div> */}
         </div>
     );
 }
