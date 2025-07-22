@@ -23,7 +23,7 @@ import AppLogo from './app-logo';
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: route('dashboard.index'),
+        href: route('dashboard'),
         icon: LayoutDashboard, // ✅ lebih spesifik dari LayoutGrid
     },
     {

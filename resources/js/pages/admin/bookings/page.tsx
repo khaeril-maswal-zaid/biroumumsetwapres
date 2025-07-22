@@ -325,7 +325,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2">
                                             <MessageSquare className="h-5 w-5 text-blue-600" />
-                                            <h4 className="font-medium text-gray-900">Keputusan Admin</h4>
+                                            <h4 className="font-medium text-gray-900">Persetujuan:</h4>
                                         </div>
 
                                         {!actionType && (

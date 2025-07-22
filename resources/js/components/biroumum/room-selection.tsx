@@ -297,7 +297,7 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                                                         <div className="rounded-lg border border-red-200 bg-red-50 p-3">
                                                             <div className="flex items-center gap-2 text-sm text-red-800">
                                                                 <X className="h-4 w-4" />
-                                                                <span className="font-medium">Bentrok dengan jadwal:</span>
+                                                                <span className="font-medium">Ruang rapat sedang digunakan:</span>
                                                             </div>
                                                             <div className="mt-1 text-xs text-red-600">{room.bookedSlots.join(', ')}</div>
                                                         </div>

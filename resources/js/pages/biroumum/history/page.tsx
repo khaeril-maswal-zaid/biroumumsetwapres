@@ -17,7 +17,6 @@ import {
     Car,
     CheckCircle,
     Clock,
-    Hash,
     ImageIcon,
     MapPin,
     MessageSquare,
@@ -299,12 +298,13 @@ export default function RequestHistory({ requestHistory }: any) {
                                 <div className="flex flex-col gap-4 rounded-lg bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
                                     <div>
                                         <div className="mb-2 flex items-center gap-1">
-                                            <Clock className="h-4 w-4 text-gray-500" />
+                                            <Calendar className="h-4 w-4 text-gray-500" />
                                             <span className="text-xs text-gray-600">{formatDate(selectedRequest.created_at)}</span>
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            <Hash className="h-4 w-4 text-gray-500" />
-                                            <span className="font-mono text-sm font-medium text-gray-700">{selectedRequest.code}</span>
+                                            <span className="font-mono text-sm font-medium text-gray-700">
+                                                Kode Permintaan: {selectedRequest.code}
+                                            </span>
                                         </div>
                                     </div>
                                     <div className="text-right">{getStatusBadge(selectedRequest.status)}</div>
@@ -409,7 +409,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                     <AlertTriangle className="h-5 w-5 text-purple-600" />
                                                     <div>
                                                         <p className="font-medium text-gray-900">Nama Item Rusak</p>
-                                                        <p className="text-sm text-gray-600">{selectedRequest?.kategori.name}</p>
+                                                        <p className="text-sm text-gray-600">{selectedRequest?.kategori?.name}</p>
                                                     </div>
                                                 </div>
                                             </>
@@ -437,7 +437,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                         <span className="text-sm font-medium">{item.name}</span>
                                                     </div>
                                                     <Badge variant="outline" className="font-medium">
-                                                        {item.quantity} {item.unit}
+                                                        {item.requested} {item.unit}
                                                     </Badge>
                                                 </div>
                                             ))}
@@ -457,7 +457,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                     onClick={() => handleViewImage(photo)}
                                                 >
                                                     <img
-                                                        src={photo || '/placeholder.svg'}
+                                                        src={`/storage/${photo}` || '/placeholder.svg'}
                                                         alt={`Foto kerusakan ${index + 1}`}
                                                         className="object-cover"
                                                     />
@@ -565,7 +565,7 @@ export default function RequestHistory({ requestHistory }: any) {
                         </DialogHeader>
                         {selectedImage && (
                             <div className="relative aspect-video w-full">
-                                <img src={selectedImage || '/placeholder.svg'} alt="Foto kerusakan" className="object-contain" />
+                                <img src={`/storage/${selectedImage}` || '/placeholder.svg'} alt="Foto kerusakan" className="object-contain" />
                             </div>
                         )}
                         <DialogFooter>

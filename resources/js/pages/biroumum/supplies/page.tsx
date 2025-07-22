@@ -34,7 +34,7 @@ const FormSchema = z.object({
             }),
         )
         .min(1, 'Minimal satu barang harus dipilih'),
-    justification: z.string().min(1, 'Justifikasi tidak boleh kosong'),
+    justification: z.string().min(1, 'Keterangan tidak boleh kosong'),
     urgency: z.string().min(1, 'Pilih tingkat urgensi'),
     contact: z.string().min(1, 'Narahubung wajib diisi'),
 });
@@ -258,7 +258,7 @@ export default function SuppliesRequest({ availableATK }: any) {
 
                                 {/* Justifikasi */}
                                 <div>
-                                    <Label>Justifikasi Kebutuhan</Label>
+                                    <Label>Keterangan</Label>
                                     <Textarea
                                         {...register('justification')}
                                         placeholder="Jelaskan alasan kebutuhan..."
