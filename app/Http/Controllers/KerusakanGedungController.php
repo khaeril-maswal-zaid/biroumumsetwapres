@@ -99,7 +99,7 @@ class KerusakanGedungController extends Controller
     {
         $validated = $request->validate([
             'action' => 'required|in:pending,process,confirmed,cancelled',
-            'message' => 'required_if:action,cencelled|string|max:255',
+            'message' => 'required_if:action,cancelled|string|max:255',
         ]);
 
         if ($validated['action'] ==  'process') {

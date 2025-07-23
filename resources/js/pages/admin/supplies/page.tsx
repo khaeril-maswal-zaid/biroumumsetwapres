@@ -41,32 +41,38 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [adminMessage, setAdminMessage] = useState('');
-    const [actionType, setActionType] = useState<'approve' | 'reject' | null>(null);
+    const [actionType, setActionType] = useState<'confirmed' | 'reject' | null>(null);
     const [approvedQuantities, setApprovedQuantities] = useState<{ [key: string]: number }>({});
 
-    const handleSubmit = async (supplyCode: string) => {
+    const handleSubmit = (supplyCode: string) => {
         setIsProcessing(true);
-        router.patch(
-            route('permintaanatk.status', supplyCode),
-            {
-                item: approvedQuantities,
-                status: calculateRequestStatus(),
-                message: adminMessage,
+
+        const trimmedMessage = adminMessage.trim();
+
+        const payload: Record<string, any> = {
+            status: actionType,
+        };
+
+        // Hanya kirim jika tidak kosong
+        if (trimmedMessage !== '') {
+            payload.message = trimmedMessage;
+        }
+
+        payload.item = approvedQuantities;
+
+        router.patch(route('permintaanatk.status', supplyCode), payload, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setIsProcessing(false);
+                setIsDetailsOpen(false);
+                setAdminMessage('');
+                setActionType(null);
+                setApprovedQuantities({});
             },
-            {
-                preserveScroll: true,
-                onSuccess: () => {
-                    setIsProcessing(false);
-                    setIsDetailsOpen(false);
-                    setAdminMessage('');
-                    setActionType(null);
-                    setApprovedQuantities({});
-                },
-                onError: (errors) => {
-                    console.log('Validation Errors: ', errors);
-                },
+            onError: (errors) => {
+                console.log('Validation Errors: ', errors);
             },
-        );
+        });
     };
 
     // Filter supplies based on search term and status
@@ -107,7 +113,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
         setApprovedQuantities(initialQuantities);
     };
 
-    const handleActionClick = (action: 'approve' | 'reject') => {
+    const handleActionClick = (action: 'confirmed' | 'reject') => {
         setActionType(action);
         setAdminMessage('');
     };
@@ -146,12 +152,10 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
         switch (status) {
             case 'pending':
                 return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Menunggu</Badge>;
-            case 'approved':
-                return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Disetujui</Badge>;
-            case 'partial':
-                return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Sebagian</Badge>;
-            case 'rejected':
-                return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Ditolak</Badge>;
+            case 'process':
+                return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Proses</Badge>;
+            case 'confirmed':
+                return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Selesai</Badge>;
             default:
                 return <Badge variant="outline">Unknown</Badge>;
         }
@@ -392,7 +396,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                                             )}
                                                         </div>
 
-                                                        {selectedRequest.status === 'pending' && actionType === 'approve' && (
+                                                        {selectedRequest.status === 'pending' && actionType === 'confirmed' && (
                                                             <div className="flex items-center gap-2">
                                                                 <Label htmlFor={`qty-${item.id}`} className="text-sm whitespace-nowrap">
                                                                     Setujui:
@@ -488,7 +492,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                                 </Button>
                                                 <Button
                                                     className="flex-1 bg-green-600 hover:bg-green-700"
-                                                    onClick={() => handleActionClick('approve')}
+                                                    onClick={() => handleActionClick('confirmed')}
                                                 >
                                                     <CheckCircle className="mr-2 h-4 w-4" />
                                                     Proses Permintaan
@@ -499,17 +503,17 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                         {actionType && (
                                             <div className="space-y-4 rounded-lg border bg-gray-50 p-4">
                                                 <div className="flex items-center gap-2">
-                                                    {actionType === 'approve' ? (
+                                                    {actionType === 'confirmed' ? (
                                                         <CheckCircle className="h-5 w-5 text-green-600" />
                                                     ) : (
                                                         <AlertCircle className="h-5 w-5 text-red-600" />
                                                     )}
                                                     <h5 className="font-medium">
-                                                        {actionType === 'approve' ? 'Memproses Permintaan ATK' : 'Menolak Permintaan ATK'}
+                                                        {actionType === 'confirmed' ? 'Memproses Permintaan ATK' : 'Menolak Permintaan ATK'}
                                                     </h5>
                                                 </div>
 
-                                                {actionType === 'approve' && (
+                                                {actionType === 'confirmed' && (
                                                     <div className="rounded-md border border-blue-200 bg-blue-50 p-3">
                                                         <p className="mb-2 text-sm text-blue-800">
                                                             <strong>Status Permintaan:</strong>
@@ -532,16 +536,18 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                                     <Textarea
                                                         id="admin-message"
                                                         placeholder={
-                                                            actionType === 'approve'
+                                                            actionType === 'confirmed'
                                                                 ? 'Tambahkan catatan atau instruksi pengambilan ATK (opsional)...'
                                                                 : 'Jelaskan alasan penolakan permintaan ATK...'
                                                         }
                                                         value={adminMessage}
                                                         onChange={(e) => setAdminMessage(e.target.value)}
                                                         rows={3}
-                                                        className="resize-none"
+                                                        className="mt-1 resize-none"
                                                     />
-                                                    <p className="text-sm text-red-600">Pesan wajib diisi</p>
+                                                    {actionType === 'reject' && !adminMessage.trim() && (
+                                                        <p className="text-sm text-red-600">Pesan wajib diisi untuk penolakan</p>
+                                                    )}
                                                 </div>
 
                                                 <div className="flex gap-2 pt-2">
@@ -565,16 +571,16 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                                         onClick={() => {
                                                             handleSubmit(selectedRequest.kode_pelaporan);
                                                         }}
-                                                        disabled={isProcessing || adminMessage === ''}
+                                                        disabled={isProcessing}
                                                         className={
-                                                            actionType === 'approve'
+                                                            actionType === 'confirmed'
                                                                 ? 'bg-green-600 hover:bg-green-700'
                                                                 : 'bg-red-600 hover:bg-red-700'
                                                         }
                                                     >
                                                         {isProcessing
                                                             ? 'Memproses...'
-                                                            : actionType === 'approve'
+                                                            : actionType === 'confirmed'
                                                               ? 'Konfirmasi Persetujuan'
                                                               : 'Konfirmasi Penolakan'}
                                                     </Button>

@@ -24,7 +24,7 @@ class KerusakanGedungFactory extends Factory
             'lokasi' => 'Lantai ' . fake()->numberBetween(1, 5) . ', Ruang ' . fake()->numberBetween(101, 599),
             'kategori_kerusakan_id' => KategoriKerusakan::inRandomOrder()->first()?->id ?? 1,
             'item' => fake()->word(),
-            'deskripsi' => fake()->sentence(),
+            'deskripsi' => '',
             'picture' =>  [fake()->image('public/storage/image/kerusakan-gedung', 640, 480, null, false), fake()->image('public/storage/image/kerusakan-gedung', 640, 480, null, false)],
             'no_hp' => fake()->phoneNumber(),
             'urgensi' => fake()->randomElement(['rendah', 'sedang', 'tinggi']),

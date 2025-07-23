@@ -54,7 +54,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
-    const [adminMessage, setAdminMessage] = useState('');
+    const [adminMessage, setAdminMessage] = useState<string>('');
     const [actionType, setActionType] = useState<'cancelled' | 'confirmed' | null>(null);
 
     // Filter damages based on search term and status
@@ -70,7 +70,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
     });
 
     const handleViewDetails = (damage: any) => {
-        if (damage.statusX === 'pending') {
+        if (damage.status === 'pending') {
             router.patch(
                 route('kerusakangedung.status', damage.kode_pelaporan),
                 {
@@ -105,25 +105,30 @@ export default function DamagesAdmin({ kerusakan }: any) {
 
     const handleSubmit = (raportCode: string) => {
         setIsProcessing(true);
-        router.patch(
-            route('kerusakangedung.status', raportCode),
-            {
-                action: actionType,
-                message: adminMessage,
+
+        const trimmedMessage = adminMessage.trim();
+
+        const payload: Record<string, any> = {
+            action: actionType,
+        };
+
+        // Hanya kirim jika tidak kosong
+        if (trimmedMessage !== '') {
+            payload.message = trimmedMessage;
+        }
+
+        router.patch(route('kerusakangedung.status', raportCode), payload, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setIsProcessing(false);
+                setIsDetailsOpen(false);
+                setAdminMessage('');
+                setActionType(null);
             },
-            {
-                preserveScroll: true,
-                onSuccess: () => {
-                    setIsProcessing(false);
-                    setIsDetailsOpen(false);
-                    setAdminMessage('');
-                    setActionType(null);
-                },
-                onError: (errors) => {
-                    console.log('Validation Errors: ', errors);
-                },
+            onError: (errors) => {
+                console.log('Validation Errors: ', errors);
             },
-        );
+        });
     };
 
     const getStatusBadge = (status: string) => {
@@ -455,7 +460,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                         value={adminMessage}
                                                         onChange={(e) => setAdminMessage(e.target.value)}
                                                         rows={3}
-                                                        className="mt-0.5 resize-none"
+                                                        className="mt-1 resize-none"
                                                     />
 
                                                     {actionType === 'cancelled' && !adminMessage.trim() && (
@@ -478,7 +483,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                         onClick={() => {
                                                             handleSubmit(selectedDamage.kode_pelaporan);
                                                         }}
-                                                        disabled={isProcessing || adminMessage === ''}
+                                                        disabled={isProcessing || (actionType === 'cancelled' && !adminMessage.trim())}
                                                         className={
                                                             actionType === 'confirmed'
                                                                 ? 'bg-green-600 hover:bg-green-700'

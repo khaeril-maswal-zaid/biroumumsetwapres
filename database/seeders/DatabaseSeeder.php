@@ -29,8 +29,8 @@ class DatabaseSeeder extends Seeder
         User::factory()->pegawai()->create();
         User::factory()->atasan()->create();
 
-        PermintaanAtk::factory(2)->create();
-        PemesananRuangRapat::factory(50)->create();
-        KerusakanGedung::factory(50)->create();
+        PermintaanAtk::factory(50)->create();
+        PemesananRuangRapat::factory(2)->create();
+        KerusakanGedung::factory(2)->create();
     }
 }

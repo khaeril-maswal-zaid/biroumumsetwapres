@@ -29,10 +29,10 @@ class PemesananRuangRapatFactory extends Factory
             'jam_mulai' => $jamMulai->format('H:i'),
             'jam_selesai' => $jamSelesai->format('H:i'),
             'daftar_ruangan_id' => DaftarRuangan::inRandomOrder()->first()?->id ?? 1,
-            'deskripsi' => fake()->sentence(),
+            'deskripsi' => '',
             'no_hp' => fake()->phoneNumber(),
             'kode_booking' => 'RRT-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
-            'status' => fake()->randomElement(['pending', 'confirmed', 'cancelled']),
+            'status' => fake()->randomElement(['pending',]), //['pending', 'confirmed', 'cancelled']
             'keterangan' => fake()->text(250),
         ];
     }

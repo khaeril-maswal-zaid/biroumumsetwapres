@@ -87,14 +87,20 @@ class PermintaanAtkController extends Controller
     public function status(PermintaanAtk $permintaanAtk, Request $request)
     {
         $validated = $request->validate([
-            'status' => 'required|in:partial,approved,rejected',
-            'message' => 'nullable|string|max:255',
+            'status' => 'required|in:pending,process,confirmed,reject',
+            'message' => 'required_if:action,rejected|string|max:255',
             'item' => 'array',
         ], [
             'status.required' => 'Status wajib diisi.',
-            'status.in' => 'Status harus salah satu dari: pending, approved, rejected.',
+            'status.in' => 'Status harus salah satu dari: Tolak, Proses dan Selesai.',
             'item.required' => 'Item tidak boleh kosong.',
         ]);
+
+        if ($validated['status'] ==  'process') {
+            $status = 'process';
+        } else {
+            $status = 'confirmed';
+        }
 
         $inputItems = $validated['item'];
 
@@ -108,11 +114,22 @@ class PermintaanAtkController extends Controller
             return $item;
         });
 
-        $permintaanAtk->update([
+        $updateData = collect([
+            'status' => $status,
             'daftar_kebutuhan' => $updatedItems,
-            'status' => $validated['status'],
-            'keterangan' => $validated['message'],
         ]);
+
+        if (isset($validated['message'])) {
+            $updateData->put('keterangan', $validated['message']);
+        }
+
+        $permintaanAtk->update($updateData->all());
+
+        // $permintaanAtk->update([
+        //     'daftar_kebutuhan' => $updatedItems,
+        //     'status' =>  $status,
+        //     'keterangan' => $validated['message'],
+        // ]);
     }
 
 
