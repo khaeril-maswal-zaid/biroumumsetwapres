@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { AlertTriangle, Calendar, Car, Clock, Home, Package, TrendingUp } from 'lucide-react';
+import { AlertTriangle, Calendar, Car, Clock, Home, Package } from 'lucide-react';
 import { useEffect } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -77,12 +77,14 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
                                 {iconMap[item.icon]}
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{item.total}</div>
+                                <div className="text-2xl font-bold">
+                                    {item.total} <span className="text-sm">Total {item.title.split(' ')[0]}</span>
+                                </div>
                                 <p className="text-xs text-muted-foreground">{item.pending} menunggu persetujuan</p>
-                                <div className="flex items-center pt-1">
+                                {/* <div className="flex items-center pt-1">
                                     <TrendingUp className="mr-1 h-3 w-3 text-green-500" />
                                     <span className="text-xs text-green-600">{item.todayBookings} hari ini</span>
-                                </div>
+                                </div> */}
                             </CardContent>
                         </Card>
                     ))}
@@ -93,12 +95,14 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
                             <Car className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">123</div>
+                            <div className="text-2xl font-bold">
+                                123 <span className="text-sm">Total Permintaan</span>
+                            </div>
                             <p className="text-xs text-muted-foreground">123 menunggu persetujuan</p>
-                            <div className="flex items-center pt-1">
+                            {/* <div className="flex items-center pt-1">
                                 <Car className="mr-1 h-3 w-3 text-green-500" />
                                 <span className="text-xs text-green-600">123 perjalanan aktif</span>
-                            </div>
+                            </div> */}
                         </CardContent>
                     </Card>
                 </div>
@@ -112,7 +116,7 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
-                                {recentActivities.map((activity) => (
+                                {recentActivities.map((activity: any) => (
                                     <div key={activity.id} className="mb-2 flex items-center justify-between rounded-lg border p-3">
                                         <div className="flex items-center gap-3">
                                             {getActivityIcon(activity.type)}
@@ -133,11 +137,11 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
                     <Card>
                         <CardHeader>
                             <CardTitle>Jadwal Pemesanan Ruangan Terdekat</CardTitle>
-                            <CardDescription>Ruangan yang akan digunakan dalam 3 hari ke depan</CardDescription>
+                            <CardDescription>Ruangan yang akan digunakan dalam 5 hari ke depan</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
-                                {upcomingBookings.map((booking) => (
+                                {upcomingBookings.map((booking: any) => (
                                     <div key={booking.id} className="flex items-center justify-between rounded-lg border p-3">
                                         <div className="flex items-center gap-3">
                                             <Calendar className="h-4 w-4 text-blue-600" />

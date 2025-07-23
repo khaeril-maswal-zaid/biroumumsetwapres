@@ -400,7 +400,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                 <div className="flex items-center gap-3">
                                                     <Wrench className="h-5 w-5 text-purple-600" />
                                                     <div>
-                                                        <p className="font-medium text-gray-900">Jenis Kerusakan</p>
+                                                        <p className="font-medium text-gray-900">Nama Item Rusak</p>
                                                         <p className="text-sm text-gray-600">{selectedRequest.title}</p>
                                                     </div>
                                                 </div>
@@ -408,7 +408,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                 <div className="flex items-center gap-3">
                                                     <AlertTriangle className="h-5 w-5 text-purple-600" />
                                                     <div>
-                                                        <p className="font-medium text-gray-900">Nama Item Rusak</p>
+                                                        <p className="font-medium text-gray-900">Kategori Kerusakan</p>
                                                         <p className="text-sm text-gray-600">{selectedRequest?.kategori?.name}</p>
                                                     </div>
                                                 </div>
@@ -418,8 +418,8 @@ export default function RequestHistory({ requestHistory }: any) {
                                         <div>
                                             <p className="mb-2 font-medium text-gray-900">
                                                 {selectedRequest && selectedRequest.id === 'booking' && 'Keperluan/ Kegiatan'}
-                                                {selectedRequest && selectedRequest.id === 'supplies' && 'Justifikasi Permintaan'}
-                                                {selectedRequest && selectedRequest.id === 'damage' && 'Deskripsi Kerusakan'}
+                                                {selectedRequest && selectedRequest.id === 'supplies' && 'Keterangan'}
+                                                {selectedRequest && selectedRequest.id === 'damage' && 'Keterangan'}
                                             </p>
                                             <p className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">{selectedRequest.deskripsi}</p>
                                         </div>
@@ -461,7 +461,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                         alt={`Foto kerusakan ${index + 1}`}
                                                         className="object-cover"
                                                     />
-                                                    <div className="bg-opacity-0 hover:bg-opacity-10 absolute inset-0 flex items-center justify-center bg-black transition-all">
+                                                    <div className="bg-opacity-0 hover:bg-opacity-10 absolute inset-0 flex items-center justify-center transition-all">
                                                         <ImageIcon className="h-6 w-6 text-white opacity-0 transition-opacity hover:opacity-100" />
                                                     </div>
                                                 </div>

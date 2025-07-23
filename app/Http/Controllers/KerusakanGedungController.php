@@ -38,7 +38,7 @@ class KerusakanGedungController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreKerusakanGedungRequest $request, KategoriKerusakan $kategoriKerusakan)
+    public function store(StoreKerusakanGedungRequest $request)
     {
         $photoPaths = [];
 
@@ -50,14 +50,13 @@ class KerusakanGedungController extends Controller
 
         KerusakanGedung::create([
             'user_id' => Auth::id(),
-            'kategori_kerusakan_id' => $kategoriKerusakan->id,
+            'kategori_kerusakan_id' => $idKat,
             'lokasi' => $request->location,
             'item' => $request->damageType,
-            'kategori' =>  $idKat,
             'deskripsi' => $request->description,
             'picture' => $photoPaths,
             'urgensi' => $request->urgency,
-            'kode_pelaporan' => 'Kgd-' . now()->format('Ymd') . '-' . strtoupper(Str::random(5)),
+            'kode_pelaporan' => 'KGD-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'no_hp' => $request->contact,
             'status' => 'pending',
             'keterangan' => $request->location,
@@ -99,13 +98,18 @@ class KerusakanGedungController extends Controller
     public function status(KerusakanGedung $kerusakanGedung, Request $request)
     {
         $validated = $request->validate([
-            'action' => 'required|in:confirmed,in_progress,cancelled',
-            'message' => 'required_unless:action,confirmed|string|max:255',
+            'action' => 'required|in:pending,process,confirmed,cancelled',
+            'message' => 'required_if:action,cencelled|string|max:255',
         ]);
 
+        if ($validated['action'] ==  'process') {
+            $status = 'process';
+        } else {
+            $status = 'confirmed';
+        }
 
         $updateData = collect([
-            'status' => $validated['action'],
+            'status' => $status,
         ]);
 
         if (isset($validated['message'])) {

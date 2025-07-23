@@ -46,7 +46,7 @@ class PermintaanAtkController extends Controller
             'deskripsi' => $request->justification,
             'urgensi' => $request->urgency,
             'no_hp' => $request->contact,
-            'kode_pelaporan' => 'Atk-' . now()->format('Ymd') . '-' . strtoupper(Str::random(5)),
+            'kode_pelaporan' => 'ATK-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'status' => 'pending',
             'keterangan' => '',
         ]);

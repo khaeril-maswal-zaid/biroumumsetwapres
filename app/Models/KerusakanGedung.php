@@ -19,6 +19,7 @@ class KerusakanGedung extends Model
 
     protected $fillable = [
         'user_id',
+        'kategori_kerusakan_id',
         'lokasi',
         'item',
         'deskripsi',

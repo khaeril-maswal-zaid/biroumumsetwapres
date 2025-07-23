@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { AlertCircle, Calendar, CheckCircle, Clock, Hash, MessageSquare, NotebookText, Search, Users, X } from 'lucide-react';
+import { AlertCircle, Calendar, CheckCircle, Clock, MessageSquare, NotebookText, Search, Users, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -29,7 +29,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
             router.reload({
                 only: ['bookingRooms'],
             });
-        }, 1 * 1000); // 60 detik
+        }, 60 * 1000); // 60 detik
 
         return () => clearInterval(interval);
     }, []);
@@ -220,8 +220,9 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                             <span className="text-xs text-gray-600">{formatTanggalIna(selectedBooking.created_at)}</span>
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            <Hash className="h-4 w-4 text-gray-500" />
-                                            <span className="font-mono text-sm font-medium text-gray-700">{selectedBooking.kode_booking}</span>
+                                            <span className="font-mono text-sm font-medium text-gray-700">
+                                                Kode Permintaan: {selectedBooking.kode_booking}
+                                            </span>
                                         </div>
                                     </div>
                                     <div className="text-right">{getStatusBadge(selectedBooking.status)}</div>

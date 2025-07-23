@@ -133,7 +133,7 @@ class PemesananRuangRapatController extends Controller
             'daftar_ruangan_id' => $room->id,
             'deskripsi' => $request->purpose,
             'no_hp' => $request->contact,
-            'kode_booking' => 'Rpt-' . now()->format('Ymd') . '-' . strtoupper(Str::random(5)),
+            'kode_booking' => 'RRT-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'keterangan' => '',
             'status' => 'pending',
         ]);

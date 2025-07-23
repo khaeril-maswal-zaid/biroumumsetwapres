@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { AlertCircle, CheckCircle, Clock, Hash, MessageSquare, NotebookText, Package, Search, User, X } from 'lucide-react';
+import { AlertCircle, CheckCircle, MessageSquare, NotebookText, Package, Search, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -302,8 +302,9 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                             <span className="text-xs text-gray-600">{formatDate(selectedRequest.created_at)}</span>
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            <Hash className="h-4 w-4 text-gray-500" />
-                                            <span className="font-mono text-sm font-medium text-gray-700">{selectedRequest.kode_pelaporan}</span>
+                                            <span className="font-mono text-sm font-medium text-gray-700">
+                                                Kode Permintaan: {selectedRequest.kode_pelaporan}
+                                            </span>
                                         </div>
                                     </div>
                                     <div className="text-right">{getStatusBadge(selectedRequest.status)}</div>
@@ -321,23 +322,26 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                             </div>
                                         </div>
 
-                                        <div className="flex items-start gap-3">
-                                            <Clock className="mt-0.5 h-5 w-5 text-green-600" />
+                                        <div className="flex items-center gap-3">
+                                            <AlertCircle className="h-5 w-5 text-purple-600" />
                                             <div>
-                                                <p className="font-medium text-gray-900">Lokasi</p>
-                                                <p className="text-sm text-gray-600">{formatDate(selectedRequest.created_at)}</p>
+                                                <p className="font-medium text-gray-900">Tingkat Urgensi</p>
+                                                {getUrgencyBadge(selectedRequest.urgensi)}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-3">
+                                            <Package className="h-5 w-5 text-green-600" />
+                                            <div>
+                                                <p className="font-medium text-gray-900">Total Item</p>
+                                                <p className="text-sm text-gray-600">{selectedRequest.daftar_kebutuhan.length} jenis barang</p>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-3">
-                                            <Package className="h-5 w-5 text-purple-600" />
-                                            <div>
-                                                <p className="font-medium text-gray-900">Total Item</p>
-                                                <p className="text-sm text-gray-600">{selectedRequest.daftar_kebutuhan.length} jenis item</p>
-                                            </div>
-                                        </div>
+                                    <div>
+                                        <p className="mb-2 font-medium text-gray-900">Keterangan</p>
+                                        <p className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">{selectedRequest.deskripsi}</p>
                                     </div>
                                 </div>
 

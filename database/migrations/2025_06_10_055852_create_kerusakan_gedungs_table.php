@@ -22,7 +22,7 @@ return new class extends Migration
             $table->enum('urgensi', ['rendah', 'sedang', 'tinggi']);
             $table->string('no_hp', 25);
             $table->string('kode_pelaporan', 50)->unique();
-            $table->enum('status', ['pending', 'confirmed', 'cancelled']);
+            $table->enum('status', ['pending', 'process', 'confirmed']);
             $table->string('keterangan', 255); //from admin
 
             $table->timestamps();

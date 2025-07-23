@@ -28,7 +28,7 @@ const schema = z.object({
     location: z.string().min(5, 'Lokasi wajib diisi'),
     damageType: z.string().min(3, 'Nama Item wajib diisi'),
     kategori: z.string().min(3, 'Nama Item wajib diisi'),
-    description: z.string().min(5, 'Deskripsi wajib diisi'),
+    description: z.string().min(5, 'Keterangan wajib diisi'),
     urgency: z.enum(['rendah', 'sedang', 'tinggi'], {
         required_error: 'Tingkat urgensi wajib dipilih',
     }),
@@ -64,7 +64,7 @@ export default function DamageReport({ kategoriKerusakan }: any) {
 
     const onSubmit = (data: FormData) => {
         router.post(
-            route('kerusakangedung.store', data.kategori),
+            route('kerusakangedung.store'),
             { ...data, photos },
             {
                 onError: (errors) => {
@@ -185,7 +185,12 @@ export default function DamageReport({ kategoriKerusakan }: any) {
                                     </div>
                                     <div>
                                         <Label htmlFor="location">Lokasi Kerusakan</Label>
-                                        <Input id="location" {...register('location')} className={`mt-1 ${errors.location && 'border-red-500'}`} />
+                                        <Input
+                                            id="location"
+                                            {...register('location')}
+                                            className={`mt-1 ${errors.location && 'border-red-500'}`}
+                                            placeholder="Exp: Gedung 1 Lt.5 Ruangan IT"
+                                        />
                                         {errors.location && <p className="mt-1 text-sm text-red-500">{errors.location.message}</p>}
                                     </div>
                                     <div>
@@ -221,7 +226,7 @@ export default function DamageReport({ kategoriKerusakan }: any) {
                                         {errors.kategori && <p className="mt-1 text-sm text-red-500">{errors.kategori.message}</p>}
                                     </div>
                                     <div>
-                                        <Label htmlFor="description">Deskripsi Kerusakan</Label>
+                                        <Label htmlFor="description">Keterangan</Label>
                                         <Textarea
                                             id="description"
                                             {...register('description')}

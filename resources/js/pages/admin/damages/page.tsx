@@ -17,7 +17,6 @@ import {
     AlertCircle,
     AlertTriangle,
     CheckCircle,
-    Hash,
     ImageIcon,
     MapPin,
     MessageSquare,
@@ -71,6 +70,25 @@ export default function DamagesAdmin({ kerusakan }: any) {
     });
 
     const handleViewDetails = (damage: any) => {
+        if (damage.statusX === 'pending') {
+            router.patch(
+                route('kerusakangedung.status', damage.kode_pelaporan),
+                {
+                    action: 'process',
+                },
+                {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        //
+                    },
+                    onError: (errors) => {
+                        console.log('Validation Errors: ', errors);
+                    },
+                },
+            );
+        }
+
+        setActionType(null);
         setSelectedDamage(damage);
         setIsDetailsOpen(true);
     };
@@ -85,7 +103,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
         setIsImageViewerOpen(true);
     };
 
-    const handleSubmit = async (raportCode: string) => {
+    const handleSubmit = (raportCode: string) => {
         setIsProcessing(true);
         router.patch(
             route('kerusakangedung.status', raportCode),
@@ -112,10 +130,10 @@ export default function DamagesAdmin({ kerusakan }: any) {
         switch (status) {
             case 'pending':
                 return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Menunggu</Badge>;
+            case 'process':
+                return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Proses</Badge>;
             case 'confirmed':
                 return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Selesai</Badge>;
-            case 'cancelled':
-                return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Ditolak</Badge>;
             default:
                 return <Badge variant="outline">Unknown</Badge>;
         }
@@ -255,8 +273,9 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                             <span className="text-xs text-gray-600">{formatTanggalIna(selectedDamage.created_at)}</span>
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            <Hash className="h-4 w-4 text-gray-500" />
-                                            <span className="font-mono text-sm font-medium text-gray-700">{selectedDamage.kode_pelaporan}</span>
+                                            <span className="font-mono text-sm font-medium text-gray-700">
+                                                Kode Permintaan: {selectedDamage.kode_pelaporan}
+                                            </span>
                                         </div>
                                     </div>
                                     <div className="text-right">{getStatusBadge(selectedDamage.status)}</div>
@@ -303,13 +322,13 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                         <div className="flex items-center gap-3">
                                             <AlertTriangle className="h-5 w-5 text-purple-600" />
                                             <div>
-                                                <p className="font-medium text-gray-900">Nama Item Rusak</p>
+                                                <p className="font-medium text-gray-900">Kategori Kerusakan</p>
                                                 <p className="text-sm text-gray-600">{selectedDamage?.kategori.name}</p>
                                             </div>
                                         </div>
 
                                         <div>
-                                            <p className="mb-2 font-medium text-gray-900">Deskripsi Kerusakan</p>
+                                            <p className="mb-2 font-medium text-gray-900">Keterangan</p>
                                             <p className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">{selectedDamage.deskripsi}</p>
                                         </div>
                                     </div>
@@ -327,11 +346,11 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                     onClick={() => handleViewImage(photo)}
                                                 >
                                                     <img
-                                                        src={photo || '/placeholder.svg'}
+                                                        src={`/storage/${photo}` || '/placeholder.svg'}
                                                         alt={`Foto kerusakan ${index + 1}`}
                                                         className="object-cover"
                                                     />
-                                                    <div className="bg-opacity-0 hover:bg-opacity-10 absolute inset-0 flex items-center justify-center bg-black transition-all">
+                                                    <div className="bg-opacity-0 hover:bg-opacity-10 absolute inset-0 flex items-center justify-center transition-all">
                                                         <ImageIcon className="h-6 w-6 text-white opacity-0 transition-opacity hover:opacity-100" />
                                                     </div>
                                                 </div>
@@ -342,7 +361,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
 
                                 {/* Admin Message Display for Approved/Rejected */}
                                 {selectedDamage.keterangan &&
-                                    selectedDamage.status !== 'pending' &&
+                                    selectedDamage.status === 'confirmed' &&
                                     (() => {
                                         // Mapping warna berdasarkan status
                                         const colorMap: any = {
@@ -379,7 +398,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                 <Separator />
 
                                 {/* Action Section */}
-                                {selectedDamage.status === 'pending' && (
+                                {(selectedDamage.status === 'pending' || selectedDamage.status === 'process') && (
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2">
                                             <MessageSquare className="h-5 w-5 text-green-600" />
@@ -388,7 +407,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
 
                                         {!actionType && (
                                             <div className="flex gap-2">
-                                                {selectedDamage.status === 'pending' && (
+                                                {(selectedDamage.status === 'pending' || selectedDamage.status === 'process') && (
                                                     <>
                                                         <Button
                                                             variant="outline"
@@ -439,7 +458,9 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                         className="mt-0.5 resize-none"
                                                     />
 
-                                                    <p className="text-sm text-red-600">Pesan wajib diisi</p>
+                                                    {actionType === 'cancelled' && !adminMessage.trim() && (
+                                                        <p className="text-sm text-red-600">Pesan wajib diisi untuk penolakan</p>
+                                                    )}
                                                 </div>
 
                                                 <div className="flex gap-2 pt-2">

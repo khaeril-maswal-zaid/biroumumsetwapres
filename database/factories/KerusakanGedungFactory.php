@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\KategoriKerusakan;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\KerusakanGedung>
@@ -27,8 +28,8 @@ class KerusakanGedungFactory extends Factory
             'picture' =>  [fake()->image('public/storage/image/kerusakan-gedung', 640, 480, null, false), fake()->image('public/storage/image/kerusakan-gedung', 640, 480, null, false)],
             'no_hp' => fake()->phoneNumber(),
             'urgensi' => fake()->randomElement(['rendah', 'sedang', 'tinggi']),
-            'kode_pelaporan' => fake()->unique()->bothify('LP-########'),
-            'status' => fake()->randomElement(['pending', 'confirmed', 'cancelled']),
+            'kode_pelaporan' => 'KGD-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
+            'status' => fake()->randomElement(['pending',]), //['pending', 'process', 'confirmed']
             'keterangan' => fake()->text(250),
         ];
     }

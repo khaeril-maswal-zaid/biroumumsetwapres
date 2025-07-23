@@ -372,7 +372,7 @@ class PemesananRuangRapat extends Model
     {
 
         $today = Carbon::today();
-        $daysLater = Carbon::today()->addDays(3);
+        $daysLater = Carbon::today()->addDays(5);
 
         $upcomingBookings = PemesananRuangRapat::with(['ruangans', 'pemesan'])
             ->whereBetween('tanggal_penggunaan', [$today, $daysLater])

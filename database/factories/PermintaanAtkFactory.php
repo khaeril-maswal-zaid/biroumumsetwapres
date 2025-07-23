@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PermintaanAtk>
@@ -61,8 +62,8 @@ class PermintaanAtkFactory extends Factory
             'deskripsi' => fake()->sentence(),
             'urgensi' => fake()->randomElement(['normal', 'mendesak', 'segera']),
             'no_hp' => fake()->phoneNumber(),
-            'kode_pelaporan' => fake()->unique()->bothify('PL-########'),
-            'status' => fake()->randomElement(['pending', 'approved', 'partial', 'rejected']),
+            'kode_pelaporan' => 'ATK-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
+            'status' => fake()->randomElement(['pending']), //['pending', 'process', 'confirmed']
             'keterangan' => fake()->text(250),
         ];
     }

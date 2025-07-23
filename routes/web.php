@@ -26,7 +26,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Laporan Kerusakan Gedung (report_damage)
     Route::get('/lapor-kerusakan-gedung', [KerusakanGedungController::class, 'create'])
         ->name('kerusakangedung.create')->middleware('permission:report_damage');
-    Route::post('/kerusakan-gedung/store/{kategoriKerusakan:kode_kerusakan}', [KerusakanGedungController::class, 'store'])
+    Route::post('/kerusakan-gedung/store', [KerusakanGedungController::class, 'store'])
         ->name('kerusakangedung.store')->middleware('permission:report_damage');
 
     //Aksi ubah status kerusakan (change_damage_status)
