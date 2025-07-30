@@ -42,6 +42,7 @@ class PermintaanAtkController extends Controller
     {
         PermintaanAtk::create([
             'user_id' => Auth::id(),
+            'unit_kerja' => $request->unit_kerja,
             'daftar_kebutuhan' => $request->items ?? [],
             'deskripsi' => $request->justification,
             'urgensi' => $request->urgency,

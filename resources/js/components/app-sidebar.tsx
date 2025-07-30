@@ -16,7 +16,6 @@ import {
     LayoutDashboard,
     LockKeyhole,
     PackageCheck,
-    Users2,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -83,11 +82,11 @@ const footerNavItems: NavItem[] = [
         href: route('daftarkerusakan.index'),
         icon: Hammer, // sama seperti atas
     },
-    {
-        title: 'Manajemen Pengguna',
-        href: route('user.index'),
-        icon: Users2, // lebih modern variasi
-    },
+    // {
+    //     title: 'Manajemen Pengguna',
+    //     href: route('user.index'),
+    //     icon: Users2, // lebih modern variasi
+    // },
     {
         title: 'Pengaturan Akses',
         href: route('roles.index'),

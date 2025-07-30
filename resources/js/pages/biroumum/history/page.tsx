@@ -429,16 +429,62 @@ export default function RequestHistory({ requestHistory }: any) {
                                 {selectedRequest.id === 'supplies' && (
                                     <>
                                         <p className="mb-3 font-medium text-gray-900">Daftar Barang yang Diminta</p>
-                                        <div className="space-y-2">
+                                        <div className="space-y-3">
                                             {selectedRequest.daftarkebutuhan.map((item: any, index: number) => (
-                                                <div key={index} className="flex items-center justify-between rounded-lg border bg-gray-50 p-3">
-                                                    <div className="flex items-center gap-3">
+                                                <div key={index} className="rounded-lg border bg-gray-50 p-4">
+                                                    <div className="mb-3 flex items-center gap-3">
                                                         <Package className="h-4 w-4 text-gray-500" />
-                                                        <span className="text-sm font-medium">{item.name}</span>
+                                                        <span className="flex-1 text-sm font-medium">{item.name}</span>
                                                     </div>
-                                                    <Badge variant="outline" className="font-medium">
-                                                        {item.requested} {item.unit}
-                                                    </Badge>
+
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div className="text-center">
+                                                            <p className="mb-1 text-xs text-gray-500">Diminta</p>
+                                                            <Badge variant="outline" className="border-blue-200 bg-blue-50 font-medium text-blue-700">
+                                                                {item.requested} {item.unit}
+                                                            </Badge>
+                                                        </div>
+
+                                                        <div className="text-center">
+                                                            <p className="mb-1 text-xs text-gray-500">Disetujui</p>
+                                                            <Badge
+                                                                variant="outline"
+                                                                className={`font-medium ${
+                                                                    item.approved
+                                                                        ? item.approved === item.requested
+                                                                            ? 'border-green-200 bg-green-50 text-green-700'
+                                                                            : 'border-yellow-200 bg-yellow-50 text-yellow-700'
+                                                                        : 'border-gray-200 bg-gray-50 text-gray-500'
+                                                                }`}
+                                                            >
+                                                                {item.approved ? `${item.approved} ${item.unit}` : 'Belum diproses'}
+                                                            </Badge>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Status indicator */}
+                                                    {selectedRequest.status !== 'pending' && (
+                                                        <div className="mt-2 border-t border-gray-200 pt-2">
+                                                            <div className="flex items-center justify-center gap-1">
+                                                                {item.approved === item.requested ? (
+                                                                    <>
+                                                                        <CheckCircle className="h-3 w-3 text-green-600" />
+                                                                        <span className="text-xs text-green-600">Disetujui penuh</span>
+                                                                    </>
+                                                                ) : item.approved > 0 ? (
+                                                                    <>
+                                                                        <AlertCircle className="h-3 w-3 text-yellow-600" />
+                                                                        <span className="text-xs text-yellow-600">Disetujui sebagian</span>
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <AlertTriangle className="h-3 w-3 text-red-600" />
+                                                                        <span className="text-xs text-red-600">Tidak disetujui</span>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ))}
                                         </div>

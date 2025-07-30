@@ -50,6 +50,7 @@ class KerusakanGedungController extends Controller
 
         KerusakanGedung::create([
             'user_id' => Auth::id(),
+            'unit_kerja' => $request->unit_kerja,
             'kategori_kerusakan_id' => $idKat,
             'lokasi' => $request->location,
             'item' => $request->damageType,

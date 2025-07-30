@@ -163,7 +163,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('kerusakangedung.reports')
         ->middleware('permission:view_admin_dashboard');
 
-    Route::get('/dashboard/manajemen-pengguna', [HomeController::class, 'users'])
+    Route::get('/dashboard/manajemen-pengguna', [UserController::class, 'users'])
         ->name('user.index')
         ->middleware('permission:view_admin_dashboard');
 

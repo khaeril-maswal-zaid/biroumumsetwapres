@@ -20,4 +20,11 @@ class UserController extends Controller
     {
         $user->syncRoles([$request->selectedUserRole]);
     }
+
+    public function users()
+    {
+        return Inertia::render('admin/users/page', [
+            'users' => User::select(['name', 'email', 'nip', 'unit_kerja'])->paginate(15)
+        ]);
+    }
 }

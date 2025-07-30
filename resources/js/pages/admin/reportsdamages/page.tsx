@@ -88,12 +88,12 @@ export default function DamageReports({
                                             <Icon className="h-4 w-4 text-muted-foreground" />
                                         </CardHeader>
                                         <CardContent>
-                                            <div className="text-2xl font-bold">{item.value}</div>
-                                            <div className="flex items-center text-xs text-muted-foreground">
+                                            <div className="text-4xl font-bold">{item.value}</div>
+                                            {/* <div className="flex items-center text-xs text-muted-foreground">
                                                 <TrendIcon className={`mr-1 h-3 w-3 ${trendColor}`} />
                                                 {trendPrefix}
                                                 {Math.abs(item.change)} dari bulan lalu
-                                            </div>
+                                            </div> */}
                                         </CardContent>
                                     </Card>
                                 );

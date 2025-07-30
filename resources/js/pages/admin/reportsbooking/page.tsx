@@ -17,91 +17,6 @@ const iconMap: any = {
     pending: MapPin,
 };
 
-// Mock data for weekly booking schedule
-const weeklySchedule = [
-    {
-        room: 'Ruang Rapat A',
-        bookings: {
-            monday: [{ time: '09:00-11:00', user: 'Dani Martinez', purpose: 'Rapat Koordinasi' }],
-            tuesday: [
-                { time: '10:00-12:00', user: 'Siti Aminah', purpose: 'Presentasi' },
-                { time: '14:00-16:00', user: 'Budi Santoso', purpose: 'Training' },
-            ],
-            wednesday: [],
-            thursday: [{ time: '13:00-15:00', user: 'Dewi Lestari', purpose: 'Meeting Klien' }],
-            friday: [{ time: '09:00-10:30', user: 'Rudi Hartono', purpose: 'Workshop' }],
-            saturday: [],
-            sunday: [],
-        },
-    },
-    {
-        room: 'Ruang Rapat B',
-        bookings: {
-            monday: [{ time: '14:00-16:00', user: 'Ahmad Fauzi', purpose: 'Rapat Koordinasi' }],
-            tuesday: [],
-            wednesday: [
-                { time: '09:00-11:00', user: 'Lisa Permata', purpose: 'Presentasi' },
-                { time: '13:00-14:30', user: 'Eko Prasetyo', purpose: 'Training' },
-            ],
-            thursday: [],
-            friday: [{ time: '10:00-12:00', user: 'Maya Sari', purpose: 'Meeting Klien' }],
-            saturday: [{ time: '09:00-12:00', user: 'Toni Wijaya', purpose: 'Workshop' }],
-            sunday: [],
-        },
-    },
-    {
-        room: 'Ruang Rapat C',
-        bookings: {
-            monday: [],
-            tuesday: [{ time: '09:00-10:00', user: 'Rina Kusuma', purpose: 'Rapat Koordinasi' }],
-            wednesday: [{ time: '14:00-17:00', user: 'Hadi Nugroho', purpose: 'Training' }],
-            thursday: [
-                { time: '09:00-11:00', user: 'Sari Indah', purpose: 'Presentasi' },
-                { time: '13:00-15:00', user: 'Joko Susilo', purpose: 'Meeting Klien' },
-            ],
-            friday: [],
-            saturday: [],
-            sunday: [],
-        },
-    },
-    {
-        room: 'Ruang Rapat D',
-        bookings: {
-            monday: [{ time: '10:00-12:00', user: 'Fitri Handayani', purpose: 'Workshop' }],
-            tuesday: [],
-            wednesday: [],
-            thursday: [{ time: '14:00-16:00', user: 'Agus Setiawan', purpose: 'Rapat Koordinasi' }],
-            friday: [{ time: '09:00-11:00', user: 'Nita Sari', purpose: 'Presentasi' }],
-            saturday: [],
-            sunday: [],
-        },
-    },
-    {
-        room: 'Ruang Rapat E',
-        bookings: {
-            monday: [{ time: '13:00-15:00', user: 'Bambang Tri', purpose: 'Training' }],
-            tuesday: [{ time: '10:00-12:00', user: 'Wati Lestari', purpose: 'Meeting Klien' }],
-            wednesday: [],
-            thursday: [],
-            friday: [{ time: '14:00-16:00', user: 'Dedi Kurnia', purpose: 'Workshop' }],
-            saturday: [],
-            sunday: [],
-        },
-    },
-    {
-        room: 'Aula Utama',
-        bookings: {
-            monday: [],
-            tuesday: [],
-            wednesday: [{ time: '09:00-17:00', user: 'Tim HR', purpose: 'Training Besar' }],
-            thursday: [],
-            friday: [],
-            saturday: [{ time: '08:00-12:00', user: 'Divisi IT', purpose: 'Workshop' }],
-            sunday: [],
-        },
-    },
-];
-
 const daysOfWeek = [
     { key: 'monday', label: 'Senin', short: 'Sen' },
     { key: 'tuesday', label: 'Selasa', short: 'Sel' },
@@ -137,8 +52,6 @@ export default function BookingReports({
     weeklyPattern,
     weeklySchedule,
 }: any) {
-    const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
-
     const formatHours = (hours: number) => {
         return `${hours} jam`;
     };
@@ -182,12 +95,12 @@ export default function BookingReports({
                                             <Icon className="h-4 w-4 text-muted-foreground" />
                                         </CardHeader>
                                         <CardContent>
-                                            <div className="text-2xl font-bold">{item.value}</div>
-                                            <div className="flex items-center text-xs text-muted-foreground">
+                                            <div className="text-4xl font-bold">{item.value}</div>
+                                            {/* <div className="flex items-center text-xs text-muted-foreground">
                                                 <TrendIcon className={`mr-1 h-3 w-3 ${trendColor}`} />
                                                 {trendPrefix}
                                                 {Math.abs(item.change)} dari bulan lalu
-                                            </div>
+                                            </div> */}
                                         </CardContent>
                                     </Card>
                                 );
@@ -372,7 +285,7 @@ export default function BookingReports({
                                             <tbody>
                                                 {weeklySchedule.map((room) => (
                                                     <tr key={room.room} className="hover:bg-gray-50">
-                                                        <td className="border-b p-3 text-sm font-medium">{room.room}</td>
+                                                        <td className="border-b p-3 text-sm font-medium text-nowrap">{room.room}</td>
                                                         {daysOfWeek.map((day) => {
                                                             const bookings = room.bookings[day.key as keyof typeof room.bookings];
                                                             const isToday = getCurrentDay() === day.key;

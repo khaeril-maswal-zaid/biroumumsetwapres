@@ -224,10 +224,10 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                     ) : (
                                         filteredDamages.map((damage: any) => (
                                             <TableRow key={damage.kode_pelaporan}>
-                                                <TableCell>{damage.kode_pelaporan}</TableCell>
+                                                <TableCell className="font-mono text-sm font-medium">{damage.kode_pelaporan}</TableCell>
                                                 <TableCell>
                                                     <div className="font-medium">{damage?.pelapor.name}</div>
-                                                    <div className="text-sm text-gray-500">{damage?.pelapor.unit_kerja}</div>
+                                                    <div className="text-sm text-gray-500">{damage.unit_kerja}</div>
                                                 </TableCell>
                                                 <TableCell>{damage.lokasi}</TableCell>
                                                 <TableCell className="hidden md:table-cell">{damage.item}</TableCell>
@@ -293,7 +293,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                             <Users className="my-auto h-5 w-5 text-blue-600" />
                                             <div>
                                                 <p className="font-medium text-gray-900">{selectedDamage?.pelapor?.name}</p>
-                                                <p className="text-xs text-gray-600">{selectedDamage?.pelapor?.unit_kerja}</p>
+                                                <p className="text-xs text-gray-600">{selectedDamage.unit_kerja}</p>
                                                 <p className="text-xs text-gray-500">{selectedDamage.no_hp}</p>
                                             </div>
                                         </div>

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import type { SharedData } from '@/types';
@@ -27,6 +27,7 @@ type KategoriKerusakan = {
 const schema = z.object({
     location: z.string().min(5, 'Lokasi wajib diisi'),
     damageType: z.string().min(3, 'Nama Item wajib diisi'),
+    unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
     kategori: z.string().min(3, 'Nama Item wajib diisi'),
     description: z.string().min(5, 'Keterangan wajib diisi'),
     urgency: z.enum(['rendah', 'sedang', 'tinggi'], {
@@ -41,6 +42,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export default function DamageReport({ kategoriKerusakan }: any) {
+    const { unitKerja } = usePage<SharedData>().props;
     const { auth } = usePage<SharedData>().props;
     const [photos, setPhotos] = useState<File[]>([]);
     const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
@@ -50,6 +52,7 @@ export default function DamageReport({ kategoriKerusakan }: any) {
         register,
         handleSubmit,
         control,
+        watch,
         formState: { errors },
         reset,
     } = useForm<FormData>({
@@ -175,13 +178,23 @@ export default function DamageReport({ kategoriKerusakan }: any) {
                                     </div>
                                     <div>
                                         <Label htmlFor="unitkerja">Unit Kerja</Label>
-                                        <Input
-                                            id="unitkerja"
-                                            type="text"
-                                            value={auth?.user.unit_kerja}
-                                            readOnly
-                                            className="mt-1 cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
-                                        />
+                                        <Select
+                                            onValueChange={(value) => setValue('unit_kerja', value, { shouldValidate: true })}
+                                            value={watch('unit_kerja')}
+                                        >
+                                            <SelectTrigger className="mt-0.5" id="unitkerja">
+                                                <SelectValue placeholder="Pilih unit kerja" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>Unit Kerja</SelectLabel>
+                                                    {unitKerja.map((item, index) => (
+                                                        <SelectItem value={item.unit_kerja}>{item.unit_kerja}</SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                        {errors.unit_kerja && <p className="mt-1 text-sm text-red-500">{errors.unit_kerja.message}</p>}
                                     </div>
                                     <div>
                                         <Label htmlFor="location">Lokasi Kerusakan</Label>

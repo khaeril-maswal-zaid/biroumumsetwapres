@@ -220,13 +220,6 @@ class HomeController extends Controller
         return Inertia::render('biroumum/history/page', compact('requestHistory'));
     }
 
-    public function users()
-    {
-        return Inertia::render('admin/users/page', [
-            //,
-        ]);
-    }
-
     public function isReadNotfif(Notification $notification)
     {
         $notification->update([

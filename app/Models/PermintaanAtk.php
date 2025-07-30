@@ -40,10 +40,9 @@ class PermintaanAtk extends Model
         $endOfLastMonth = $now->copy()->subMonth()->endOfMonth();
 
         $statuses = [
-            'approved' => 'Disetujui',
-            'partial' => 'Sebagian',
             'pending' => 'Menunggu',
-            'rejected' => 'Ditolak',
+            'process' => 'Proses',
+            'confirmed' => 'Selesai',
         ];
 
         $totalAllTime = $this->count();

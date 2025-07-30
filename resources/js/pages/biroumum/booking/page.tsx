@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { type SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,6 +24,7 @@ const schema = z.object({
     room_name: z.string().min(1, 'Nama ruangan wajib diisi'),
     date: z.string().min(1, 'Tanggal wajib diisi'),
     startTime: z.string().min(1, 'Jam mulai wajib diisi'),
+    unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
     endTime: z.string().min(1, 'Jam selesai wajib diisi'),
     purpose: z.string().min(1, 'Kegiatan wajib diisi'),
     contact: z.string().min(1, 'Kontak wajib diisi'),
@@ -32,6 +34,7 @@ type FormData = z.infer<typeof schema>;
 
 export default function RoomBooking() {
     const { auth } = usePage<SharedData>().props;
+    const { unitKerja } = usePage<SharedData>().props;
 
     const {
         register,
@@ -43,6 +46,7 @@ export default function RoomBooking() {
     } = useForm<FormData>({
         resolver: zodResolver(schema),
         defaultValues: {
+            unit_kerja: '',
             room_code: '',
             room_name: '',
             date: '',
@@ -113,13 +117,23 @@ export default function RoomBooking() {
 
                                         <div>
                                             <Label htmlFor="unitkerja">Unit Kerja</Label>
-                                            <Input
-                                                id="unitkerja"
-                                                type="text"
-                                                value={auth?.user.unit_kerja}
-                                                readOnly
-                                                className="mt-1 cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
-                                            />
+                                            <Select
+                                                onValueChange={(value) => setValue('unit_kerja', value, { shouldValidate: true })}
+                                                value={watch('unit_kerja')}
+                                            >
+                                                <SelectTrigger className="mt-0.5" id="unitkerja">
+                                                    <SelectValue placeholder="Pilih unit kerja" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectLabel>Unit Kerja</SelectLabel>
+                                                        {unitKerja.map((item, index) => (
+                                                            <SelectItem value={item.unit_kerja}>{item.unit_kerja}</SelectItem>
+                                                        ))}
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                            {errors.unit_kerja && <p className="mt-1 text-sm text-red-500">{errors.unit_kerja.message}</p>}
                                         </div>
                                     </div>
 
@@ -132,19 +146,19 @@ export default function RoomBooking() {
                                         <div>
                                             <Label htmlFor="date">Tanggal penggunaan ruangan</Label>
                                             <Input className="mt-1" type="date" min={today} {...register('date')} />
-                                            {errors.date && <p className="text-sm text-red-500">{errors.date.message}</p>}
+                                            {errors.date && <p className="mt-1 text-sm text-red-500">{errors.date.message}</p>}
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <Label htmlFor="startTime">Jam Mulai</Label>
                                                 <Input className="mt-1" type="time" {...register('startTime')} />
-                                                {errors.startTime && <p className="text-sm text-red-500">{errors.startTime.message}</p>}
+                                                {errors.startTime && <p className="mt-1 text-sm text-red-500">{errors.startTime.message}</p>}
                                             </div>
                                             <div>
                                                 <Label htmlFor="endTime">Jam Selesai</Label>
                                                 <Input className="mt-1" type="time" {...register('endTime')} min={formData.startTime} />
-                                                {errors.endTime && <p className="text-sm text-red-500">{errors.endTime.message}</p>}
+                                                {errors.endTime && <p className="mt-1 text-sm text-red-500">{errors.endTime.message}</p>}
                                             </div>
                                         </div>
 
@@ -168,7 +182,7 @@ export default function RoomBooking() {
                                             selectedEndTime={formData.endTime}
                                         />
 
-                                        {errors.room_code && <p className="text-sm text-red-500">{errors.room_code.message}</p>}
+                                        {/* {errors.room_code && <p className="mt-1 text-sm text-red-500">{errors.room_code.message}</p>} */}
                                     </div>
 
                                     <div className="space-y-4">
@@ -177,13 +191,13 @@ export default function RoomBooking() {
                                         <div>
                                             <Label htmlFor="purpose">Kegiatan</Label>
                                             <Textarea className="mt-1" id="purpose" {...register('purpose')} />
-                                            {errors.purpose && <p className="text-sm text-red-500">{errors.purpose.message}</p>}
+                                            {errors.purpose && <p className="mt-1 text-sm text-red-500">{errors.purpose.message}</p>}
                                         </div>
 
                                         <div>
                                             <Label htmlFor="contact">No Handphone</Label>
                                             <Input className="mt-1" id="contact" {...register('contact')} />
-                                            {errors.contact && <p className="text-sm text-red-500">{errors.contact.message}</p>}
+                                            {errors.contact && <p className="mt-1 text-sm text-red-500">{errors.contact.message}</p>}
                                         </div>
                                     </div>
 

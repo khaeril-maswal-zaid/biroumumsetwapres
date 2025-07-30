@@ -79,7 +79,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
     const filteredSupplies = permintaanAtk.data.filter((supply: any) => {
         const matchesSearch =
             supply?.pemesan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            supply.daftar_kebutuhan.some((item: any) => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
+            supply?.kode_pelaporan.toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesStatus = statusFilter === 'all' || supply.status === statusFilter;
 
@@ -167,8 +167,6 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
             day: 'numeric',
             month: 'long',
             year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
         }).format(date);
     };
 
@@ -240,7 +238,6 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                         <TableHead>Nama Pemesan</TableHead>
                                         <TableHead>Jumlah Item</TableHead>
                                         <TableHead className="hidden md:table-cell">Urgensi</TableHead>
-                                        <TableHead className="hidden lg:table-cell">Tanggal</TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead className="text-right">Aksi</TableHead>
                                     </TableRow>
@@ -256,11 +253,11 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                         filteredSupplies.map((supply: any) => (
                                             <TableRow key={supply.kode_pelaporan}>
                                                 <TableCell>
-                                                    <div className="font-medium">{supply.kode_pelaporan}</div>
+                                                    <div className="font-mono text-sm font-medium">{supply.kode_pelaporan}</div>
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="font-medium">{supply?.pemesan.name}</div>
-                                                    <div className="text-sm text-gray-500">{supply?.pemesan.unit_kerja}</div>
+                                                    <div className="text-sm text-gray-500">{supply.unit_kerja}</div>
                                                 </TableCell>
                                                 <TableCell>
                                                     <Badge variant="outline" className="flex w-fit items-center gap-1">
@@ -269,7 +266,6 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell className="hidden md:table-cell">{getUrgencyBadge(supply.urgensi)}</TableCell>
-                                                <TableCell className="hidden lg:table-cell">{formatDate(supply.created_at)}</TableCell>
                                                 <TableCell>{getStatusBadge(supply.status)}</TableCell>
                                                 <TableCell className="text-right">
                                                     <Button variant="ghost" size="sm" onClick={() => handleViewDetails(supply)}>
@@ -321,7 +317,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                             <User className="my-auto h-5 w-5 text-blue-600" />
                                             <div>
                                                 <p className="font-medium text-gray-900">{selectedRequest?.pemesan?.name}</p>
-                                                <p className="text-xs text-gray-600">{selectedRequest?.pemesan?.unit_kerja}</p>
+                                                <p className="text-xs text-gray-600">{selectedRequest.unit_kerja}</p>
                                                 <p className="text-xs text-gray-500">{selectedRequest.no_hp}</p>
                                             </div>
                                         </div>
@@ -379,11 +375,13 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                                             </div>
                                                             <div className="flex items-center gap-4 text-sm text-gray-600">
                                                                 <span>
-                                                                    Diminta: {item.requested} {item.unit}
+                                                                    Diminta: {item.requested}{' '}
+                                                                    {item.unit && item.unit.charAt(0).toUpperCase() + item.unit.slice(1)}
                                                                 </span>
                                                                 <span>•</span>
                                                                 <span>
-                                                                    Disetujui: {approvedQty} {item.unit}
+                                                                    Disetujui: {approvedQty}{' '}
+                                                                    {item.unit && item.unit.charAt(0).toUpperCase() + item.unit.slice(1)}
                                                                 </span>
                                                             </div>
                                                             {percentage > 0 && percentage < 100 && (

@@ -22,12 +22,13 @@ class DatabaseSeeder extends Seeder
             DaftarRuanganSeeder::class,
             KategoriKerusakanSeeder::class,
             DaftarAtkSeeder::class,
+            UserSeeder::class,
         ]);
 
-        User::factory(10)->create();
-        User::factory()->admin()->create();
-        User::factory()->pegawai()->create();
-        User::factory()->atasan()->create();
+        // User::factory(10)->create();
+        // User::factory()->admin()->create();
+        // User::factory()->pegawai()->create();
+        // User::factory()->atasan()->create();
 
         PermintaanAtk::factory(50)->create();
         PemesananRuangRapat::factory(2)->create();

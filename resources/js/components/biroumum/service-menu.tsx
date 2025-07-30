@@ -24,14 +24,14 @@ export function ServiceMenu() {
             href: route('kerusakangedung.create'),
         },
         {
-            icon: Car,
-            label: 'Permintaan Kendaraan',
-            href: route('permintaankendaraan.create'),
+            icon: PenTool,
+            label: 'Permintaan ATK',
+            href: route('permintaanatk.create'),
         },
         {
-            icon: PenTool,
-            label: 'Permintaan Alat Tulis Kantor',
-            href: route('permintaanatk.create'),
+            icon: Car,
+            label: 'Permintaan Kendaraan',
+            href: '#',
         },
     ];
 

@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import type { SharedData } from '@/types';
@@ -36,6 +37,7 @@ const FormSchema = z.object({
         .min(1, 'Minimal satu barang harus dipilih'),
     justification: z.string().min(1, 'Keterangan tidak boleh kosong'),
     urgency: z.string().min(1, 'Pilih tingkat urgensi'),
+    unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
     contact: z.string().min(1, 'Narahubung wajib diisi'),
 });
 
@@ -79,6 +81,7 @@ type FormData = z.infer<typeof FormSchema>;
 
 export default function SuppliesRequest({ availableATK }: any) {
     const { auth } = usePage<SharedData>().props;
+    const { unitKerja } = usePage<SharedData>().props;
 
     const {
         register,
@@ -95,6 +98,7 @@ export default function SuppliesRequest({ availableATK }: any) {
             justification: '',
             urgency: '',
             contact: '',
+            unit_kerja: '',
         },
     });
 
@@ -143,8 +147,24 @@ export default function SuppliesRequest({ availableATK }: any) {
                                     <Input readOnly value={auth.user.name} className="mt-1 cursor-not-allowed bg-gray-100 text-gray-500" />
                                 </div>
                                 <div>
-                                    <Label>Unit Kerja</Label>
-                                    <Input readOnly value={auth.user.unit_kerja} className="mt-1 cursor-not-allowed bg-gray-100 text-gray-500" />
+                                    <Label htmlFor="unitkerja">Unit Kerja</Label>
+                                    <Select
+                                        onValueChange={(value) => setValue('unit_kerja', value, { shouldValidate: true })}
+                                        value={watch('unit_kerja')}
+                                    >
+                                        <SelectTrigger className="mt-0.5" id="unitkerja">
+                                            <SelectValue placeholder="Pilih unit kerja" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectLabel>Unit Kerja</SelectLabel>
+                                                {unitKerja.map((item, index) => (
+                                                    <SelectItem value={item.unit_kerja}>{item.unit_kerja}</SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.unit_kerja && <p className="mt-1 text-sm text-red-500">{errors.unit_kerja.message}</p>}
                                 </div>
 
                                 {/* Daftar Barang */}

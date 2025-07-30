@@ -21,6 +21,7 @@ class KerusakanGedungFactory extends Factory
     {
         return [
             'user_id' => User::inRandomOrder()->first()?->id ?? 1,
+            'unit_kerja' => User::inRandomOrder()->first()?->unit_kerja ?? 'Biro Umum',
             'lokasi' => 'Lantai ' . fake()->numberBetween(1, 5) . ', Ruang ' . fake()->numberBetween(101, 599),
             'kategori_kerusakan_id' => KategoriKerusakan::inRandomOrder()->first()?->id ?? 1,
             'item' => fake()->word(),

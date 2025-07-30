@@ -77,7 +77,7 @@ export default function SuppliesReports({
                     {/* Summary Tab */}
                     <TabsContent value="summary" className="space-y-6">
                         {/* Summary Cards */}
-                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                             {Object.entries(summaryData).map(([key, item]: any) => {
                                 const Icon = iconMap[key] || CheckCircle;
                                 const TrendIcon = item.trend === 'up' ? TrendingUp : TrendingDown;
@@ -90,11 +90,11 @@ export default function SuppliesReports({
                                             <Icon className="h-4 w-4 text-muted-foreground" />
                                         </CardHeader>
                                         <CardContent>
-                                            <div className="text-2xl font-bold">{item.value}</div>
-                                            <div className="flex items-center text-xs text-muted-foreground">
+                                            <div className="text-4xl font-bold">{item.value}</div>
+                                            {/* <div className="flex items-center text-xs text-muted-foreground">
                                                 <TrendIcon className={`mr-1 h-3 w-3 ${trendColor}`} />
                                                 {item.change} dari bulan lalu
-                                            </div>
+                                            </div> */}
                                         </CardContent>
                                     </Card>
                                 );

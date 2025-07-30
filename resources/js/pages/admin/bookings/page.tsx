@@ -96,7 +96,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
             case 'pending':
                 return <Badge className="mb-1 bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Pengajuan</Badge>;
             case 'confirmed':
-                return <Badge className="mb-1 bg-green-100 text-green-800 hover:bg-green-200">Approved</Badge>;
+                return <Badge className="mb-1 bg-green-100 text-green-800 hover:bg-green-200">Disetujui</Badge>;
             case 'cancelled':
                 return <Badge className="mb-1 bg-red-100 text-red-800 hover:bg-red-200">Dibatalkan</Badge>;
             default:
@@ -140,7 +140,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                     <SelectContent>
                                         <SelectItem value="all">Semua Status</SelectItem>
                                         <SelectItem value="pending">Pengajuan</SelectItem>
-                                        <SelectItem value="confirmed">Approved</SelectItem>
+                                        <SelectItem value="confirmed">Disetujui</SelectItem>
                                         <SelectItem value="cancelled">Dibatalkan</SelectItem>
                                     </SelectContent>
                                 </Select>
@@ -176,7 +176,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="font-medium">{booking?.pemesan.name}</div>
-                                                    <div className="text-sm text-gray-500">{booking?.pemesan.unit_kerja}</div>
+                                                    <div className="text-sm text-gray-500">{booking.unit_kerja}</div>
                                                 </TableCell>
                                                 <TableCell>{booking?.ruangans.nama_ruangan}</TableCell>
                                                 <TableCell className="hidden md:table-cell">{formatTanggalIna(booking.tanggal_penggunaan)}</TableCell>
@@ -235,7 +235,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                             <Users className="my-auto h-5 w-5 text-blue-600" />
                                             <div>
                                                 <p className="font-medium text-gray-900">{selectedBooking?.pemesan.name}</p>
-                                                <p className="text-xs text-gray-600">{selectedBooking?.pemesan.unit_kerja}</p>
+                                                <p className="text-xs text-gray-600">{selectedBooking.unit_kerja}</p>
                                                 <p className="text-xs text-gray-500">{selectedBooking.no_hp}</p>
                                             </div>
                                         </div>
@@ -277,7 +277,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                     </div>
                                 </div>
 
-                                {/* Admin Message Display for Approved/Rejected */}
+                                {/* Admin Message Display for Disetujui/Rejected */}
                                 {selectedBooking.keterangan &&
                                     selectedBooking.status !== 'pending' &&
                                     (() => {

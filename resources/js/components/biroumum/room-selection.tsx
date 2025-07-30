@@ -167,11 +167,8 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
         );
     }
 
-    const handleCardClick = (room: Room, isDisabled: boolean) => {
-        console.log('handleCardClick:', room.nama_ruangan, 'Disabled:', isDisabled);
-        if (!isDisabled) {
-            onRoomChange(room.id, room.nama_ruangan);
-        }
+    const handleCardClick = (room: Room) => {
+        onRoomChange(room.id, room.nama_ruangan);
     };
 
     const isTimeSlotConflict = (room: Room) => {

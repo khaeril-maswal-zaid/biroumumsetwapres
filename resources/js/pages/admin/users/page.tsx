@@ -1,7 +1,6 @@
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -11,84 +10,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { Building, Mail, Phone, Search, User, UserCheck, UserX } from 'lucide-react';
+import { Building, Mail, Search } from 'lucide-react';
 import { useState } from 'react';
-
-// Mock data for users
-const users = [
-    {
-        id: '1',
-        name: 'Dani Martinez',
-        email: 'dani.martinez@company.com',
-        phone: '+62 812-3456-7890',
-        devisi: 'Biro 1',
-        role: 'Staff',
-        status: 'active',
-        avatar: '/placeholder.svg?height=40&width=40',
-        joinDate: '2024-01-15',
-        lastLogin: '2025-06-11T08:30:00',
-    },
-    {
-        id: '2',
-        name: 'Budi Santoso',
-        email: 'budi.santoso@company.com',
-        phone: '+62 812-3456-7891',
-        devisi: 'Biro 2',
-        role: 'Supervisor',
-        status: 'active',
-        avatar: '/placeholder.svg?height=40&width=40',
-        joinDate: '2023-08-20',
-        lastLogin: '2025-06-10T17:45:00',
-    },
-    {
-        id: '3',
-        name: 'Siti Aminah',
-        email: 'siti.aminah@company.com',
-        phone: '+62 812-3456-7892',
-        devisi: 'Biro 3',
-        role: 'Manager',
-        status: 'active',
-        avatar: '/placeholder.svg?height=40&width=40',
-        joinDate: '2023-03-10',
-        lastLogin: '2025-06-11T09:15:00',
-    },
-    {
-        id: '4',
-        name: 'Rudi Hartono',
-        email: 'rudi.hartono@company.com',
-        phone: '+62 812-3456-7893',
-        devisi: 'Biro 4',
-        role: 'Staff',
-        status: 'inactive',
-        avatar: '/placeholder.svg?height=40&width=40',
-        joinDate: '2024-05-22',
-        lastLogin: '2025-06-05T14:20:00',
-    },
-    {
-        id: '5',
-        name: 'Dewi Lestari',
-        email: 'dewi.lestari@company.com',
-        phone: '+62 812-3456-7894',
-        devisi: 'Biro 1',
-        role: 'Staff',
-        status: 'active',
-        avatar: '/placeholder.svg?height=40&width=40',
-        joinDate: '2024-02-28',
-        lastLogin: '2025-06-11T07:50:00',
-    },
-    {
-        id: '6',
-        name: 'Ahmad Fauzi',
-        email: 'ahmad.fauzi@company.com',
-        phone: '+62 812-3456-7895',
-        devisi: 'Biro 2',
-        role: 'Staff',
-        status: 'suspended',
-        avatar: '/placeholder.svg?height=40&width=40',
-        joinDate: '2024-07-12',
-        lastLogin: '2025-06-08T16:30:00',
-    },
-];
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -97,7 +20,9 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function UsersAdmin() {
+export default function UsersAdmin({ users }: any) {
+    console.log(users);
+
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [roleFilter, setRoleFilter] = useState('all');
@@ -127,68 +52,16 @@ export default function UsersAdmin() {
         }, 1000);
     };
 
-    // Filter users based on search term, status, and role
-    const filteredUsers = users.filter((user) => {
+    // Filter users based on search term, status, and nip
+    const filteredUsers = users.data.filter((user) => {
         const matchesSearch =
-            user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.devisi.toLowerCase().includes(searchTerm.toLowerCase());
-
-        const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
-        const matchesRole = roleFilter === 'all' || user.role === roleFilter;
-
-        return matchesSearch && matchesStatus && matchesRole;
+            user.name.toLowerCase().includes(searchTerm.toLowerCase()) || user.unit_kerja.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesSearch;
     });
 
     const handleViewDetails = (user: any) => {
         setSelectedUser(user);
         setIsDetailsOpen(true);
-    };
-
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case 'active':
-                return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Aktif</Badge>;
-            case 'inactive':
-                return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">Tidak Aktif</Badge>;
-            case 'suspended':
-                return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Suspended</Badge>;
-            default:
-                return <Badge variant="outline">Unknown</Badge>;
-        }
-    };
-
-    const getRoleBadge = (role: string) => {
-        switch (role) {
-            case 'Manager':
-                return <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">Manager</Badge>;
-            case 'Supervisor':
-                return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Supervisor</Badge>;
-            case 'Staff':
-                return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">Staff</Badge>;
-            default:
-                return <Badge variant="outline">{role}</Badge>;
-        }
-    };
-
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return new Intl.DateTimeFormat('id-ID', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-        }).format(date);
-    };
-
-    const formatDateTime = (dateString: string) => {
-        const date = new Date(dateString);
-        return new Intl.DateTimeFormat('id-ID', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        }).format(date);
     };
 
     return (
@@ -249,8 +122,6 @@ export default function UsersAdmin() {
                                         <TableHead>Pengguna</TableHead>
                                         <TableHead className="hidden md:table-cell">Divisi</TableHead>
                                         <TableHead className="hidden lg:table-cell">Role</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead className="hidden lg:table-cell">Login Terakhir</TableHead>
                                         <TableHead className="text-right">Aksi</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -281,10 +152,8 @@ export default function UsersAdmin() {
                                                         </div>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell className="hidden md:table-cell">{user.devisi}</TableCell>
-                                                <TableCell className="hidden lg:table-cell">{getRoleBadge(user.role)}</TableCell>
-                                                <TableCell>{getStatusBadge(user.status)}</TableCell>
-                                                <TableCell className="hidden lg:table-cell">{formatDateTime(user.lastLogin)}</TableCell>
+                                                <TableCell className="hidden md:table-cell">{user.unit_kerja}</TableCell>
+                                                <TableCell className="hidden lg:table-cell">{user.nip}</TableCell>
                                                 <TableCell className="text-right">
                                                     <Button variant="ghost" size="sm" onClick={() => handleViewDetails(user)}>
                                                         Detail
@@ -320,10 +189,6 @@ export default function UsersAdmin() {
                                     </Avatar>
                                     <div>
                                         <h3 className="text-lg font-medium">{selectedUser.name}</h3>
-                                        <div className="mt-1 flex items-center gap-2">
-                                            {getRoleBadge(selectedUser.role)}
-                                            {getStatusBadge(selectedUser.status)}
-                                        </div>
                                     </div>
                                 </div>
 
@@ -334,62 +199,17 @@ export default function UsersAdmin() {
                                     </div>
 
                                     <div className="flex items-center gap-2">
-                                        <Phone className="h-4 w-4 text-gray-500" />
-                                        <p className="text-sm">{selectedUser.phone}</p>
-                                    </div>
-
-                                    <div className="flex items-center gap-2">
                                         <Building className="h-4 w-4 text-gray-500" />
-                                        <p className="text-sm">{selectedUser.devisi}</p>
+                                        <p className="text-sm">{selectedUser.unit_kerja}</p>
                                     </div>
 
                                     <div className="flex items-center gap-2">
-                                        <User className="h-4 w-4 text-gray-500" />
-                                        <p className="text-sm">Role: {selectedUser.role}</p>
-                                    </div>
-
-                                    <div className="space-y-2 pt-2">
-                                        <div>
-                                            <p className="text-sm font-medium">Tanggal Bergabung:</p>
-                                            <p className="text-sm text-gray-700">{formatDate(selectedUser.joinDate)}</p>
-                                        </div>
-
-                                        <div>
-                                            <p className="text-sm font-medium">Login Terakhir:</p>
-                                            <p className="text-sm text-gray-700">{formatDateTime(selectedUser.lastLogin)}</p>
-                                        </div>
+                                        <p className="text-sm">NIP: {selectedUser.nip}</p>
                                     </div>
                                 </div>
                             </div>
                         )}
                         <DialogFooter className="flex justify-between sm:justify-between">
-                            {selectedUser && (
-                                <div className="flex gap-2">
-                                    {selectedUser.status === 'active' && (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="flex items-center gap-1"
-                                            onClick={() => handleDeactivateUser(selectedUser.id)}
-                                            disabled={isProcessing}
-                                        >
-                                            <UserX className="h-4 w-4" />
-                                            <span>{isProcessing ? 'Memproses...' : 'Nonaktifkan'}</span>
-                                        </Button>
-                                    )}
-                                    {selectedUser.status !== 'active' && (
-                                        <Button
-                                            size="sm"
-                                            className="flex items-center gap-1"
-                                            onClick={() => handleActivateUser(selectedUser.id)}
-                                            disabled={isProcessing}
-                                        >
-                                            <UserCheck className="h-4 w-4" />
-                                            <span>{isProcessing ? 'Memproses...' : 'Aktifkan'}</span>
-                                        </Button>
-                                    )}
-                                </div>
-                            )}
                             <Button variant="outline" onClick={() => setIsDetailsOpen(false)}>
                                 Tutup
                             </Button>

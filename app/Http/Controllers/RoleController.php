@@ -17,6 +17,7 @@ class RoleController extends Controller
             return [
                 'id' => (string) $user->id,
                 'name' => $user->name,
+                'nip' => $user->nip,
                 'email' => $user->email,
                 'role' => $user->roles->pluck('name')->first() ?? '-',
                 'status' => $user->status ?? 'aktif',

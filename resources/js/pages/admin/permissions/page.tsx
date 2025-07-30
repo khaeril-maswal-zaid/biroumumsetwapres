@@ -46,6 +46,7 @@ interface User {
     id: string;
     name: string;
     email: string;
+    nip: string;
     role: string;
     status: 'aktif' | 'nonaktif';
     last_login: string;
@@ -53,6 +54,7 @@ interface User {
 
 interface Permission {
     name: string;
+
     label: string;
     category: string;
 }
@@ -87,6 +89,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
         (user) =>
             user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.nip.toLowerCase().includes(searchTerm.toLowerCase()) ||
             user.role.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
@@ -402,9 +405,8 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                                         <TableRow>
                                             <TableHead>Nama</TableHead>
                                             <TableHead>Email</TableHead>
+                                            <TableHead>NIP</TableHead>
                                             <TableHead>Role</TableHead>
-                                            <TableHead>Status</TableHead>
-                                            <TableHead>Last Login</TableHead>
                                             <TableHead>Aksi</TableHead>
                                         </TableRow>
                                     </TableHeader>
@@ -413,11 +415,12 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                                             <TableRow key={user.id}>
                                                 <TableCell className="font-medium">{user.name}</TableCell>
                                                 <TableCell>{user.email}</TableCell>
+                                                <TableCell>{user.nip}</TableCell>
                                                 <TableCell>
-                                                    <Badge variant="outline">{user.role}</Badge>
+                                                    <Badge variant="outline">
+                                                        {user.role.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}{' '}
+                                                    </Badge>
                                                 </TableCell>
-                                                <TableCell>{getStatusBadge(user.status)}</TableCell>
-                                                <TableCell className="text-sm text-muted-foreground">{user.last_login}</TableCell>
                                                 <TableCell>
                                                     <Button variant="outline" size="sm" onClick={() => handleEditUserRole(user)}>
                                                         <Edit className="mr-1 h-4 w-4" />

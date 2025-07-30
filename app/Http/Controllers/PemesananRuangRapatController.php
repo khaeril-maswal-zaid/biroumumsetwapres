@@ -127,6 +127,7 @@ class PemesananRuangRapatController extends Controller
 
         PemesananRuangRapat::create([
             'user_id' => Auth::id(),
+            'unit_kerja' => $request->unit_kerja,
             'tanggal_penggunaan' => $request->date,
             'jam_mulai' => $request->startTime,
             'jam_selesai' => $request->endTime,
@@ -175,12 +176,12 @@ class PemesananRuangRapatController extends Controller
     {
         $validated = $request->validate([
             'action' => 'required|in:confirmed,cancelled',
-            'message' => 'required|string|max:255',
+            'message' => 'required_if:action,cancelled|nullable|string|max:255',
         ]);
 
         $pemesananruangrapat->update([
             'status' => $validated['action'],
-            'keterangan' => $validated['message'],
+            'keterangan' => $validated['message'] ?? '',
         ]);
     }
 

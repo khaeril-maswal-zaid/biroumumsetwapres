@@ -52,20 +52,20 @@ class KerusakanGedung extends Model
         // Total semua data
         $totalAllTime = $this->count();
         $totalPending = $this->where('status', 'pending')->count();
+        $totalInprocess = $this->where('status', 'process')->count();
         $totalConfirmed = $this->where('status', 'confirmed')->count();
-        $totalCancelled = $this->where('status', 'cancelled')->count();
 
         // Bulan ini
         $thisMonthTotal = $this->whereBetween('created_at', [$startOfThisMonth, $now])->count();
         $thisMonthPending = $this->where('status', 'pending')->whereBetween('created_at', [$startOfThisMonth, $now])->count();
+        $thisMonthInprocess = $this->where('status', 'process')->whereBetween('created_at', [$startOfThisMonth, $now])->count();
         $thisMonthConfirmed = $this->where('status', 'confirmed')->whereBetween('created_at', [$startOfThisMonth, $now])->count();
-        $thisMonthCancelled = $this->where('status', 'cancelled')->whereBetween('created_at', [$startOfThisMonth, $now])->count();
 
         // Bulan lalu
         $lastMonthTotal = $this->whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])->count();
         $lastMonthPending = $this->where('status', 'pending')->whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])->count();
+        $lastMonthInprocess = $this->where('status', 'process')->whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])->count();
         $lastMonthConfirmed = $this->where('status', 'confirmed')->whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])->count();
-        $lastMonthCancelled = $this->where('status', 'cancelled')->whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])->count();
 
         return [
             'totalReports' => [
@@ -80,17 +80,17 @@ class KerusakanGedung extends Model
                 'trend' => ($thisMonthPending - $lastMonthPending) >= 0 ? 'up' : 'down',
                 'title' => 'Menunggu',
             ],
+            'processed' => [
+                'value' => $totalInprocess,
+                'change' => $thisMonthInprocess - $lastMonthInprocess,
+                'trend' => ($thisMonthInprocess - $lastMonthInprocess) >= 0 ? 'up' : 'down',
+                'title' => 'Proses',
+            ],
             'confirmed' => [
                 'value' => $totalConfirmed,
                 'change' => $thisMonthConfirmed - $lastMonthConfirmed,
                 'trend' => ($thisMonthConfirmed - $lastMonthConfirmed) >= 0 ? 'up' : 'down',
                 'title' => 'Selesai',
-            ],
-            'cancelled' => [
-                'value' => $totalCancelled,
-                'change' => $thisMonthCancelled - $lastMonthCancelled,
-                'trend' => ($thisMonthCancelled - $lastMonthCancelled) >= 0 ? 'up' : 'down',
-                'title' => 'Dibatalkan',
             ],
         ];
     }
@@ -99,13 +99,13 @@ class KerusakanGedung extends Model
     {
         return [
             [
-                'name'  => 'Disetujui',
+                'name'  => 'Selesai',
                 'value' => $this->where('status', 'confirmed')->count(),
                 'color' => '#10b981',
             ],
             [
-                'name'  => 'Ditolak',
-                'value' => $this->where('status', 'cancelled')->count(),
+                'name'  => 'Proses',
+                'value' => $this->where('status', 'process')->count(),
                 'color' => '#ef4444',
             ],
             [

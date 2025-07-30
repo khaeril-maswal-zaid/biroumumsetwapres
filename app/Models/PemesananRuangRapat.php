@@ -67,7 +67,7 @@ class PemesananRuangRapat extends Model
 
                 $dayBookings = $weeklyData->get($dayKey, []);
                 $dayBookings[] = [
-                    'time' => Carbon::parse($booking->jam_mulai)->format('H:i') . '-' . Carbon::parse($booking->jam_selesai)->format('H:i'),
+                    'time' => Carbon::parse($booking->jam_mulai)->format('H:i') . ' - ' . Carbon::parse($booking->jam_selesai)->format('H:i'),
                     'user' => $booking->pemesan?->name ?? '-',
                     'purpose' => $booking->deskripsi,
                 ];
