@@ -42,7 +42,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Permintaan Kendaraan',
-        href: route('permintaankendaraan.index'),
+        href: '#', // route('permintaankendaraan.index'),
         icon: CarFront, // ✅ lebih modern dan umum untuk kendaraan
     },
 ];
@@ -82,11 +82,6 @@ const footerNavItems: NavItem[] = [
         href: route('daftarkerusakan.index'),
         icon: Hammer, // sama seperti atas
     },
-    // {
-    //     title: 'Manajemen Pengguna',
-    //     href: route('user.index'),
-    //     icon: Users2, // lebih modern variasi
-    // },
     {
         title: 'Pengaturan Akses',
         href: route('roles.index'),

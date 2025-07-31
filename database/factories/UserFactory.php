@@ -69,7 +69,7 @@ class UserFactory extends Factory
             'nip' => 'atasan1@setwapres.com',
             'unit_kerja' => 'Umum',
         ])->afterCreating(function (User $user) {
-            $user->assignRole('atasan');
+            $user->assignRole('super_admin');
         });
     }
 

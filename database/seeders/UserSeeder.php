@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -415,6 +416,7 @@ class UserSeeder extends Seeder
                 'email' => 'yanadikusuma@setwapresri.go.id',
                 'nip' => '197506251994121001',
                 'unit_kerja' => 'Biro Umum',
+                'role' => 'super_admin'
             ],
             [
                 'name' => 'Dr. Dedy Triharjanto, S.E., M.M.',
@@ -427,6 +429,7 @@ class UserSeeder extends Seeder
                 'email' => 'fajartriwardono@setwapresri.go.id',
                 'nip' => '199002112015031001',
                 'unit_kerja' => 'Biro Umum',
+                'role' => 'admin_ruangan'
             ],
             [
                 'name' => 'Muhammad Alkautsar, S.H., M.H.',
@@ -439,6 +442,7 @@ class UserSeeder extends Seeder
                 'email' => 'harisugiharto@setwapresri.go.id',
                 'nip' => '197612051996031002',
                 'unit_kerja' => 'Biro Umum',
+                'role' => 'admin_atk'
             ],
             [
                 'name' => 'Fatia Hizriani, S.Pd., M.M.',
@@ -475,6 +479,7 @@ class UserSeeder extends Seeder
                 'email' => 'halimfadillahsuwitojati@setwapresri.go.id',
                 'nip' => '199110162015031001',
                 'unit_kerja' => 'Biro Umum',
+                'role' => 'admin_kerusakan_gedung'
             ],
             [
                 'name' => 'Ismaja Rumalutur, S.E.',
@@ -1204,16 +1209,45 @@ class UserSeeder extends Seeder
             ],
         ];
 
+        $dataX = [
+            [
+                'name' => 'Sapto Harjono Wahjoe Sedjati, S.Sos., M.A.',
+                'email' => 'saptoharjonowahjoesedjati@setwapresri.go.id',
+                'nip' => '197010271995031001',
+                'unit_kerja' => 'Biro Tata Usaha dan Sumber Daya Manusia',
+            ],
+            [
+                'name' => 'Yayat Hidayat, S.IP.',
+                'email' => 'yayathidayat@setwapresri.go.id',
+                'nip' => '197404071999031001',
+                'unit_kerja' => 'Biro Tata Usaha dan Sumber Daya Manusia',
+            ],
+            [
+                'name' => 'Lely Setia Rimelanty, S.E.',
+                'email' => 'lelysetiarimelanty@setwapresri.go.id',
+                'nip' => ' 197111031996032001',
+                'unit_kerja' => 'Biro Tata Usaha dan Sumber Daya Manusia',
+            ],
+            [
+                'name' => 'Faniagi Hardianto, S.AP. M.AP',
+                'email' => 'faniagihardianto@setwapresri.go.id',
+                'nip' => '198509302005011002',
+                'unit_kerja' => 'Biro Tata Usaha dan Sumber Daya Manusia',
+            ],
+        ];
 
         foreach ($data as $key => $value) {
-            User::create([
+            $user =  User::create([
                 'name' => $value['name'],
                 'email' => $value['email'],
                 'nip' => $value['nip'],
                 'unit_kerja' => $value['unit_kerja'],
 
-                'password' => $value['nip'],
+                'password' => Hash::make($value['nip']),
             ]);
+
+
+            $user->assignRole($value['role'] ?? 'pegawai');
         }
     }
 }

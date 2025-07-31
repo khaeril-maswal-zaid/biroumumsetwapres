@@ -32,6 +32,7 @@ class RoleController extends Controller
                 return [
                     'id' => $role->id,
                     'name' => $role->name,
+                    'label' => $role->label,
                     'description' => $role->description,
                     'total_users' => $role->users_count,
                     'permissions' => $role->permissions->pluck('name')->toArray(),

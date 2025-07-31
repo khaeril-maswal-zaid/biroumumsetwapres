@@ -38,8 +38,9 @@ interface Role {
     id: string;
     name: string;
     description: string;
+    label: string;
     permissions: string[];
-    user_count: number;
+    total_users: number;
 }
 
 interface User {
@@ -54,7 +55,6 @@ interface User {
 
 interface Permission {
     name: string;
-
     label: string;
     category: string;
 }
@@ -251,14 +251,14 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
 
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                             {filteredRoles.map((role) => (
-                                <Card key={role.id}>
+                                <Card key={role.id} className="gap-0">
                                     <CardHeader className="pb-3">
                                         <div className="flex items-start justify-between">
                                             <div>
-                                                <CardTitle className="text-lg capitalize">{role.name}</CardTitle>
+                                                <CardTitle className="text-lg capitalize">{role.label}</CardTitle>
                                                 <p className="mt-1 text-sm text-muted-foreground">{role.description}</p>
                                             </div>
-                                            <Badge variant="secondary">{role.user_count} user</Badge>
+                                            <Badge variant="secondary">{role.total_users} user</Badge>
                                         </div>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
@@ -293,7 +293,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                                                         <AlertDialogTitle>Hapus Role</AlertDialogTitle>
                                                         <AlertDialogDescription>
                                                             Apakah Anda yakin ingin menghapus role "{role.name}"? Tindakan ini tidak dapat dibatalkan
-                                                            dan akan mempengaruhi {role.user_count} pengguna.
+                                                            dan akan mempengaruhi {role.total_users} pengguna.
                                                         </AlertDialogDescription>
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
