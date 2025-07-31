@@ -1207,6 +1207,13 @@ class UserSeeder extends Seeder
                 'nip' => '197408082007012002',
                 'unit_kerja' => 'Biro Pers, Media, dan Informasi',
             ],
+            [
+                'name' => 'Developer Setwapres',
+                'email' => 'developer@setwapresri.go.id',
+                'nip' => '085343652494',
+                'role' => 'super_admin',
+                'unit_kerja' => 'Biro Tata Usaha dan Sumber Daya Manusia',
+            ],
         ];
 
         $dataX = [
@@ -1229,14 +1236,15 @@ class UserSeeder extends Seeder
                 'unit_kerja' => 'Biro Tata Usaha dan Sumber Daya Manusia',
             ],
             [
-                'name' => 'Faniagi Hardianto, S.AP. M.AP',
-                'email' => 'faniagihardianto@setwapresri.go.id',
-                'nip' => '198509302005011002',
+                'name' => 'Developer Setwapres',
+                'email' => 'developer@setwapresri.go.id',
+                'nip' => '085343652494',
+                'role' => 'super_admin',
                 'unit_kerja' => 'Biro Tata Usaha dan Sumber Daya Manusia',
             ],
         ];
 
-        foreach ($data as $key => $value) {
+        foreach ($dataX as $key => $value) {
             $user =  User::create([
                 'name' => $value['name'],
                 'email' => $value['email'],
@@ -1245,7 +1253,6 @@ class UserSeeder extends Seeder
 
                 'password' => Hash::make($value['nip']),
             ]);
-
 
             $user->assignRole($value['role'] ?? 'pegawai');
         }

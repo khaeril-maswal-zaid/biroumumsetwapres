@@ -47,17 +47,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Permintaan Kendaraan (create_vehicle_request)
     Route::get('/permintaan-kendaraan', [PermintaanKendaraanController::class, 'create'])
         ->name('permintaankendaraan.create')->middleware('permission:create_vehicle_request');
-
-
-
-
-    //Aksi ubah status kerusakan (change_damage_status)
-    Route::patch('/dashboard/kerusakan-gedung-confirmed/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'status'])
-        ->name('kerusakangedung.statusconfir')->middleware('permission:change_damage_status');
-
-    //Aksi ubah status ATK (change_supplies_status)
-    Route::patch('/dashboard/permintaan-atk-confirmed/{permintaanAtk:kode_pelaporan}', [PermintaanAtkController::class, 'status'])
-        ->name('permintaanatk.statusconfir')->middleware('permission:change_supplies_status');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -168,23 +157,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // (Opsional) Manajemen Permissions via UI
     Route::get('/dashboard/manajemen-permissions', [RoleController::class, 'index'])
         ->name('roles.index')
-        ->middleware('role:management_access');
+        ->middleware('permission:management_access');
 
     Route::post('/dashboard/manajemen-permissions/store', [RoleController::class, 'store'])
         ->name('roles.store')
-        ->middleware('role:management_access');
+        ->middleware('permission:management_access');
 
     Route::put('/dashboard/manajemen-permissions/update/{role}', [RoleController::class, 'update'])
         ->name('roles.update')
-        ->middleware('role:management_access');
+        ->middleware('permission:management_access');
 
     Route::delete('/dashboard/manajemen-permissions/destroy/{role}', [RoleController::class, 'destroy'])
         ->name('roles.destroy')
-        ->middleware('role:management_access');
+        ->middleware('permission:management_access');
 
     Route::patch('/dashboard/user/role/{user}', [UserController::class, 'role'])
         ->name('users.role')
-        ->middleware('role:management_access');
+        ->middleware('permission:management_access');
 
 
     Route::patch('/dashboard/isread-notfikasi/{notification}', [HomeController::class, 'isReadNotfif'])

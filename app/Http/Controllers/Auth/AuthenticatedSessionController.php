@@ -85,7 +85,7 @@ class AuthenticatedSessionController extends Controller
             'view_atk',
             'view_rooms',
 
-            'management_acces'
+            'management_access'
         ];
 
         $allPermissions = array_merge(
