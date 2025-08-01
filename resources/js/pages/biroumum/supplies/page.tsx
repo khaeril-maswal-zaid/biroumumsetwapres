@@ -113,8 +113,6 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
     };
 
     const onSubmit = (data: FormData) => {
-        console.log(data);
-
         router.post(route('permintaanatk.store'), data, {
             onError: (e) => console.log(e),
             onSuccess: () => {
@@ -157,7 +155,9 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
                                             <SelectGroup>
                                                 <SelectLabel>Unit Kerja</SelectLabel>
                                                 {unitKerja.map((item, index) => (
-                                                    <SelectItem value={item}>{item}</SelectItem>
+                                                    <SelectItem key={index} value={item}>
+                                                        {item}
+                                                    </SelectItem>
                                                 ))}
                                             </SelectGroup>
                                         </SelectContent>

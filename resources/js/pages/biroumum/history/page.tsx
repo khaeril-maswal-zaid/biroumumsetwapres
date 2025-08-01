@@ -28,10 +28,12 @@ import {
 import { useEffect, useState } from 'react';
 
 export default function RequestHistory({ requestHistory }: any) {
+    console.log(requestHistory);
+
     useEffect(() => {
         const interval = setInterval(() => {
             router.reload({ only: ['requestHistory'] });
-        }, 1000); // setiap 1 detik
+        }, 60 * 1000); // 1 * 60 detik
 
         return () => clearInterval(interval);
     }, []);

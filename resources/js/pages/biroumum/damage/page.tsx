@@ -52,6 +52,7 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
         handleSubmit,
         control,
         watch,
+        setValue,
         formState: { errors },
         reset,
     } = useForm<FormData>({
