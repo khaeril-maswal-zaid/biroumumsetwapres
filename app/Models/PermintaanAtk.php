@@ -18,6 +18,7 @@ class PermintaanAtk extends Model
 
     protected $fillable = [
         'user_id',
+        'unit_kerja',
         'daftar_kebutuhan',
         'deskripsi',
         'urgensi',
@@ -131,39 +132,15 @@ class PermintaanAtk extends Model
             $query = $this->whereBetween('created_at', [$monthStart, $monthEnd]);
 
             $total = $query->count();
-            $approved = $query->where('status', 'approved')->count();
-            $rejected = $query->where('status', 'rejected')->count();
-            $partial = $query->where('status', 'partial')->count();
 
             $monthlyData[] = [
                 'month' => $monthLabel,
                 'requests' => $total,
-                'approved' => $approved,
-                'rejected' => $rejected,
-                'partial' => $partial,
-                'rate' => $total > 0 ? round(($approved / $total) * 100) : 0,
             ];
         }
 
         // Pisah jadi dua struktur: monthlyTrend & approvalRateTrend
-        return [
-            'monthlyTrend' => collect($monthlyData)->map(function ($item) {
-                return [
-                    'month' => $item['month'],
-                    'requests' => $item['requests'],
-                    'approved' => $item['approved'],
-                    'rejected' => $item['rejected'],
-                    'partial'  => $item['partial'],
-                ];
-            }),
-
-            'approvalRateTrend' => collect($monthlyData)->map(function ($item) {
-                return [
-                    'month' => $item['month'],
-                    'rate' => $item['rate'],
-                ];
-            }),
-        ];
+        return $monthlyData;
     }
 
     public function topUsersStats()
@@ -172,13 +149,13 @@ class PermintaanAtk extends Model
             ->get()
             ->groupBy('user_id')
             ->map(function ($rows, $userId) {
-                $user = $rows->first()->pemesan;
+                $user = $rows->first();
                 $requests = $rows->count();
                 $approved = $rows->where('status', 'approved')->count();
                 $rate = $requests > 0 ? round(($approved / $requests) * 100) : 0;
 
                 return [
-                    'name' => $user->name ?? 'Tidak diketahui',
+                    'name' => $user->pemesan->name ?? 'Tidak diketahui',
                     'division' => $user->unit_kerja ?? '-',
                     'requests' => $requests,
                     'approved' => $approved,

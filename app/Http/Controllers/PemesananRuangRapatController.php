@@ -8,6 +8,7 @@ use App\Models\PemesananRuangRapat;
 use App\Http\Requests\StorePemesananRuangRapatRequest;
 use App\Http\Requests\UpdatePemesananRuangRapatRequest;
 use App\Models\DaftarRuangan;
+use App\Models\UnitKerja;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -90,6 +91,7 @@ class PemesananRuangRapatController extends Controller
 
         return Inertia::render('biroumum/booking/page', [
             'tersedia' => $result,
+            'unitKerja' => UnitKerja::select('name')->pluck('name')->all(),
         ]);
     }
 
@@ -200,6 +202,8 @@ class PemesananRuangRapatController extends Controller
             'penggunaanRuangan'  => $reportsData->penggunaanRuangan(),
             'statusDistribution' => $reportsData->statusDistribution(),
             'weeklySchedule' => $reportsData->weeklySchedule(),
+            'rooms' => DaftarRuangan::select('nama_ruangan')->get(),
+            'roomSchedules' => $reportsData->where('status', 'confirmed')->with('pemesan')->with('ruangans')->get(),
         ]);
     }
 }

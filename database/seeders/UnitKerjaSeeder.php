@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\UnitKerja;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class UnitKerjaSeeder extends Seeder
 {
@@ -15,23 +16,19 @@ class UnitKerjaSeeder extends Seeder
     {
         $datas =
             [
-                [
-                    "code_unit" => "biro-1",
-                    "name" => "Unit Kerja A",
-                    "label" => "Unit Kerja A Label"
-                ],
-                [
-                    "code_unit" => "biro-2",
-                    "name" => "Unit Kerja B",
-                    "label" => "Unit Kerja B Label"
-                ],
-                [
-                    "code_unit" => "biro-3",
-                    "name" => "Unit Kerja C",
-                    "label" => "Unit Kerja C Label"
-                ]
+                "Biro Tata Usaha dan Sumber Daya Manusia",
+                "Biro Umum",
+                "Biro Perencanaan dan Keuangan",
+                "Biro Protokol dan Kerumahtanggaan",
+                "label" => "Unit Kerja C Label",
+                "Biro Pers, Media, dan Informasi",
             ];
 
-        UnitKerja::insert($datas);
+        foreach ($datas as $key => $value) {
+            UnitKerja::create([
+                'label' => Str::slug($value, '-'),
+                'label' => $value,
+            ]);
+        }
     }
 }

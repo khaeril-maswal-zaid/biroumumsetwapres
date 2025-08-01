@@ -6,6 +6,7 @@ use App\Models\KerusakanGedung;
 use App\Http\Requests\StoreKerusakanGedungRequest;
 use App\Http\Requests\UpdateKerusakanGedungRequest;
 use App\Models\KategoriKerusakan;
+use App\Models\UnitKerja;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
@@ -30,8 +31,10 @@ class KerusakanGedungController extends Controller
      */
     public function create()
     {
+
         return Inertia::render('biroumum/damage/page', [
-            'kategoriKerusakan' => KategoriKerusakan::all()
+            'kategoriKerusakan' => KategoriKerusakan::all(),
+            'unitKerja' => UnitKerja::select('name')->pluck('name')->all(),
         ]);
     }
 
@@ -132,8 +135,7 @@ class KerusakanGedungController extends Controller
             'urgencyData' =>  $reportsData->urgencyData(),
             'topReportersData' =>  $reportsData->reporterStats()['topReportersData'],
             'divisionReports' =>  $reportsData->reporterStats()['divisionReports'],
-            'monthlyTrend' => $reportsData->monthlyTrends()['monthlyTrend'],
-            'approvalRateTrend' => $reportsData->monthlyTrends()['approvalRateTrend'],
+            'monthlyTrend' => $reportsData->monthlyTrends(),
         ];
 
         return Inertia::render('admin/reportsdamages/page', $data);

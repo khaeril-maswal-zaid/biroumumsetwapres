@@ -19,7 +19,7 @@ class PemesananRuangRapatFactory extends Factory
         $jamSelesai = (clone $jamMulai)->addMinutes(rand(30, $endLimit->diffInMinutes($jamMulai)));
 
         $bulanIni = Carbon::now()->startOfMonth();
-        $duaBulanLalu = Carbon::now()->subMonths(2)->startOfMonth();
+        $duaBulanLalu = Carbon::now()->subMonths(1)->startOfMonth();
         $startDate = fake()->randomElement([$bulanIni, $duaBulanLalu]);
         $tanggalPenggunaan = fake()->dateTimeBetween($startDate, $startDate->copy()->endOfMonth())->format('Y-m-d');
 
@@ -33,7 +33,7 @@ class PemesananRuangRapatFactory extends Factory
             'deskripsi' => '',
             'no_hp' => fake()->phoneNumber(),
             'kode_booking' => 'RRT-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
-            'status' => fake()->randomElement(['pending',]), //['pending', 'confirmed', 'cancelled']
+            'status' => fake()->randomElement(['pending', 'confirmed', 'cancelled']), //['pending', 'confirmed', 'cancelled']
             'keterangan' => fake()->text(250),
         ];
     }

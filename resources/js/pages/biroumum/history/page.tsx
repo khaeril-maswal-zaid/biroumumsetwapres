@@ -316,7 +316,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                             <User className="my-auto h-5 w-5 text-blue-600" />
                                             <div>
                                                 <p className="font-medium text-gray-900">{selectedRequest.user.name}</p>
-                                                <p className="text-xs text-gray-600">{selectedRequest.user.unit_kerja}</p>
+                                                <p className="text-xs text-gray-600">{selectedRequest?.unit_kerja}</p>
                                                 <p className="text-xs text-gray-500">{selectedRequest.no_hp}</p>
                                             </div>
                                         </div>

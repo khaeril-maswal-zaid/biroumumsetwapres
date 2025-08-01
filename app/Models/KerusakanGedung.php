@@ -19,6 +19,7 @@ class KerusakanGedung extends Model
 
     protected $fillable = [
         'user_id',
+        'unit_kerja',
         'kategori_kerusakan_id',
         'lokasi',
         'item',
@@ -140,9 +141,9 @@ class KerusakanGedung extends Model
             ->get()
             ->groupBy('user_id')
             ->map(function ($group) {
-                $user = $group->first()->pelapor;
+                $user = $group->first();
                 return [
-                    'name' => $user?->name ?? 'Tidak Diketahui',
+                    'name' => $user?->pelapor->name ?? 'Tidak Diketahui',
                     'division' => $user?->unit_kerja ?? '-',
                     'reports' => $group->count(),
                 ];
@@ -153,7 +154,7 @@ class KerusakanGedung extends Model
 
         $divisionReports = $this->with('pelapor')
             ->get()
-            ->groupBy(fn($item) => $item->pelapor?->unit_kerja ?? 'Tidak Diketahui')
+            ->groupBy(fn($item) => $item?->unit_kerja ?? 'Tidak Diketahui')
             ->map(function ($group, $division) {
                 return [
                     'division' => $division,
@@ -202,36 +203,14 @@ class KerusakanGedung extends Model
             $query = $this->whereBetween('created_at', [$monthStart, $monthEnd]);
 
             $total = $query->count();
-            $approved = $query->where('status', 'approved')->count();
-            $rejected = $query->where('status', 'rejected')->count();
-
             $monthlyData[] = [
                 'month' => $monthLabel,
                 'requests' => $total,
-                'approved' => $approved,
-                'rejected' => $rejected,
-                'rate' => $total > 0 ? round(($approved / $total) * 100) : 0,
             ];
         }
 
         // Pisah jadi dua struktur: monthlyTrend & approvalRateTrend
-        return [
-            'monthlyTrend' => collect($monthlyData)->map(function ($item) {
-                return [
-                    'month' => $item['month'],
-                    'requests' => $item['requests'],
-                    'approved' => $item['approved'],
-                    'rejected' => $item['rejected'],
-                ];
-            }),
-
-            'approvalRateTrend' => collect($monthlyData)->map(function ($item) {
-                return [
-                    'month' => $item['month'],
-                    'rate' => $item['rate'],
-                ];
-            }),
-        ];
+        return $monthlyData;
     }
 
     public function urgencyData()

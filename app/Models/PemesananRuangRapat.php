@@ -14,6 +14,7 @@ class PemesananRuangRapat extends Model
 
     protected $fillable = [
         'user_id',
+        'unit_kerja',
         'tanggal_penggunaan',
         'jam_mulai',
         'jam_selesai',
@@ -286,11 +287,11 @@ class PemesananRuangRapat extends Model
 
     public function divisionUsage()
     {
-        $data = $this->with('pemesan')
+        $data = $this
             ->whereNotNull('user_id')
             ->get();
 
-        $grouped = $data->groupBy(fn($item) => $item->pemesan->unit_kerja);
+        $grouped = $data->groupBy(fn($item) => $item->unit_kerja);
 
         $result = $grouped->map(function ($items, $division) {
             $bookings = $items->count();

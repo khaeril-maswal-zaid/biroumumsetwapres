@@ -32,9 +32,10 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function RoomBooking() {
+export default function RoomBooking({ unitKerja }: any) {
+    console.log(unitKerja);
+
     const { auth } = usePage<SharedData>().props;
-    const { unitKerja } = usePage<SharedData>().props;
 
     const {
         register,
@@ -128,7 +129,7 @@ export default function RoomBooking() {
                                                     <SelectGroup>
                                                         <SelectLabel>Unit Kerja</SelectLabel>
                                                         {unitKerja.map((item, index) => (
-                                                            <SelectItem value={item.unit_kerja}>{item.unit_kerja}</SelectItem>
+                                                            <SelectItem value={item}>{item}</SelectItem>
                                                         ))}
                                                     </SelectGroup>
                                                 </SelectContent>

@@ -1,13 +1,16 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { Calendar, ChevronLeft, ChevronRight, Clock, Filter, MapPin, TrendingDown, TrendingUp, User } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Clock, Filter, Hash, Mail, MapPin, Phone, User, Users } from 'lucide-react';
 import { useState } from 'react';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
@@ -35,124 +38,20 @@ const getCurrentDay = () => {
     return dayMap[today];
 };
 
+const rooms = [
+    { value: 'all', label: 'Semua Ruangan' },
+    { value: 'Meeting A', label: 'Meeting A' },
+    { value: 'Meeting B', label: 'Meeting B' },
+    { value: 'Training', label: 'Training' },
+    { value: 'Seminar', label: 'Seminar' },
+];
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
         href: '/dashboard',
     },
 ];
-
-const date = new Date();
-
-const [currentDate, setCurrentDate] = useState(date);
-const [filterRoom, setFilterRoom] = useState('all');
-
-// Data dummy jadwal ruangan
-const roomSchedules = [
-    {
-        id: 1,
-        room: 'Meeting A',
-        start: '09:00',
-        end: '11:00',
-        date: '2025-07-31',
-        color: 'bg-blue-100 text-blue-800',
-    },
-    {
-        id: 2,
-        room: 'Meeting B',
-        start: '13:00',
-        end: '15:00',
-        date: '2025-07-31',
-        color: 'bg-green-100 text-green-800',
-    },
-    {
-        id: 3,
-        room: 'Training',
-        start: '08:00',
-        end: '17:00',
-        date: '2025-07-31',
-        color: 'bg-purple-100 text-purple-800',
-    },
-    {
-        id: 4,
-        room: 'Meeting A',
-        start: '14:00',
-        end: '16:00',
-        date: '2025-08-01',
-        color: 'bg-blue-100 text-blue-800',
-    },
-    {
-        id: 5,
-        room: 'Seminar',
-        start: '09:30',
-        end: '12:00',
-        date: '2025-08-02',
-        color: 'bg-orange-100 text-orange-800',
-    },
-    {
-        id: 6,
-        room: 'Meeting B',
-        start: '10:00',
-        end: '11:30',
-        date: '2025-08-01',
-        color: 'bg-green-100 text-green-800',
-    },
-    {
-        id: 7,
-        room: 'Training',
-        start: '15:00',
-        end: '17:00',
-        date: '2025-08-02',
-        color: 'bg-purple-100 text-purple-800',
-    },
-];
-
-const rooms = ['Meeting A', 'Meeting B', 'Training', 'Seminar'];
-
-// Fungsi untuk mendapatkan nama bulan dalam bahasa Indonesia
-const getMonthName = (date: any) => {
-    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-    return months[date.getMonth()];
-};
-
-// Fungsi untuk mendapatkan jadwal berdasarkan tanggal
-const getSchedulesByDate = (date: any) => {
-    const dateStr = date.toISOString().split('T')[0];
-    return roomSchedules.filter((schedule) => {
-        const matchesDate = schedule.date === dateStr;
-        const matchesRoom = filterRoom === 'all' || schedule.room === filterRoom;
-        return matchesDate && matchesRoom;
-    });
-};
-
-// Fungsi untuk navigasi bulan
-const navigateMonth = (direction: any) => {
-    const newDate = new Date(currentDate);
-    newDate.setMonth(currentDate.getMonth() + direction);
-    setCurrentDate(newDate);
-};
-
-// Fungsi untuk mendapatkan tanggal dalam bulan
-const getDaysInMonth = () => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
-
-    const days = [];
-    const current = new Date(startDate);
-
-    for (let i = 0; i < 42; i++) {
-        days.push(new Date(current));
-        current.setDate(current.getDate() + 1);
-    }
-
-    return days;
-};
-
-const days = getDaysInMonth();
 
 export default function BookingReports({
     penggunaanRuangan,
@@ -164,9 +63,67 @@ export default function BookingReports({
     monthlyTrend,
     weeklyPattern,
     weeklySchedule,
+    roomSchedules,
+    rooms,
 }: any) {
     const formatHours = (hours: number) => {
         return `${hours} jam`;
+    };
+
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const [filterRoom, setFilterRoom] = useState('all');
+    const [selectedSchedule, setSelectedSchedule] = useState(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    // Fungsi untuk mendapatkan nama bulan dalam bahasa Indonesia
+    const getMonthName = (tanggal_penggunaan) => {
+        const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        return months[tanggal_penggunaan.getMonth()];
+    };
+
+    // Fungsi untuk mendapatkan jadwal berdasarkan tanggal
+    const getSchedulesByDate = (tanggal_penggunaan) => {
+        const dateStr = tanggal_penggunaan.toISOString().split('T')[0];
+        return roomSchedules.filter((schedule) => {
+            const matchesDate = schedule.tanggal_penggunaan === dateStr;
+            const matchesRoom = filterRoom === 'all' || schedule?.ruangans?.nama_ruangan === filterRoom;
+            return matchesDate && matchesRoom;
+        });
+    };
+
+    // Fungsi untuk navigasi bulan
+    const navigateMonth = (direction) => {
+        const newDate = new Date(currentDate);
+        newDate.setMonth(currentDate.getMonth() + direction);
+        setCurrentDate(newDate);
+    };
+
+    // Fungsi untuk mendapatkan tanggal dalam bulan
+    const getDaysInMonth = () => {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const startDate = new Date(firstDay);
+        startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+        const days = [];
+        const current = new Date(startDate);
+
+        for (let i = 0; i < 42; i++) {
+            days.push(new Date(current));
+            current.setDate(current.getDate() + 1);
+        }
+
+        return days;
+    };
+
+    const days = getDaysInMonth();
+
+    // Fungsi untuk membuka detail jadwal
+    const handleScheduleClick = (schedule) => {
+        setSelectedSchedule(schedule);
+        setIsDialogOpen(true);
     };
 
     return (
@@ -184,10 +141,11 @@ export default function BookingReports({
                 </div>
 
                 <Tabs defaultValue="summary" className="space-y-6">
-                    <TabsList className="grid w-full grid-cols-4">
+                    <TabsList className="grid w-full grid-cols-5">
                         <TabsTrigger value="summary">Ringkasan</TabsTrigger>
                         <TabsTrigger value="utilization">Penggunaan Ruangan</TabsTrigger>
-                        <TabsTrigger value="patterns">Pola Penggunaan</TabsTrigger>
+                        <TabsTrigger value="pekan">Jadwal Pekan ini</TabsTrigger>
+                        <TabsTrigger value="detail">Kalender Bulanan</TabsTrigger>
                         <TabsTrigger value="analytics">Analisis Pengguna</TabsTrigger>
                     </TabsList>
 
@@ -197,9 +155,6 @@ export default function BookingReports({
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                             {Object.entries(summaryData).map(([key, item]: any) => {
                                 const Icon = iconMap[key] || Calendar;
-                                const TrendIcon = item.trend === 'up' ? TrendingUp : TrendingDown;
-                                const trendColor = item.trend === 'up' ? 'text-green-500' : 'text-red-500';
-                                const trendPrefix = item.trend === 'up' ? '+' : '';
 
                                 return (
                                     <Card key={key} className="gap-0">
@@ -346,7 +301,7 @@ export default function BookingReports({
                                 <CardDescription>Analisis penggunaan ruangan berdasarkan kapasitas dan waktu</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="space-y-4">
+                                <div className="space-y-6">
                                     {penggunaanRuangan.map((room: any) => (
                                         <div key={room.room} className="space-y-2">
                                             <div className="flex items-center justify-between">
@@ -366,8 +321,8 @@ export default function BookingReports({
                         </Card>
                     </TabsContent>
 
-                    {/* Patterns Tab */}
-                    <TabsContent value="patterns" className="space-y-6">
+                    {/* Jadwal Pekan ini */}
+                    <TabsContent value="pekan" className="space-y-6">
                         {/* Weekly Booking Schedule */}
                         <Card>
                             <CardHeader>
@@ -470,99 +425,190 @@ export default function BookingReports({
                                 </div>
                             </CardContent>
                         </Card>
+                    </TabsContent>
 
-                        {/* Header */}
-                        <div className="mb-8">
-                            <h1 className="flex items-center gap-3 text-3xl font-bold text-gray-900">
-                                <Calendar className="h-8 w-8 text-blue-600" />
-                                Jadwal Penggunaan Ruangan
-                            </h1>
-                            <p className="mt-2 text-gray-600">Kelola dan pantau penggunaan ruangan dengan mudah</p>
-                        </div>
-
+                    {/* Jadwal Detail ini */}
+                    <TabsContent value="detail" className="space-y-6">
                         {/* Kalender */}
-                        <div className="rounded-xl bg-white p-6 shadow-lg">
-                            {/* Kontrol Kalender */}
-                            <div className="mb-6 flex items-center justify-between">
-                                <div className="flex items-center gap-4">
-                                    <button onClick={() => navigateMonth(-1)} className="rounded-lg p-2 transition-colors hover:bg-gray-100">
-                                        <ChevronLeft className="h-5 w-5" />
-                                    </button>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Kalender Pemesanan Ruangan</CardTitle>
+                                <CardDescription>Pantau seluruh jadwal pemesanan ruangan dalam tampilan kalender bulanan.</CardDescription>
 
-                                    <h2 className="text-xl font-semibold text-gray-900">
-                                        {getMonthName(currentDate)} {currentDate.getFullYear()}
-                                    </h2>
+                                {/* Kontrol Kalender */}
+                                <div className="mt-5 flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <Button variant="outline" size="icon" onClick={() => navigateMonth(-1)}>
+                                            <ChevronLeft className="h-4 w-4" />
+                                        </Button>
 
-                                    <button onClick={() => navigateMonth(1)} className="rounded-lg p-2 transition-colors hover:bg-gray-100">
-                                        <ChevronRight className="h-5 w-5" />
-                                    </button>
-                                </div>
+                                        <CardTitle className="text-xl">
+                                            {getMonthName(currentDate)} {currentDate.getFullYear()}
+                                        </CardTitle>
 
-                                {/* Filter Ruangan */}
-                                <div className="flex items-center gap-2">
-                                    <Filter className="h-4 w-4 text-gray-500" />
-                                    <select
-                                        value={filterRoom}
-                                        onChange={(e) => setFilterRoom(e.target.value)}
-                                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500"
-                                    >
-                                        <option value="all">Semua Ruangan</option>
-                                        {rooms.map((room) => (
-                                            <option key={room} value={room}>
-                                                {room}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-
-                            {/* Grid Kalender */}
-                            <div className="mb-4 grid grid-cols-7 gap-2">
-                                {['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'].map((day) => (
-                                    <div key={day} className="rounded-lg bg-gray-50 p-3 text-center text-sm font-medium text-gray-700">
-                                        {day}
+                                        <Button variant="outline" size="icon" onClick={() => navigateMonth(1)}>
+                                            <ChevronRight className="h-4 w-4" />
+                                        </Button>
                                     </div>
-                                ))}
-                            </div>
 
-                            <div className="grid grid-cols-7 gap-2">
-                                {days.map((day: any, index: any) => {
-                                    const isCurrentMonth = day.getMonth() === currentDate.getMonth();
-                                    const isToday = day.toDateString() === new Date().toDateString();
-                                    const daySchedules = getSchedulesByDate(day);
+                                    {/* Filter Ruangan */}
+                                    <div className="flex items-center gap-2">
+                                        <Filter className="h-4 w-4 text-muted-foreground" />
+                                        <Select value={filterRoom} onValueChange={setFilterRoom}>
+                                            <SelectTrigger className="w-[180px]">
+                                                <SelectValue placeholder="Pilih ruangan" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem key="all" value="all">
+                                                    Semua Ruangan
+                                                </SelectItem>
+                                                {rooms.map((room) => (
+                                                    <SelectItem key={room.nama_ruangan} value={room.nama_ruangan}>
+                                                        {room.nama_ruangan}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                            </CardHeader>
 
-                                    return (
-                                        <div
-                                            key={index}
-                                            className={`min-h-[120px] rounded-lg border p-2 transition-all duration-200 ${isCurrentMonth ? 'border-gray-200 bg-white' : 'border-gray-100 bg-gray-50'} ${isToday ? 'bg-blue-50 ring-2 ring-blue-500' : ''} `}
-                                        >
-                                            {/* Tanggal */}
-                                            <div
-                                                className={`mb-2 text-sm font-medium ${isCurrentMonth ? 'text-gray-900' : 'text-gray-400'} ${isToday ? 'font-bold text-blue-600' : ''} `}
+                            <CardContent className="space-y-4">
+                                {/* Header Hari */}
+                                <div className="grid grid-cols-7 gap-2">
+                                    {['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'].map((day) => (
+                                        <div key={day} className="rounded-lg bg-muted p-3 text-center text-sm font-medium text-muted-foreground">
+                                            {day}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Grid Tanggal */}
+                                <div className="grid grid-cols-7 gap-2">
+                                    {days.map((day, index) => {
+                                        const isCurrentMonth = day.getMonth() === currentDate.getMonth();
+                                        const isToday = day.toDateString() === new Date().toDateString();
+                                        const daySchedules = getSchedulesByDate(day);
+
+                                        return (
+                                            <Card
+                                                key={index}
+                                                className={`relative min-h-[120px] py-3 transition-all duration-200 ${isCurrentMonth ? 'bg-card' : 'bg-muted/30'} ${isToday ? 'shadow-md ring-2 ring-primary' : ''} `}
                                             >
-                                                {day.getDate()}
+                                                <CardContent className="p-2">
+                                                    {/* Tanggal */}
+                                                    <div
+                                                        className={`mb-2 flex h-6 w-6 items-center justify-center rounded-full text-sm font-medium ${isCurrentMonth ? 'text-foreground' : 'text-muted-foreground'} ${isToday ? 'bg-primary font-bold text-primary-foreground' : ''} `}
+                                                    >
+                                                        {day.getDate()}
+                                                    </div>
+
+                                                    {/* Jadwal Ruangan */}
+                                                    <div className="space-y-1 px-5">
+                                                        {daySchedules.map((schedule) => (
+                                                            <Badge
+                                                                key={schedule.id}
+                                                                variant="secondary"
+                                                                className="block w-full cursor-pointer justify-start truncate bg-green-100 px-2 py-1 text-xs text-green-800 transition-opacity hover:opacity-80"
+                                                                title={`${schedule.room} (${schedule.jam_mulai}-${schedule.jam_selesai})`}
+                                                                onClick={() => handleScheduleClick(schedule)}
+                                                            >
+                                                                <div className="flex w-full flex-col items-start">
+                                                                    <span className="w-full truncate">{schedule?.ruangans?.nama_ruangan}</span>
+                                                                    <span className="flex items-center gap-1 text-xs opacity-75">
+                                                                        <Clock className="h-3 w-3" />
+                                                                        {schedule.jam_mulai} - {schedule.jam_selesai}
+                                                                    </span>
+                                                                </div>
+                                                            </Badge>
+                                                        ))}
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        );
+                                    })}
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Modal Detail Jadwal */}
+                        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                            <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+                                {selectedSchedule && (
+                                    <>
+                                        <DialogHeader className="space-y-4">
+                                            <DialogTitle className="flex items-center gap-2 text-2xl">
+                                                <MapPin className="h-6 w-6 text-primary" />
+                                                Detail Reservasi Ruangan
+                                            </DialogTitle>
+                                        </DialogHeader>
+
+                                        <div className="space-y-5">
+                                            {/* Foto Ruangan */}
+                                            <div className="relative">
+                                                <img
+                                                    src={`/storage/${selectedSchedule?.ruangans?.image}`}
+                                                    alt={selectedSchedule?.ruangans?.nama_ruangan}
+                                                    className="h-48 w-full rounded-lg object-cover"
+                                                />
                                             </div>
 
-                                            {/* Jadwal Ruangan */}
-                                            <div className="space-y-1">
-                                                {daySchedules.map((schedule) => (
-                                                    <div
-                                                        key={schedule.id}
-                                                        className={`truncate rounded-md px-2 py-1 text-xs font-medium ${schedule.color} `}
-                                                        title={`${schedule.room} (${schedule.start}-${schedule.end})`}
-                                                    >
-                                                        <div className="truncate">{schedule.room}</div>
-                                                        <div className="text-xs opacity-75">
-                                                            {schedule.start}-{schedule.end}
+                                            {/* Detail Kegiatan */}
+                                            <Card>
+                                                <CardContent className="space-y-4">
+                                                    <div className="mb-2 flex items-center gap-1.5 text-muted-foreground">
+                                                        <MapPin className="h-5 w-5" />
+                                                        {selectedSchedule?.ruangans?.nama_ruangan}
+                                                    </div>
+
+                                                    <div className="ml-0.5 flex items-center gap-1.5 text-muted-foreground">
+                                                        <Clock className="h-4 w-4" />
+                                                        <span>
+                                                            {selectedSchedule.jam_mulai} - {selectedSchedule.jam_selesai}
+                                                        </span>
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="mb-2 font-semibold">Kegiatan :</h4>
+                                                        <p className="leading-relaxed text-muted-foreground">{selectedSchedule.deskripsi}</p>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+
+                                            {/* Info Pemesan */}
+                                            <Card className="gap-4">
+                                                <CardHeader>
+                                                    <CardTitle className="flex items-center gap-2">
+                                                        <Users className="h-5 w-5" />
+                                                        Informasi Pemesan
+                                                    </CardTitle>
+                                                </CardHeader>
+                                                <CardContent className="space-y-4">
+                                                    <div className="space-y-2">
+                                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                                            {/* <span className="font-mono text-sm font-medium">Kode Permintaan :</span> */}
+                                                            <Hash className="h-4 w-4" />
+                                                            <span className="font-mono text-sm font-medium">{selectedSchedule.kode_booking}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                                            <User className="h-4 w-4" />
+                                                            <span>{selectedSchedule.pemesan?.name}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                                            <Mail className="h-4 w-4" />
+                                                            <span>{selectedSchedule.pemesan?.email}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                                            <Phone className="h-4 w-4" />
+                                                            <span>{selectedSchedule.no_hp}</span>
                                                         </div>
                                                     </div>
-                                                ))}
-                                            </div>
+                                                </CardContent>
+                                            </Card>
                                         </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
+                                    </>
+                                )}
+                            </DialogContent>
+                        </Dialog>
                     </TabsContent>
 
                     {/* Analytics Tab */}

@@ -79,10 +79,8 @@ const urgencyOptions = [
 
 type FormData = z.infer<typeof FormSchema>;
 
-export default function SuppliesRequest({ availableATK }: any) {
+export default function SuppliesRequest({ availableATK, unitKerja }: any) {
     const { auth } = usePage<SharedData>().props;
-    const { unitKerja } = usePage<SharedData>().props;
-
     const {
         register,
         handleSubmit,
@@ -159,7 +157,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                             <SelectGroup>
                                                 <SelectLabel>Unit Kerja</SelectLabel>
                                                 {unitKerja.map((item, index) => (
-                                                    <SelectItem value={item.unit_kerja}>{item.unit_kerja}</SelectItem>
+                                                    <SelectItem value={item}>{item}</SelectItem>
                                                 ))}
                                             </SelectGroup>
                                         </SelectContent>

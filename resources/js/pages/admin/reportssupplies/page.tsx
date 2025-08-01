@@ -8,23 +8,7 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { CheckCircle, Clock, Shuffle, TrendingDown, TrendingUp, XCircle } from 'lucide-react';
-import {
-    Area,
-    AreaChart,
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Cell,
-    Legend,
-    Line,
-    LineChart,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
-} from 'recharts';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -67,10 +51,9 @@ export default function SuppliesReports({
                 </div>
 
                 <Tabs defaultValue="summary" className="space-y-6">
-                    <TabsList className="grid w-full grid-cols-4">
+                    <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="summary">Ringkasan</TabsTrigger>
-                        <TabsTrigger value="items">Analisis Item</TabsTrigger>
-                        <TabsTrigger value="trends">Tren</TabsTrigger>
+                        <TabsTrigger value="items">Diagram</TabsTrigger>
                         <TabsTrigger value="users">Analisa Pengguna</TabsTrigger>
                     </TabsList>
 
@@ -197,22 +180,46 @@ export default function SuppliesReports({
 
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Tingkat Persetujuan per Item</CardTitle>
-                                    <CardDescription>Persentase persetujuan untuk setiap jenis item ATK</CardDescription>
+                                    <CardTitle>Tren Permintaan Bulanan</CardTitle>
+                                    <CardDescription>Perkembangan jumlah permintaan ATK dalam 6 bulan terakhir</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="space-y-4">
-                                        {itemComparison.map((item: any) => (
-                                            <div key={item.name} className="space-y-2">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="font-medium">{item.name}</span>
-                                                    <span className="text-sm text-gray-500">
-                                                        {item.approved}/{item.requested} ({item.approvalRate}%)
-                                                    </span>
-                                                </div>
-                                                <Progress value={item.approvalRate} className="h-2" />
-                                            </div>
-                                        ))}
+                                    <div className="h-[300px]">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <AreaChart data={monthlyTrend}>
+                                                <CartesianGrid strokeDasharray="3 3" />
+                                                <XAxis dataKey="month" />
+                                                <YAxis />
+                                                <Tooltip />
+                                                <Area
+                                                    type="monotone"
+                                                    dataKey="requests"
+                                                    stackId="1"
+                                                    stroke="#3b82f6"
+                                                    fill="#3b82f6"
+                                                    fillOpacity={0.6}
+                                                    name="Total Permintaan"
+                                                />
+                                                <Area
+                                                    type="monotone"
+                                                    dataKey="approved"
+                                                    stackId="2"
+                                                    stroke="#10b981"
+                                                    fill="#10b981"
+                                                    fillOpacity={0.6}
+                                                    name="Disetujui"
+                                                />
+                                                <Area
+                                                    type="monotone"
+                                                    dataKey="partial"
+                                                    stackId="2"
+                                                    stroke="#b87333"
+                                                    fill="#b87333"
+                                                    fillOpacity={0.6}
+                                                    name="Sebagian"
+                                                />
+                                            </AreaChart>
+                                        </ResponsiveContainer>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -234,83 +241,6 @@ export default function SuppliesReports({
                                             <Bar dataKey="requested" fill="#3b82f6" name="Diminta" />
                                             <Bar dataKey="approved" fill="#10b981" name="Disetujui" />
                                         </BarChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-
-                    {/* Trends Tab */}
-                    <TabsContent value="trends" className="space-y-6">
-                        {/* Monthly Trend */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Tren Permintaan Bulanan</CardTitle>
-                                <CardDescription>Perkembangan jumlah permintaan ATK dalam 6 bulan terakhir</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="h-[300px]">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <AreaChart data={monthlyTrend}>
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="month" />
-                                            <YAxis />
-                                            <Tooltip />
-                                            <Area
-                                                type="monotone"
-                                                dataKey="requests"
-                                                stackId="1"
-                                                stroke="#3b82f6"
-                                                fill="#3b82f6"
-                                                fillOpacity={0.6}
-                                                name="Total Permintaan"
-                                            />
-                                            <Area
-                                                type="monotone"
-                                                dataKey="approved"
-                                                stackId="2"
-                                                stroke="#10b981"
-                                                fill="#10b981"
-                                                fillOpacity={0.6}
-                                                name="Disetujui"
-                                            />
-                                            <Area
-                                                type="monotone"
-                                                dataKey="partial"
-                                                stackId="2"
-                                                stroke="#b87333"
-                                                fill="#b87333"
-                                                fillOpacity={0.6}
-                                                name="Sebagian"
-                                            />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* Approval Rate Trend */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Tren Tingkat Persetujuan</CardTitle>
-                                <CardDescription>Persentase tingkat persetujuan permintaan ATK per bulan</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="h-[300px]">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <LineChart data={approvalRateTrend}>
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="month" />
-                                            <YAxis domain={[75, 90]} />
-                                            <Tooltip formatter={(value) => [`${value}%`, 'Tingkat Persetujuan']} />
-                                            <Line
-                                                type="monotone"
-                                                dataKey="rate"
-                                                stroke="#10b981"
-                                                strokeWidth={3}
-                                                dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
-                                            />
-                                        </LineChart>
                                     </ResponsiveContainer>
                                 </div>
                             </CardContent>

@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Models\Notification;
-use App\Models\User;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -54,11 +53,6 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'notifFromServer' => Notification::latest()->get(),
-            'unitKerja' => User::select('unit_kerja')
-                ->distinct()
-                ->orderBy('unit_kerja', 'asc')
-                ->get()
-
         ];
     }
 }

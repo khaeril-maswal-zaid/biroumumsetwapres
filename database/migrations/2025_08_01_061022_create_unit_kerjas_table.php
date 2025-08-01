@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('unit_kerjas', function (Blueprint $table) {
             $table->id();
-            $table->string('code_unit')->unique();
             $table->string('name')->unique();
             $table->string('label');
             $table->timestamps();

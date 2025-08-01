@@ -41,8 +41,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function DamageReport({ kategoriKerusakan }: any) {
-    const { unitKerja } = usePage<SharedData>().props;
+export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
     const { auth } = usePage<SharedData>().props;
     const [photos, setPhotos] = useState<File[]>([]);
     const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
@@ -189,7 +188,7 @@ export default function DamageReport({ kategoriKerusakan }: any) {
                                                 <SelectGroup>
                                                     <SelectLabel>Unit Kerja</SelectLabel>
                                                     {unitKerja.map((item, index) => (
-                                                        <SelectItem value={item.unit_kerja}>{item.unit_kerja}</SelectItem>
+                                                        <SelectItem value={item}>{item}</SelectItem>
                                                     ))}
                                                 </SelectGroup>
                                             </SelectContent>

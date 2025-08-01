@@ -6,6 +6,7 @@ use App\Models\PermintaanAtk;
 use App\Http\Requests\StorePermintaanAtkRequest;
 use App\Http\Requests\UpdatePermintaanAtkRequest;
 use App\Models\DaftarAtk;
+use App\Models\UnitKerja;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
@@ -31,7 +32,8 @@ class PermintaanAtkController extends Controller
     public function create()
     {
         return Inertia::render('biroumum/supplies/page', [
-            'availableATK' => DaftarAtk::select(['id', 'name', 'unit'])->get()
+            'availableATK' => DaftarAtk::select(['id', 'name', 'unit'])->get(),
+            'unitKerja' => UnitKerja::select('name')->pluck('name')->all(),
         ]);
     }
 
@@ -141,8 +143,7 @@ class PermintaanAtkController extends Controller
         $data = [
             'summaryData' => $reportsData->summaryData(),
             'itemComparison' => $reportsData->itemComparison(),
-            'monthlyTrend' => $reportsData->monthlyTrends()['monthlyTrend'],
-            'approvalRateTrend' => $reportsData->monthlyTrends()['approvalRateTrend'],
+            'monthlyTrend' => $reportsData->monthlyTrends(),
             'topUsers' => $reportsData->topUsersStats(),
             'divisionStats' => $reportsData->divisionStats(),
             'statusDistribution' => $reportsData->statusDistribution(),

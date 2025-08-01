@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             KategoriKerusakanSeeder::class,
             DaftarAtkSeeder::class,
             UserSeeder::class,
+            UnitKerjaSeeder::class,
         ]);
 
         // User::factory(10)->create();
@@ -31,7 +32,7 @@ class DatabaseSeeder extends Seeder
         // User::factory()->atasan()->create();
 
         PermintaanAtk::factory(50)->create();
-        PemesananRuangRapat::factory(2)->create();
-        KerusakanGedung::factory(2)->create();
+        PemesananRuangRapat::factory(50)->create();
+        KerusakanGedung::factory(50)->create();
     }
 }
