@@ -18,51 +18,57 @@ import {
     PackageCheck,
 } from 'lucide-react';
 import AppLogo from './app-logo';
-
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: route('dashboard'),
-        icon: LayoutDashboard, // ✅ lebih spesifik dari LayoutGrid
+        icon: LayoutDashboard,
+        permission: 'view_admin_dashboard',
     },
     {
         title: 'Pemesanan Ruang Rapat',
         href: route('ruangrapat.index'),
-        icon: CalendarClock, // ✅ lebih menggambarkan pemesanan + waktu
+        icon: CalendarClock,
+        permission: 'view_bookings',
     },
     {
         title: 'Kerusakan Gedung',
         href: route('kerusakangedung.index'),
-        icon: Hammer, // ✅ lebih cocok untuk “kerusakan”
+        icon: Hammer,
+        permission: 'view_damages',
     },
     {
         title: 'Permintaan ATK',
         href: route('permintaanatk.index'),
-        icon: ClipboardList, // ✅ menggambarkan permintaan / daftar barang
+        icon: ClipboardList,
+        permission: 'view_suppliess',
     },
     {
         title: 'Permintaan Kendaraan',
-        href: '#', // route('permintaankendaraan.index'),
-        icon: CarFront, // ✅ lebih modern dan umum untuk kendaraan
+        href: '#', // Ganti nanti dengan route('permintaankendaraan.index') jika aktif
+        icon: CarFront,
+        permission: 'view_vehicle_requests',
     },
 ];
 
-//Laporan---
 const reportsNavItems: NavItem[] = [
     {
         title: 'Pemesanan Ruangan',
         href: route('ruangrapat.reports'),
-        icon: FileBarChart2, // ✅ laporan bentuk chart
+        icon: FileBarChart2,
+        permission: 'report_bookings',
     },
     {
         title: 'Laporan Kerusakan',
         href: route('kerusakangedung.reports'),
-        icon: FileWarning, // ✅ laporan + indikasi kerusakan
+        icon: FileWarning,
+        permission: 'report_damages',
     },
     {
         title: 'Permintaan ATK',
         href: route('permintaanatk.reports'),
-        icon: FileText, // ✅ laporan umum
+        icon: FileText,
+        permission: 'report_suppliess',
     },
 ];
 
@@ -70,22 +76,26 @@ const footerNavItems: NavItem[] = [
     {
         title: 'Manajemen Ruangan',
         href: route('rooms.index'),
-        icon: Building2, // sudah tepat
+        icon: Building2,
+        permission: 'view_rooms',
     },
     {
         title: 'Manajemen ATK',
         href: route('daftaratk.index'),
-        icon: PackageCheck, // ✅ barang + stok
+        icon: PackageCheck,
+        permission: 'view_atk',
     },
     {
         title: 'Kategori Kerusakan',
         href: route('daftarkerusakan.index'),
-        icon: Hammer, // sama seperti atas
+        icon: Hammer,
+        permission: 'view_category_damages',
     },
     {
         title: 'Pengaturan Akses',
         href: route('roles.index'),
-        icon: LockKeyhole, // ✅ lebih representatif untuk akses
+        icon: LockKeyhole,
+        permission: 'management_access',
     },
 ];
 
@@ -107,10 +117,6 @@ export function AppSidebar() {
             <SidebarContent>
                 <NavMain items={mainNavItems} itemsReport={reportsNavItems} />
             </SidebarContent>
-
-            {/* <SidebarContent>
-                <NavReports items={reportsNavItems} />
-            </SidebarContent> */}
 
             <SidebarFooter>
                 <NavFooter items={footerNavItems} className="mt-auto" />

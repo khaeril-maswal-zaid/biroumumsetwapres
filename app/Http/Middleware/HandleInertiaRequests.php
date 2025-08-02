@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\Notification;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
 
@@ -40,12 +41,20 @@ class HandleInertiaRequests extends Middleware
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
+        if (Auth::check()) {
+            $user = Auth::user();
+            $permissions = $user->getAllPermissions()->pluck('name')->toArray();
+        } else {
+            $permissions = [];
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
                 'user' => $request->user(),
+                'permissions' => $permissions,
             ],
             'ziggy' => fn(): array => [
                 ...(new Ziggy)->toArray(),

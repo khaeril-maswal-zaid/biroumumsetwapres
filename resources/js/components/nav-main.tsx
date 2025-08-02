@@ -30,15 +30,19 @@ type NavMainProps = {
 
 export function NavMain({ items, itemsReport }: NavMainProps) {
     const { url: pathname } = usePage();
+    const { permissions }: any = usePage().props.auth;
 
-    const [isManagementOpen, setIsManagementOpen] = useState(itemsReport.some((item: any) => isPathActive(pathname, item.href)));
+    const visibleMainItems = items.filter((item) => !item.permission || permissions.includes(item.permission));
+    const visibleReportItems = itemsReport.filter((item) => !item.permission || permissions.includes(item.permission));
+
+    const [isManagementOpen, setIsManagementOpen] = useState(visibleReportItems.some((item: any) => isPathActive(pathname, item.href)));
 
     return (
         <SidebarGroup className="px-2 py-0">
             <SidebarGroupLabel>Platform</SidebarGroupLabel>
             <SidebarMenu>
-                {items.map((item) => {
-                    const isActive = isPathActive(pathname, item.href, true); // exact match ONLY
+                {visibleMainItems.map((item) => {
+                    const isActive = isPathActive(pathname, item.href, true);
 
                     return (
                         <SidebarMenuItem key={item.title}>
@@ -58,43 +62,45 @@ export function NavMain({ items, itemsReport }: NavMainProps) {
                     );
                 })}
 
-                <Collapsible open={isManagementOpen} onOpenChange={setIsManagementOpen}>
-                    <CollapsibleTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            className={cn(
-                                'w-full justify-start rounded-md text-sm font-medium transition-colors',
-                                itemsReport.some((item: any) => isPathActive(pathname, item.href))
-                                    ? 'bg-blue-50 text-blue-700'
-                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
-                            )}
-                        >
-                            <BarChart4 className="h-5 w-5" />
-                            Laporan
-                            {isManagementOpen ? <ChevronDown className="ml-auto h-4 w-4" /> : <ChevronRight className="ml-auto h-4 w-4" />}
-                        </Button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="mt-1 space-y-1">
-                        {itemsReport.map((item: any) => {
-                            const isActive = isPathActive(pathname, item.href); // default: partial match OK
-                            return (
-                                <Link
-                                    key={item.title}
-                                    href={item.href}
-                                    className={cn(
-                                        'flex items-center rounded-md px-6 py-1.5 text-sm font-medium transition-colors',
-                                        isActive
-                                            ? 'border-r-2 border-blue-700 bg-blue-50 text-blue-700'
-                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
-                                    )}
-                                >
-                                    <item.icon className="mr-3 h-4 w-4" />
-                                    {item.title}
-                                </Link>
-                            );
-                        })}
-                    </CollapsibleContent>
-                </Collapsible>
+                {visibleReportItems.length > 0 && (
+                    <Collapsible open={isManagementOpen} onOpenChange={setIsManagementOpen}>
+                        <CollapsibleTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                className={cn(
+                                    'w-full justify-start rounded-md text-sm font-medium transition-colors',
+                                    visibleReportItems.some((item: any) => isPathActive(pathname, item.href))
+                                        ? 'bg-blue-50 text-blue-700'
+                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
+                                )}
+                            >
+                                <BarChart4 className="h-5 w-5" />
+                                Laporan
+                                {isManagementOpen ? <ChevronDown className="ml-auto h-4 w-4" /> : <ChevronRight className="ml-auto h-4 w-4" />}
+                            </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="mt-1 space-y-1">
+                            {visibleReportItems.map((item: any) => {
+                                const isActive = isPathActive(pathname, item.href);
+                                return (
+                                    <Link
+                                        key={item.title}
+                                        href={item.href}
+                                        className={cn(
+                                            'flex items-center rounded-md px-6 py-1.5 text-sm font-medium transition-colors',
+                                            isActive
+                                                ? 'border-r-2 border-blue-700 bg-blue-50 text-blue-700'
+                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
+                                        )}
+                                    >
+                                        <item.icon className="mr-3 h-4 w-4" />
+                                        {item.title}
+                                    </Link>
+                                );
+                            })}
+                        </CollapsibleContent>
+                    </Collapsible>
+                )}
             </SidebarMenu>
         </SidebarGroup>
     );

@@ -30,10 +30,10 @@ class RolePermissionSeeder extends Seeder
             ['name' => 'delete_category_damages', 'label' => 'Hapus Kategory Kerusakan', 'category' => 'Kategory Kerusakan'],
 
             // 🛠️ Kerusakan
-            ['name' => 'view_damages', 'label' => 'Lihat Laporan Kerusakan Gedung', 'category' => 'Laporan Kerusakan Gedung'],
-            ['name' => 'report_damages', 'label' => 'Data Laporan Kerusakan Gedung', 'category' => 'Laporan Kerusakan Gedung'],
-            ['name' => 'create_damage', 'label' => 'Laporkan Kerusakan Gedung', 'category' => 'Laporan Kerusakan Gedung'],
-            ['name' => 'change_damage_status', 'label' => 'Konfirmasi Kerusakan Gedung', 'category' => 'Laporan Kerusakan Gedung'],
+            ['name' => 'view_damages', 'label' => 'Lihat Pengajuan Kerusakan Gedung', 'category' => 'Pengajuan Kerusakan Gedung'],
+            ['name' => 'report_damages', 'label' => 'Laporan Pengajuan Kerusakan Gedung', 'category' => 'Pengajuan Kerusakan Gedung'],
+            ['name' => 'create_damage', 'label' => 'Laporkan Kerusakan Gedung', 'category' => 'Pengajuan Kerusakan Gedung'],
+            ['name' => 'change_damage_status', 'label' => 'Konfirmasi Kerusakan Gedung', 'category' => 'Pengajuan Kerusakan Gedung'],
 
             // 📅 Pemesanan Ruang
             ['name' => 'view_bookings', 'label' => 'Lihat Pemesanan Ruang', 'category' => 'Pemesanan Ruang Rapat'],

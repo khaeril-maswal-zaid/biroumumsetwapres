@@ -12,36 +12,42 @@ export function NavFooter({
     items: NavItem[];
 }) {
     const { url } = usePage();
+    const { permissions }: any = usePage().props.auth;
 
     return (
         <SidebarGroup {...props} className={`group-data-[collapsible=icon]:p-0 ${className || ''}`}>
             <SidebarGroupContent>
                 <SidebarMenu>
-                    {items.map((item) => {
-                        let itemPath = '/';
-                        try {
-                            itemPath = new URL(item.href).pathname;
-                        } catch {
-                            itemPath = item.href;
-                        }
-                        const isActive = url.startsWith(itemPath);
+                    {items
+                        .filter((item) => {
+                            if (!item.permission) return true;
+                            return permissions.includes(item.permission);
+                        })
+                        .map((item) => {
+                            let itemPath = '/';
+                            try {
+                                itemPath = new URL(item.href).pathname;
+                            } catch {
+                                itemPath = item.href;
+                            }
+                            const isActive = url.startsWith(itemPath);
 
-                        return (
-                            <SidebarMenuItem key={item.title}>
-                                <SidebarMenuButton
-                                    asChild
-                                    className={`text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100 ${
-                                        isActive ? 'border-r-2 border-blue-700 bg-blue-50 text-blue-700' : ''
-                                    }`}
-                                >
-                                    <Link href={item.href} rel="noopener noreferrer">
-                                        {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
-                                        <span>{item.title}</span>
-                                    </Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        );
-                    })}
+                            return (
+                                <SidebarMenuItem key={item.title}>
+                                    <SidebarMenuButton
+                                        asChild
+                                        className={`text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100 ${
+                                            isActive ? 'border-r-2 border-blue-700 bg-blue-50 text-blue-700' : ''
+                                        }`}
+                                    >
+                                        <Link href={item.href} rel="noopener noreferrer">
+                                            {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
+                                            <span>{item.title}</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            );
+                        })}
                 </SidebarMenu>
             </SidebarGroupContent>
         </SidebarGroup>
