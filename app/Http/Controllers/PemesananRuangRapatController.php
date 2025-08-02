@@ -91,7 +91,7 @@ class PemesananRuangRapatController extends Controller
 
         return Inertia::render('biroumum/booking/page', [
             'tersedia' => $result,
-            'unitKerja' => UnitKerja::select('name')->pluck('name')->all(),
+            'unitKerja' => UnitKerja::select('label')->pluck('label')->all(),
         ]);
     }
 

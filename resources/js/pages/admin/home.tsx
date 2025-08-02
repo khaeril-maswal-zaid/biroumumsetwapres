@@ -120,9 +120,9 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
                                     <div key={activity.id} className="mb-2 flex items-center justify-between rounded-lg border p-3">
                                         <div className="flex items-center gap-3">
                                             {getActivityIcon(activity.type)}
-                                            <div>
+                                            <div className="pe-3">
                                                 <p className="text-sm font-medium">{activity.title}</p>
-                                                <p className="text-xs text-gray-500">oleh {activity.user}</p>
+                                                <p className="line-clamp-1 text-xs text-gray-500">Oleh {activity.user}</p>
                                                 <p className="text-xs text-gray-400">{activity.time}</p>
                                             </div>
                                         </div>

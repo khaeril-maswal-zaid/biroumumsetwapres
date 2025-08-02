@@ -139,7 +139,7 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
                             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                                 {/* Nama & Unit Kerja */}
                                 <div>
-                                    <Label>Nama Pelapor</Label>
+                                    <Label>Nama Pengaju</Label>
                                     <Input readOnly value={auth.user.name} className="mt-1 cursor-not-allowed bg-gray-100 text-gray-500" />
                                 </div>
                                 <div>

@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Head, router } from '@inertiajs/react';
 import {
@@ -170,7 +169,7 @@ export default function RequestHistory({ requestHistory }: any) {
                         <PageHeader title="Riwayat Permintaan" backUrl="/" />
 
                         {/* Filters */}
-                        <Card>
+                        <Card className="gap-3">
                             <CardHeader>
                                 <CardTitle>Filter Riwayat</CardTitle>
                             </CardHeader>
@@ -184,32 +183,6 @@ export default function RequestHistory({ requestHistory }: any) {
                                             className="w-full"
                                         />
                                         <Search className="h-4 w-4 text-gray-400" />
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <Select value={typeFilter} onValueChange={setTypeFilter}>
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Jenis" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="all">Semua Jenis</SelectItem>
-                                                <SelectItem value="booking">Ruang Rapat</SelectItem>
-                                                <SelectItem value="vehicle">Kendaraan</SelectItem>
-                                                <SelectItem value="supplies">ATK</SelectItem>
-                                                <SelectItem value="damage">Kerusakan</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Status" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="all">Semua Status</SelectItem>
-                                                <SelectItem value="pending">Menunggu</SelectItem>
-                                                <SelectItem value="approved">Disetujui</SelectItem>
-                                                <SelectItem value="completed">Selesai</SelectItem>
-                                                <SelectItem value="rejected">Ditolak</SelectItem>
-                                            </SelectContent>
-                                        </Select>
                                     </div>
                                 </div>
                             </CardContent>

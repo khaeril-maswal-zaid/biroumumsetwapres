@@ -33,7 +33,7 @@ class PermintaanAtkController extends Controller
     {
         return Inertia::render('biroumum/supplies/page', [
             'availableATK' => DaftarAtk::select(['id', 'name', 'unit'])->get(),
-            'unitKerja' => UnitKerja::select('name')->pluck('name')->all(),
+            'unitKerja' => UnitKerja::select('label')->pluck('label')->all(),
         ]);
     }
 
@@ -127,12 +127,6 @@ class PermintaanAtkController extends Controller
         }
 
         $permintaanAtk->update($updateData->all());
-
-        // $permintaanAtk->update([
-        //     'daftar_kebutuhan' => $updatedItems,
-        //     'status' =>  $status,
-        //     'keterangan' => $validated['message'],
-        // ]);
     }
 
 

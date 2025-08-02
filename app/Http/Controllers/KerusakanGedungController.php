@@ -34,7 +34,7 @@ class KerusakanGedungController extends Controller
 
         return Inertia::render('biroumum/damage/page', [
             'kategoriKerusakan' => KategoriKerusakan::all(),
-            'unitKerja' => UnitKerja::select('name')->pluck('name')->all(),
+            'unitKerja' => UnitKerja::select('label')->pluck('label')->all(),
         ]);
     }
 

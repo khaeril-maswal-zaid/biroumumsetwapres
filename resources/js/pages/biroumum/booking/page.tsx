@@ -33,8 +33,6 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export default function RoomBooking({ unitKerja }: any) {
-    console.log(unitKerja);
-
     const { auth } = usePage<SharedData>().props;
 
     const {
@@ -106,7 +104,7 @@ export default function RoomBooking({ unitKerja }: any) {
                                         {showDangerDialog && <DangerAlert message={showDangerDialog} show={true} />}
 
                                         <div>
-                                            <Label htmlFor="name">Nama pemesan</Label>
+                                            <Label htmlFor="name">Nama Pengaju</Label>
                                             <Input
                                                 id="name"
                                                 type="text"
@@ -145,7 +143,7 @@ export default function RoomBooking({ unitKerja }: any) {
                                         </h3>
 
                                         <div>
-                                            <Label htmlFor="date">Tanggal penggunaan ruangan</Label>
+                                            <Label htmlFor="date">Tanggal Penggunaan Ruangan</Label>
                                             <Input className="mt-1" type="date" min={today} {...register('date')} />
                                             {errors.date && <p className="mt-1 text-sm text-red-500">{errors.date.message}</p>}
                                         </div>
