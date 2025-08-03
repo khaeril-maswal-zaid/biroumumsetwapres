@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DaftarAtk;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class DaftarAtkController extends Controller
@@ -38,7 +39,11 @@ class DaftarAtkController extends Controller
             'unit' => 'required|string|max:250',
         ]);
 
-        DaftarAtk::create($validated);
+        $query = array_merge($validated, [
+            'instansi_id' => Auth::user()->instansi_id
+        ]);
+
+        DaftarAtk::create($query);
     }
 
     public function destroy(DaftarAtk $daftarAtk)

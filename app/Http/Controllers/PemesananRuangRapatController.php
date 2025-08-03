@@ -129,6 +129,7 @@ class PemesananRuangRapatController extends Controller
 
         PemesananRuangRapat::create([
             'user_id' => Auth::id(),
+            'instansi_id' => Auth::user()->instansi_id,
             'unit_kerja' => $request->unit_kerja,
             'tanggal_penggunaan' => $request->date,
             'jam_mulai' => $request->startTime,

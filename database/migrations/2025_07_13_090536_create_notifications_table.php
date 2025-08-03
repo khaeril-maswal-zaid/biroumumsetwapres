@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('instansi_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->nullable(); // siapa yg dituju
             $table->string('type'); // overdue, reminder, new
             $table->string('category'); // room, supplies, damage

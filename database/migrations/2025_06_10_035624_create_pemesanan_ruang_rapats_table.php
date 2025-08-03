@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pemesanan_ruang_rapats', function (Blueprint $table) {
             $table->id();
-
+            $table->foreignId('instansi_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('unit_kerja', 255);
             $table->date('tanggal_penggunaan');

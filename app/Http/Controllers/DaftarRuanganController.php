@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreDaftarRuanganRequest;
 use App\Models\DaftarRuangan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 
@@ -32,6 +33,7 @@ class DaftarRuanganController extends Controller
         $path = $request->photo->store('image/rooms', 'public');
 
         DaftarRuangan::create([
+            'instansi_id' => Auth::user()->instansi_id,
             'nama_ruangan' => $request->nama_ruangan,
             'kode_ruangan' => $request->kode_ruangan,
             'lokasi' => $request->lokasi,

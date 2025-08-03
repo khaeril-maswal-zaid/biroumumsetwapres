@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\KategoriKerusakan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class KategoriKerusakanController extends Controller
@@ -18,6 +19,7 @@ class KategoriKerusakanController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'instansi_id' => Auth::user()->instansi_id,
             'name' => 'required|string|max:250',
             'kode_kerusakan' => 'required|string|max:50|unique:kategori_kerusakans,kode_kerusakan',
         ]);
