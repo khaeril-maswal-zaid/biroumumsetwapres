@@ -15,8 +15,9 @@ class KategoriKerusakanSeeder extends Seeder
     {
         for ($i = 0; $i < 10; $i++) {
             KategoriKerusakan::create([
-                'kode_kerusakan' => 'Krn-' . $i,
-                'name' => 'Kerusakan ' . $i,
+                'kode_kerusakan' => 'Krn-' . $i + 1,
+                'instansi_id' => 4,
+                'name' => 'Kerusakan ' . $i + 1,
             ]);
         }
     }

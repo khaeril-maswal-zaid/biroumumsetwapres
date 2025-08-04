@@ -48,6 +48,7 @@ class PemesananRuangRapatController extends Controller
             if (Carbon::parse($jamMulai)->gte(Carbon::parse($jamSelesai))) {
                 return Inertia::render('biroumum/booking/page', [
                     'tersedia' => $result,
+                    'unitKerja' => UnitKerja::select('label')->pluck('label')->all(),
                 ]);
             }
 
@@ -192,6 +193,14 @@ class PemesananRuangRapatController extends Controller
     {
         $reportsData = new PemesananRuangRapat();
 
+        $startOfWeek = Carbon::now()->startOfWeek(); // Senin minggu ini (00:00)
+
+        $roomSchedules = $reportsData->where('status', 'confirmed')
+            ->where('tanggal_penggunaan', '<', $startOfWeek) // hanya yang sebelum pekan ini
+            ->with(['pemesan', 'ruangans'])
+            ->get();
+
+
         // Kirim ke Inertia
         return Inertia::render('admin/reportsbooking/page', [
             'summaryData'        => $reportsData->summaryData(),
@@ -202,9 +211,9 @@ class PemesananRuangRapatController extends Controller
             'divisionUsage'      => $reportsData->divisionUsage(),
             'penggunaanRuangan'  => $reportsData->penggunaanRuangan(),
             'statusDistribution' => $reportsData->statusDistribution(),
-            'weeklySchedule' => $reportsData->weeklySchedule(),
-            'rooms' => DaftarRuangan::select('nama_ruangan')->get(),
-            'roomSchedules' => $reportsData->where('status', 'confirmed')->with('pemesan')->with('ruangans')->get(),
+            'weeklySchedule'     => $reportsData->weeklySchedule(),
+            'rooms'              => DaftarRuangan::select('nama_ruangan')->get(),
+            'roomSchedules' =>  $roomSchedules
         ]);
     }
 }

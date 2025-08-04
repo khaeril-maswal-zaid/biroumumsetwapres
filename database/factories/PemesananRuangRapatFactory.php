@@ -25,6 +25,7 @@ class PemesananRuangRapatFactory extends Factory
 
         return [
             'user_id' => User::inRandomOrder()->first()?->id ?? 1,
+            'instansi_id' => 4,
             'unit_kerja' => User::inRandomOrder()->first()?->unit_kerja ?? 'Biro Umum',
             'tanggal_penggunaan' => $tanggalPenggunaan,
             'jam_mulai' => $jamMulai->format('H:i'),

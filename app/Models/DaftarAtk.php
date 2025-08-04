@@ -12,6 +12,7 @@ class DaftarAtk extends Model
 {
     protected $fillable = [
         'name',
+        'instansi_id',
         'kode_atk',
         'category',
         'unit',

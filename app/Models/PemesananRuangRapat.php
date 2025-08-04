@@ -17,6 +17,7 @@ class PemesananRuangRapat extends Model
 
     protected $fillable = [
         'user_id',
+        'instansi_id',
         'unit_kerja',
         'tanggal_penggunaan',
         'jam_mulai',

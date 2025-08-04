@@ -11,11 +11,12 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 
-#[ScopedBy([InstansiScope::class])]
+// #[ScopedBy([InstansiScope::class])]
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
+
 
     /**
      * The attributes that are mass assignable.
@@ -24,6 +25,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'instansi_id',
         'email',
         'password',
     ];

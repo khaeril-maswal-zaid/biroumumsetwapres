@@ -26,6 +26,7 @@ class UnitKerjaSeeder extends Seeder
 
         foreach ($datas as $key => $value) {
             UnitKerja::create([
+                'instansi_id' => 4,
                 'name' => Str::slug($value, '-'),
                 'label' => $value,
             ]);

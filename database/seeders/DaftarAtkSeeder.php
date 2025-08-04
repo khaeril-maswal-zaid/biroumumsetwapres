@@ -108,6 +108,7 @@ class DaftarAtkSeeder extends Seeder
 
         foreach ($data as $key => $value) {
             DaftarAtk::create([
+                'instansi_id' => 4,
                 'name' => $value['name'],
                 'kode_atk' => $value['kode_atk'],
                 'category' => $value['category'],

@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $data = [
+        $dataY = [
             [
                 'name' => 'Sapto Harjono Wahjoe Sedjati, S.Sos., M.A.',
                 'email' => 'saptoharjonowahjoesedjati@setwapresri.go.id',
@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Lely Setia Rimelanty, S.E.',
                 'email' => 'lelysetiarimelanty@setwapresri.go.id',
-                'nip' => ' 197111031996032001',
+                'nip' => '197111031996032001',
                 'unit_kerja' => 'Biro Tata Usaha dan Sumber Daya Manusia',
                 'instansi_id' => 4,
             ],
@@ -1415,7 +1415,7 @@ class UserSeeder extends Seeder
             ],
         ];
 
-        $dataX = [
+        $data = [
             [
                 'name' => 'Sapto Harjono Wahjoe Sedjati, S.Sos., M.A.',
                 'email' => 'saptoharjonowahjoesedjati@setwapresri.go.id',
@@ -1433,7 +1433,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Lely Setia Rimelanty, S.E.',
                 'email' => 'lelysetiarimelanty@setwapresri.go.id',
-                'nip' => ' 197111031996032001',
+                'nip' => '197111031996032001',
                 'unit_kerja' => 'Biro Tata Usaha dan Sumber Daya Manusia',
                 'instansi_id' => 4,
             ],
@@ -1447,7 +1447,7 @@ class UserSeeder extends Seeder
             ],
         ];
 
-        foreach ($dataX as $key => $value) {
+        foreach ($data as $key => $value) {
             $user =  User::create([
                 'name' => $value['name'],
                 'instansi_id' => $value['instansi_id'],

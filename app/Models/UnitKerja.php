@@ -11,6 +11,7 @@ class UnitKerja extends Model
 {
     protected $fillable = [
         'name',
+        'instansi_id',
         'label',
     ];
 }

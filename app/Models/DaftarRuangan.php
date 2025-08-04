@@ -17,6 +17,7 @@ class DaftarRuangan extends Model
     // Di model Ruangan.php (misalnya)
     protected $fillable = [
         'nama_ruangan',
+        'instansi_id',
         'kode_ruangan',
         'lokasi',
         'kapasitas',

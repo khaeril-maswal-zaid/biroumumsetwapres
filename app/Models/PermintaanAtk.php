@@ -21,6 +21,7 @@ class PermintaanAtk extends Model
 
     protected $fillable = [
         'user_id',
+        'instansi_id',
         'unit_kerja',
         'daftar_kebutuhan',
         'deskripsi',

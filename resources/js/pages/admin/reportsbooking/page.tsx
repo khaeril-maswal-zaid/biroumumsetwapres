@@ -83,7 +83,8 @@ export default function BookingReports({
 
     // Fungsi untuk mendapatkan jadwal berdasarkan tanggal
     const getSchedulesByDate = (tanggal_penggunaan) => {
-        const dateStr = tanggal_penggunaan.toISOString().split('T')[0];
+        const dateStr = tanggal_penggunaan.toLocaleDateString('sv-SE'); // Format: YYYY-MM-DD
+
         return roomSchedules.filter((schedule) => {
             const matchesDate = schedule.tanggal_penggunaan === dateStr;
             const matchesRoom = filterRoom === 'all' || schedule?.ruangans?.nama_ruangan === filterRoom;
@@ -104,8 +105,13 @@ export default function BookingReports({
         const month = currentDate.getMonth();
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
+
+        // Kalender dimulai dari hari Senin
         const startDate = new Date(firstDay);
-        startDate.setDate(startDate.getDate() - firstDay.getDay());
+        const dayOfWeek = firstDay.getDay(); // 0 (Minggu) - 6 (Sabtu)
+
+        const offset = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Geser ke Senin
+        startDate.setDate(startDate.getDate() - offset);
 
         const days = [];
         const current = new Date(startDate);
@@ -476,7 +482,7 @@ export default function BookingReports({
                             <CardContent className="space-y-4">
                                 {/* Header Hari */}
                                 <div className="grid grid-cols-7 gap-2">
-                                    {['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'].map((day) => (
+                                    {['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'].map((day) => (
                                         <div key={day} className="rounded-lg bg-muted p-3 text-center text-sm font-medium text-muted-foreground">
                                             {day}
                                         </div>
@@ -537,7 +543,7 @@ export default function BookingReports({
                                 {selectedSchedule && (
                                     <>
                                         <DialogHeader className="space-y-4">
-                                            <DialogTitle className="flex items-center gap-2 text-2xl">
+                                            <DialogTitle className="flex items-center gap-2 text-lg">
                                                 <MapPin className="h-6 w-6 text-primary" />
                                                 Detail Reservasi Ruangan
                                             </DialogTitle>
