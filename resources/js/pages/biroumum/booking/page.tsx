@@ -194,7 +194,7 @@ export default function RoomBooking({ unitKerja }: any) {
                                         </div>
 
                                         <div>
-                                            <Label htmlFor="contact">No Handphone</Label>
+                                            <Label htmlFor="contact">No Hp</Label>
                                             <Input className="mt-1" id="contact" {...register('contact')} />
                                             {errors.contact && <p className="mt-1 text-sm text-red-500">{errors.contact.message}</p>}
                                         </div>

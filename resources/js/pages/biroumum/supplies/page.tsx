@@ -323,8 +323,9 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
 
                                 {/* Narahubung */}
                                 <div>
-                                    <Label>Narahubung</Label>
+                                    <Label htmlFor="contact">No Hp</Label>
                                     <Input
+                                        id="contact"
                                         {...register('contact')}
                                         placeholder="Nama dan nomor telepon"
                                         className={`mt-1 ${cn(errors.contact && 'border-red-500')}`}

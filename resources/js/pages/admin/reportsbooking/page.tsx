@@ -76,13 +76,13 @@ export default function BookingReports({
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     // Fungsi untuk mendapatkan nama bulan dalam bahasa Indonesia
-    const getMonthName = (tanggal_penggunaan) => {
+    const getMonthName = (tanggal_penggunaan: any) => {
         const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
         return months[tanggal_penggunaan.getMonth()];
     };
 
     // Fungsi untuk mendapatkan jadwal berdasarkan tanggal
-    const getSchedulesByDate = (tanggal_penggunaan) => {
+    const getSchedulesByDate = (tanggal_penggunaan: any) => {
         const dateStr = tanggal_penggunaan.toLocaleDateString('sv-SE'); // Format: YYYY-MM-DD
 
         return roomSchedules.filter((schedule) => {
@@ -93,7 +93,7 @@ export default function BookingReports({
     };
 
     // Fungsi untuk navigasi bulan
-    const navigateMonth = (direction) => {
+    const navigateMonth = (direction: any) => {
         const newDate = new Date(currentDate);
         newDate.setMonth(currentDate.getMonth() + direction);
         setCurrentDate(newDate);
@@ -127,7 +127,7 @@ export default function BookingReports({
     const days = getDaysInMonth();
 
     // Fungsi untuk membuka detail jadwal
-    const handleScheduleClick = (schedule) => {
+    const handleScheduleClick = (schedule: any) => {
         setSelectedSchedule(schedule);
         setIsDialogOpen(true);
     };
@@ -511,7 +511,7 @@ export default function BookingReports({
 
                                                     {/* Jadwal Ruangan */}
                                                     <div className="space-y-1 px-5">
-                                                        {daySchedules.map((schedule) => (
+                                                        {daySchedules.map((schedule: any) => (
                                                             <Badge
                                                                 key={schedule.id}
                                                                 variant="secondary"

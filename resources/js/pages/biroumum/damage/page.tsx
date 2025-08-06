@@ -339,7 +339,7 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
                                     </div>
 
                                     <div>
-                                        <Label htmlFor="contact">No Handphone</Label>
+                                        <Label htmlFor="contact">No Hp</Label>
                                         <Input id="contact" {...register('contact')} className={`mt-1 ${errors.contact && 'border-red-500'}`} />
                                         {errors.contact && <p className="mt-1 text-sm text-red-500">{errors.contact.message}</p>}
                                     </div>
