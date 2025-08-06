@@ -16,11 +16,11 @@ import { Separator } from '@radix-ui/react-separator';
 import {
     AlertCircle,
     AlertTriangle,
+    Calendar,
     CheckCircle,
     ImageIcon,
     MapPin,
     MessageSquare,
-    NotebookText,
     Search,
     Settings,
     Users,
@@ -62,7 +62,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
         const matchesSearch =
             damage?.pelapor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             damage.lokasi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            damage.item.toLowerCase().includes(searchTerm.toLowerCase());
+            damage.kode_pelaporan.toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesStatus = statusFilter === 'all' || damage.status === statusFilter;
 
@@ -179,7 +179,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                             <div className="flex w-full max-w-sm items-center space-x-2">
                                 <Search className="h-4 w-4 text-gray-400" />
                                 <Input
-                                    placeholder="Cari nama, lokasi, atau nama  item rusak..."
+                                    placeholder="Cari nama, lokasi, atau kode permintaan......"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="w-full"
@@ -204,7 +204,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead>Kode Laporan</TableHead>
+                                        <TableHead>Kode Permintaan</TableHead>
                                         <TableHead>Nama Pelapor</TableHead>
                                         <TableHead>Lokasi</TableHead>
                                         <TableHead className="hidden md:table-cell">Nama Item Rusak</TableHead>
@@ -274,7 +274,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                 <div className="flex flex-col gap-4 rounded-lg bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
                                     <div>
                                         <div className="mb-2 flex items-center gap-1">
-                                            <NotebookText className="h-4 w-4 text-gray-500" />
+                                            <Calendar className="h-4 w-4 text-gray-500" />
                                             <span className="text-xs text-gray-600">{formatTanggalIna(selectedDamage.created_at)}</span>
                                         </div>
                                         <div className="flex items-center gap-1">

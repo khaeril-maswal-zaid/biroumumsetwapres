@@ -25,7 +25,7 @@ class PermintaanAtk extends Model
         'unit_kerja',
         'daftar_kebutuhan',
         'deskripsi',
-        'urgensi',
+        // 'urgensi',
         'no_hp',
         'kode_pelaporan',
         'status',

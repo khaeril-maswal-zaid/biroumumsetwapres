@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { AlertCircle, CheckCircle, MessageSquare, NotebookText, Package, Search, User, X } from 'lucide-react';
+import { AlertCircle, Calendar, CheckCircle, MessageSquare, Package, Search, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -208,7 +208,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                             <div className="flex w-full max-w-sm items-center space-x-2">
                                 <Search className="h-4 w-4 text-gray-400" />
                                 <Input
-                                    placeholder="Cari nama atau barang..."
+                                    placeholder="Cari nama pengaju atau kode permintaan..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="w-full"
@@ -298,7 +298,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                 <div className="flex flex-col gap-4 rounded-lg bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
                                     <div>
                                         <div className="mb-2 flex items-center gap-1">
-                                            <NotebookText className="h-4 w-4 text-gray-500" />
+                                            <Calendar className="h-4 w-4 text-gray-500" />
                                             <span className="text-xs text-gray-600">{formatDate(selectedRequest.created_at)}</span>
                                         </div>
                                         <div className="flex items-center gap-1">

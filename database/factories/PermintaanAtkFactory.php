@@ -62,7 +62,7 @@ class PermintaanAtkFactory extends Factory
                 'unit' => fake()->randomElement(['rim', 'pak', 'lusin', 'buah']),
             ]),
             'deskripsi' => '',
-            'urgensi' => fake()->randomElement(['normal', 'mendesak', 'segera']),
+            // 'urgensi' => fake()->randomElement(['normal', 'mendesak', 'segera']),
             'no_hp' => fake()->phoneNumber(),
             'kode_pelaporan' => 'ATK-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'status' => fake()->randomElement(['pending']), //['pending', 'process', 'confirmed']

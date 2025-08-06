@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { AlertCircle, Calendar, CheckCircle, Clock, MessageSquare, NotebookText, Search, Users, X } from 'lucide-react';
+import { AlertCircle, Calendar, CheckCircle, Clock, MessageSquare, Search, Users, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -70,9 +70,8 @@ export default function BookingsAdmin({ bookingRooms }: any) {
     const filteredBookings = bookingRooms.data.filter((booking: any) => {
         const matchesSearch =
             booking?.pemesan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            booking?.ruangans.nama_ruangan.toLowerCase().includes(searchTerm.toLowerCase()) ||
             booking.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            booking.bookingCode.toLowerCase().includes(searchTerm.toLowerCase());
+            booking.kode_booking.toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
 
@@ -126,7 +125,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                             <div className="flex w-full max-w-sm items-center space-x-2">
                                 <Search className="h-4 w-4 text-gray-400" />
                                 <Input
-                                    placeholder="Cari nama, ruangan, atau kode booking..."
+                                    placeholder="Cari nama pengaju, kegiatan, atau kode permintaan..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="w-full"
@@ -151,7 +150,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead>Kode Booking</TableHead>
+                                        <TableHead>Kode Permintaan</TableHead>
                                         <TableHead>Nama Pemesan</TableHead>
                                         <TableHead>Ruangan</TableHead>
                                         <TableHead className="hidden md:table-cell">Tanggal</TableHead>
@@ -216,7 +215,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                 <div className="flex flex-col gap-4 rounded-lg bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
                                     <div>
                                         <div className="mb-2 flex items-center gap-1">
-                                            <NotebookText className="h-4 w-4 text-gray-500" />
+                                            <Calendar className="h-4 w-4 text-gray-500" />
                                             <span className="text-xs text-gray-600">{formatTanggalIna(selectedBooking.created_at)}</span>
                                         </div>
                                         <div className="flex items-center gap-1">

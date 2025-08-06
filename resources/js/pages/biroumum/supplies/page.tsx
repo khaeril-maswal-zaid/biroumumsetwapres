@@ -36,7 +36,7 @@ const FormSchema = z.object({
         )
         .min(1, 'Minimal satu barang harus dipilih'),
     justification: z.string().min(1, 'Keterangan tidak boleh kosong'),
-    urgency: z.string().min(1, 'Pilih tingkat urgensi'),
+    // urgency: z.string().min(1, 'Pilih tingkat urgensi'),
     unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
     contact: z.string().min(1, 'Narahubung wajib diisi'),
 });
@@ -94,7 +94,7 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
         defaultValues: {
             items: [{ id: '', name: '', requested: 0, approved: 0, unit: '' }],
             justification: '',
-            urgency: '',
+            // urgency: '',
             contact: '',
             unit_kerja: '',
         },
@@ -102,7 +102,7 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
 
     const { fields, append, remove, update } = useFieldArray({ control, name: 'items' });
     const items = watch('items');
-    const selectedUrgency = watch('urgency');
+    // // const selectedUrgency = watch('urgency');
 
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
     const [openComboboxes, setOpenComboboxes] = useState<Record<number, boolean>>({});
@@ -285,7 +285,7 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
                                 </div>
 
                                 {/* Urgensi */}
-                                <div>
+                                {/* <div>
                                     <Label className="text-base font-medium">Tingkat Urgensi</Label>
                                     <div className="mt-3 space-y-3">
                                         {urgencyOptions.map((opt) => {
@@ -311,7 +311,6 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
                                                                 {isSel && <div className={cn('h-3 w-3 rounded-full', opt.badgeColor)}></div>}
                                                             </div>
                                                             <p className="mb-1 text-xs opacity-80">{opt.description}</p>
-                                                            {/* <p className="text-xs font-medium opacity-60">{opt.detail}</p> */}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -319,7 +318,7 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
                                         })}
                                         {errors.urgency && <p className="text-sm text-red-600">{errors.urgency.message}</p>}
                                     </div>
-                                </div>
+                                </div> */}
 
                                 {/* Narahubung */}
                                 <div>

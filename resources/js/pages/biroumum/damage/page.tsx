@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
 import type { SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
@@ -30,9 +29,9 @@ const schema = z.object({
     unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
     kategori: z.string().min(3, 'Nama Item wajib diisi'),
     description: z.string().min(5, 'Keterangan wajib diisi'),
-    urgency: z.enum(['rendah', 'sedang', 'tinggi'], {
-        required_error: 'Tingkat urgensi wajib dipilih',
-    }),
+    // urgency: z.enum(['rendah', 'sedang', 'tinggi'], {
+    //     required_error: 'Tingkat urgensi wajib dipilih',
+    // }),
     contact: z
         .string()
         .min(5, 'No Hp wajib diisi')
@@ -286,7 +285,7 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
                                     </div>
 
                                     {/* Creative Urgency Selection */}
-                                    <div>
+                                    {/* <div>
                                         <Label className="text-base font-medium">Tingkat Urgensi</Label>
                                         <Controller
                                             name="urgency"
@@ -323,7 +322,6 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
                                                                             )}
                                                                         </div>
                                                                         <p className="mb-1 text-xs opacity-80">{option.description}</p>
-                                                                        {/* <p className="text-xs font-medium opacity-60">{option.detail}</p> */}
                                                                     </div>
                                                                 </div>
                                                                 {isSelected && (
@@ -336,7 +334,7 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
                                             )}
                                         />
                                         {errors.urgency && <p className="mt-2 text-sm text-red-500">{errors.urgency.message}</p>}
-                                    </div>
+                                    </div> */}
 
                                     <div>
                                         <Label htmlFor="contact">No Hp</Label>

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->json('daftar_kebutuhan')->nullable();
             $table->string('deskripsi', 255); //from pengadu
-            $table->enum('urgensi', ['normal', 'mendesak', 'segera']);
+            // $table->enum('urgensi', ['normal', 'mendesak', 'segera']);
             $table->string('no_hp', 25);
             $table->string('kode_pelaporan', 50)->unique();
             $table->enum('status', ['pending', 'process', 'confirmed']);

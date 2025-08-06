@@ -60,7 +60,7 @@ class KerusakanGedungController extends Controller
             'item' => $request->damageType,
             'deskripsi' => $request->description,
             'picture' => $photoPaths,
-            'urgensi' => $request->urgency,
+            // 'urgensi' => $request->urgency,
             'kode_pelaporan' => 'KGD-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'no_hp' => $request->contact,
             'status' => 'pending',

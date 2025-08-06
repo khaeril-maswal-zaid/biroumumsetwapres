@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('item', 255);
             $table->string('deskripsi', 255);  //from pengadu
             $table->json('picture', 255);
-            $table->enum('urgensi', ['rendah', 'sedang', 'tinggi']);
+            // $table->enum('urgensi', ['rendah', 'sedang', 'tinggi']);
             $table->string('no_hp', 25);
             $table->string('kode_pelaporan', 50)->unique();
             $table->enum('status', ['pending', 'process', 'confirmed']);

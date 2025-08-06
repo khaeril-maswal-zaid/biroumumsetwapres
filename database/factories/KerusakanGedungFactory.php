@@ -29,7 +29,7 @@ class KerusakanGedungFactory extends Factory
             'deskripsi' => '',
             'picture' =>  [fake()->image('public/storage/image/kerusakan-gedung', 640, 480, null, false), fake()->image('public/storage/image/kerusakan-gedung', 640, 480, null, false)],
             'no_hp' => fake()->phoneNumber(),
-            'urgensi' => fake()->randomElement(['rendah', 'sedang', 'tinggi']),
+            // 'urgensi' => fake()->randomElement(['rendah', 'sedang', 'tinggi']),
             'kode_pelaporan' => 'KGD-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'status' => fake()->randomElement(['pending',]), //['pending', 'process', 'confirmed']
             'keterangan' => fake()->text(250),
