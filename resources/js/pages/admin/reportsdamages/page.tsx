@@ -8,7 +8,7 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { Calendar, CheckCircle, Clock, MapPin, TrendingDown, TrendingUp, Users, XCircle } from 'lucide-react';
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -50,10 +50,9 @@ export default function DamageReports({
                 </div>
 
                 <Tabs defaultValue="summary" className="space-y-6">
-                    <TabsList className="grid w-full grid-cols-4">
+                    <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="summary">Ringkasan</TabsTrigger>
                         <TabsTrigger value="analysis">Analisis Kerusakan</TabsTrigger>
-                        <TabsTrigger value="performance">Kinerja Perbaikan</TabsTrigger>
                         <TabsTrigger value="trends">Analisa Pengguna</TabsTrigger>
                     </TabsList>
 
@@ -117,24 +116,29 @@ export default function DamageReports({
                                 </CardContent>
                             </Card>
 
-                            <Card className="pb-0">
+                            <Card className="gap-0">
                                 <CardHeader>
-                                    <CardTitle>Waktu Respons per Kategori</CardTitle>
-                                    <CardDescription>Rata-rata waktu respons dalam hari</CardDescription>
+                                    <CardTitle>Tren Permintaan Bulanan</CardTitle>
+                                    <CardDescription>Perkembangan jumlah permintaan ATK dalam 6 bulan terakhir</CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="h-[300px]">
-                                        <ResponsiveContainer width="100%" height={280}>
-                                            <BarChart data={damageTypeData}>
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <AreaChart data={monthlyTrend}>
                                                 <CartesianGrid strokeDasharray="3 3" />
-                                                <XAxis dataKey="name" fontSize={12} />
-                                                <YAxis fontSize={12} />
-                                                <Tooltip
-                                                    formatter={(value: any) => [`${value} laporan`, 'Jumlah']}
-                                                    labelFormatter={(label) => `Kategori: ${label}`}
+                                                <XAxis dataKey="month" />
+                                                <YAxis />
+                                                <Tooltip />
+                                                <Area
+                                                    type="monotone"
+                                                    dataKey="requests"
+                                                    stackId="1"
+                                                    stroke="#3b82f6"
+                                                    fill="#3b82f6"
+                                                    fillOpacity={0.6}
+                                                    name="Total Permintaan"
                                                 />
-                                                <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                                            </BarChart>
+                                            </AreaChart>
                                         </ResponsiveContainer>
                                     </div>
                                 </CardContent>
@@ -145,7 +149,7 @@ export default function DamageReports({
                     <TabsContent value="analysis" className="space-y-6">
                         {/* Damage Types */}
                         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                            <Card>
+                            {/* <Card>
                                 <CardHeader>
                                     <CardTitle>Tingkat Urgensi Laporan</CardTitle>
                                     <CardDescription>Distribusi laporan berdasarkan tingkat urgensi</CardDescription>
@@ -173,6 +177,29 @@ export default function DamageReports({
                                             <Legend verticalAlign="bottom" height={36} />
                                         </PieChart>
                                     </ResponsiveContainer>
+                                </CardContent>
+                            </Card> */}
+
+                            <Card className="pb-0">
+                                <CardHeader>
+                                    <CardTitle>Waktu Respons per Kategori</CardTitle>
+                                    <CardDescription>Rata-rata waktu respons dalam hari</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="h-[300px]">
+                                        <ResponsiveContainer width="100%" height={500}>
+                                            <BarChart data={damageTypeData}>
+                                                <CartesianGrid strokeDasharray="3 3" />
+                                                <XAxis dataKey="name" fontSize={12} />
+                                                <YAxis fontSize={12} />
+                                                <Tooltip
+                                                    formatter={(value: any) => [`${value} laporan`, 'Jumlah']}
+                                                    labelFormatter={(label) => `Kategori: ${label}`}
+                                                />
+                                                <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
                                 </CardContent>
                             </Card>
 
@@ -204,37 +231,6 @@ export default function DamageReports({
                                 </CardContent>
                             </Card>
                         </div>
-                    </TabsContent>
-
-                    <TabsContent value="performance" className="space-y-6">
-                        {/* Monthly Trend */}
-                        <Card className="gap-0">
-                            <CardHeader>
-                                <CardTitle>Tren Permintaan Bulanan</CardTitle>
-                                <CardDescription>Perkembangan jumlah permintaan ATK dalam 6 bulan terakhir</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="h-[300px]">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <AreaChart data={monthlyTrend}>
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="month" />
-                                            <YAxis />
-                                            <Tooltip />
-                                            <Area
-                                                type="monotone"
-                                                dataKey="requests"
-                                                stackId="1"
-                                                stroke="#3b82f6"
-                                                fill="#3b82f6"
-                                                fillOpacity={0.6}
-                                                name="Total Permintaan"
-                                            />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </CardContent>
-                        </Card>
                     </TabsContent>
 
                     <TabsContent value="trends" className="space-y-6">

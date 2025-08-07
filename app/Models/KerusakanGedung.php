@@ -128,13 +128,15 @@ class KerusakanGedung extends Model
             ->groupBy('kategori_kerusakan_id')
             ->map(function ($items) {
                 $kategori = $items->first()->kategori;
+
                 return [
                     'name' => $kategori?->name ?? 'Tanpa Kategori',
                     'value' => $items->count(),
                     'color' => '#' . substr(md5($kategori?->name ?? Str::random(5)), 0, 6),
                 ];
             })
-            ->values(); // biar hasilnya array numerik
+            ->sortBy('name') // urutkan berdasarkan nama kategori A-Z
+            ->values(); // ubah menjadi array numerik
 
         return $data;
     }

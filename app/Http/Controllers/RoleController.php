@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -13,17 +14,18 @@ class RoleController extends Controller
 {
     public function index()
     {
-        $users = User::with('roles')->get()->map(function ($user) {
-            return [
-                'id' => (string) $user->id,
-                'name' => $user->name,
-                'nip' => $user->nip,
-                'email' => $user->email,
-                'role' => $user->roles->pluck('name')->first() ?? '-',
-                'status' => $user->status ?? 'aktif',
-                'last_login' => $user->last_login,
-            ];
-        });
+        $users = User::with('roles')
+            ->where('instansi_id', Auth::id())
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => (string) $user->id,
+                    'name' => $user->name,
+                    'nip' => $user->nip,
+                    'email' => $user->email,
+                    'role' => $user->roles->pluck('name')->first() ?? '-',
+                ];
+            });
 
         $roles =  Role::with(['permissions'])
             ->withCount('users')

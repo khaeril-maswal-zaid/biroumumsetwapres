@@ -8,7 +8,7 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { CheckCircle, Clock, Shuffle, TrendingDown, TrendingUp, XCircle } from 'lucide-react';
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -147,7 +147,7 @@ export default function SuppliesReports({
 
                     {/* Items Analysis Tab */}
                     <TabsContent value="items" className="space-y-6">
-                        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                        {/* <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                             <Card>
                                 <CardHeader>
                                     <CardTitle>Tingkat Urgensi Laporan</CardTitle>
@@ -177,53 +177,52 @@ export default function SuppliesReports({
                                     </ResponsiveContainer>
                                 </CardContent>
                             </Card>
-
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Tren Permintaan Bulanan</CardTitle>
-                                    <CardDescription>Perkembangan jumlah permintaan ATK dalam 6 bulan terakhir</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="h-[300px]">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            <AreaChart data={monthlyTrend}>
-                                                <CartesianGrid strokeDasharray="3 3" />
-                                                <XAxis dataKey="month" />
-                                                <YAxis />
-                                                <Tooltip />
-                                                <Area
-                                                    type="monotone"
-                                                    dataKey="requests"
-                                                    stackId="1"
-                                                    stroke="#3b82f6"
-                                                    fill="#3b82f6"
-                                                    fillOpacity={0.6}
-                                                    name="Total Permintaan"
-                                                />
-                                                <Area
-                                                    type="monotone"
-                                                    dataKey="approved"
-                                                    stackId="2"
-                                                    stroke="#10b981"
-                                                    fill="#10b981"
-                                                    fillOpacity={0.6}
-                                                    name="Disetujui"
-                                                />
-                                                <Area
-                                                    type="monotone"
-                                                    dataKey="partial"
-                                                    stackId="2"
-                                                    stroke="#b87333"
-                                                    fill="#b87333"
-                                                    fillOpacity={0.6}
-                                                    name="Sebagian"
-                                                />
-                                            </AreaChart>
-                                        </ResponsiveContainer>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
+                        </div> */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Tren Permintaan Bulanan</CardTitle>
+                                <CardDescription>Perkembangan jumlah permintaan ATK dalam 6 bulan terakhir</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="h-[300px]">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <AreaChart data={monthlyTrend}>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="month" />
+                                            <YAxis />
+                                            <Tooltip />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="requests"
+                                                stackId="1"
+                                                stroke="#3b82f6"
+                                                fill="#3b82f6"
+                                                fillOpacity={0.6}
+                                                name="Total Permintaan"
+                                            />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="approved"
+                                                stackId="2"
+                                                stroke="#10b981"
+                                                fill="#10b981"
+                                                fillOpacity={0.6}
+                                                name="Disetujui"
+                                            />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="partial"
+                                                stackId="2"
+                                                stroke="#b87333"
+                                                fill="#b87333"
+                                                fillOpacity={0.6}
+                                                name="Sebagian"
+                                            />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </CardContent>
+                        </Card>
 
                         <Card>
                             <CardHeader>
