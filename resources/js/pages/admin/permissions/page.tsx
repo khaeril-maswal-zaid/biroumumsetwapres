@@ -77,8 +77,6 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
         setUsers(mockUsers);
     }, [mockRoles, mockUsers]);
 
-    console.log(users);
-
     const [isEditUserRoleDialogOpen, setIsEditUserRoleDialogOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [selectedUserRole, setSelectedUserRole] = useState('');

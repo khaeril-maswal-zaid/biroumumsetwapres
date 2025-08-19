@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $dataY = [
+        $data = [
             [
                 'name' => 'Sapto Harjono Wahjoe Sedjati, S.Sos., M.A.',
                 'email' => 'saptoharjonowahjoesedjati@setwapresri.go.id',
@@ -1415,7 +1415,7 @@ class UserSeeder extends Seeder
             ],
         ];
 
-        $data = [
+        $dataX = [
             [
                 'name' => 'Sapto Harjono Wahjoe Sedjati, S.Sos., M.A.',
                 'email' => 'saptoharjonowahjoesedjati@setwapresri.go.id',
