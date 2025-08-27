@@ -29,8 +29,11 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
-        $request->session()->regenerate();
+        // $request->authenticate();
+        // $request->session()->regenerate();
+
+        $nip_Sso = '';
+        $password_Sso = '';
 
         $user = Auth::user();
 

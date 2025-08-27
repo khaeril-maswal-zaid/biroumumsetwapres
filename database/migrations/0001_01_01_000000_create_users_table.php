@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('instansi_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('nip');
+            $table->string('nip_sso');
             $table->string('unit_kerja');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
