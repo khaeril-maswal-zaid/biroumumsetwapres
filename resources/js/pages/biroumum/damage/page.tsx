@@ -2,17 +2,18 @@
 
 import { BottomNavigation } from '@/components/biroumum/bottom-navigation';
 import { PageHeader } from '@/components/biroumum/page-header';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
-import { AlertCircle, AlertOctagon, AlertTriangle, CheckCircle2, ImagePlus, Trash2, Wrench } from 'lucide-react';
+import { AlertCircle, AlertCircleIcon, AlertOctagon, AlertTriangle, CheckCircle2, ImagePlus, Trash2, Wrench } from 'lucide-react';
 import type React from 'react';
 import { useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -26,7 +27,7 @@ type KategoriKerusakan = {
 const schema = z.object({
     location: z.string().min(5, 'Lokasi wajib diisi'),
     damageType: z.string().min(3, 'Nama Item wajib diisi'),
-    unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
+    // unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
     kategori: z.string().min(3, 'Nama Item wajib diisi'),
     description: z.string().min(5, 'Keterangan wajib diisi'),
     // urgency: z.enum(['rendah', 'sedang', 'tinggi'], {
@@ -45,6 +46,7 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
     const [photos, setPhotos] = useState<File[]>([]);
     const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [errorServer, setErrorServer] = useState<null | Record<string, string[]>>(null);
 
     const {
         register,
@@ -70,13 +72,14 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
             { ...data, photos },
             {
                 onError: (errors) => {
-                    console.log(errors);
+                    setErrorServer(errors);
                 },
                 onSuccess: () => {
                     setShowSuccessDialog(true);
                     reset();
                     setPhotos([]);
                     setPhotoPreviews([]);
+                    setErrorServer(null); // reset error
                 },
             },
         );
@@ -156,6 +159,23 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
                 <div className="pb-20">
                     <div className="space-y-6 p-4">
                         <PageHeader title="Laporan Kerusakan Gedung" backUrl="/" />
+
+                        {errorServer && (
+                            <Alert variant="destructive" className="mb-4 bg-white text-red-700">
+                                <AlertCircleIcon />
+                                <AlertTitle>Gagal kirim laporan !</AlertTitle>
+                                <AlertDescription className="text-red-700">
+                                    <ul>
+                                        {Object.values(errorServer)
+                                            .flat()
+                                            .map((item, index) => (
+                                                <li key={index}>{item}</li>
+                                            ))}
+                                    </ul>
+                                </AlertDescription>
+                            </Alert>
+                        )}
+
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center space-x-2">
@@ -175,7 +195,19 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
                                             className="mt-1 cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
                                         />
                                     </div>
+
                                     <div>
+                                        <Label htmlFor="name">Unit Kerja</Label>
+                                        <Input
+                                            id="name"
+                                            type="text"
+                                            readOnly
+                                            value={auth?.user.unit_kerja}
+                                            className="mt-1 cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
+                                        />
+                                    </div>
+
+                                    {/* <div>
                                         <Label htmlFor="unitkerja">Unit Kerja</Label>
                                         <Select
                                             onValueChange={(value) => setValue('unit_kerja', value, { shouldValidate: true })}
@@ -187,14 +219,17 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>Unit Kerja</SelectLabel>
-                                                    {unitKerja.map((item, index) => (
-                                                        <SelectItem value={item}>{item}</SelectItem>
+                                                    {unitKerja.map((item: any, index: any) => (
+                                                        <SelectItem key={index} value={item}>
+                                                            {item}
+                                                        </SelectItem>
                                                     ))}
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
                                         {errors.unit_kerja && <p className="mt-1 text-sm text-red-500">{errors.unit_kerja.message}</p>}
-                                    </div>
+                                    </div> */}
+
                                     <div>
                                         <Label htmlFor="location">Lokasi Kerusakan</Label>
                                         <Input
@@ -247,7 +282,11 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
                                         {errors.description && <p className="mt-1 text-sm text-red-500">{errors.description.message}</p>}
                                     </div>
                                     <div>
-                                        <Label>Foto Kerusakan (Maks. 2 foto)</Label>
+                                        <Label>Foto Kerusakan </Label>
+                                        <p className="mt-1 text-xs text-gray-500">
+                                            Maks. <span className="font-medium">2 file</span>, ukuran ≤ 5 MB, format{' '}
+                                            <span className="font-medium">JPG, JPEG, PNG, atau HEIC</span>
+                                        </p>
                                         <div className="mt-2 grid grid-cols-2 gap-4">
                                             {photoPreviews.map((preview, index) => (
                                                 <div key={index} className="relative">

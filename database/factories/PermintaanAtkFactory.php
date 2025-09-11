@@ -52,7 +52,7 @@ class PermintaanAtkFactory extends Factory
         return [
             'user_id' => User::inRandomOrder()->first()?->id ?? 1,
             'instansi_id' => 4,
-            'unit_kerja' => User::inRandomOrder()->first()?->unit_kerja ?? 'Biro Umum',
+            // 'unit_kerja' => User::inRandomOrder()->first()?->unit_kerja ?? 'Biro Umum',
             'daftar_kebutuhan' =>
             collect(range(1, rand(1, 5)))->map(fn() => [
                 'id' => (string) fake()->numberBetween(1, 100),

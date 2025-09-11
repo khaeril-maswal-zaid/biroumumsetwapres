@@ -26,12 +26,12 @@ class PemesananRuangRapatFactory extends Factory
         return [
             'user_id' => User::inRandomOrder()->first()?->id ?? 1,
             'instansi_id' => 4,
-            'unit_kerja' => User::inRandomOrder()->first()?->unit_kerja ?? 'Biro Umum',
+            // 'unit_kerja' => User::inRandomOrder()->first()?->unit_kerja ?? 'Biro Umum',
             'tanggal_penggunaan' => $tanggalPenggunaan,
             'jam_mulai' => $jamMulai->format('H:i'),
             'jam_selesai' => $jamSelesai->format('H:i'),
             'daftar_ruangan_id' => DaftarRuangan::inRandomOrder()->first()?->id ?? 1,
-            'deskripsi' => '',
+            'deskripsi' => fake()->text(250),
             'no_hp' => fake()->phoneNumber(),
             'kode_booking' => 'RRT-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'status' => fake()->randomElement(['pending', 'confirmed', 'cancelled']), //['pending', 'confirmed', 'cancelled']

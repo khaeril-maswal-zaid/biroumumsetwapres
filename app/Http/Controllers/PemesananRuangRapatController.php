@@ -52,7 +52,7 @@ class PemesananRuangRapatController extends Controller
                 ]);
             }
 
-            // Ambil semua ruangan
+            // Ambil ruangan
             $ruangans = DaftarRuangan::select([
                 'id',
                 'nama_ruangan',
@@ -61,7 +61,7 @@ class PemesananRuangRapatController extends Controller
                 'kapasitas',
                 'image',
                 'fasilitas',
-            ])->get();
+            ])->where('status', 'aktif')->get();
 
             // Ambil booking yang bentrok
             $bookings = PemesananRuangRapat::where('tanggal_penggunaan', $tanggal)
@@ -131,7 +131,7 @@ class PemesananRuangRapatController extends Controller
         PemesananRuangRapat::create([
             'user_id' => Auth::id(),
             'instansi_id' => Auth::user()->instansi_id,
-            'unit_kerja' => $request->unit_kerja,
+            // 'unit_kerja' => $request->unit_kerja,
             'tanggal_penggunaan' => $request->date,
             'jam_mulai' => $request->startTime,
             'jam_selesai' => $request->endTime,
@@ -149,7 +149,9 @@ class PemesananRuangRapatController extends Controller
      */
     public function show(PemesananRuangRapat $pemesananRuangRapat)
     {
-        //
+        return Inertia::render('admin/bookings/review', [
+            'selectedBooking' => $pemesananRuangRapat->load('ruangans', 'pemesan'),
+        ]);
     }
 
     /**
@@ -176,14 +178,14 @@ class PemesananRuangRapatController extends Controller
         //
     }
 
-    public function status(PemesananRuangRapat $pemesananruangrapat, Request $request)
+    public function status(PemesananRuangRapat $pemesananRuangRapat, Request $request)
     {
         $validated = $request->validate([
             'action' => 'required|in:confirmed,cancelled',
             'message' => 'required_if:action,cancelled|nullable|string|max:255',
         ]);
 
-        $pemesananruangrapat->update([
+        $pemesananRuangRapat->update([
             'status' => $validated['action'],
             'keterangan' => $validated['message'] ?? '',
         ]);

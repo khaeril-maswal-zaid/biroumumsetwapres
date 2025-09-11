@@ -2,25 +2,23 @@
 
 import { BottomNavigation } from '@/components/biroumum/bottom-navigation';
 import { PageHeader } from '@/components/biroumum/page-header';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import type { SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
-import { AlertCircle, AlertOctagon, AlertTriangle, CheckCircle2, PenTool } from 'lucide-react';
+import { AlertCircle, AlertCircleIcon, AlertOctagon, AlertTriangle, Check, CheckCircle2, ChevronsUpDown, PenTool } from 'lucide-react';
 import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import * as z from 'zod';
-
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Check, ChevronsUpDown } from 'lucide-react';
 
 // Skema validasi
 const FormSchema = z.object({
@@ -37,7 +35,7 @@ const FormSchema = z.object({
         .min(1, 'Minimal satu barang harus dipilih'),
     justification: z.string().min(1, 'Keterangan tidak boleh kosong'),
     // urgency: z.string().min(1, 'Pilih tingkat urgensi'),
-    unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
+    // unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
     contact: z.string().min(1, 'Narahubung wajib diisi'),
 });
 
@@ -96,9 +94,11 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
             justification: '',
             // urgency: '',
             contact: '',
-            unit_kerja: '',
+            // unit_kerja: '',
         },
     });
+
+    const [errorServer, setErrorServer] = useState<null | Record<string, string[]>>(null);
 
     const { fields, append, remove, update } = useFieldArray({ control, name: 'items' });
     const items = watch('items');
@@ -114,10 +114,13 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
 
     const onSubmit = (data: FormData) => {
         router.post(route('permintaanatk.store'), data, {
-            onError: (e) => console.log(e),
+            onError: (e) => {
+                setErrorServer(e);
+            },
             onSuccess: () => {
                 setShowSuccessDialog(true);
                 reset();
+                setErrorServer(null);
             },
         });
     };
@@ -128,6 +131,23 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
             <div className="mx-auto min-h-screen w-full max-w-md bg-gray-50">
                 <div className="space-y-6 p-4 pb-20 md:pb-0">
                     <PageHeader title="Permintaan Alat Tulis Kantor" backUrl="/" />
+
+                    {errorServer && (
+                        <Alert variant="destructive" className="mb-4 bg-white text-red-700">
+                            <AlertCircleIcon />
+                            <AlertTitle>Gagal kirim laporan !</AlertTitle>
+                            <AlertDescription className="text-red-700">
+                                <ul>
+                                    {Object.values(errorServer)
+                                        .flat()
+                                        .map((item, index) => (
+                                            <li key={index}>{item}</li>
+                                        ))}
+                                </ul>
+                            </AlertDescription>
+                        </Alert>
+                    )}
+
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center space-x-2">
@@ -142,7 +162,13 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
                                     <Label>Nama Pengaju</Label>
                                     <Input readOnly value={auth.user.name} className="mt-1 cursor-not-allowed bg-gray-100 text-gray-500" />
                                 </div>
+
                                 <div>
+                                    <Label>Unit Kerja</Label>
+                                    <Input readOnly value={auth.user.unit_kerja} className="mt-1 cursor-not-allowed bg-gray-100 text-gray-500" />
+                                </div>
+
+                                {/* <div>
                                     <Label htmlFor="unitkerja">Unit Kerja</Label>
                                     <Select
                                         onValueChange={(value) => setValue('unit_kerja', value, { shouldValidate: true })}
@@ -154,7 +180,7 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectLabel>Unit Kerja</SelectLabel>
-                                                {unitKerja.map((item, index) => (
+                                                {unitKerja.map((item: any, index: any) => (
                                                     <SelectItem key={index} value={item}>
                                                         {item}
                                                     </SelectItem>
@@ -163,7 +189,7 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
                                         </SelectContent>
                                     </Select>
                                     {errors.unit_kerja && <p className="mt-1 text-sm text-red-500">{errors.unit_kerja.message}</p>}
-                                </div>
+                                </div> */}
 
                                 {/* Daftar Barang */}
                                 <div>

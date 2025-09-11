@@ -22,33 +22,34 @@ class StoreKerusakanGedungRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'location'      => 'required|string|max:255',
-            'damageType'    => 'required|string|max:255',
-            'kategori'      => 'required|string|exists:kategori_kerusakans,kode_kerusakan',
-            'description'   => 'required|string|max:255',
-            'photos'         => 'required|array',
-            'photos.*'       => 'file|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
-            // 'urgency'       => 'required|in:rendah,sedang,tinggi',
-            'contact'       => 'required|string|max:15',
+            'location'    => 'required|string|max:255',
+            'damageType'  => 'required|string|max:255',
+            'kategori'    => 'required|string|exists:kategori_kerusakans,kode_kerusakan',
+            'description' => 'required|string|max:255',
+            'photos'      => 'required|array',
+            'photos.*'    => 'image|mimes:jpeg,png,jpg,heic|max:5125',
+            // 'urgency'     => 'required|in:rendah,sedang,tinggi',
+            'contact'     => 'required|string|max:15',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'location.required'     => 'Lokasi kerusakan wajib diisi.',
-            'damageType.required'   => 'Jenis kerusakan wajib diisi.',
-            'description.required'  => 'Deskripsi kerusakan wajib diisi.',
-            'photos.required'        => 'Foto kerusakan wajib diunggah.',
-            'photos.array'           => 'Format foto harus berupa array.',
-            'photos.*.file'          => 'Setiap file harus berupa gambar.',
-            'photos.*.image'         => 'Setiap file harus berupa gambar yang valid.',
-            'photos.*.mimes'         => 'Format gambar harus jpg, jpeg, png, gif, atau svg.',
-            'photos.*.max'           => 'Ukuran gambar maksimal 4MB.',
-            // 'urgency.required'      => 'Tingkat urgensi wajib diisi.',
-            'urgency.in'            => 'Tingkat urgensi harus salah satu dari: rendah, sedang, tinggi.',
-            'contact.required'      => 'Nomor kontak wajib diisi.',
-            'contact.max'           => 'Nomor kontak maksimal 15 karakter.',
+            'location.required'    => 'Lokasi kerusakan wajib diisi.',
+            'damageType.required'  => 'Jenis kerusakan wajib diisi.',
+            'kategori.required'    => 'Kategori kerusakan wajib diisi.',
+            'kategori.exists'      => 'Kategori kerusakan tidak valid.',
+            'description.required' => 'Deskripsi kerusakan wajib diisi.',
+
+            'photos.required'      => 'Foto kerusakan wajib diunggah.',
+            'photos.array'         => 'Format foto harus berupa array.',
+            'photos.*.image'       => 'Setiap file harus berupa gambar yang valid.',
+            'photos.*.mimes'       => 'Format gambar harus jpg, jpeg, png, atau heic.',
+            'photos.*.max'         => 'Ukuran gambar maksimal 5MB.',
+            // 'urgency.required'   => 'Tingkat urgensi wajib diisi.',
+            'contact.required'     => 'Nomor kontak wajib diisi.',
+            'contact.max'          => 'Nomor kontak maksimal 15 karakter.',
         ];
     }
 }

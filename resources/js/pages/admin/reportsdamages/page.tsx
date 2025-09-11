@@ -264,7 +264,7 @@ export default function DamageReports({
                             {/* Division Performance */}
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Kinerja per Divisi</CardTitle>
+                                    <CardTitle>Kinerja per Unit Kerja</CardTitle>
                                     <CardDescription>Perbandingan jumlah laporan dan tingkat penyelesaian</CardDescription>
                                 </CardHeader>
                                 <CardContent>

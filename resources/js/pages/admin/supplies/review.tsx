@@ -1,21 +1,25 @@
-'use client';
-
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { AlertCircle, Calendar, CheckCircle, MessageSquare, Package, Search, User, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { BreadcrumbItem } from '@/types';
+import { Head, router } from '@inertiajs/react';
+import { AlertCircle, Calendar, CheckCircle, MessageSquare, Package, User, X } from 'lucide-react';
+import { useState } from 'react';
+('use client');
+
+const formatTanggalIna = (tanggal: string) => {
+    return new Intl.DateTimeFormat('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+    }).format(new Date(tanggal));
+};
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -24,21 +28,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function SuppliesAdmin({ permintaanAtk }: any) {
-    useEffect(() => {
-        const interval = setInterval(() => {
-            router.reload({
-                only: ['permintaanAtk'],
-            });
-        }, 60 * 1000); // 60 detik
-
-        return () => clearInterval(interval);
-    }, []);
-
-    const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('all');
-    const [selectedRequest, setSelectedRequest] = useState<any>(null);
-    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+export default function BookingDetailsPage({ selectedRequest }: any) {
     const [isProcessing, setIsProcessing] = useState(false);
     const [adminMessage, setAdminMessage] = useState('');
     const [actionType, setActionType] = useState<'confirmed' | 'reject' | null>(null);
@@ -64,7 +54,6 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
             preserveScroll: true,
             onSuccess: () => {
                 setIsProcessing(false);
-                setIsDetailsOpen(false);
                 setAdminMessage('');
                 setActionType(null);
                 setApprovedQuantities({});
@@ -73,31 +62,6 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                 console.log('Validation Errors: ', errors);
             },
         });
-    };
-
-    // Filter supplies based on search term and status
-    const filteredSupplies = permintaanAtk.data.filter((supply: any) => {
-        const matchesSearch =
-            supply?.pemesan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            supply?.kode_pelaporan.toLowerCase().includes(searchTerm.toLowerCase());
-
-        const matchesStatus = statusFilter === 'all' || supply.status === statusFilter;
-
-        return matchesSearch && matchesStatus;
-    });
-
-    const handleViewDetails = (request: any) => {
-        setSelectedRequest(request);
-        setIsDetailsOpen(true);
-        setActionType(null);
-        setAdminMessage('');
-
-        // Initialize approved quantities with current approved values
-        const initialQuantities: { [key: string]: number } = {};
-        request.daftar_kebutuhan.forEach((item: any) => {
-            initialQuantities[item.id] = item.approved;
-        });
-        setApprovedQuantities(initialQuantities);
     };
 
     const handleActionClick = (action: 'confirmed' | 'reject') => {
@@ -148,15 +112,6 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
         }
     };
 
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return new Intl.DateTimeFormat('id-ID', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-        }).format(date);
-    };
-
     const calculateRequestStatus = () => {
         const items = selectedRequest.daftar_kebutuhan;
         let approvedCount = 0;
@@ -185,102 +140,15 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <Card>
+                <Card className="max-w-4xl">
                     <CardHeader>
-                        <CardTitle>Daftar Permintaan ATK</CardTitle>
-                        <CardDescription>Semua permintaan alat tulis kantor yang telah diajukan.</CardDescription>
+                        <CardTitle className="mb-2 flex items-center gap-1">
+                            <Package className="h-5 w-5" />
+                            Detail Permintaan ATK
+                        </CardTitle>
+                        <CardDescription>Tinjau setiap item yang diminta dan tentukan jumlah yang akan disetujui.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                            <div className="flex w-full max-w-sm items-center space-x-2">
-                                <Search className="h-4 w-4 text-gray-400" />
-                                <Input
-                                    placeholder="Cari nama pengaju atau kode permintaan..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full"
-                                />
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                    <SelectTrigger className="w-[180px]">
-                                        <SelectValue placeholder="Filter Status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">Semua Status</SelectItem>
-                                        <SelectItem value="pending">Menunggu</SelectItem>
-                                        <SelectItem value="approved">Disetujui</SelectItem>
-                                        <SelectItem value="partial">Sebagian</SelectItem>
-                                        <SelectItem value="rejected">Ditolak</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-
-                        <div className="rounded-md border">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Kode Permintaan</TableHead>
-                                        <TableHead>Nama Pemesan</TableHead>
-                                        <TableHead>Jumlah Item</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead className="text-right">Aksi</TableHead>
-                                        <TableHead className="text-right">Aksi</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {filteredSupplies.length === 0 ? (
-                                        <TableRow>
-                                            <TableCell colSpan={6} className="py-4 text-center text-gray-500">
-                                                Tidak ada permintaan ATK yang ditemukan
-                                            </TableCell>
-                                        </TableRow>
-                                    ) : (
-                                        filteredSupplies.map((supply: any) => (
-                                            <TableRow key={supply.kode_pelaporan}>
-                                                <TableCell>
-                                                    <div className="font-mono text-sm font-medium">{supply.kode_pelaporan}</div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="font-medium">{supply?.pemesan.name}</div>
-                                                    <div className="text-sm text-gray-500">{supply.unit_kerja}</div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge variant="outline" className="flex w-fit items-center gap-1">
-                                                        <Package className="h-3 w-3" />
-                                                        <span>{supply.daftar_kebutuhan.length} item</span>
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell>{getStatusBadge(supply.status)}</TableCell>
-                                                <TableCell>
-                                                    <Link href={route('permintaanatk.show', supply.kode_pelaporan)}>Review</Link>
-                                                </TableCell>
-                                                <TableCell className="text-right">
-                                                    <Button variant="ghost" size="sm" onClick={() => handleViewDetails(supply)}>
-                                                        Detail
-                                                    </Button>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* ATK Request Details Dialog */}
-                <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-                    <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
-                        <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2">
-                                <Package className="h-5 w-5" />
-                                Detail Permintaan ATK
-                            </DialogTitle>
-                            <DialogDescription>Tinjau setiap item yang diminta dan tentukan jumlah yang akan disetujui.</DialogDescription>
-                        </DialogHeader>
-
                         {selectedRequest && (
                             <div className="space-y-6">
                                 {/* Status and Request Info */}
@@ -288,7 +156,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                     <div>
                                         <div className="mb-2 flex items-center gap-1">
                                             <Calendar className="h-4 w-4 text-gray-500" />
-                                            <span className="text-xs text-gray-600">{formatDate(selectedRequest.created_at)}</span>
+                                            <span className="text-xs text-gray-600">{formatTanggalIna(selectedRequest.created_at)}</span>
                                         </div>
                                         <div className="flex items-center gap-1">
                                             <span className="font-mono text-sm font-medium text-gray-700">
@@ -570,14 +438,8 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                 )}
                             </div>
                         )}
-
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setIsDetailsOpen(false)} disabled={isProcessing}>
-                                Tutup
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                    </CardContent>
+                </Card>
             </div>
         </AppLayout>
     );

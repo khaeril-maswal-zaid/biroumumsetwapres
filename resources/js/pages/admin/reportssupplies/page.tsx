@@ -291,8 +291,8 @@ export default function SuppliesReports({
                             {/* Division Statistics */}
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Statistik per Divisi</CardTitle>
-                                    <CardDescription>Tingkat permintaan dan persetujuan per divisi</CardDescription>
+                                    <CardTitle>Statistik per Unit Kerja</CardTitle>
+                                    <CardDescription>Tingkat permintaan dan persetujuan per unit kerja</CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="space-y-4">
