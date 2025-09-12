@@ -15,11 +15,11 @@ import {
     Calendar,
     CheckCircle,
     Clock,
-    Delete,
     ImageIcon,
     MapPin,
     MessageSquare,
     Settings,
+    Trash2,
     Users,
     Wrench,
     X,
@@ -53,12 +53,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
     const [isUpdateProcessOpen, setIsUpdateProcessOpen] = useState(false);
     const [processDate, setProcessDate] = useState<string>('');
     const [processText, setProcessText] = useState<string>('');
-
     const [processLogs, setProcessLogs] = useState(selectedDamage?.log_progres);
-
-    useEffect(() => {
-        setProcessLogs(selectedDamage?.log_progres);
-    }, selectedDamage?.log_progres);
 
     const handleActionClick = (action: 'cancelled' | 'confirmed' | 'process') => {
         if (action === 'process' && selectedDamage.status === 'process') {
@@ -167,6 +162,12 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
     //             return <Badge variant="outline">Unknown</Badge>;
     //     }
     // };
+
+    useEffect(() => {
+        setProcessLogs(selectedDamage?.log_progres ?? []);
+    }, [selectedDamage?.log_progres]);
+
+    console.log(actionType, selectedDamage.status);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -333,7 +334,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                                     <Button
                                                         variant="outline"
                                                         className="flex-1 border-red-200 bg-transparent text-red-700 hover:bg-red-50"
-                                                        onClick={() => handleActionClick('confirmed')}
+                                                        onClick={() => handleActionClick('cancelled')}
                                                     >
                                                         <X className="mr-2 h-4 w-4" />
                                                         Ditolak
@@ -382,7 +383,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                                 )}
                                                 {actionType === 'process' && <CheckCircle className="h-5 w-5 text-blue-600" />}
                                                 <h5 className="font-medium">
-                                                    {actionType === 'confirmed' && selectedDamage.status === 'pending' && 'Konfirmasi Penolakan'}
+                                                    {actionType === 'cancelled' && selectedDamage.status === 'pending' && 'Konfirmasi Penolakan'}
                                                     {actionType === 'confirmed' && selectedDamage.status === 'process' && 'Konfirmasi Selesai'}
                                                     {actionType === 'process' && 'Konfirmasi Penyetujuan'}
                                                 </h5>
@@ -434,10 +435,10 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                                     }}
                                                     disabled={
                                                         isProcessing ||
-                                                        (actionType === 'confirmed' && selectedDamage.status === 'pending' && !adminMessage.trim())
+                                                        (actionType === 'cancelled' && selectedDamage.status === 'pending' && !adminMessage.trim())
                                                     }
                                                     className={
-                                                        actionType === 'confirmed' && selectedDamage.status === 'pending'
+                                                        actionType === 'cancelled' && selectedDamage.status === 'pending'
                                                             ? 'bg-red-600 hover:bg-red-700'
                                                             : actionType === 'process'
                                                               ? 'bg-blue-600 hover:bg-blue-700'
@@ -446,7 +447,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                                 >
                                                     {isProcessing
                                                         ? 'Memproses...'
-                                                        : actionType === 'confirmed' && selectedDamage.status === 'pending'
+                                                        : actionType === 'cancelled' && selectedDamage.status === 'pending'
                                                           ? 'Konfirmasi Penolakan'
                                                           : actionType === 'confirmed' && selectedDamage.status === 'process'
                                                             ? 'Konfirmasi Selesai'
@@ -475,7 +476,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                             </div>
                                         ) : (
                                             <div className="space-y-4">
-                                                {processLogs.map((log, index) => {
+                                                {processLogs.map((log: any, index: any) => {
                                                     const style = getLogTypeStyle(log.type, index);
                                                     const IconComponent = style.icon;
                                                     const isLatest = index === processLogs.length - 1;
@@ -487,7 +488,9 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                                             )}
 
                                                             <div
-                                                                className={`relative rounded-lg border p-3 transition-all hover:shadow-sm ${style.border} ${style.bg} ${isLatest ? 'ring-2 ring-blue-100' : ''}`}
+                                                                className={`relative rounded-lg border p-3 transition-all hover:shadow-sm ${style.border} ${style.bg} ${
+                                                                    isLatest ? 'ring-2 ring-blue-100' : ''
+                                                                }`}
                                                             >
                                                                 <div className="flex items-start gap-3">
                                                                     <div
@@ -495,23 +498,24 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                                                     >
                                                                         <IconComponent className={`h-4 w-4 ${style.color}`} />
                                                                     </div>
+
+                                                                    {/* Konten teks */}
                                                                     <div className="min-w-0 flex-1">
                                                                         <div className="mb-1 flex items-center gap-2">
                                                                             <span className="text-xs font-medium text-gray-600">
                                                                                 {formatTanggalIna(log.tanggal)}
                                                                             </span>
-                                                                            {/* <span className="text-xs text-gray-400">•</span>
-                                                                            <span className="text-xs text-gray-500">{log.time}</span> */}
                                                                         </div>
                                                                         <p className="text-sm leading-relaxed text-gray-700">{log.title}</p>
                                                                     </div>
-                                                                </div>
-                                                                <div>
-                                                                    <Delete
-                                                                        onClick={() => {
-                                                                            handleLogProcessDelete(log.id);
-                                                                        }}
-                                                                    />
+
+                                                                    {/* Tombol hapus di kanan */}
+                                                                    <button
+                                                                        onClick={() => handleLogProcessDelete(log.id)}
+                                                                        className="my-auto ml-2 text-red-400 transition-colors hover:text-red-800"
+                                                                    >
+                                                                        <Trash2 className="h-4 w-4" />
+                                                                    </button>
                                                                 </div>
                                                             </div>
                                                         </div>

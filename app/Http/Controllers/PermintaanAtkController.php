@@ -102,11 +102,7 @@ class PermintaanAtkController extends Controller
             'item.required' => 'Item tidak boleh kosong.',
         ]);
 
-        if ($validated['status'] ==  'process') {
-            $status = 'process';
-        } else {
-            $status = 'confirmed';
-        }
+        $status = $validated['status'] === 'process' ? 'process' : 'confirmed';
 
         $inputItems = $validated['item'];
 

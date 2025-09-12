@@ -7,7 +7,6 @@ use App\Models\PermintaanAtk;
 use App\Models\KerusakanGedung;
 use App\Models\Notification;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 
 class NotificationService
 {
@@ -37,16 +36,16 @@ class NotificationService
             ->where('created_at', '<=', $threshold)
             ->get();
 
-        //dd()
-
         foreach ($bookings as $booking) {
+            $createdAtFormatted = Carbon::parse($booking->created_at)->translatedFormat('d M Y H:i');
+
             $this->createNotification([
                 'category' => 'room',
                 'type' => 'overdue',
                 'title' => 'Permintaan Ruang Tertunda',
-                'message' => "Permintaan ruang {$booking->ruangans->nama_ruangan} oleh {$booking->pemesan->name} belum ditanggapi sejak lebih dari 20 jam",
+                'message' => "Permintaan ruang {$booking->ruangans->nama_ruangan} oleh {$booking->pemesan->name} belum ditanggapi sejak {$createdAtFormatted}",
                 'priority' => 'high',
-                'action_url' => '/admin/bookings',
+                'action_url' => route('ruangrapat.index'),
             ]);
         }
     }
@@ -60,13 +59,15 @@ class NotificationService
             ->get();
 
         foreach ($requests as $request) {
+            $createdAtFormatted = Carbon::parse($request->created_at)->translatedFormat('d M Y H:i');
+
             $this->createNotification([
                 'category' => 'supplies',
                 'type' => 'overdue',
                 'title' => 'Permintaan ATK Tertunda',
-                'message' => "Permintaan ATK dari {$request->pemesan->unit_kerja} belum ditanggapi lebih dari 20 jam",
+                'message' => "Permintaan ATK dari {$request->pemesan->unit_kerja} belum ditanggapi sejak {$createdAtFormatted}",
                 'priority' => 'high',
-                'action_url' => '/admin/supplies',
+                'action_url' => route('permintaanatk.index'),
             ]);
         }
     }
@@ -80,13 +81,15 @@ class NotificationService
             ->get();
 
         foreach ($reports as $report) {
+            $createdAtFormatted = Carbon::parse($report->created_at)->translatedFormat('d M Y H:i');
+
             $this->createNotification([
                 'category' => 'damage',
                 'type' => 'overdue',
                 'title' => 'Laporan Kerusakan Tertunda',
-                'message' => "Laporan kerusakan {$report->item} di {$report->lokasi} belum ditanggapi sejak lebih dari 20 jam",
+                'message' => "Laporan kerusakan {$report->item} di {$report->lokasi} belum ditanggapi sejak {$createdAtFormatted}",
                 'priority' => 'high',
-                'action_url' => '/admin/damages',
+                'action_url' => 'kerusakangedung.index',
             ]);
         }
     }

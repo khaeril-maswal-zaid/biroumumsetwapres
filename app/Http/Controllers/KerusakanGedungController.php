@@ -109,11 +109,7 @@ class KerusakanGedungController extends Controller
             'message' => 'required_if:action,cancelled|string|max:255',
         ]);
 
-        if ($validated['action'] ==  'process') {
-            $status = 'process';
-        } else {
-            $status = 'confirmed';
-        }
+        $status = $validated['action'] === 'process' ? 'process' : 'confirmed';
 
         $updateData = collect([
             'status' => $status,
