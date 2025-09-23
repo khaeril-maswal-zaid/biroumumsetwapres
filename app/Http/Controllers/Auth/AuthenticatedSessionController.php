@@ -32,6 +32,9 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
 
+        $nip_Sso = '';
+        $password_Sso = '';
+
         $user = Auth::user();
 
         if ($user->hasAnyPermission('view_admin_dashboard')) {

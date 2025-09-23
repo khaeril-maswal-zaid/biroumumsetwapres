@@ -1453,6 +1453,7 @@ class UserSeeder extends Seeder
                 'instansi_id' => $value['instansi_id'],
                 'email' => $value['email'],
                 'nip' => $value['nip'],
+                'nip_sso' => $value['nip'],
                 'unit_kerja' => $value['unit_kerja'],
                 'password' => Hash::make($value['nip']),
             ]);
