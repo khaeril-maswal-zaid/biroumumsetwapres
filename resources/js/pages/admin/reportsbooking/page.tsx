@@ -85,7 +85,7 @@ export default function BookingReports({
     const getSchedulesByDate = (tanggal_penggunaan: any) => {
         const dateStr = tanggal_penggunaan.toLocaleDateString('sv-SE'); // Format: YYYY-MM-DD
 
-        return roomSchedules.filter((schedule) => {
+        return roomSchedules.filter((schedule: any) => {
             const matchesDate = schedule.tanggal_penggunaan === dateStr;
             const matchesRoom = filterRoom === 'all' || schedule?.ruangans?.nama_ruangan === filterRoom;
             return matchesDate && matchesRoom;
@@ -619,7 +619,7 @@ export default function BookingReports({
 
                     {/* Analytics Tab */}
                     <TabsContent value="analytics" className="space-y-6">
-                        <div className="grid gap-6 md:grid-cols-2">
+                        <div className="grid gap-6 lg:grid-cols-2">
                             {/* Top Users */}
                             <Card>
                                 <CardHeader>
@@ -652,8 +652,8 @@ export default function BookingReports({
                             {/* Division Usage */}
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Penggunaan per Divisi</CardTitle>
-                                    <CardDescription>Statistik pemesanan berdasarkan divisi</CardDescription>
+                                    <CardTitle>Penggunaan per Unit Kerja</CardTitle>
+                                    <CardDescription>Statistik pemesanan berdasarkan unit kerja</CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="space-y-4">

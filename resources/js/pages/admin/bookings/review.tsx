@@ -1,20 +1,22 @@
-'use client';
-
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { AlertCircle, Calendar, CheckCircle, Clock, MessageSquare, Search, Users, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { BreadcrumbItem } from '@/types';
+import { Head, router } from '@inertiajs/react';
+import { AlertCircle, Calendar, CheckCircle, Clock, MessageSquare, Users, X } from 'lucide-react';
+import { useState } from 'react';
+
+const formatTanggalIna = (tanggal: string) => {
+    return new Intl.DateTimeFormat('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+    }).format(new Date(tanggal));
+};
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -23,24 +25,15 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function BookingsAdmin({ bookingRooms }: any) {
-    useEffect(() => {
-        const interval = setInterval(() => {
-            router.reload({
-                only: ['bookingRooms'],
-            });
-        }, 60 * 1000); // 60 detik
-
-        return () => clearInterval(interval);
-    }, []);
-
-    const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('all');
-    const [selectedBooking, setSelectedBooking] = useState<any>(null);
-    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [adminMessage, setAdminMessage] = useState('');
+export default function BookingDetailsPage({ selectedBooking }: any) {
     const [actionType, setActionType] = useState<'confirmed' | 'cancelled' | null>(null);
+    const [adminMessage, setAdminMessage] = useState('');
+    const [isProcessing, setIsProcessing] = useState(false);
+
+    const handleActionClick = (action: 'confirmed' | 'cancelled') => {
+        setActionType(action);
+        setAdminMessage('');
+    };
 
     const handleSubmit = async (bookingCode: string) => {
         setIsProcessing(true);
@@ -55,7 +48,6 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                 preserveScroll: true,
                 onSuccess: () => {
                     setIsProcessing(false);
-                    setIsDetailsOpen(false);
                     setAdminMessage('');
                     setActionType(null);
                 },
@@ -64,30 +56,6 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                 },
             },
         );
-    };
-
-    // Filter bookings based on search term and status
-    const filteredBookings = bookingRooms.data.filter((booking: any) => {
-        const matchesSearch =
-            booking?.pemesan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            booking.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            booking.kode_booking.toLowerCase().includes(searchTerm.toLowerCase());
-
-        const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
-
-        return matchesSearch && matchesStatus;
-    });
-
-    const handleViewDetails = (booking: any) => {
-        setSelectedBooking(booking);
-        setIsDetailsOpen(true);
-        setActionType(null);
-        setAdminMessage('');
-    };
-
-    const handleActionClick = (action: 'confirmed' | 'cancelled') => {
-        setActionType(action);
-        setAdminMessage('');
     };
 
     const getStatusBadge = (status: string) => {
@@ -103,116 +71,19 @@ export default function BookingsAdmin({ bookingRooms }: any) {
         }
     };
 
-    const formatTanggalIna = (tanggal: string) => {
-        return new Intl.DateTimeFormat('id-ID', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-        }).format(new Date(tanggal));
-    };
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <Card>
+                <Card className="max-w-3xl">
                     <CardHeader>
-                        <CardTitle>Daftar Pemesanan</CardTitle>
-                        <CardDescription>Semua pemesanan ruang rapat yang telah diajukan.</CardDescription>
+                        <CardTitle className="mb-2 flex items-center gap-1">
+                            <Calendar className="inline-block h-5 w-5" />
+                            <span className="py-auto">Detail Pemesanan Ruang Rapat</span>
+                        </CardTitle>
+                        <CardDescription>Tinjau informasi pemesanan dan berikan keputusan dengan pesan untuk pengaju.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                            <div className="flex w-full max-w-sm items-center space-x-2">
-                                <Search className="h-4 w-4 text-gray-400" />
-                                <Input
-                                    placeholder="Cari nama pengaju, kegiatan, atau kode permintaan..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full"
-                                />
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                    <SelectTrigger className="w-[180px]">
-                                        <SelectValue placeholder="Filter Status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">Semua Status</SelectItem>
-                                        <SelectItem value="pending">Pengajuan</SelectItem>
-                                        <SelectItem value="confirmed">Disetujui</SelectItem>
-                                        <SelectItem value="cancelled">Dibatalkan</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-
-                        <div className="rounded-md border">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Kode Permintaan</TableHead>
-                                        <TableHead>Nama Pemesan</TableHead>
-                                        <TableHead>Ruangan</TableHead>
-                                        <TableHead className="hidden md:table-cell">Tanggal</TableHead>
-                                        <TableHead className="hidden md:table-cell">Waktu</TableHead>
-                                        <TableHead className="hidden lg:table-cell">Kegiatan/ Keperluan</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead className="text-right">Aksi</TableHead>
-                                        <TableHead className="text-right">Aksi</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {filteredBookings.length === 0 ? (
-                                        <TableRow>
-                                            <TableCell colSpan={8} className="py-4 text-center text-gray-500">
-                                                Tidak ada data pemesanan yang ditemukan
-                                            </TableCell>
-                                        </TableRow>
-                                    ) : (
-                                        filteredBookings.map((booking: any) => (
-                                            <TableRow key={booking.kode_booking}>
-                                                <TableCell>
-                                                    <div className="font-mono text-sm font-medium">{booking.kode_booking}</div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="font-medium">{booking?.pemesan.name}</div>
-                                                    <div className="text-sm text-gray-500">{booking.unit_kerja}</div>
-                                                </TableCell>
-                                                <TableCell>{booking?.ruangans.nama_ruangan}</TableCell>
-                                                <TableCell className="hidden md:table-cell">{formatTanggalIna(booking.tanggal_penggunaan)}</TableCell>
-                                                <TableCell className="hidden md:table-cell">
-                                                    {booking.jam_mulai} - {booking.jam_selesai}
-                                                </TableCell>
-                                                <TableCell className="hidden max-w-[200px] truncate lg:table-cell">{booking.deskripsi}</TableCell>
-                                                <TableCell>{getStatusBadge(booking.status)}</TableCell>
-                                                <TableCell>
-                                                    <Link href={route('ruangrapat.show', booking.kode_booking)}>Review </Link>
-                                                </TableCell>
-                                                <TableCell className="text-right">
-                                                    <Button variant="ghost" size="sm" onClick={() => handleViewDetails(booking)}>
-                                                        Detail
-                                                    </Button>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Booking Details Dialog */}
-                <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-                    <DialogContent className="max-h-[90vh] overflow-y-auto px-10 pt-12 sm:max-w-2xl">
-                        <DialogHeader className="mb-4">
-                            <DialogTitle className="flex items-center gap-2">
-                                <Calendar className="h-5 w-5" />
-                                Detail Pemesanan Ruang Rapat
-                            </DialogTitle>
-                            <DialogDescription>Tinjau informasi pemesanan dan berikan keputusan dengan pesan untuk pengaju.</DialogDescription>
-                        </DialogHeader>
-
                         {selectedBooking && (
                             <div className="space-y-6">
                                 {/* Status and Room Info */}
@@ -426,14 +297,8 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                 )}
                             </div>
                         )}
-
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setIsDetailsOpen(false)} disabled={isProcessing}>
-                                Tutup
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                    </CardContent>
+                </Card>
             </div>
         </AppLayout>
     );

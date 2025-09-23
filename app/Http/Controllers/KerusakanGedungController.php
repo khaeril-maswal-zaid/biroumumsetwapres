@@ -54,7 +54,7 @@ class KerusakanGedungController extends Controller
         KerusakanGedung::create([
             'user_id' => Auth::id(),
             'instansi_id' => Auth::user()->instansi_id,
-            'unit_kerja' => $request->unit_kerja,
+            // 'unit_kerja' => $request->unit_kerja,
             'kategori_kerusakan_id' => $idKat,
             'lokasi' => $request->location,
             'item' => $request->damageType,
@@ -73,7 +73,9 @@ class KerusakanGedungController extends Controller
      */
     public function show(KerusakanGedung $kerusakanGedung)
     {
-        //
+        return Inertia::render('admin/damages/review', [
+            'selectedDamage' => $kerusakanGedung->load('kategori', 'pelapor', 'logProgres'),
+        ]);
     }
 
     /**
@@ -107,11 +109,7 @@ class KerusakanGedungController extends Controller
             'message' => 'required_if:action,cancelled|string|max:255',
         ]);
 
-        if ($validated['action'] ==  'process') {
-            $status = 'process';
-        } else {
-            $status = 'confirmed';
-        }
+        $status = $validated['action'] === 'process' ? 'process' : 'confirmed';
 
         $updateData = collect([
             'status' => $status,

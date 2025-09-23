@@ -29,6 +29,12 @@ class RolePermissionSeeder extends Seeder
             ['name' => 'edit_category_damages', 'label' => 'Ubah Kategory Kerusakan', 'category' => 'Kategory Kerusakan'],
             ['name' => 'delete_category_damages', 'label' => 'Hapus Kategory Kerusakan', 'category' => 'Kategory Kerusakan'],
 
+            //Log Proses
+            // ['name' => 'view_log_proses', 'label' => 'Lihat Data Kategory Kerusakan', 'category' => 'Kategory Kerusakan'], //Karena 1 page dengan 'view_category_damages'
+            ['name' => 'create_log_proses', 'label' => 'Tambah Log Proses Kerusakan', 'category' => 'Log Proses Kerusakan'],
+            ['name' => 'edit_log_proses', 'label' => 'Ubah Log Proses Kerusakan', 'category' => 'Log Proses Kerusakan'],
+            ['name' => 'delete_log_proses', 'label' => 'Hapus Log Proses Kerusakan', 'category' => 'Log Proses Kerusakan'],
+
             // 🛠️ Kerusakan
             ['name' => 'view_damages', 'label' => 'Lihat Pengajuan Kerusakan Gedung', 'category' => 'Pengajuan Kerusakan Gedung'],
             ['name' => 'report_damages', 'label' => 'Laporan Pengajuan Kerusakan Gedung', 'category' => 'Pengajuan Kerusakan Gedung'],

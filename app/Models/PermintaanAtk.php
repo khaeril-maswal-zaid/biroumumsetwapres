@@ -22,7 +22,7 @@ class PermintaanAtk extends Model
     protected $fillable = [
         'user_id',
         'instansi_id',
-        'unit_kerja',
+        // 'unit_kerja',
         'daftar_kebutuhan',
         'deskripsi',
         // 'urgensi',
@@ -159,8 +159,8 @@ class PermintaanAtk extends Model
                 $rate = $requests > 0 ? round(($approved / $requests) * 100) : 0;
 
                 return [
-                    'name' => $user->pemesan->name ?? 'Tidak diketahui',
-                    'division' => $user->unit_kerja ?? '-',
+                    'name' => $user?->pemesan->name ?? 'Tidak diketahui',
+                    'division' => $user?->pemesan->unit_kerja ?? '-',
                     'requests' => $requests,
                     'approved' => $approved,
                     'rate' => $rate,

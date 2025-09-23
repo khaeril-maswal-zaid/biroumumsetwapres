@@ -27,8 +27,6 @@ import {
 import { useEffect, useState } from 'react';
 
 export default function RequestHistory({ requestHistory }: any) {
-    console.log(requestHistory);
-
     useEffect(() => {
         const interval = setInterval(() => {
             router.reload({ only: ['requestHistory'] });
@@ -38,8 +36,6 @@ export default function RequestHistory({ requestHistory }: any) {
     }, []);
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [typeFilter, setTypeFilter] = useState('all');
-    const [statusFilter, setStatusFilter] = useState('all');
     const [selectedRequest, setSelectedRequest] = useState<any>(null);
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);

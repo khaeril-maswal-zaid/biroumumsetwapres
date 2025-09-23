@@ -46,7 +46,7 @@ class DaftarRuanganController extends Controller
         return to_route('rooms.index');
     }
 
-    public function update(StoreDaftarRuanganRequest $request, DaftarRuangan $daftarRuangan) //kalau sama ji
+    public function update(Request $request, DaftarRuangan $daftarRuangan) //kalau sama ji
     {
         if ($request->hasFile('photo')) {
             // Hapus file lama

@@ -6,13 +6,13 @@ use App\Models\Scopes\InstansiScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 
-#[ScopedBy([InstansiScope::class])]
+// #[ScopedBy([InstansiScope::class])]
 class Notification extends Model
 {
     protected $fillable = [
         'user_id',
         'type',
-        'instansi_id',
+        // 'instansi_id',
         'category',
         'title',
         'message',

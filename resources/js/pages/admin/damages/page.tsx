@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { Label } from '@radix-ui/react-label';
 import { Separator } from '@radix-ui/react-separator';
 import {
@@ -208,9 +208,10 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                         <TableHead>Nama Pelapor</TableHead>
                                         <TableHead>Lokasi</TableHead>
                                         <TableHead className="hidden md:table-cell">Nama Item Rusak</TableHead>
-                                        <TableHead className="hidden lg:table-cell">Urgensi</TableHead>
+                                        {/* <TableHead className="hidden lg:table-cell">Urgensi</TableHead> */}
                                         <TableHead>Status</TableHead>
                                         <TableHead className="hidden md:table-cell">Foto</TableHead>
+                                        <TableHead className="text-right">Aksi</TableHead>
                                         <TableHead className="text-right">Aksi</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -231,7 +232,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                 </TableCell>
                                                 <TableCell>{damage.lokasi}</TableCell>
                                                 <TableCell className="hidden md:table-cell">{damage.item}</TableCell>
-                                                <TableCell className="hidden lg:table-cell">{getUrgencyBadge(damage.urgensi)}</TableCell>
+                                                {/* <TableCell className="hidden lg:table-cell">{getUrgencyBadge(damage.urgensi)}</TableCell> */}
                                                 <TableCell>{getStatusBadge(damage.status)}</TableCell>
                                                 <TableCell className="hidden md:table-cell">
                                                     {damage.picture.length > 0 ? (
@@ -242,6 +243,9 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                     ) : (
                                                         <span className="text-sm text-gray-500">-</span>
                                                     )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Link href={route('kerusakangedung.show', damage.kode_pelaporan)}>Review</Link>
                                                 </TableCell>
                                                 <TableCell className="text-right">
                                                     <Button variant="ghost" size="sm" onClick={() => handleViewDetails(damage)}>

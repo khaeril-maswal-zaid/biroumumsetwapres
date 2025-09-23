@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 class GenerateNotifications extends Command
 {
-    protected $signature = 'notifications:generateX';
+    protected $signature = 'notifications:generate';
     protected $description = 'Generate overdue and reminder notifications.';
 
 

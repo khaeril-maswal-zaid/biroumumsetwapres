@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[ScopedBy([InstansiScope::class])]
 class KerusakanGedung extends Model
@@ -23,7 +24,7 @@ class KerusakanGedung extends Model
     protected $fillable = [
         'user_id',
         'instansi_id',
-        'unit_kerja',
+        // 'unit_kerja',
         'kategori_kerusakan_id',
         'lokasi',
         'item',
@@ -45,6 +46,11 @@ class KerusakanGedung extends Model
     public function kategori(): BelongsTo
     {
         return $this->belongsTo(KategoriKerusakan::class, 'kategori_kerusakan_id');
+    }
+
+    public function logProgres(): HasMany
+    {
+        return $this->hasMany(LogProses::class, 'kerusakan_gedung_id')->orderBy('tanggal', 'asc');
     }
 
     public function summaryData()
@@ -150,7 +156,7 @@ class KerusakanGedung extends Model
                 $user = $group->first();
                 return [
                     'name' => $user?->pelapor->name ?? 'Tidak Diketahui',
-                    'division' => $user?->unit_kerja ?? '-',
+                    'division' => $user?->pelapor->unit_kerja ?? '-',
                     'reports' => $group->count(),
                 ];
             })
@@ -160,7 +166,7 @@ class KerusakanGedung extends Model
 
         $divisionReports = $this->with('pelapor')
             ->get()
-            ->groupBy(fn($item) => $item?->unit_kerja ?? 'Tidak Diketahui')
+            ->groupBy(fn($item) => $item?->pelapor->unit_kerja ?? 'Tidak Diketahui')
             ->map(function ($group, $division) {
                 return [
                     'division' => $division,

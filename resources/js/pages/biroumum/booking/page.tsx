@@ -4,17 +4,17 @@ import { BottomNavigation } from '@/components/biroumum/bottom-navigation';
 import { DangerAlert } from '@/components/biroumum/danger-alert';
 import { PageHeader } from '@/components/biroumum/page-header';
 import { RoomSelection } from '@/components/biroumum/room-selection';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { type SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
-import { Calendar, CheckCircle2, Users } from 'lucide-react';
+import { AlertCircleIcon, Calendar, CheckCircle2, Users } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -24,7 +24,7 @@ const schema = z.object({
     room_name: z.string().min(1, 'Nama ruangan wajib diisi'),
     date: z.string().min(1, 'Tanggal wajib diisi'),
     startTime: z.string().min(1, 'Jam mulai wajib diisi'),
-    unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
+    // unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
     endTime: z.string().min(1, 'Jam selesai wajib diisi'),
     purpose: z.string().min(1, 'Kegiatan wajib diisi'),
     contact: z.string().min(1, 'Kontak wajib diisi'),
@@ -45,7 +45,7 @@ export default function RoomBooking({ unitKerja }: any) {
     } = useForm<FormData>({
         resolver: zodResolver(schema),
         defaultValues: {
-            unit_kerja: '',
+            // unit_kerja: '',
             room_code: '',
             room_name: '',
             date: '',
@@ -60,6 +60,7 @@ export default function RoomBooking({ unitKerja }: any) {
 
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
     const [showDangerDialog, setShowDangerDialog] = useState<Errors | null>(null);
+    const [errorServer, setErrorServer] = useState<null | Record<string, string[]>>(null);
 
     const handleConfirm = () => {
         setShowSuccessDialog(false);
@@ -72,9 +73,11 @@ export default function RoomBooking({ unitKerja }: any) {
                 reset();
                 setShowSuccessDialog(true);
                 setShowDangerDialog(null);
+                setErrorServer(null);
             },
             onError: (err) => {
                 setShowDangerDialog(err);
+                setErrorServer(err);
             },
         });
     };
@@ -88,6 +91,22 @@ export default function RoomBooking({ unitKerja }: any) {
                 <div className="pb-20">
                     <div className="space-y-6 p-4">
                         <PageHeader title="Pemesanan Ruang Rapat" backUrl="/" />
+
+                        {errorServer && (
+                            <Alert variant="destructive" className="mb-4 bg-white text-red-700">
+                                <AlertCircleIcon />
+                                <AlertTitle>Gagal kirim laporan !</AlertTitle>
+                                <AlertDescription className="text-red-700">
+                                    <ul>
+                                        {Object.values(errorServer)
+                                            .flat()
+                                            .map((item, index) => (
+                                                <li key={index}>{item}</li>
+                                            ))}
+                                    </ul>
+                                </AlertDescription>
+                            </Alert>
+                        )}
 
                         <Card>
                             <CardHeader>
@@ -115,6 +134,17 @@ export default function RoomBooking({ unitKerja }: any) {
                                         </div>
 
                                         <div>
+                                            <Label htmlFor="name">Unit Kerja</Label>
+                                            <Input
+                                                id="name"
+                                                type="text"
+                                                readOnly
+                                                value={auth?.user.unit_kerja}
+                                                className="mt-1 cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
+                                            />
+                                        </div>
+
+                                        {/* <div>
                                             <Label htmlFor="unitkerja">Unit Kerja</Label>
                                             <Select
                                                 onValueChange={(value) => setValue('unit_kerja', value, { shouldValidate: true })}
@@ -133,7 +163,7 @@ export default function RoomBooking({ unitKerja }: any) {
                                                 </SelectContent>
                                             </Select>
                                             {errors.unit_kerja && <p className="mt-1 text-sm text-red-500">{errors.unit_kerja.message}</p>}
-                                        </div>
+                                        </div> */}
                                     </div>
 
                                     <div className="space-y-4">
