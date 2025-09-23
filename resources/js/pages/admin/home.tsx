@@ -1,10 +1,9 @@
 'use client';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { AlertTriangle, Calendar, Car, Clock, Home, Package } from 'lucide-react';
 import { useEffect } from 'react';
 
@@ -69,7 +68,7 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4 xl:gap-6">
                     {Object.entries(dashboardStats).map(([key, item]) => (
                         <Card key={key} className="gap-2">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -107,7 +106,7 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
                     </Card>
                 </div>
 
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 xl:gap-6">
                     {/* Recent Activities */}
                     <Card>
                         <CardHeader>
@@ -143,28 +142,28 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
                             <div className="space-y-4">
                                 {upcomingBookings.map((booking: any) => (
                                     <div key={booking.id} className="flex items-center justify-between rounded-lg border p-3">
-                                        <div className="flex items-center gap-3">
-                                            <Calendar className="h-4 w-4 text-blue-600" />
+                                        <div className="flex min-w-0 flex-1 items-center gap-3">
+                                            <Calendar className="h-7 w-7 text-blue-600" />
                                             <div>
                                                 <p className="text-sm font-medium">{booking.room}</p>
                                                 <p className="text-xs text-gray-500">{booking.user}</p>
                                                 <p className="text-xs text-gray-400">{booking.purpose}</p>
                                             </div>
                                         </div>
-                                        <div className="text-right">
+                                        <div className="flex shrink-0 flex-col items-end text-right">
                                             <p className="text-sm font-medium">{booking.date}</p>
                                             <p className="text-xs text-gray-500">{booking.time}</p>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                            <div className="mt-4 border-t pt-4">
+                            {/* <div className="mt-4 border-t pt-4">
                                 <Link href="/admin/bookings">
                                     <Button variant="outline" className="w-full bg-transparent" size="sm">
                                         Kelola Semua Booking
                                     </Button>
                                 </Link>
-                            </div>
+                            </div> */}
                         </CardContent>
                     </Card>
                 </div>

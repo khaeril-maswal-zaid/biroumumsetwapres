@@ -33,7 +33,7 @@ class NotificationService
         $threshold = Carbon::now()->subHours(20);
         $bookings = PemesananRuangRapat::with('pemesan')
             ->where('status', 'pending')
-            ->where('created_at', '<=', $threshold)
+            // ->where('created_at', '<=', $threshold)
             ->get();
 
         foreach ($bookings as $booking) {
@@ -42,10 +42,10 @@ class NotificationService
             $this->createNotification([
                 'category' => 'room',
                 'type' => 'overdue',
-                'title' => 'Permintaan Ruang Tertunda',
+                'title' => 'Permintaan Ruang Rapat Baru',
                 'message' => "Permintaan ruang {$booking->ruangans->nama_ruangan} oleh {$booking->pemesan->name} belum ditanggapi sejak {$createdAtFormatted}",
                 'priority' => 'high',
-                'action_url' => route('ruangrapat.index'),
+                'action_url' => route('ruangrapat.show', $booking->kode_booking, false),
             ]);
         }
     }
@@ -55,7 +55,7 @@ class NotificationService
         $threshold = Carbon::now()->subHours(20);
         $requests = PermintaanAtk::with('pemesan')
             ->where('status', 'pending')
-            ->where('created_at', '<=', $threshold)
+            // ->where('created_at', '<=', $threshold)
             ->get();
 
         foreach ($requests as $request) {
@@ -64,10 +64,10 @@ class NotificationService
             $this->createNotification([
                 'category' => 'supplies',
                 'type' => 'overdue',
-                'title' => 'Permintaan ATK Tertunda',
+                'title' => 'Permintaan ATK Baru',
                 'message' => "Permintaan ATK dari {$request->pemesan->unit_kerja} belum ditanggapi sejak {$createdAtFormatted}",
                 'priority' => 'high',
-                'action_url' => route('permintaanatk.index'),
+                'action_url' => route('permintaanatk.show', $request->kode_pelaporan, false),
             ]);
         }
     }
@@ -77,7 +77,7 @@ class NotificationService
         $threshold = Carbon::now()->subHours(20);
         $reports = KerusakanGedung::with('pelapor')
             ->where('status', 'pending')
-            ->where('created_at', '<=', $threshold)
+            // ->where('created_at', '<=', $threshold)
             ->get();
 
         foreach ($reports as $report) {
@@ -86,10 +86,10 @@ class NotificationService
             $this->createNotification([
                 'category' => 'damage',
                 'type' => 'overdue',
-                'title' => 'Laporan Kerusakan Tertunda',
+                'title' => 'Laporan Kerusakan Gedung',
                 'message' => "Laporan kerusakan {$report->item} di {$report->lokasi} belum ditanggapi sejak {$createdAtFormatted}",
                 'priority' => 'high',
-                'action_url' => 'kerusakangedung.index',
+                'action_url' => route('kerusakangedung.show', $report->kode_pelaporan, false),
             ]);
         }
     }
@@ -113,7 +113,7 @@ class NotificationService
                     'title' => "Pengingat Ruangan H-{$daysAhead}",
                     'message' => "Ruang {$booking->ruangans->nama_ruangan} akan digunakan pada {$targetDate->translatedFormat('d M')} pukul {$booking->jam_mulai} oleh {$booking->pemesan->name}",
                     'priority' => 'medium',
-                    'action_url' => '/admin/bookings',
+                    'action_url' => route('ruangrapat.show', $booking->kode_booking, false),
                 ]);
             }
         }
@@ -123,7 +123,6 @@ class NotificationService
     {
         // Hindari duplikasi (bisa pakai hash dari message atau unique key)
         $exists = Notification::where('message', $data['message'])->whereDate('created_at', Carbon::today())->exists();
-
         if (!$exists) {
             Notification::create([
                 'type' => $data['type'],
@@ -139,6 +138,6 @@ class NotificationService
 
     protected function deleteOldReadNotifications()
     {
-        Notification::truncate();
+        // Notification::truncate();
     }
 }

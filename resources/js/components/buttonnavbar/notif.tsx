@@ -30,7 +30,6 @@ export interface Notification {
 
 export default function Notification() {
     const { notifFromServer } = usePage<SharedData>().props;
-
     useEffect(() => {
         const interval = setInterval(() => {
             router.reload({
@@ -50,7 +49,7 @@ export default function Notification() {
     const unreadCount = notifications.filter((n: any) => !n.is_read).length;
     const highPriorityCount = notifications.filter((n: any) => !n.is_read && n.priority === 'high').length;
 
-    const markAsRead = (id: number) => {
+    const markAsRead = (id: number, url: string) => {
         router.patch(
             route('notif.isread', id),
             {
@@ -58,15 +57,16 @@ export default function Notification() {
             },
             {
                 onSuccess: () => {
-                    //
+                    setNotifications((prev) =>
+                        prev.map((notification) => (notification.id === id ? { ...notification, is_read: true } : notification)),
+                    );
+                    router.get(url);
                 },
                 onError: (er) => {
                     console.log(er);
                 },
             },
         );
-
-        setNotifications((prev) => prev.map((notification) => (notification.id === id ? { ...notification, is_read: true } : notification)));
     };
 
     const markAllAsRead = () => {
@@ -178,7 +178,7 @@ export default function Notification() {
                                     className={`mb-2 cursor-pointer p-3 ${getNotificationColor(notification.type, notification.priority)} ${
                                         !notification.is_read ? 'border-l-4' : ''
                                     }`}
-                                    onClick={() => markAsRead(notification.id)}
+                                    onClick={() => markAsRead(notification.id, notification.action_url)}
                                 >
                                     <div className="flex w-full items-start gap-3">
                                         <div className="mt-1 flex-shrink-0">{getNotificationIcon(notification.category)}</div>
@@ -191,7 +191,7 @@ export default function Notification() {
                                             {/* Deskripsi dan badge berdampingan */}
                                             <div className="mb-1 flex items-start justify-between gap-2">
                                                 <p className="line-clamp-2 flex-1 text-xs text-gray-600">{notification.message}</p>
-                                                <div className="flex-shrink-0">{getPriorityBadge(notification.priority)}</div>
+                                                {/* <div className="flex-shrink-0">{getPriorityBadge(notification.priority)}</div> */}
                                             </div>
 
                                             {/* Waktu di bawah */}

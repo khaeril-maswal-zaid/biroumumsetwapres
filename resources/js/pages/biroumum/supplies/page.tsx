@@ -15,8 +15,25 @@ import { cn } from '@/lib/utils';
 import type { SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
-import { AlertCircle, AlertCircleIcon, AlertOctagon, AlertTriangle, Check, CheckCircle2, ChevronsUpDown, PenTool } from 'lucide-react';
-import { useState } from 'react';
+import {
+    AlertCircle,
+    AlertCircleIcon,
+    AlertOctagon,
+    AlertTriangle,
+    Check,
+    CheckCircle2,
+    ChevronsUpDown,
+    FileText,
+    PenTool,
+    Upload,
+} from 'lucide-react';
+import * as pdfjsLib from 'pdfjs-dist';
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker?url';
+
+// Set worker source
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+
+import { useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -37,6 +54,12 @@ const FormSchema = z.object({
     // urgency: z.string().min(1, 'Pilih tingkat urgensi'),
     // unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
     contact: z.string().min(1, 'Narahubung wajib diisi'),
+    memo: z
+        .any()
+        .refine((file) => file instanceof File, 'File memo wajib diupload')
+        .refine((file) => file?.type === 'application/pdf', 'File harus berformat PDF')
+        .refine((file) => file === null || file instanceof File, 'File memo wajib diupload')
+        .nullable(),
 });
 
 const urgencyOptions = [
@@ -95,10 +118,69 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
             // urgency: '',
             contact: '',
             // unit_kerja: '',
+            memo: null,
         },
     });
 
     const [errorServer, setErrorServer] = useState<null | Record<string, string[]>>(null);
+
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+    const [isGeneratingThumbnail, setIsGeneratingThumbnail] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const generatePDFThumbnail = async (file: File) => {
+        setIsGeneratingThumbnail(true);
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            const page = await pdf.getPage(1);
+
+            const viewport = page.getViewport({ scale: 0.5 });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            await page.render({
+                canvasContext: context!,
+                viewport: viewport,
+                canvas,
+            }).promise;
+
+            const imageUrl = canvas.toDataURL('image/png');
+            setThumbnailUrl(imageUrl);
+        } catch (error) {
+            console.error('Error generating PDF thumbnail:', error);
+            setThumbnailUrl(null);
+        } finally {
+            setIsGeneratingThumbnail(false);
+        }
+    };
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            if (file.type !== 'application/pdf') {
+                alert('Hanya file PDF yang diperbolehkan');
+                return;
+            }
+
+            setSelectedFile(file);
+            setValue('memo', file, { shouldValidate: true });
+            await generatePDFThumbnail(file);
+        }
+    };
+
+    const removeFile = () => {
+        setSelectedFile(null);
+        setThumbnailUrl(null);
+        setValue('memo', null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
 
     const { fields, append, remove, update } = useFieldArray({ control, name: 'items' });
     const items = watch('items');
@@ -113,13 +195,31 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
     };
 
     const onSubmit = (data: FormData) => {
-        router.post(route('permintaanatk.store'), data, {
+        const formData = new FormData();
+        formData.append('justification', data.justification);
+        formData.append('contact', data.contact);
+        if (data.memo) {
+            formData.append('memo', data.memo);
+        }
+
+        data.items.forEach((item, index) => {
+            formData.append(`items[${index}][id]`, item.id);
+            formData.append(`items[${index}][name]`, item.name);
+            formData.append(`items[${index}][requested]`, String(item.requested));
+            formData.append(`items[${index}][approved]`, String(item.approved));
+            formData.append(`items[${index}][unit]`, item.unit);
+        });
+
+        router.post(route('permintaanatk.store'), formData, {
+            forceFormData: true,
             onError: (e) => {
                 setErrorServer(e);
             },
             onSuccess: () => {
                 setShowSuccessDialog(true);
                 reset();
+                setSelectedFile(null);
+                setThumbnailUrl(null);
                 setErrorServer(null);
             },
         });
@@ -345,6 +445,72 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
                                         {errors.urgency && <p className="text-sm text-red-600">{errors.urgency.message}</p>}
                                     </div>
                                 </div> */}
+
+                                <div>
+                                    <Label htmlFor="memo">Upload Memo (PDF) *</Label>
+                                    <div className="mt-1 space-y-3">
+                                        <div className="flex items-center space-x-2">
+                                            <Input
+                                                ref={fileInputRef}
+                                                id="memo"
+                                                type="file"
+                                                accept=".pdf"
+                                                onChange={handleFileChange}
+                                                className="hidden"
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                onClick={() => fileInputRef.current?.click()}
+                                                className="flex items-center space-x-2"
+                                            >
+                                                <Upload className="h-4 w-4" />
+                                                <span>Pilih File PDF</span>
+                                            </Button>
+                                            {selectedFile && (
+                                                <Button type="button" variant="destructive" size="sm" onClick={removeFile}>
+                                                    Hapus
+                                                </Button>
+                                            )}
+                                        </div>
+
+                                        <div className="rounded-lg border-2 border-dashed border-gray-300 p-4">
+                                            {selectedFile ? (
+                                                <div className="space-y-3">
+                                                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                                                        <FileText className="h-4 w-4" />
+                                                        <span>{selectedFile.name}</span>
+                                                        <span className="text-xs">({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)</span>
+                                                    </div>
+
+                                                    {isGeneratingThumbnail ? (
+                                                        <div className="flex items-center justify-center py-8">
+                                                            <div className="text-sm text-gray-500">Membuat preview...</div>
+                                                        </div>
+                                                    ) : thumbnailUrl ? (
+                                                        <div className="flex justify-center">
+                                                            <img
+                                                                src={thumbnailUrl || '/placeholder.svg'}
+                                                                alt="PDF Preview"
+                                                                className="max-h-32 rounded border shadow-sm"
+                                                            />
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex items-center justify-center py-8 text-sm text-gray-500">
+                                                            Preview tidak tersedia
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center justify-center py-8 text-sm text-gray-500">
+                                                    Belum ada file dipilih
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {errors.memo && <p className="text-sm text-red-500">{errors.memo.message}</p>}
+                                    </div>
+                                </div>
 
                                 {/* Narahubung */}
                                 <div>
