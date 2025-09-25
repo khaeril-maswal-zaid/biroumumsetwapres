@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { AlertCircle, Calendar, CheckCircle, Eye, MessageSquare, Package, Search, User, X } from 'lucide-react';
+import { AlertCircle, Calendar, CheckCircle, MessageSquare, Package, Search, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -44,7 +44,6 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
     const [adminMessage, setAdminMessage] = useState('');
     const [actionType, setActionType] = useState<'confirmed' | 'reject' | null>(null);
     const [approvedQuantities, setApprovedQuantities] = useState<{ [key: string]: number }>({});
-
 
     const handleSubmit = (supplyCode: string) => {
         setIsProcessing(true);
@@ -262,12 +261,14 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                                 </TableCell>
                                                 <TableCell>{getStatusBadge(supply.status)}</TableCell>
                                                 <TableCell>
-                                                   <Button variant="ghost" size="sm" onClick={() => handleViewMemo(supply)}>
+                                                    <Button variant="ghost" size="sm" onClick={() => handleViewMemo(supply)}>
                                                         View
                                                     </Button>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Link className='font-medium' href={route('permintaanatk.show', supply.kode_pelaporan)}>Detail</Link>
+                                                    <Link className="font-medium" href={route('permintaanatk.show', supply.kode_pelaporan)}>
+                                                        Detail
+                                                    </Link>
                                                 </TableCell>
                                                 <TableCell className="text-right">
                                                     <Button variant="ghost" size="sm" onClick={() => handleViewDetails(supply)}>
@@ -592,38 +593,35 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                     </DialogContent>
                 </Dialog>
 
-               {/* ATK Request Details Dialog */}
-<Dialog open={isMemoOpen} onOpenChange={setIsMemoOpen}>
-  <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
-    <DialogHeader>
-      <DialogTitle className="flex items-center gap-2">
-        <Package className="h-5 w-5" />
-        Memo Permintaan ATK
-      </DialogTitle>
-      <DialogDescription>
-        Dokumen memo yang dilampirkan sebagai dasar permintaan alat tulis kantor.
-      </DialogDescription>
-    </DialogHeader>
+                {/* ATK Request Details Dialog */}
+                <Dialog open={isMemoOpen} onOpenChange={setIsMemoOpen}>
+                    <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2">
+                                <Package className="h-5 w-5" />
+                                Memo Permintaan ATK
+                            </DialogTitle>
+                            <DialogDescription>Dokumen memo yang dilampirkan sebagai dasar permintaan alat tulis kantor.</DialogDescription>
+                        </DialogHeader>
 
-    {selectedRequest && selectedRequest.memo_url && (
-      <div className="space-y-6">
-        <div className="h-[70vh] w-full">
-          <iframe
-            src={selectedRequest.memo}
-            className="h-full w-full rounded-md border"
-          />
-        </div>
-      </div>
-    )}
+                        {selectedRequest && selectedRequest.memo && (
+                            <div className="space-y-6">
+                                <div className="h-[70vh] w-full">
+                                    <iframe
+                                        src={route('preview.memo', { filename: selectedRequest.memo })}
+                                        className="h-full w-full rounded-md border"
+                                    />
+                                </div>
+                            </div>
+                        )}
 
-    <DialogFooter>
-      <Button variant="outline" onClick={() => setIsMemoOpen(false)}>
-        Tutup
-      </Button>
-    </DialogFooter>
-  </DialogContent>
-</Dialog>
-
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setIsMemoOpen(false)}>
+                                Tutup
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </AppLayout>
     );

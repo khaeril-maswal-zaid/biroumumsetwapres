@@ -239,6 +239,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/dashboard/isread-notfikasi-all', [HomeController::class, 'isReadAllNotfif'])
         ->name('notif.isreadall')
         ->middleware('permission:view_admin_dashboard');
+
+    // routes/web.php
+    Route::get('/preview/{filename}', function ($filename) {
+        $path = storage_path("app/public/memos/{$filename}");
+        abort_unless(file_exists($path), 404);
+
+        return response()->file($path, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"'
+        ]);
+    })->name('preview.memo');
 });
 
 
