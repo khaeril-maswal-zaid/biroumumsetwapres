@@ -42,6 +42,9 @@ class PermintaanAtkController extends Controller
      */
     public function store(StorePermintaanAtkRequest $request)
     {
+
+        $path = $request->file('memo')->store('memos', 'public');
+
         PermintaanAtk::create([
             'user_id' => Auth::id(),
             'instansi_id' => Auth::user()->instansi_id,
@@ -52,6 +55,7 @@ class PermintaanAtkController extends Controller
             'no_hp' => $request->contact,
             'kode_pelaporan' => 'ATK-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'status' => 'pending',
+            'memo' => $path,
             'keterangan' => '',
         ]);
     }

@@ -64,6 +64,7 @@ class PermintaanAtkFactory extends Factory
             'deskripsi' => '',
             // 'urgensi' => fake()->randomElement(['normal', 'mendesak', 'segera']),
             'no_hp' => fake()->phoneNumber(),
+            'memo' => 'memo.pdf',
             'kode_pelaporan' => 'ATK-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'status' => fake()->randomElement(['pending']), //['pending', 'process', 'confirmed']
             'keterangan' => fake()->text(250),

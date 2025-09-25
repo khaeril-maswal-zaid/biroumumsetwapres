@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { AlertCircle, Calendar, CheckCircle, MessageSquare, Package, Search, User, X } from 'lucide-react';
+import { AlertCircle, Calendar, CheckCircle, Eye, MessageSquare, Package, Search, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -39,10 +39,12 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedRequest, setSelectedRequest] = useState<any>(null);
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+    const [isMemoOpen, setIsMemoOpen] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [adminMessage, setAdminMessage] = useState('');
     const [actionType, setActionType] = useState<'confirmed' | 'reject' | null>(null);
     const [approvedQuantities, setApprovedQuantities] = useState<{ [key: string]: number }>({});
+
 
     const handleSubmit = (supplyCode: string) => {
         setIsProcessing(true);
@@ -98,6 +100,11 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
             initialQuantities[item.id] = item.approved;
         });
         setApprovedQuantities(initialQuantities);
+    };
+
+    const handleViewMemo = (request: any) => {
+        setSelectedRequest(request);
+        setIsMemoOpen(true);
     };
 
     const handleActionClick = (action: 'confirmed' | 'reject') => {
@@ -225,6 +232,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                         <TableHead>Nama Pemesan</TableHead>
                                         <TableHead>Jumlah Item</TableHead>
                                         <TableHead>Status</TableHead>
+                                        <TableHead>Memo</TableHead>
                                         <TableHead className="text-right">Aksi</TableHead>
                                         <TableHead className="text-right">Aksi</TableHead>
                                     </TableRow>
@@ -254,7 +262,12 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                                 </TableCell>
                                                 <TableCell>{getStatusBadge(supply.status)}</TableCell>
                                                 <TableCell>
-                                                    <Link href={route('permintaanatk.show', supply.kode_pelaporan)}>Review</Link>
+                                                   <Button variant="ghost" size="sm" onClick={() => handleViewMemo(supply)}>
+                                                        View
+                                                    </Button>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Link className='font-medium' href={route('permintaanatk.show', supply.kode_pelaporan)}>Detail</Link>
                                                 </TableCell>
                                                 <TableCell className="text-right">
                                                     <Button variant="ghost" size="sm" onClick={() => handleViewDetails(supply)}>
@@ -578,6 +591,39 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
+
+               {/* ATK Request Details Dialog */}
+<Dialog open={isMemoOpen} onOpenChange={setIsMemoOpen}>
+  <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
+    <DialogHeader>
+      <DialogTitle className="flex items-center gap-2">
+        <Package className="h-5 w-5" />
+        Memo Permintaan ATK
+      </DialogTitle>
+      <DialogDescription>
+        Dokumen memo yang dilampirkan sebagai dasar permintaan alat tulis kantor.
+      </DialogDescription>
+    </DialogHeader>
+
+    {selectedRequest && selectedRequest.memo_url && (
+      <div className="space-y-6">
+        <div className="h-[70vh] w-full">
+          <iframe
+            src={selectedRequest.memo}
+            className="h-full w-full rounded-md border"
+          />
+        </div>
+      </div>
+    )}
+
+    <DialogFooter>
+      <Button variant="outline" onClick={() => setIsMemoOpen(false)}>
+        Tutup
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+
             </div>
         </AppLayout>
     );

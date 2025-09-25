@@ -27,6 +27,7 @@ class PermintaanAtk extends Model
         'deskripsi',
         // 'urgensi',
         'no_hp',
+        'memo',
         'kode_pelaporan',
         'status',
         'keterangan',

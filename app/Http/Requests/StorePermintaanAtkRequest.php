@@ -26,6 +26,7 @@ class StorePermintaanAtkRequest extends FormRequest
             'justification' => 'required|string|max:255',
             // 'urgency'      => 'required|in:normal,mendesak,segera',
             'contact'      => 'required|string|max:15',
+            'memo'         => 'required|file|mimes:pdf|max:2048',
         ];
     }
 
@@ -38,6 +39,12 @@ class StorePermintaanAtkRequest extends FormRequest
             // 'urgency.in'          => 'Tingkat urgensi tidak valid.',
             'contact.required'    => 'Nomor kontak wajib diisi.',
             'contact.max'         => 'Nomor kontak maksimal 15 karakter.',
+
+                // Memo
+        'memo.required'             => 'File memo wajib diupload.',
+        'memo.file'                 => 'File memo tidak valid.',
+        'memo.mimes'                => 'File memo harus berformat PDF.',
+        'memo.max'                  => 'Ukuran file memo maksimal 2 MB.',
         ];
     }
 }

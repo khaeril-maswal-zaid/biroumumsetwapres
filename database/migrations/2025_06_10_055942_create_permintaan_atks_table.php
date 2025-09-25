@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('deskripsi', 255); //from pengadu
             // $table->enum('urgensi', ['normal', 'mendesak', 'segera']);
             $table->string('no_hp', 25);
+            $table->string('memo', 255);
             $table->string('kode_pelaporan', 50)->unique();
             $table->enum('status', ['pending', 'process', 'confirmed']);
             $table->string('keterangan', 255);
