@@ -31,6 +31,7 @@ class PermintaanAtk extends Model
         'kode_pelaporan',
         'status',
         'keterangan',
+        'is_read'
     ];
 
     public function pemesan(): BelongsTo

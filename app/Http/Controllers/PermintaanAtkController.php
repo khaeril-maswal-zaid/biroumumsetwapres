@@ -56,7 +56,6 @@ class PermintaanAtkController extends Controller
             'kode_pelaporan' => 'ATK-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'status' => 'pending',
             'memo' => $path,
-            'keterangan' => '',
         ]);
     }
 
@@ -148,5 +147,16 @@ class PermintaanAtkController extends Controller
         ];
 
         return Inertia::render('admin/reportssupplies/page', $data);
+    }
+
+    public function showMemo($filename)
+    {
+        $path = storage_path("app/public/memo/{$filename}");
+
+        // Kunci: gunakan `file()` (inline), bukan `download()`
+        return response()->file($path, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"'
+        ]);
     }
 }

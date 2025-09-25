@@ -23,7 +23,8 @@ return new class extends Migration
             $table->string('memo', 255);
             $table->string('kode_pelaporan', 50)->unique();
             $table->enum('status', ['pending', 'process', 'confirmed']);
-            $table->string('keterangan', 255);
+            $table->string('keterangan', 255)->default(''); //from admin
+            $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
     }

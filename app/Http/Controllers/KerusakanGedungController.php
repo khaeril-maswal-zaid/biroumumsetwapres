@@ -64,7 +64,6 @@ class KerusakanGedungController extends Controller
             'kode_pelaporan' => 'KGD-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'no_hp' => $request->contact,
             'status' => 'pending',
-            'keterangan' => $request->location,
         ]);
     }
 

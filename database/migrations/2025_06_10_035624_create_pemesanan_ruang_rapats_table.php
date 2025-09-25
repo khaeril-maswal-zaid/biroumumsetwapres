@@ -24,8 +24,8 @@ return new class extends Migration
             $table->string('no_hp', 25);
             $table->enum('status', ['pending', 'confirmed', 'cancelled']);
             $table->string('kode_booking', 255)->unique();
-            $table->string('keterangan', 255); //from admin
-
+            $table->string('keterangan', 255)->default(''); //from admin
+            $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
     }

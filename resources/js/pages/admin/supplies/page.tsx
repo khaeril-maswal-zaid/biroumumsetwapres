@@ -607,10 +607,9 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                         {selectedRequest && selectedRequest.memo && (
                             <div className="space-y-6">
                                 <div className="h-[70vh] w-full">
-                                    <iframe
-                                        src={route('preview.memo', { filename: selectedRequest.memo })}
-                                        className="h-full w-full rounded-md border"
-                                    />
+                                    <div className="h-[70vh] w-full">
+                                        <iframe src={route('memo', selectedRequest.memo)} className="h-full w-full rounded-md" />
+                                    </div>
                                 </div>
                             </div>
                         )}

@@ -35,6 +35,7 @@ class KerusakanGedung extends Model
         'kode_pelaporan',
         'status',
         'keterangan',
+        'is_read'
     ];
 
     public function pelapor(): BelongsTo

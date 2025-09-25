@@ -25,8 +25,8 @@ return new class extends Migration
             $table->string('no_hp', 25);
             $table->string('kode_pelaporan', 50)->unique();
             $table->enum('status', ['pending', 'process', 'confirmed']);
-            $table->string('keterangan', 255); //from admin
-
+            $table->string('keterangan', 255)->default(''); //from admin
+            $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
     }
