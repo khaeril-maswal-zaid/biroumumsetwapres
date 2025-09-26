@@ -32,7 +32,7 @@ class KerusakanGedungFactory extends Factory
             // 'urgensi' => fake()->randomElement(['rendah', 'sedang', 'tinggi']),
             'kode_pelaporan' => 'KGD-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'status' => fake()->randomElement(['pending',]), //['pending', 'process', 'confirmed']
-            'is_read' => fake()->numberBetween(0, 1),
+            'is_read' => fake()->boolean(),
             'keterangan' => fake()->text(250),
         ];
     }

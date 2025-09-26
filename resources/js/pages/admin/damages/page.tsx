@@ -16,6 +16,7 @@ import { Separator } from '@radix-ui/react-separator';
 import {
     AlertCircle,
     AlertTriangle,
+    ArrowLeft,
     Calendar,
     CheckCircle,
     ImageIcon,
@@ -131,10 +132,20 @@ export default function DamagesAdmin({ kerusakan }: any) {
         });
     };
 
-    const getStatusBadge = (status: string) => {
+    const getStatusBadge = (status: string, isRead: boolean) => {
         switch (status) {
             case 'pending':
-                return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Menunggu</Badge>;
+                return (
+                    <Badge
+                        className={
+                            isRead
+                                ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' // versi memudar
+                                : 'bg-yellow-300 text-yellow-800 hover:bg-yellow-300' // versi normal
+                        }
+                    >
+                        Menunggu
+                    </Badge>
+                );
             case 'process':
                 return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Proses</Badge>;
             case 'confirmed':
@@ -168,7 +179,13 @@ export default function DamagesAdmin({ kerusakan }: any) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto bg-gradient-to-br from-white to-blue-100 p-4">
+                <Link href={route('kerusakangedung.index')}>
+                    <Button variant="ghost" className="mb-1 flex items-center space-x-2 border">
+                        <ArrowLeft className="h-4 w-4" />
+                        <span>Kembali</span>
+                    </Button>
+                </Link>
                 <Card>
                     <CardHeader>
                         <CardTitle>Daftar Laporan Kerusakan</CardTitle>
@@ -204,6 +221,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
+                                        <TableHead>No</TableHead>
                                         <TableHead>Kode Permintaan</TableHead>
                                         <TableHead>Nama Pelapor</TableHead>
                                         <TableHead>Lokasi</TableHead>
@@ -212,7 +230,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                         <TableHead>Status</TableHead>
                                         <TableHead className="hidden md:table-cell">Foto</TableHead>
                                         <TableHead className="text-right">Aksi</TableHead>
-                                        <TableHead className="text-right">Aksi</TableHead>
+                                        {/* <TableHead className="text-right">Aksi</TableHead> */}
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -223,8 +241,9 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                             </TableCell>
                                         </TableRow>
                                     ) : (
-                                        filteredDamages.map((damage: any) => (
+                                        filteredDamages.map((damage: any, index: any) => (
                                             <TableRow key={damage.kode_pelaporan}>
+                                                <TableCell>{index + 1}</TableCell>
                                                 <TableCell className="font-mono text-sm font-medium">{damage.kode_pelaporan}</TableCell>
                                                 <TableCell>
                                                     <div className="font-medium">{damage?.pelapor.name}</div>
@@ -233,7 +252,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                 <TableCell>{damage.lokasi}</TableCell>
                                                 <TableCell className="hidden md:table-cell">{damage.item}</TableCell>
                                                 {/* <TableCell className="hidden lg:table-cell">{getUrgencyBadge(damage.urgensi)}</TableCell> */}
-                                                <TableCell>{getStatusBadge(damage.status)}</TableCell>
+                                                <TableCell>{getStatusBadge(damage.status, damage.is_read)}</TableCell>
                                                 <TableCell className="hidden md:table-cell">
                                                     {damage.picture.length > 0 ? (
                                                         <Badge variant="outline" className="flex items-center gap-1">
@@ -244,14 +263,16 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                         <span className="text-sm text-gray-500">-</span>
                                                     )}
                                                 </TableCell>
-                                                <TableCell>
-                                                    <Link href={route('kerusakangedung.show', damage.kode_pelaporan)}>Review</Link>
-                                                </TableCell>
                                                 <TableCell className="text-right">
+                                                    <Link className="font-medium" href={route('kerusakangedung.show', damage.kode_pelaporan)}>
+                                                        Detail
+                                                    </Link>
+                                                </TableCell>
+                                                {/* <TableCell className="text-right">
                                                     <Button variant="ghost" size="sm" onClick={() => handleViewDetails(damage)}>
                                                         Detail
                                                     </Button>
-                                                </TableCell>
+                                                </TableCell> */}
                                             </TableRow>
                                         ))
                                     )}
@@ -287,7 +308,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="text-right">{getStatusBadge(selectedDamage.status)}</div>
+                                    <div className="text-right">{getStatusBadge(selectedDamage.status, selectedDamage.is_read)}</div>
                                 </div>
 
                                 {/* Booking Details */}

@@ -239,11 +239,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/dashboard/isread-notfikasi-all', [HomeController::class, 'isReadAllNotfif'])
         ->name('notif.isreadall')
         ->middleware('permission:view_admin_dashboard');
-
-    // routes/web.php
-    Route::get('/{filename}', [PermintaanAtkController::class, 'showMemo'])->name('memo');
 });
 
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
+
+// routes/web.php
+Route::get('/{filename}', [PermintaanAtkController::class, 'showMemo'])->name('memo');

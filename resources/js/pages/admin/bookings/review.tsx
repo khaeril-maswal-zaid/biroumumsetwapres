@@ -6,8 +6,8 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Head, router } from '@inertiajs/react';
-import { AlertCircle, Calendar, CheckCircle, Clock, MessageSquare, Users, X } from 'lucide-react';
+import { Head, Link, router } from '@inertiajs/react';
+import { AlertCircle, ArrowLeft, Calendar, CheckCircle, Clock, MessageSquare, Users, X } from 'lucide-react';
 import { useState } from 'react';
 
 const formatTanggalIna = (tanggal: string) => {
@@ -74,7 +74,17 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto bg-gradient-to-br from-white to-blue-100 p-4">
+                <Link href={route('ruangrapat.index')}>
+                    <Button
+                        variant="default"
+                        className="mb-1 flex items-center space-x-2 border bg-accent text-accent-foreground hover:border-gray-300 hover:bg-gray-200"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        <span>Kembali</span>
+                    </Button>
+                </Link>
+
                 <Card className="max-w-3xl">
                     <CardHeader>
                         <CardTitle className="mb-2 flex items-center gap-1">

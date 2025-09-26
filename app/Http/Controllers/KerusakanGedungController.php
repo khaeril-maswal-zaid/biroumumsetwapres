@@ -72,6 +72,10 @@ class KerusakanGedungController extends Controller
      */
     public function show(KerusakanGedung $kerusakanGedung)
     {
+        $kerusakanGedung->update(([
+            'is_read' => true
+        ]));
+
         return Inertia::render('admin/damages/review', [
             'selectedDamage' => $kerusakanGedung->load('kategori', 'pelapor', 'logProgres'),
         ]);

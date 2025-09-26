@@ -67,7 +67,7 @@ class PermintaanAtkFactory extends Factory
             'memo' => 'memo.pdf',
             'kode_pelaporan' => 'ATK-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'status' => fake()->randomElement(['pending']), //['pending', 'process', 'confirmed']
-            'is_read' => fake()->numberBetween(0, 1),
+            'is_read' => fake()->boolean(),
             'keterangan' => fake()->text(250),
         ];
     }

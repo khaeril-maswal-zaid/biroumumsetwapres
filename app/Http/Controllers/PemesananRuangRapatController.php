@@ -148,6 +148,10 @@ class PemesananRuangRapatController extends Controller
      */
     public function show(PemesananRuangRapat $pemesananRuangRapat)
     {
+        $pemesananRuangRapat->update(([
+            'is_read' => true
+        ]));
+
         return Inertia::render('admin/bookings/review', [
             'selectedBooking' => $pemesananRuangRapat->load('ruangans', 'pemesan'),
         ]);

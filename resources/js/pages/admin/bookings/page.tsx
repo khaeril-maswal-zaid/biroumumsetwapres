@@ -90,10 +90,20 @@ export default function BookingsAdmin({ bookingRooms }: any) {
         setAdminMessage('');
     };
 
-    const getStatusBadge = (status: string) => {
+    const getStatusBadge = (status: string, isRead: boolean) => {
         switch (status) {
             case 'pending':
-                return <Badge className="mb-1 bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Pengajuan</Badge>;
+                return (
+                    <Badge
+                        className={
+                            isRead
+                                ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' // versi memudar
+                                : 'bg-yellow-300 text-yellow-800 hover:bg-yellow-300' // versi normal
+                        }
+                    >
+                        Menunggu
+                    </Badge>
+                );
             case 'confirmed':
                 return <Badge className="mb-1 bg-green-100 text-green-800 hover:bg-green-200">Disetujui</Badge>;
             case 'cancelled':
@@ -114,7 +124,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-gradient-to-br from-white to-blue-100 p-4">
                 <Card>
                     <CardHeader>
                         <CardTitle>Daftar Pemesanan</CardTitle>
@@ -150,15 +160,15 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
+                                        <TableHead>No</TableHead>
                                         <TableHead>Kode Permintaan</TableHead>
                                         <TableHead>Nama Pemesan</TableHead>
                                         <TableHead>Ruangan</TableHead>
                                         <TableHead className="hidden md:table-cell">Tanggal</TableHead>
                                         <TableHead className="hidden md:table-cell">Waktu</TableHead>
-                                        <TableHead className="hidden lg:table-cell">Kegiatan/ Keperluan</TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead className="text-right">Aksi</TableHead>
-                                        <TableHead className="text-right">Aksi</TableHead>
+                                        {/* <TableHead className="text-right">Aksi</TableHead> */}
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -169,8 +179,9 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                             </TableCell>
                                         </TableRow>
                                     ) : (
-                                        filteredBookings.map((booking: any) => (
+                                        filteredBookings.map((booking: any, index: any) => (
                                             <TableRow key={booking.kode_booking}>
+                                                <TableCell>{index + 1}</TableCell>
                                                 <TableCell>
                                                     <div className="font-mono text-sm font-medium">{booking.kode_booking}</div>
                                                 </TableCell>
@@ -183,16 +194,17 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                                 <TableCell className="hidden md:table-cell">
                                                     {booking.jam_mulai} - {booking.jam_selesai}
                                                 </TableCell>
-                                                <TableCell className="hidden max-w-[200px] truncate lg:table-cell">{booking.deskripsi}</TableCell>
-                                                <TableCell>{getStatusBadge(booking.status)}</TableCell>
-                                                <TableCell>
-                                                    <Link href={route('ruangrapat.show', booking.kode_booking)}>Review </Link>
-                                                </TableCell>
+                                                <TableCell>{getStatusBadge(booking.status, booking.is_read)}</TableCell>
                                                 <TableCell className="text-right">
+                                                    <Link className="font-medium" href={route('ruangrapat.show', booking.kode_booking)}>
+                                                        Detail
+                                                    </Link>
+                                                </TableCell>
+                                                {/* <TableCell className="text-right">
                                                     <Button variant="ghost" size="sm" onClick={() => handleViewDetails(booking)}>
                                                         Detail
                                                     </Button>
-                                                </TableCell>
+                                                </TableCell> */}
                                             </TableRow>
                                         ))
                                     )}
@@ -228,7 +240,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="text-right">{getStatusBadge(selectedBooking.status)}</div>
+                                    <div className="text-right">{getStatusBadge(selectedBooking.status, selectedBooking.is_read)}</div>
                                 </div>
 
                                 {/* Booking Details */}

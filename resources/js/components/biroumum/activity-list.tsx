@@ -93,7 +93,7 @@ export function ActivityList({ activities }: ActivityListProps) {
                                                 </div>
                                                 <h3 className="truncate font-semibold text-gray-900">{request.title}</h3>
                                                 <p className="line-clamp-1 text-sm text-gray-600">{request?.info}</p>
-                                                <div className="mt-2 flex items-center gap-4 text-xs text-gray-500">
+                                                {/* <div className="mt-2 flex items-center gap-4 text-xs text-gray-500">
                                                     {request ? (
                                                         request.id !== 'booking' ? (
                                                             getUrgencyBadge(request.subtitle)
@@ -101,7 +101,7 @@ export function ActivityList({ activities }: ActivityListProps) {
                                                             <span>{request.subtitle}</span>
                                                         )
                                                     ) : null}
-                                                </div>
+                                                </div> */}
                                             </div>
                                         </div>
                                         <div className="flex flex-col items-end gap-2">{getStatusBadge(request.status)}</div>

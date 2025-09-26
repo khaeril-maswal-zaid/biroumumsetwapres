@@ -8,8 +8,8 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Head, router } from '@inertiajs/react';
-import { AlertCircle, Calendar, CheckCircle, MessageSquare, Package, User, X } from 'lucide-react';
+import { Head, Link, router } from '@inertiajs/react';
+import { AlertCircle, ArrowLeft, Calendar, CheckCircle, MessageSquare, Package, User, X } from 'lucide-react';
 import { useState } from 'react';
 ('use client');
 
@@ -139,7 +139,17 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-gradient-to-br from-white to-blue-100 p-4">
+                <Link href={route('permintaanatk.index')}>
+                    <Button
+                        variant="ghost"
+                        className="mb-1 flex items-center space-x-2 border bg-accent text-accent-foreground hover:border-gray-300 hover:bg-gray-200"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        <span>Kembali</span>
+                    </Button>
+                </Link>
+
                 <Card className="max-w-4xl">
                     <CardHeader>
                         <CardTitle className="mb-2 flex items-center gap-1">

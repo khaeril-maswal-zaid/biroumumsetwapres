@@ -141,10 +141,20 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
         }
     };
 
-    const getStatusBadge = (status: string) => {
+    const getStatusBadge = (status: string, isRead: boolean) => {
         switch (status) {
             case 'pending':
-                return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Menunggu</Badge>;
+                return (
+                    <Badge
+                        className={
+                            isRead
+                                ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' // versi memudar
+                                : 'bg-yellow-300 text-yellow-800 hover:bg-yellow-300' // versi normal
+                        }
+                    >
+                        Menunggu
+                    </Badge>
+                );
             case 'process':
                 return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Proses</Badge>;
             case 'confirmed':
@@ -190,7 +200,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto bg-gradient-to-br from-white to-blue-100 p-4">
                 <Card>
                     <CardHeader>
                         <CardTitle>Daftar Permintaan ATK</CardTitle>
@@ -227,13 +237,14 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
+                                        <TableHead>No</TableHead>
                                         <TableHead>Kode Permintaan</TableHead>
                                         <TableHead>Nama Pemesan</TableHead>
                                         <TableHead>Jumlah Item</TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead>Memo</TableHead>
                                         <TableHead className="text-right">Aksi</TableHead>
-                                        <TableHead className="text-right">Aksi</TableHead>
+                                        {/* <TableHead className="text-right">Aksi</TableHead> */}
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -244,8 +255,9 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                             </TableCell>
                                         </TableRow>
                                     ) : (
-                                        filteredSupplies.map((supply: any) => (
+                                        filteredSupplies.map((supply: any, index: any) => (
                                             <TableRow key={supply.kode_pelaporan}>
+                                                <TableCell>{index + 1}</TableCell>
                                                 <TableCell>
                                                     <div className="font-mono text-sm font-medium">{supply.kode_pelaporan}</div>
                                                 </TableCell>
@@ -259,22 +271,22 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                                         <span>{supply.daftar_kebutuhan.length} item</span>
                                                     </Badge>
                                                 </TableCell>
-                                                <TableCell>{getStatusBadge(supply.status)}</TableCell>
+                                                <TableCell>{getStatusBadge(supply.status, supply.is_read)}</TableCell>
                                                 <TableCell>
                                                     <Button variant="ghost" size="sm" onClick={() => handleViewMemo(supply)}>
-                                                        View
+                                                        Lihat memo
                                                     </Button>
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell className="text-right">
                                                     <Link className="font-medium" href={route('permintaanatk.show', supply.kode_pelaporan)}>
                                                         Detail
                                                     </Link>
                                                 </TableCell>
-                                                <TableCell className="text-right">
+                                                {/* <TableCell className="text-right">
                                                     <Button variant="ghost" size="sm" onClick={() => handleViewDetails(supply)}>
                                                         Detail
                                                     </Button>
-                                                </TableCell>
+                                                </TableCell> */}
                                             </TableRow>
                                         ))
                                     )}
@@ -310,7 +322,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="text-right">{getStatusBadge(selectedRequest.status)}</div>
+                                    <div className="text-right">{getStatusBadge(selectedRequest.status, selectedRequest.is_read)}</div>
                                 </div>
 
                                 {/* Request Details */}

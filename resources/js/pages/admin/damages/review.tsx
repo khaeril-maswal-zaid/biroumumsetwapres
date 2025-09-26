@@ -172,9 +172,12 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Detal Laporan Kerusakan Gedung" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-gradient-to-br from-white to-blue-100 p-4">
                 <Link href={route('kerusakangedung.index')}>
-                    <Button variant="ghost" className="mb-2 flex items-center space-x-2 border">
+                    <Button
+                        variant="ghost"
+                        className="mb-1 flex items-center space-x-2 border bg-accent text-accent-foreground hover:border-gray-300 hover:bg-gray-200"
+                    >
                         <ArrowLeft className="h-4 w-4" />
                         <span>Kembali</span>
                     </Button>

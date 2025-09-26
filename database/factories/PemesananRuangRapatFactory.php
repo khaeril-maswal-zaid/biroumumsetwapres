@@ -35,7 +35,7 @@ class PemesananRuangRapatFactory extends Factory
             'no_hp' => fake()->phoneNumber(),
             'kode_booking' => 'RRT-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'status' => fake()->randomElement(['pending', 'confirmed', 'cancelled']), //['pending', 'confirmed', 'cancelled']
-            'is_read' => fake()->numberBetween(0, 1),
+            'is_read' => fake()->boolean(),
             'keterangan' => fake()->text(250),
         ];
     }
