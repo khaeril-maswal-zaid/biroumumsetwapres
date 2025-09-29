@@ -176,23 +176,42 @@ class RolePermissionSeeder extends Seeder
 
         // 🎖️ Role: Atasan--------------------------------
         $superAdminPermissions = [
-            'view_admin_dashboard',
-
-            'view_vehicles',
-            'view_suppliess',
-            'view_bookings',
-            'view_damages',
-
-            'view_category_damages',
-            'view_atk',
             'view_rooms',
-
-            'report_suppliess',
-            'report_bookings',
+            'create_rooms',
+            'edit_rooms',
+            'delete_rooms',
+            'view_atk',
+            'create_atk',
+            'edit_atk',
+            'delete_atk',
+            'view_category_damages',
+            'create_category_damages',
+            'edit_category_damages',
+            'delete_category_damages',
+            'create_log_proses',
+            'edit_log_proses',
+            'delete_log_proses',
+            'view_damages',
             'report_damages',
-
-            'management_access'
+            'create_damage',
+            'change_damage_status',
+            'view_bookings',
+            'report_bookings',
+            'create_booking',
+            'change_booking_status',
+            'view_suppliess',
+            'report_suppliess',
+            'create_supplies',
+            'change_supplies_status',
+            'view_vehicles',
+            'create_vehicle',
+            'change_vehicle_status',
+            'view_admin_dashboard',
+            'view_history',
+            'view_homepage',
+            'management_access',
         ];
+
         $super_adminRole = Role::create(
             [
                 'name' => 'super_admin',
