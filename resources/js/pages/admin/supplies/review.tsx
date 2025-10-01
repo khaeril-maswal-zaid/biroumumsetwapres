@@ -428,7 +428,10 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
                                                         onClick={() => {
                                                             handleSubmit(selectedRequest.kode_pelaporan);
                                                         }}
-                                                        disabled={isProcessing}
+                                                        disabled={
+                                                            isProcessing ||
+                                                            (actionType === 'reject' && selectedRequest.status === 'pending' && !adminMessage.trim())
+                                                        }
                                                         className={
                                                             actionType === 'confirmed'
                                                                 ? 'bg-green-600 hover:bg-green-700'

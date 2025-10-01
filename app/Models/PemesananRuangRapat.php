@@ -380,7 +380,7 @@ class PemesananRuangRapat extends Model
         $today = Carbon::today();
         $daysLater = Carbon::today()->addDays(5);
 
-        $upcomingBookings = PemesananRuangRapat::with(['ruangans', 'pemesan'])
+        $upcomingBookings = $this->with(['ruangans', 'pemesan'])
             ->whereBetween('tanggal_penggunaan', [$today, $daysLater])
             ->where('status', 'confirmed') // Optional: hanya ambil yang sudah dikonfirmasi
             ->orderBy('tanggal_penggunaan')
@@ -400,5 +400,69 @@ class PemesananRuangRapat extends Model
             });
 
         return $upcomingBookings;
+    }
+
+    public function availableRooms($request)
+    {
+        $result = [];
+
+        if ($request->filled(['tanggal', 'jam_mulai', 'jam_selesai'])) {
+            $validated = $request->validate([
+                'tanggal'     => 'required|date',
+                'jam_mulai'   => 'required|date_format:H:i',
+                'jam_selesai' => 'required|date_format:H:i',
+            ]);
+
+            $tanggal    = $validated['tanggal'];
+            $jamMulai   = $validated['jam_mulai'];
+            $jamSelesai = $validated['jam_selesai'];
+
+            // Cek apakah jam_mulai < jam_selesai
+            if (Carbon::parse($jamMulai)->gte(Carbon::parse($jamSelesai))) {
+                return [
+                    'tersedia' => $result,
+                    'unitKerja' => UnitKerja::select('label')->pluck('label')->all(),
+                ];
+            }
+
+            // Ambil ruangan
+            $ruangans = DaftarRuangan::select([
+                'id',
+                'nama_ruangan',
+                'kode_ruangan',
+                'lokasi',
+                'kapasitas',
+                'image',
+                'fasilitas',
+            ])->where('status', 'aktif')->get();
+
+            // Ambil booking yang bentrok
+            $bookings = $this->where('tanggal_penggunaan', $tanggal)
+                ->where('jam_mulai', '<', $jamSelesai)
+                ->where('jam_selesai', '>', $jamMulai)
+                ->get();
+
+            // Proses ketersediaan tiap ruangan
+            $result = $ruangans->map(function ($r) use ($bookings) {
+                $myBookings = $bookings->where('daftar_ruangan_id', $r->id);
+                $slots = $myBookings->map(function ($b) {
+                    return Carbon::parse($b->jam_mulai)->format('H:i') . ' - ' . Carbon::parse($b->jam_selesai)->format('H:i');
+                })->values()->all();
+
+                return [
+                    'id'           => $r->kode_ruangan,
+                    'nama_ruangan' => $r->nama_ruangan,
+                    'kode_ruangan' => $r->kode_ruangan,
+                    'kapasitas'    => $r->kapasitas,
+                    'lokasi'       => $r->lokasi,
+                    'status'       => count($slots) ? 'booked' : 'available',
+                    'bookedSlots'  => $slots,
+                    'image'        => $r->image,
+                    'facilities'   => $r->fasilitas,
+                ];
+            });
+        }
+
+        return $result;
     }
 }

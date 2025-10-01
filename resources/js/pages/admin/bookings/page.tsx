@@ -135,7 +135,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                             <div className="flex w-full max-w-sm items-center space-x-2">
                                 <Search className="h-4 w-4 text-gray-400" />
                                 <Input
-                                    placeholder="Cari nama pengaju, kegiatan, atau kode permintaan..."
+                                    placeholder="Cari nama pengaju, kegiatan, atau kode pemesanan..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="w-full"
@@ -161,7 +161,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>No</TableHead>
-                                        <TableHead>Kode Permintaan</TableHead>
+                                        <TableHead>Kode Pemesanan</TableHead>
                                         <TableHead>Nama Pemesan</TableHead>
                                         <TableHead>Ruangan</TableHead>
                                         <TableHead className="hidden md:table-cell">Tanggal</TableHead>
@@ -236,7 +236,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                         </div>
                                         <div className="flex items-center gap-1">
                                             <span className="font-mono text-sm font-medium text-gray-700">
-                                                Kode Permintaan: {selectedBooking.kode_booking}
+                                                Kode Pemesanan: {selectedBooking.kode_booking}
                                             </span>
                                         </div>
                                     </div>

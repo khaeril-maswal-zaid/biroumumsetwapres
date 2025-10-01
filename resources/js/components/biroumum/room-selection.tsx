@@ -7,32 +7,12 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Skeleton } from '@/components/ui/skeleton';
 import { router, usePage } from '@inertiajs/react';
-import {
-    BookOpen,
-    Camera,
-    Car,
-    CheckCircle,
-    Clock,
-    Computer,
-    Edit,
-    Folders,
-    Info,
-    Mic,
-    Monitor,
-    PenSquare,
-    Projector,
-    Shield,
-    Snowflake,
-    Sofa,
-    Speaker,
-    Table,
-    Tv,
-    Users,
-    Wifi,
-    X,
-} from 'lucide-react';
+import { Info, Users } from 'lucide-react';
+import { useState } from 'react';
+
+import { Camera, CheckCircle, Clock, Computer, Home, Mic, Monitor, PenSquare, Shield, Snowflake, Sofa, Speaker, Tv, Wifi, X } from 'lucide-react';
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 interface Room {
     id: string;
@@ -56,26 +36,21 @@ interface RoomSelectionProps {
 
 const facilityOptions = [
     { id: 'wifi', label: 'WiFi', icon: Wifi },
-    { id: 'projector', label: 'Proyektor', icon: Projector },
-    { id: 'lcd-proyektor', label: 'LCD Proyektor', icon: Projector },
     { id: 'tv-led', label: 'TV LED', icon: Tv },
     { id: 'sound-system', label: 'Sound System', icon: Speaker },
     { id: 'kamera-cctv', label: 'Kamera CCTV', icon: Camera },
     { id: 'mikrofon', label: 'Mikrofon', icon: Mic },
-    { id: 'meja-bundar', label: 'Meja Bundar', icon: Table },
     { id: 'papan-tulis', label: 'Papan Tulis', icon: PenSquare },
-    { id: 'whiteboard', label: 'Whiteboard', icon: Edit },
     { id: 'ac', label: 'AC', icon: Snowflake },
-    { id: 'parking', label: 'Parkir', icon: Car },
     { id: 'komputer', label: 'Komputer', icon: Computer },
     { id: 'sofa', label: 'Sofa', icon: Sofa },
-    { id: 'majalah', label: 'Majalah', icon: BookOpen },
-    { id: 'rak-arsip', label: 'Rak Arsip', icon: Folders },
-    { id: 'lemari-besi', label: 'Lemari Besi', icon: Shield },
+    { id: 'lemari', label: 'Lemari', icon: Shield },
 ];
 
 export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, selectedStartTime, selectedEndTime }: RoomSelectionProps) {
-    const { tersedia } = usePage<{ tersedia: Room[] }>().props;
+    const { flash } = usePage<{ flash: { availableRoom?: Room[] } }>().props;
+
+    console.log(selectedRoom, onRoomChange, selectedDate, selectedStartTime, selectedEndTime);
 
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState(false);
@@ -85,7 +60,7 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
     useEffect(() => {
         if (selectedDate && selectedStartTime && selectedEndTime) {
             router.get(
-                route('ruangrapat.create'),
+                route('ruangrapat.available'),
                 {
                     tanggal: selectedDate,
                     jam_mulai: selectedStartTime,
@@ -104,8 +79,10 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
     }, [selectedDate, selectedStartTime, selectedEndTime]);
 
     useEffect(() => {
-        setRooms(tersedia);
-    }, [tersedia]);
+        if (flash.availableRoom) {
+            setRooms(flash.availableRoom);
+        }
+    }, [flash.availableRoom]);
 
     const handleViewDetail = (e: React.MouseEvent, room: Room) => {
         e.stopPropagation(); // Prevent card click from triggering
@@ -349,7 +326,7 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                                         <span>Kapasitas: {selectedRoomDetail.kapasitas} orang</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Clock className="h-4 w-4 text-gray-500" />
+                                        <Home className="h-4 w-4 text-gray-500" />
                                         <span>{selectedRoomDetail.lokasi}</span>
                                     </div>
                                 </div>

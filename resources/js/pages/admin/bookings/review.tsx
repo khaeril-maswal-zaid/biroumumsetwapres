@@ -1,14 +1,33 @@
+import { FormBooking } from '@/components/biroumum/form-booking';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, Link, router } from '@inertiajs/react';
-import { AlertCircle, ArrowLeft, Calendar, CheckCircle, Clock, MessageSquare, Users, X } from 'lucide-react';
-import { useState } from 'react';
+import { AlertCircle, ArrowLeft, Calendar, CheckCircle, Clock, Edit3, MessageSquare, Users, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+
+import { z } from 'zod';
+
+const schema = z.object({
+    room_code: z.string().min(1, 'Ruangan wajib dipilih'),
+    room_name: z.string().min(1, 'Nama ruangan wajib diisi'),
+    date: z.string().min(1, 'Tanggal wajib diisi'),
+    startTime: z.string().min(1, 'Jam mulai wajib diisi'),
+    // unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
+    endTime: z.string().min(1, 'Jam selesai wajib diisi'),
+    purpose: z.string().min(1, 'Kegiatan wajib diisi'),
+    contact: z.string().min(1, 'Kontak wajib diisi'),
+});
+
+type FormData = z.infer<typeof schema>;
 
 const formatTanggalIna = (tanggal: string) => {
     return new Intl.DateTimeFormat('id-ID', {
@@ -35,28 +54,28 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
         setAdminMessage('');
     };
 
-    const handleSubmit = async (bookingCode: string) => {
-        setIsProcessing(true);
+    // const handleSubmit = async (bookingCode: string) => {
+    //     setIsProcessing(true);
 
-        router.patch(
-            route('ruangrapat.status', bookingCode),
-            {
-                action: actionType,
-                message: adminMessage,
-            },
-            {
-                preserveScroll: true,
-                onSuccess: () => {
-                    setIsProcessing(false);
-                    setAdminMessage('');
-                    setActionType(null);
-                },
-                onError: (errors) => {
-                    console.log('Validation Errors: ', errors);
-                },
-            },
-        );
-    };
+    //     router.patch(
+    //         route('ruangrapat.status', bookingCode),
+    //         {
+    //             action: actionType,
+    //             message: adminMessage,
+    //         },
+    //         {
+    //             preserveScroll: true,
+    //             onSuccess: () => {
+    //                 setIsProcessing(false);
+    //                 setAdminMessage('');
+    //                 setActionType(null);
+    //             },
+    //             onError: (errors) => {
+    //                 console.log('Validation Errors: ', errors);
+    //             },
+    //         },
+    //     );
+    // };
 
     const getStatusBadge = (status: string) => {
         switch (status) {
@@ -70,6 +89,95 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                 return <Badge variant="outline">Unknown</Badge>;
         }
     };
+
+    //--------------------------------------
+    const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
+
+    // const handleReschedule = () => {
+    //     setShowRescheduleDialog(true);
+    //     // Pre-fill with current booking data
+    // };
+
+    //--------------------------------------
+    const methods = useForm<FormData>({
+        resolver: zodResolver(schema),
+        defaultValues: {
+            room_code: '',
+            room_name: '',
+            date: '',
+            startTime: '',
+            endTime: '',
+            purpose: '',
+            contact: '',
+        },
+    });
+
+    const { handleSubmit, reset } = methods;
+
+    const [errorServer, setErrorServer] = useState<null | Record<string, string[]>>(null);
+
+    const onSubmit = (data: FormData) => {
+        router.put(route('ruangrapat.update', selectedBooking.kode_booking), data, {
+            onSuccess: () => {
+                reset();
+                setErrorServer(null);
+            },
+            onError: (err) => {
+                setErrorServer(err);
+            },
+        });
+    };
+
+    //--------------------------------------------------------
+    // helper di BookingDetailsPage (atau util)
+    function mapBookingToForm(data: any): FormData {
+        const toDate = (d: any) => {
+            if (!d) return '';
+            if (typeof d === 'string') {
+                // coba ambil bagian tanggal (handles '2025-09-30T00:00:00Z' atau '2025-09-30 00:00:00')
+                const datePart = d.split('T')[0].split(' ')[0];
+                if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) return datePart;
+            }
+            const parsed = new Date(d);
+            if (!isNaN(parsed.getTime())) return parsed.toISOString().split('T')[0];
+            return '';
+        };
+
+        const toTime = (t: any) => {
+            if (!t) return '';
+            if (typeof t === 'string') {
+                const m = t.match(/(\d{2}:\d{2})/);
+                if (m) return m[1];
+                // fallback: if '09:00:00' -> slice
+                if (t.length >= 5 && t.includes(':')) return t.slice(0, 5);
+            }
+            return '';
+        };
+
+        return {
+            room_code: data?.ruangans?.kode_ruangan ?? '',
+            room_name: data?.ruangans?.nama_ruangan ?? '',
+            date: toDate(data?.tanggal_penggunaan) ?? '',
+            startTime: toTime(data?.jam_mulai) ?? '',
+            endTime: toTime(data?.jam_selesai) ?? '',
+            purpose: data?.deskripsi ?? '',
+            contact: data?.no_hp ?? '',
+        };
+    }
+
+    const handleReschedule = () => {
+        if (selectedBooking) {
+            methods.reset(mapBookingToForm(selectedBooking)); // reset di parent
+        }
+        setShowRescheduleDialog(true);
+    };
+
+    // jalankan useEffect untuk jaga-jaga:
+    useEffect(() => {
+        if (showRescheduleDialog && selectedBooking) {
+            methods.reset(mapBookingToForm(selectedBooking));
+        }
+    }, [showRescheduleDialog]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -105,12 +213,25 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                         </div>
                                         <div className="flex items-center gap-1">
                                             <span className="font-mono text-sm font-medium text-gray-700">
-                                                Kode Permintaan: {selectedBooking.kode_booking}
+                                                Kode Pemesanan: {selectedBooking.kode_booking}
                                             </span>
                                         </div>
                                     </div>
                                     <div className="text-right">{getStatusBadge(selectedBooking.status)}</div>
                                 </div>
+
+                                {(selectedBooking.status === 'confirmed' || selectedBooking.status === 'pending') && (
+                                    <div className="flex justify-end">
+                                        <Button
+                                            variant="outline"
+                                            className="flex items-center gap-2 border-blue-200 bg-transparent text-blue-700 hover:bg-blue-50"
+                                            onClick={handleReschedule}
+                                        >
+                                            <Edit3 className="h-4 w-4" />
+                                            Reschedule
+                                        </Button>
+                                    </div>
+                                )}
 
                                 {/* Booking Details */}
                                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -309,6 +430,43 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                         )}
                     </CardContent>
                 </Card>
+
+                <Dialog open={showRescheduleDialog} onOpenChange={setShowRescheduleDialog}>
+                    <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2">
+                                <Edit3 className="h-5 w-5 text-blue-600" />
+                                Reschedule Pemesanan
+                            </DialogTitle>
+                        </DialogHeader>
+
+                        <div className="space-y-4">
+                            {/* <FormProvider {...methods}>
+                                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                                    <FormBooking unitKerja={[]} initialData={selectedBooking} />
+                                    <Button type="submit" className="w-full">
+                                        Update Pemesanan
+                                    </Button>
+                                </form>
+                            </FormProvider> */}
+
+                            <FormProvider {...methods}>
+                                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                                    <FormBooking unitKerja={[]} />
+                                    <Button type="submit" className="w-full">
+                                        Update Pemesanan
+                                    </Button>
+                                </form>
+                            </FormProvider>
+                        </div>
+
+                        <DialogFooter className="flex gap-2">
+                            <Button variant="outline" onClick={() => setShowRescheduleDialog(false)}>
+                                Batal
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </AppLayout>
     );

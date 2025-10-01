@@ -196,7 +196,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                             <div className="flex w-full max-w-sm items-center space-x-2">
                                 <Search className="h-4 w-4 text-gray-400" />
                                 <Input
-                                    placeholder="Cari nama, lokasi, atau kode permintaan......"
+                                    placeholder="Cari nama, lokasi, atau kode laporan......"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="w-full"
@@ -222,7 +222,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>No</TableHead>
-                                        <TableHead>Kode Permintaan</TableHead>
+                                        <TableHead>Kode Laporan</TableHead>
                                         <TableHead>Nama Pelapor</TableHead>
                                         <TableHead>Lokasi</TableHead>
                                         <TableHead className="hidden md:table-cell">Nama Item Rusak</TableHead>
@@ -304,7 +304,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                         </div>
                                         <div className="flex items-center gap-1">
                                             <span className="font-mono text-sm font-medium text-gray-700">
-                                                Kode Permintaan: {selectedDamage.kode_pelaporan}
+                                                Kode Laporan: {selectedDamage.kode_pelaporan}
                                             </span>
                                         </div>
                                     </div>

@@ -29,69 +29,9 @@ class PemesananRuangRapatController extends Controller
         return Inertia::render('admin/bookings/page', $data);
     }
 
-    public function create(Request $request): Response
+    public function create(): Response
     {
-        $result = [];
-
-        if ($request->filled(['tanggal', 'jam_mulai', 'jam_selesai'])) {
-            $validated = $request->validate([
-                'tanggal'     => 'required|date',
-                'jam_mulai'   => 'required|date_format:H:i',
-                'jam_selesai' => 'required|date_format:H:i',
-            ]);
-
-            $tanggal    = $validated['tanggal'];
-            $jamMulai   = $validated['jam_mulai'];
-            $jamSelesai = $validated['jam_selesai'];
-
-            // Cek apakah jam_mulai < jam_selesai
-            if (Carbon::parse($jamMulai)->gte(Carbon::parse($jamSelesai))) {
-                return Inertia::render('biroumum/booking/page', [
-                    'tersedia' => $result,
-                    'unitKerja' => UnitKerja::select('label')->pluck('label')->all(),
-                ]);
-            }
-
-            // Ambil ruangan
-            $ruangans = DaftarRuangan::select([
-                'id',
-                'nama_ruangan',
-                'kode_ruangan',
-                'lokasi',
-                'kapasitas',
-                'image',
-                'fasilitas',
-            ])->where('status', 'aktif')->get();
-
-            // Ambil booking yang bentrok
-            $bookings = PemesananRuangRapat::where('tanggal_penggunaan', $tanggal)
-                ->where('jam_mulai', '<', $jamSelesai)
-                ->where('jam_selesai', '>', $jamMulai)
-                ->get();
-
-            // Proses ketersediaan tiap ruangan
-            $result = $ruangans->map(function ($r) use ($bookings) {
-                $myBookings = $bookings->where('daftar_ruangan_id', $r->id);
-                $slots = $myBookings->map(function ($b) {
-                    return Carbon::parse($b->jam_mulai)->format('H:i') . ' - ' . Carbon::parse($b->jam_selesai)->format('H:i');
-                })->values()->all();
-
-                return [
-                    'id'           => $r->kode_ruangan,
-                    'nama_ruangan' => $r->nama_ruangan,
-                    'kode_ruangan' => $r->kode_ruangan,
-                    'kapasitas'    => $r->kapasitas,
-                    'lokasi'       => $r->lokasi,
-                    'status'       => count($slots) ? 'booked' : 'available',
-                    'bookedSlots'  => $slots,
-                    'image'        => $r->image,
-                    'facilities'   => $r->fasilitas,
-                ];
-            });
-        }
-
         return Inertia::render('biroumum/booking/page', [
-            'tersedia' => $result,
             'unitKerja' => UnitKerja::select('label')->pluck('label')->all(),
         ]);
     }
@@ -170,7 +110,42 @@ class PemesananRuangRapatController extends Controller
      */
     public function update(UpdatePemesananRuangRapatRequest $request, PemesananRuangRapat $pemesananRuangRapat)
     {
-        //
+        // Ambil ruangan dari DB
+        $room = DaftarRuangan::where('kode_ruangan', $request['room_code'])->first();
+
+        //Cek apakah nama ruangan dari request itu sama dengan nama ruangan hasil query dari id request
+        if (Str::lower(Str::slug($room->nama_ruangan)) !== Str::lower(Str::slug($request->room_name))) {
+            return back()->withErrors(['room_name' => 'Nama ruangan tidak sesuai.']);
+        }
+
+        // Cek apakah ruangan tersedia
+        $isConflict = PemesananRuangRapat::where('daftar_ruangan_id', $room->id)
+            ->where('tanggal_penggunaan', $request['date'])
+            ->where(function ($q) use ($request) {
+                $q->whereBetween('jam_mulai', [$request['startTime'], $request['endTime']])
+                    ->orWhereBetween('jam_selesai', [$request['startTime'], $request['endTime']])
+                    ->orWhere(function ($q2) use ($request) {
+                        $q2->where('jam_mulai', '<=', $request['startTime'])
+                            ->where('jam_selesai', '>=', $request['endTime']);
+                    });
+            })
+            ->exists();
+
+        if ($isConflict) {
+            return back()->withErrors(['room' => 'Ruangan tidak tersedia pada waktu tersebut']);
+        }
+
+        $pemesananRuangRapat->update([
+            'user_id' => Auth::id(),
+            'instansi_id' => Auth::user()->instansi_id,
+            // 'unit_kerja' => $request->unit_kerja,
+            'tanggal_penggunaan' => $request->date,
+            'jam_mulai' => $request->startTime,
+            'jam_selesai' => $request->endTime,
+            'daftar_ruangan_id' => $room->id,
+            'deskripsi' => $request->purpose,
+            'no_hp' => $request->contact,
+        ]);
     }
 
     /**
@@ -220,5 +195,11 @@ class PemesananRuangRapatController extends Controller
             'rooms'              => DaftarRuangan::select('nama_ruangan')->get(),
             'roomSchedules' =>  $roomSchedules
         ]);
+    }
+
+    public function getAvailableRooms(Request $request)
+    {
+        $pemesananRuangRapat = new PemesananRuangRapat();
+        return back()->with('availableRoom', $pemesananRuangRapat->availableRooms($request));
     }
 }

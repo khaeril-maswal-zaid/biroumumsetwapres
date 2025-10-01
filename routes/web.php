@@ -31,6 +31,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/ruang-rapat', [PemesananRuangRapatController::class, 'create'])
         ->name('ruangrapat.create')->middleware('permission:create_booking');
 
+    Route::get('/pemesanan-ruang-rapat-available/', [PemesananRuangRapatController::class, 'getAvailableRooms'])
+        ->name('ruangrapat.available');
+
     Route::post('/ruang-rapat/store', [PemesananRuangRapatController::class, 'store'])
         ->name('ruangrapat.store')->middleware('permission:create_booking');
 
@@ -67,6 +70,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Manajemen Booking (view_bookings & change_booking_status)
     Route::get('/dashboard/ruang-rapat', [PemesananRuangRapatController::class, 'index'])
         ->name('ruangrapat.index')
+        ->middleware('permission:view_bookings');
+
+    Route::put('/dashboard/ruang-rapat/update/{pemesananRuangRapat:kode_booking}', [PemesananRuangRapatController::class, 'update'])
+        ->name('ruangrapat.update')
         ->middleware('permission:view_bookings');
 
     Route::get('/dashboard/ruang-rapat-review/{pemesananRuangRapat:kode_booking}', [PemesananRuangRapatController::class, 'show'])
