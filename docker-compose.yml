@@ -1,0 +1,13 @@
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: umumswp
+    container_name: umumswp-app
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./src:/var/www
+    ports:
+      - "8003:8080"
