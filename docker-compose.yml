@@ -9,5 +9,7 @@ services:
     working_dir: /var/www/
     volumes:
       - ./src:/var/www
+      - /var/www/vendor
+      - /var/www/node_modules
     ports:
       - "8003:8080"
