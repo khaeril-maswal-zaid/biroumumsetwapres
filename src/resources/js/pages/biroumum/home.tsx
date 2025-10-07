@@ -24,7 +24,7 @@ export default function Dashboard({ requestHistory }: any) {
 
     return (
         <>
-            <Head title="Biro Umum - Setwapres" />
+            <Head title="Layanan Biro Umum - Setwapres" />
             <div className="mx-auto min-h-screen w-full max-w-md bg-gray-50">
                 {/* Desktop Navigation */}
 
