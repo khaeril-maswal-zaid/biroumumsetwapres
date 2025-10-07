@@ -27,7 +27,7 @@ class KerusakanGedungFactory extends Factory
             'kategori_kerusakan_id' => KategoriKerusakan::inRandomOrder()->first()?->id ?? 1,
             'item' => fake()->word(),
             'deskripsi' => '',
-            'picture' =>  [fake()->image('public/storage/image/kerusakan-gedung', 640, 480, null, false), fake()->image('public/storage/image/kerusakan-gedung', 640, 480, null, false)],
+            'picture' =>  [fake()->image('public/storage/images/kerusakan-gedung', 640, 480, null, false), fake()->image('public/storage/images/kerusakan-gedung', 640, 480, null, false)],
             'no_hp' => fake()->phoneNumber(),
             // 'urgensi' => fake()->randomElement(['rendah', 'sedang', 'tinggi']),
             'kode_pelaporan' => 'KGD-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
