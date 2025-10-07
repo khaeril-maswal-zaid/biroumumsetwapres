@@ -15,7 +15,7 @@ class RoleController extends Controller
     public function index()
     {
         $users = User::with('roles')
-            ->where('instansi_id', Auth::id())
+            ->where('instansi_id', Auth::user()->instansi_id)
             ->get()
             ->map(function ($user) {
                 return [
