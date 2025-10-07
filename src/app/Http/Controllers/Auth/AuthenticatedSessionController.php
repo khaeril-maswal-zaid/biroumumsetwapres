@@ -37,13 +37,11 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();  
 
-        dd($user->getAllPermissions());
-
         if ($user->hasAnyPermission('view_admin_dashboard')) {
             return to_route('dashboard');
         }
 
-        return redirect()->intended(route('home'));
+        return to_route('home');
     }
 
 
