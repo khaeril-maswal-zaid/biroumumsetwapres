@@ -35,7 +35,9 @@ class AuthenticatedSessionController extends Controller
         $nip_Sso = '';
         $password_Sso = '';
 
-        $user = Auth::user();
+        $user = Auth::user();  
+
+        dd($user->getAllPermissions());
 
         if ($user->hasAnyPermission('view_admin_dashboard')) {
             return to_route('dashboard');
