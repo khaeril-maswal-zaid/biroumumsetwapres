@@ -24,7 +24,7 @@ services:
       DB_PASSWORD: "setwapres"
 
     networks:
-      - shared-net # ⬅️ tambahkan ini
+      - shared-net
 
 networks:
   shared-net:
