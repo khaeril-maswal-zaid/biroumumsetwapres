@@ -509,7 +509,7 @@ class UserSeeder extends Seeder
             ],
             [
                 'name' => 'Hari Sugiharto, S.T., M.M.',
-                'email' => 'harisugiharto@setwapresri.go.id',
+                'email' => 'hari.sugiharto@setneg.go.id',
                 'nip' => '197612051996031002',
                 'unit_kerja' => 'Biro Umum',
                 'instansi_id' => 4,
@@ -1425,12 +1425,12 @@ class UserSeeder extends Seeder
                 'role' => 'super_admin',
             ],
             [
-                'name' => 'Santi Setiawati S.IP.',
-                'email' => 'santi.setiawati@set.wapresri.go.id',
-                'nip' => '197108091998032002',
+                'name' => 'Hari Sugiharto, S.T., M.M.',
+                'email' => 'hari.sugiharto@setneg.go.id',
+                'nip' => '197612051996031002',
                 'unit_kerja' => 'Biro Umum',
                 'instansi_id' => 4,
-                'role' => 'admin_atk',
+                'role' => 'admin_atk'
             ],
             [
                 'name' => 'Fajar Triwardono S.T., M.T.',
