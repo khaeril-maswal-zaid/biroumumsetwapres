@@ -1417,20 +1417,28 @@ class UserSeeder extends Seeder
 
         $dataX = [
             [
+                'name' => 'Ayu Setiarini S.T., M.T.I.',
+                'email' => 'ayu.setiarini@setneg.go.id',
+                'nip' => '198605282009122001',
+                'unit_kerja' => 'Biro TUSDM',
+                'instansi_id' => 4,
+                'role' => 'super_admin',
+            ],
+            [
                 'name' => 'Yan Adikusuma S.Kom., M.Eng.',
                 'email' => 'yan.adikusuma@ksp.go.id',
                 'nip' => '197506251994121001',
                 'unit_kerja' => 'Biro Umum',
                 'instansi_id' => 4,
-                'role' => 'super_admin',
+                'role' => 'pimpinan',
             ],
             [
-                'name' => 'Santi Setiawati S.IP.',
-                'email' => 'santi.setiawati@set.wapresri.go.id',
-                'nip' => '197108091998032002',
+                'name' => 'Hari Sugiharto, S.T., M.M.',
+                'email' => 'hari.sugiharto@setneg.go.id',
+                'nip' => '197612051996031002',
                 'unit_kerja' => 'Biro Umum',
                 'instansi_id' => 4,
-                'role' => 'admin_atk',
+                'role' => 'admin_atk'
             ],
             [
                 'name' => 'Fajar Triwardono S.T., M.T.',

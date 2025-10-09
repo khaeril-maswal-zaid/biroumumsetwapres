@@ -173,8 +173,29 @@ class RolePermissionSeeder extends Seeder
         );
         $pegawaiRole->syncPermissions($pegawaiPermissions);
 
+        // 👤 Role: Pimpinan------------------------------
+        $atsanPermissions = [
+            'view_rooms',
+            'view_admin_dashboard',
+            'view_vehicles',
+            'view_suppliess',
+            'view_bookings',
+            'view_damages',
+            'view_category_damages',
+            'view_atk',
+        ];
+        $pegawaiRole = Role::create(
+            [
+                'name' => 'pimpinan',
+                'label' => 'Pimpinan',
+                'guard_name' => 'web',
+                'description' => 'Dapat melihat berbagai permintaan seperti booking ruangan, kendaraan, ATK, dan pelaporan kerusakan.'
+            ]
+        );
+        $pegawaiRole->syncPermissions($atsanPermissions);
 
-        // 🎖️ Role: Atasan--------------------------------
+
+        // 🎖️ Role: Super Admin--------------------------------
         $superAdminPermissions = [
             'view_rooms',
             'create_rooms',
