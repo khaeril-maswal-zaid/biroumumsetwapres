@@ -75,7 +75,7 @@ export default function Profile() {
                                 <Button
                                     variant="outline"
                                     onClick={handleLogout}
-                                    className="flex items-center space-x-2 border-red-200 bg-red-50 text-red-600"
+                                    className="flex items-center space-x-2 border-red-200 bg-red-50 hover:bg-red-300 text-red-600"
                                 >
                                     <LogOut className="h-4 w-4" />
                                     <span>Logout</span>
