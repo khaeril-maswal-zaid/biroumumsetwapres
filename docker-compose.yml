@@ -11,7 +11,7 @@ services:
       - ./src:/var/www
 
     ports:
-      - "8003:8080"
+      - "80:80"
 
     networks:
       - alzaid-net
