@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use LdapRecord\Container;
+use LdapRecord\Models\ActiveDirectory\User as LdapUser;
+use LdapRecord\Laravel\Auth\BindException;
 
 class LoginRequest extends FormRequest
 {
@@ -27,7 +30,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email' => ['required', 'string',],
             'password' => ['required', 'string'],
         ];
     }
@@ -37,20 +40,22 @@ class LoginRequest extends FormRequest
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function authenticate(): void
-    {
-        $this->ensureIsNotRateLimited();
+    // public function authenticate(): void
+    // {
+    //     $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+    //     if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+    //         RateLimiter::hit($this->throttleKey());
 
-            throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
-            ]);
-        }
+    //         throw ValidationException::withMessages([
+    //             'email' => __('auth.failed'),
+    //         ]);
+    //     }
 
-        RateLimiter::clear($this->throttleKey());
-    }
+    //     RateLimiter::clear($this->throttleKey());
+    // }
+
+
 
     /**
      * Ensure the login request is not rate limited.
@@ -80,6 +85,61 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('email')) . '|' . $this->ip());
+    }
+
+
+    //----------------------------------------------------------------
+    public function authenticate(): void
+    {
+        $this->ensureIsNotRateLimited();
+
+        $credentials = $this->only('email', 'password');
+        $remember = $this->boolean('remember');
+
+        // 1️⃣ Coba login ke database lokal dulu
+        if (Auth::attempt($credentials, $remember)) {
+            RateLimiter::clear($this->throttleKey());
+            return;
+        }
+
+        $this->ensureIsNotRateLimited();
+
+        $credentials = $this->only('email', 'password');
+
+        try {
+            $ldapUser = LdapUser::where('mail', '=', $credentials['email'])->first();
+
+            if ($ldapUser) {
+                $connection = Container::getDefaultConnection();
+
+                // Coba autentikasi ke LDAP server
+                if ($connection->auth()->attempt($ldapUser->getDn(), $credentials['password'])) {
+                    // Autentikasi LDAP BERHASIL 🎉
+
+                    // Sinkronisasi user LDAP ke database lokal
+                    $localUser = \App\Models\User::firstOrCreate(
+                        ['email' => $credentials['email']],
+                        [
+                            'name' => $ldapUser->getFirstAttribute('cn'),
+                            'password' => bcrypt(Str::random(16)), // dummy password
+                        ]
+                    );
+
+                    Auth::login($localUser, $this->boolean('remember'));
+                    RateLimiter::clear($this->throttleKey());
+                    return;
+                }
+            }
+        } catch (\Exception $e) {
+            logger('LDAP login failed: ' . $e->getMessage());
+        }
+
+        // Kalau LDAP gagal, anggap autentikasi gagal
+        RateLimiter::hit($this->throttleKey());
+
+        throw ValidationException::withMessages([
+            'email' => __('auth.failed'),
+        ]);
     }
 }
