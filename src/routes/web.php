@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth', 'verified'])->group(function () {
     // Halaman utama user (view_homepage)
     Route::get('/', [HomeController::class, 'index'])
-        ->name('home')->middleware('permission:view_homepage');
+        ->name('home');
+    // ->middleware('permission:view_homepage');
 
     // Profile user (bisa semua user terverifikasi)
     Route::get('/profile', [UserController::class, 'show'])

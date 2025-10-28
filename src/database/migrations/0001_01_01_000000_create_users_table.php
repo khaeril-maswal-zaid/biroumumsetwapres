@@ -13,16 +13,19 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('instansi_id')->constrained()->cascadeOnDelete();
-            $table->string('name');
+            // $table->foreignId('master_pegawai_id')->constrained()->cascadeOnDelete();
+            // $table->string('name');
             $table->string('nip');
-            $table->string('nip_sso');
-            $table->string('unit_kerja');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('nip_sso')->nullable();
+            $table->boolean('is_ldap');
+            // $table->string('unit_kerja');
+            // $table->string('email')->unique();
+            // $table->timestamp('email_verified_at')->nullable();
+            // $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+
+            // $table->foreign('nip')->references('nip')->on('master_pegawais')->cascadeOnDelete();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

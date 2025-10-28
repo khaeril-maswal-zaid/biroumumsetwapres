@@ -31,7 +31,7 @@ export default function Dashboard({ requestHistory }: any) {
                 {/* Main Content */}
                 <div className="pb-20">
                     {/* Header with user info */}
-                    <DashboardHeader userName={auth.user.name} />
+                    <DashboardHeader userName={auth.user?.name} />
 
                     <div className="space-y-6 p-4">
                         {/* Search Bar */}
