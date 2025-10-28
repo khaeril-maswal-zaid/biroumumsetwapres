@@ -11,19 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('instansis', function (Blueprint $table) {
+            $table->string('kode_instansi')->primary();
+            $table->string('nama_instansi')->nullable();
+            $table->timestamps();
+        });
+
+
         // Schema::create('instansis', function (Blueprint $table) {
         //     $table->id();
         //     $table->integer('kode_instansi')->unique();
         //     $table->string('nama_instansi');
         //     $table->timestamps();
         // });
-
-        Schema::create('instansis', function (Blueprint $table) {
-            $table->id();
-            $table->integer('kode_instansi')->unique();
-            $table->string('nama_instansi');
-            $table->timestamps();
-        });
     }
 
     /**

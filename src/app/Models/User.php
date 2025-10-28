@@ -26,10 +26,12 @@ class User extends Authenticatable implements LdapAuthenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'instansi_id',
+        'master_pegawai_id',
+        'nip',
+        'nip_sso',
+        'is_ldap',
         'email',
-        'password',
+        'password'
     ];
 
     /**
@@ -58,5 +60,10 @@ class User extends Authenticatable implements LdapAuthenticatable
     public function instansi()
     {
         return $this->belongsTo(Instansi::class, 'instansi_id');
+    }
+
+    public function pegawai()
+    {
+        return $this->belongsTo(MasterPegawai::class, 'nip', 'nip');
     }
 }

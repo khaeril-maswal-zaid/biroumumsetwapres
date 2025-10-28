@@ -25,7 +25,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // History user (view_history)
     Route::get('/history', [HomeController::class, 'history'])
-        ->name('history')->middleware('permission:view_history');
+        ->name('history');
+    // ->middleware('permission:view_history');
 
 
     // Pengajuan Ruang Rapat (create_booking)

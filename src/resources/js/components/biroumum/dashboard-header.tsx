@@ -5,6 +5,8 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ userName }: DashboardHeaderProps) {
+    console.log(userName);
+
     return (
         <div className="flex items-center justify-between bg-white p-4">
             <div className="flex items-center space-x-3">

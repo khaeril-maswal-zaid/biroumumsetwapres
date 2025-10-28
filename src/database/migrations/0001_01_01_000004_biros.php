@@ -11,21 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
+
+        Schema::create('biros', function (Blueprint $table) {
+            $table->string('kode_biro')->primary();
+            $table->string('nama_biro')->nullable();
+            $table->string('kode_deputi')->nullable(); // FK string
+            $table->timestamps();
+        });
+
         // Schema::create('biros', function (Blueprint $table) {
         //     $table->id();
         //     $table->integer('kode_biro')->unique();
         //     $table->string('nama_biro');
-        //     $table->integer('kode_deputi');
+        //     $table->foreignId('deputi_id')->constrained('deputis')->cascadeOnDelete();
         //     $table->timestamps();
         // });
-
-        Schema::create('biros', function (Blueprint $table) {
-            $table->id();
-            $table->integer('kode_biro')->unique();
-            $table->string('nama_biro');
-            $table->foreignId('deputi_id')->constrained('deputis')->cascadeOnDelete();
-            $table->timestamps();
-        });
     }
 
     /**

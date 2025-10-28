@@ -11,21 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('subbagians', function (Blueprint $table) {
+            $table->string('kode_subbagian')->primary();
+            $table->string('nama_subbagian')->nullable();
+            $table->string('kode_bagian')->nullable(); // FK string
+            $table->timestamps();
+        });
+
         // Schema::create('subbagians', function (Blueprint $table) {
         //     $table->id();
         //     $table->integer('kode_subbagian')->unique();
         //     $table->string('nama_subbagian');
-        //     $table->integer('kode_bagian');
+        //     $table->foreignId('bagian_id')->constrained('bagians')->cascadeOnDelete();
         //     $table->timestamps();
         // });
-
-        Schema::create('subbagians', function (Blueprint $table) {
-            $table->id();
-            $table->integer('kode_subbagian')->unique();
-            $table->string('nama_subbagian');
-            $table->foreignId('bagian_id')->constrained('bagians')->cascadeOnDelete();
-            $table->timestamps();
-        });
     }
 
     /**

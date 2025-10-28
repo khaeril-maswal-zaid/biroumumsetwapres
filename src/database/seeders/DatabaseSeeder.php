@@ -19,12 +19,12 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             // InstansiSeeder::class,
-            RolePermissionSeeder::class,
-            DaftarRuanganSeeder::class,
-            KategoriKerusakanSeeder::class,
-            DaftarAtkSeeder::class,
-            UserSeeder::class,
-            UnitKerjaSeeder::class,
+            // RolePermissionSeeder::class,
+            // DaftarRuanganSeeder::class,
+            // KategoriKerusakanSeeder::class,
+            // DaftarAtkSeeder::class,
+            // UserSeeder::class,
+            // //UnitKerjaSeeder::class, // disabled seeder
         ]);
 
         // User::factory(10)->create();

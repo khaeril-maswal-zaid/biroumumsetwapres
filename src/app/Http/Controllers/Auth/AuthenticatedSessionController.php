@@ -32,17 +32,16 @@ class AuthenticatedSessionController extends Controller
     {
         try {
             $ldapUser = Container::getDefaultConnection()
-                ->query();
-            // ->where('samaccountname', '=', $nip_Sso)
-            // ->first();
-
-            dd($ldapUser);
+                ->query()
+                ->where('samaccountname', '=', $nip_Sso)
+                ->first();
 
             if (!$ldapUser || !Container::getDefaultConnection()->auth()->attempt($ldapUser['distinguishedname'][0], $password_Sso)) {
                 return redirect()->back()->withErrors(['username' => 'Username atau password tidak sesuai']);
             }
 
             Auth::login($user);
+            request()->session()->regenerate();
 
             //After login successfully --------------------
             $userLoged = Auth::user();
@@ -72,7 +71,7 @@ class AuthenticatedSessionController extends Controller
         $use_login = User::where('nip_sso', $request->email)->first();
 
         if ($use_login?->is_ldap) {
-            $this->ldap_authenticate($request->email, $request->password, $use_login);
+            return $this->ldap_authenticate($request->email, $request->password, $use_login);
         }
 
         // $passwordDefault = '1234567';

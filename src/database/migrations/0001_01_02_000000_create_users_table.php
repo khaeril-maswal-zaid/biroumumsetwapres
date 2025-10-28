@@ -11,22 +11,48 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Schema::create('users', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->foreignId('instansi_id')->constrained()->cascadeOnDelete();
+        //     $table->string('name');
+        //     $table->string('nip');
+        //     $table->string('nip_sso');
+        //     $table->string('unit_kerja');
+        //     $table->string('email')->unique();
+        //     $table->timestamp('email_verified_at')->nullable();
+        //     $table->string('password');
+        //     $table->rememberToken();
+        //     $table->timestamps();
+        // });
+
+
+        // Schema::create('users', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->foreignId('master_pegawai_id')->constrained()->cascadeOnDelete();
+        //     $table->string('nip')->unique();
+        //     $table->string('nip_sso')->nullable();
+        //     $table->boolean('is_ldap')->default(false);
+        //     $table->string('email')->nullable()->unique();
+        //     $table->string('password')->nullable();
+        //     $table->rememberToken();
+        //     $table->timestamps();
+        // });
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('master_pegawai_id')->constrained()->cascadeOnDelete();
-            // $table->string('name');
-            $table->string('nip');
+
+            $table->string('nip')->unique();
             $table->string('nip_sso')->nullable();
-            $table->boolean('is_ldap');
-            // $table->string('unit_kerja');
-            // $table->string('email')->unique();
-            // $table->timestamp('email_verified_at')->nullable();
-            // $table->string('password');
+            $table->boolean('is_ldap')->default(false);
+
+            $table->string('email')->nullable()->unique();
+            $table->string('password')->nullable();
+
             $table->rememberToken();
             $table->timestamps();
-
-            // $table->foreign('nip')->references('nip')->on('master_pegawais')->cascadeOnDelete();
         });
+
+
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

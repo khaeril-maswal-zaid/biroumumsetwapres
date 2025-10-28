@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('unit_kerjas', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('instansi_id')->constrained()->cascadeOnDelete();
-            $table->string('name')->unique();
-            $table->string('label');
-            $table->timestamps();
-        });
+        // Schema::create('unit_kerjas', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->foreignId('unit')->constrained()->cascadeOnDelete();
+        //     $table->string('name')->unique();
+        //     $table->string('label');
+        //     $table->timestamps();
+        // });
     }
 
     /**
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('unit_kerjas');
+        // Schema::dropIfExists('unit_kerjas');
     }
 };

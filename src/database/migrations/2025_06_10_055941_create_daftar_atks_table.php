@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('daftar_atks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('instansi_id')->constrained()->cascadeOnDelete();
+            // $table->foreignId('unit')->constrained()->cascadeOnDelete();
+            $table->string('kode_unit')->nullable();
             $table->string('name', 250);
             $table->string('kode_atk', 250)->unique();
             $table->string('category', 250);
-            $table->string('unit', 250);
+            $table->string('satuan', 250);
             $table->timestamps();
         });
     }
