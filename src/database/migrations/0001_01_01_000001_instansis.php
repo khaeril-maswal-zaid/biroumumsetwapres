@@ -13,10 +13,17 @@ return new class extends Migration
     {
         // Schema::create('instansis', function (Blueprint $table) {
         //     $table->id();
-        //     $table->string('nama');
-        //     $table->text('alamat')->nullable();
+        //     $table->integer('kode_instansi')->unique();
+        //     $table->string('nama_instansi');
         //     $table->timestamps();
         // });
+
+        Schema::create('instansis', function (Blueprint $table) {
+            $table->id();
+            $table->integer('kode_instansi')->unique();
+            $table->string('nama_instansi');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -24,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Schema::dropIfExists('instansis');
+        Schema::dropIfExists('instansis');
     }
 };

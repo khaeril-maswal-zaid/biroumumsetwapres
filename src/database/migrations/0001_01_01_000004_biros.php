@@ -11,11 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Schema::create('biros', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->integer('kode_biro')->unique();
+        //     $table->string('nama_biro');
+        //     $table->integer('kode_deputi');
+        //     $table->timestamps();
+        // });
+
         Schema::create('biros', function (Blueprint $table) {
             $table->id();
             $table->integer('kode_biro')->unique();
             $table->string('nama_biro');
-            $table->integer('kode_deputi')->unique();
+            $table->foreignId('deputi_id')->constrained('deputis')->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -25,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('biros');
     }
 };
