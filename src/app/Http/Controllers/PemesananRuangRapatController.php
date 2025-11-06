@@ -23,7 +23,7 @@ class PemesananRuangRapatController extends Controller
     public function index()
     {
         $data = [
-            'bookingRooms' => PemesananRuangRapat::with('ruangans')->with('pemesan')->latest()->paginate(50)
+            'bookingRooms' => PemesananRuangRapat::with('ruangans')->with('pemesan.pegawai')->latest()->paginate(50)
         ];
 
         return Inertia::render('admin/bookings/page', $data);
@@ -31,9 +31,7 @@ class PemesananRuangRapatController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('biroumum/booking/page', [
-            'unitKerja' => UnitKerja::select('label')->pluck('label')->all(),
-        ]);
+        return Inertia::render('biroumum/booking/page');
     }
 
 
@@ -70,8 +68,7 @@ class PemesananRuangRapatController extends Controller
 
         PemesananRuangRapat::create([
             'user_id' => Auth::id(),
-            'instansi_id' => Auth::user()->instansi_id,
-            // 'unit_kerja' => $request->unit_kerja,
+            'kode_unit' => Auth::user()->pegawai?->unit?->kode_unit,
             'tanggal_penggunaan' => $request->date,
             'jam_mulai' => $request->startTime,
             'jam_selesai' => $request->endTime,
@@ -93,7 +90,7 @@ class PemesananRuangRapatController extends Controller
         ]));
 
         return Inertia::render('admin/bookings/review', [
-            'selectedBooking' => $pemesananRuangRapat->load('ruangans', 'pemesan'),
+            'selectedBooking' => $pemesananRuangRapat->load('ruangans', 'pemesan.pegawai.biro'),
         ]);
     }
 
@@ -176,8 +173,8 @@ class PemesananRuangRapatController extends Controller
         $startOfWeek = Carbon::now()->startOfWeek(); // Senin minggu ini (00:00)
 
         $roomSchedules = $reportsData->where('status', 'confirmed')
-            ->where('tanggal_penggunaan', '<', $startOfWeek) // hanya yang sebelum pekan ini
-            ->with(['pemesan', 'ruangans'])
+            // ->where('tanggal_penggunaan', '<', $startOfWeek) // hanya yang sebelum pekan ini
+            ->with(['pemesan.pegawai.biro', 'ruangans'])
             ->get();
 
 

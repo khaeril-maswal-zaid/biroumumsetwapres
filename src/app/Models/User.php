@@ -57,13 +57,18 @@ class User extends Authenticatable implements LdapAuthenticatable
         ];
     }
 
-    public function instansi()
-    {
-        return $this->belongsTo(Instansi::class, 'instansi_id');
-    }
+    // public function instansi()
+    // {
+    //     return $this->belongsTo(Instansi::class, 'instansi_id');
+    // }
 
     public function pegawai()
     {
         return $this->belongsTo(MasterPegawai::class, 'nip', 'nip');
+    }
+
+    public function getKodeUnitAttribute()
+    {
+        return $this->pegawai?->unit?->kode_unit;
     }
 }

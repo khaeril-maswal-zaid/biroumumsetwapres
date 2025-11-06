@@ -11,7 +11,7 @@ class KategoriKerusakan extends Model
 {
     protected $fillable  = [
         'name',
-        'instansi_id',
+        'kode_unit',
         'kode_kerusakan'
     ];
 }

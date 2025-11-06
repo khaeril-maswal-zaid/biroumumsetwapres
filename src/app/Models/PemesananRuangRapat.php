@@ -17,7 +17,7 @@ class PemesananRuangRapat extends Model
 
     protected $fillable = [
         'user_id',
-        'instansi_id',
+        'kode_unit',
         // 'unit_kerja',
         'tanggal_penggunaan',
         'jam_mulai',
@@ -74,7 +74,7 @@ class PemesananRuangRapat extends Model
                 $dayBookings = $weeklyData->get($dayKey, []);
                 $dayBookings[] = [
                     'time' => Carbon::parse($booking->jam_mulai)->format('H:i') . ' - ' . Carbon::parse($booking->jam_selesai)->format('H:i'),
-                    'user' => $booking->pemesan?->name ?? '-',
+                    'user' => $booking->pemesan?->pegawai?->name ?? '-',
                     'purpose' => $booking->deskripsi,
                 ];
                 $weeklyData->put($dayKey, $dayBookings);
@@ -260,7 +260,7 @@ class PemesananRuangRapat extends Model
 
     public function topUsers($limit = 7)
     {
-        $data = $this->with('pemesan')
+        $data = $this->with('pemesan.pegawai.biro')
             ->whereNotNull('user_id')
             ->get()
             ->groupBy('user_id')
@@ -272,12 +272,13 @@ class PemesananRuangRapat extends Model
                 $hours = $items->sum(function ($item) {
                     $start = Carbon::parse($item->jam_mulai);
                     $end = Carbon::parse($item->jam_selesai);
-                    return $end->floatDiffInHours($start);
+                    return abs($start->floatDiffInHours($end));
                 });
 
+
                 return [
-                    'name' => $user->name,
-                    'division' => $user->unit_kerja,
+                    'name' => $user?->pegawai?->name,
+                    'division' => $user?->pegawai?->biro?->nama_biro,
                     'bookings' => $bookings,
                     'hours' => round($hours),
                     'avgDuration' => round($hours / $bookings, 1),
@@ -294,9 +295,10 @@ class PemesananRuangRapat extends Model
     {
         $data = $this
             ->whereNotNull('user_id')
+            ->with('pemesan.pegawai.biro')
             ->get();
 
-        $grouped = $data->groupBy(fn($item) => $item->unit_kerja);
+        $grouped = $data->groupBy(fn($item) => $item->pemesan->pegawai?->biro?->nama_biro);
 
         $result = $grouped->map(function ($items, $division) {
             $bookings = $items->count();
@@ -304,8 +306,9 @@ class PemesananRuangRapat extends Model
             $hours = $items->sum(function ($item) {
                 $start = Carbon::parse($item->jam_mulai);
                 $end = Carbon::parse($item->jam_selesai);
-                return $end->floatDiffInHours($start);
+                return abs($start->floatDiffInHours($end));
             });
+
 
             return [
                 'division' => $division,
@@ -336,8 +339,9 @@ class PemesananRuangRapat extends Model
             $hours = $items->sum(function ($item) {
                 $start = Carbon::parse($item->jam_mulai);
                 $end = Carbon::parse($item->jam_selesai);
-                return $end->floatDiffInHours($start);
+                return abs($start->floatDiffInHours($end));
             });
+
 
             $percent = $totalBookings > 0 ? round(($bookings / $totalBookings) * 100) : 0;
 
@@ -390,7 +394,7 @@ class PemesananRuangRapat extends Model
                 return [
                     'id' => $item->id,
                     'room' => $item->ruangans->nama_ruangan ?? '-',
-                    'user' => $item->pemesan->unit_kerja ?? '-',
+                    'user' => $item->pemesan?->pegawai?->biro?->nama_biro ?? '-',
                     'date' => Carbon::parse($item->tanggal_penggunaan)->isTomorrow()
                         ? 'Besok'
                         : Carbon::parse($item->tanggal_penggunaan)->translatedFormat('d M Y'),
@@ -421,7 +425,6 @@ class PemesananRuangRapat extends Model
             if (Carbon::parse($jamMulai)->gte(Carbon::parse($jamSelesai))) {
                 return [
                     'tersedia' => $result,
-                    'unitKerja' => UnitKerja::select('label')->pluck('label')->all(),
                 ];
             }
 

@@ -13,9 +13,7 @@ return new class extends Migration
     {
         Schema::create('permintaan_atks', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('unit')->constrained()->cascadeOnDelete();
             $table->string('kode_unit')->nullable();
-            // $table->string('unit_kerja', 255);
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->json('daftar_kebutuhan')->nullable();
             $table->string('deskripsi', 255); //from pengadu

@@ -46,13 +46,13 @@ const FormSchema = z.object({
                 name: z.string().min(1),
                 requested: z.coerce.number().min(1, 'Jumlah minimal 1'),
                 approved: z.coerce.number(),
-                unit: z.string().min(1, 'Satuan wajib dipilih'),
+                satuan: z.string().min(1, 'Satuan wajib dipilih'),
             }),
         )
         .min(1, 'Minimal satu barang harus dipilih'),
     justification: z.string().min(1, 'Keterangan tidak boleh kosong'),
     // urgency: z.string().min(1, 'Pilih tingkat urgensi'),
-    // unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
+    // satuan_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
     contact: z.string().min(1, 'Narahubung wajib diisi'),
     memo: z
         .any()
@@ -100,7 +100,7 @@ const urgencyOptions = [
 
 type FormData = z.infer<typeof FormSchema>;
 
-export default function SuppliesRequest({ availableATK, unitKerja }: any) {
+export default function SuppliesRequest({ availableATK }: any) {
     const { auth } = usePage<SharedData>().props;
     const {
         register,
@@ -113,11 +113,10 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
     } = useForm<FormData>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            items: [{ id: '', name: '', requested: 0, approved: 0, unit: '' }],
+            items: [{ id: '', name: '', requested: 0, approved: 0, satuan: '' }],
             justification: '',
             // urgency: '',
             contact: '',
-            // unit_kerja: '',
             memo: null,
         },
     });
@@ -207,7 +206,7 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
             formData.append(`items[${index}][name]`, item.name);
             formData.append(`items[${index}][requested]`, String(item.requested));
             formData.append(`items[${index}][approved]`, String(item.approved));
-            formData.append(`items[${index}][unit]`, item.unit);
+            formData.append(`items[${index}][satuan]`, item.satuan);
         });
 
         router.post(route('permintaanatk.store'), formData, {
@@ -228,7 +227,7 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
     return (
         <>
             <Head title="Permintaan Alat Kantor" />
-            <div className="mx-auto min-h-screen w-full max-w-md bg-gray-50">
+            <div className="mx-auto min-h-screen w-full max-w-md bg-gray-50 pb-24">
                 <div className="space-y-6 p-4 pb-20 md:pb-0">
                     <PageHeader title="Permintaan Alat Tulis Kantor" backUrl="/" />
 
@@ -265,31 +264,12 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
 
                                 <div>
                                     <Label>Unit Kerja</Label>
-                                    <Input readOnly value={auth.user.unit_kerja} className="mt-1 cursor-not-allowed bg-gray-100 text-gray-500" />
+                                    <Input
+                                        readOnly
+                                        value={auth?.user?.biro?.nama_biro ?? '-'}
+                                        className="mt-1 cursor-not-allowed bg-gray-100 text-gray-500"
+                                    />
                                 </div>
-
-                                {/* <div>
-                                    <Label htmlFor="unitkerja">Unit Kerja</Label>
-                                    <Select
-                                        onValueChange={(value) => setValue('unit_kerja', value, { shouldValidate: true })}
-                                        value={watch('unit_kerja')}
-                                    >
-                                        <SelectTrigger className="mt-0.5" id="unitkerja">
-                                            <SelectValue placeholder="Pilih unit kerja" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectLabel>Unit Kerja</SelectLabel>
-                                                {unitKerja.map((item: any, index: any) => (
-                                                    <SelectItem key={index} value={item}>
-                                                        {item}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                    {errors.unit_kerja && <p className="mt-1 text-sm text-red-500">{errors.unit_kerja.message}</p>}
-                                </div> */}
 
                                 {/* Daftar Barang */}
                                 <div>
@@ -326,7 +306,7 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
                                                                                         update(index, {
                                                                                             id: String(atk.id),
                                                                                             name: atk.name,
-                                                                                            unit: atk.unit,
+                                                                                            satuan: atk.satuan,
                                                                                             requested: field.requested || 1,
                                                                                             approved: 0,
                                                                                         });
@@ -343,7 +323,7 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
                                                                                     <div className="flex flex-col">
                                                                                         <span>{atk.name}</span>
                                                                                         <span className="text-xs text-gray-500">
-                                                                                            Satuan: {atk.unit}
+                                                                                            Satuan: {atk.satuan}
                                                                                         </span>
                                                                                     </div>
                                                                                 </CommandItem>
@@ -356,7 +336,7 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
                                                         {/* Hidden RHF fields */}
                                                         <input type="hidden" {...register(`items.${index}.id`)} />
                                                         <input type="hidden" {...register(`items.${index}.name`)} />
-                                                        <input type="hidden" {...register(`items.${index}.unit`)} />
+                                                        <input type="hidden" {...register(`items.${index}.satuan`)} />
                                                     </div>
 
                                                     {/* Jumlah */}
@@ -372,7 +352,7 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
 
                                                     {/* Satuan */}
                                                     <div className="col-span-2">
-                                                        <Input readOnly value={sel.unit} placeholder="Satuan" />
+                                                        <Input readOnly value={sel.satuan} placeholder="Satuan" />
                                                     </div>
 
                                                     {/* Hapus item */}
@@ -391,7 +371,7 @@ export default function SuppliesRequest({ availableATK, unitKerja }: any) {
                                         type="button"
                                         variant="outline"
                                         size="sm"
-                                        onClick={() => append({ id: '', name: '', requested: 0, approved: 0, unit: '' })}
+                                        onClick={() => append({ id: '', name: '', requested: 0, approved: 0, satuan: '' })}
                                         disabled={fields.length >= availableATK.length}
                                         className="mt-2"
                                     >
