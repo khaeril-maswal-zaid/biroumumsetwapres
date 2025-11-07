@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\MasterPegawai;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -30,8 +31,8 @@ class UserSeeder extends Seeder
             // ],
 
             [
-                'name' => 'Admin Ruangan',
-                'email' => 'adminruangan.umum@set.wapresri.go.id',
+                'name' => 'Admin ATK',
+                'email' => 'adminatk.umum@set.wapresri.go.id',
                 'nip' => 'Adm1n165#@',
                 'role' => 'admin_atk'
             ],
@@ -58,16 +59,21 @@ class UserSeeder extends Seeder
 
         foreach ($data as $key => $value) {
             $user =  User::create([
-                'name' => $value['name'],
-                'is_ldap' => 0,
-                'email' => $value['email'],
                 'nip' => $value['nip'],
                 'nip_sso' => $value['nip'],
-                'unit_kerja' => $value['unit_kerja'],
+                'is_ldap' => 0,
+                'email' => $value['email'],
                 'password' => Hash::make($value['nip']),
             ]);
 
             $user->assignRole($value['role'] ?? 'pegawai');
+
+            MasterPegawai::create([
+                'nip' => $value['nip'],
+                'name' => $value['name'],
+                'kode_unit' => '02',
+                'kode_biro' => '0239',
+            ]);
         }
     }
 }

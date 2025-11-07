@@ -27,7 +27,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+
             'email' => fake()->email(),
             'nip' => fake()->email(),
             'unit_kerja' => 'Kendaraan',
@@ -35,42 +35,6 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
-    }
-
-    public function admin()
-    {
-        return $this->state([
-            'name' => 'Admin 1',
-            'email' => 'admin1@setwapres.com',
-            'nip' => 'admin1@setwapres.com',
-            'unit_kerja' => 'Kendaraan',
-        ])->afterCreating(function (User $user) {
-            $user->assignRole('admin');
-        });
-    }
-
-    public function pegawai()
-    {
-        return $this->state([
-            'name' => 'Pegawai 1',
-            'email' => 'pegawai1@setwapres.com',
-            'nip' => 'pegawai1@setwapres.com',
-            'unit_kerja' => 'TUSDM',
-        ])->afterCreating(function (User $user) {
-            $user->assignRole('pegawai');
-        });
-    }
-
-    public function atasan()
-    {
-        return $this->state([
-            'name' => 'Atasan 1',
-            'email' => 'atasan1@setwapres.com',
-            'nip' => 'atasan1@setwapres.com',
-            'unit_kerja' => 'Umum',
-        ])->afterCreating(function (User $user) {
-            $user->assignRole('super_admin');
-        });
     }
 
     /**

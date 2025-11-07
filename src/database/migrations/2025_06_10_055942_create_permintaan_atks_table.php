@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('permintaan_atks', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_unit')->nullable();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('kode_unit')->nullable();
             $table->json('daftar_kebutuhan')->nullable();
             $table->string('deskripsi', 255); //from pengadu
             // $table->enum('urgensi', ['normal', 'mendesak', 'segera']);

@@ -173,7 +173,7 @@ class PemesananRuangRapatController extends Controller
         $startOfWeek = Carbon::now()->startOfWeek(); // Senin minggu ini (00:00)
 
         $roomSchedules = $reportsData->where('status', 'confirmed')
-            // ->where('tanggal_penggunaan', '<', $startOfWeek) // hanya yang sebelum pekan ini
+            ->where('tanggal_penggunaan', '<', $startOfWeek) // hanya yang sebelum pekan ini
             ->with(['pemesan.pegawai.biro', 'ruangans'])
             ->get();
 

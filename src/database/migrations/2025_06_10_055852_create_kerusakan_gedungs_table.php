@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('kerusakan_gedungs', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('kode_unit')->nullable();
             $table->foreignId('kategori_kerusakan_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('lokasi', 255);
             $table->string('item', 255);
             $table->string('deskripsi', 255);  //from pengadu

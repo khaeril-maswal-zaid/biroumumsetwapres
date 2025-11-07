@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('pemesanan_ruang_rapats', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('kode_unit')->nullable();
             $table->date('tanggal_penggunaan');
             $table->time('jam_mulai');
             $table->time('jam_selesai');
             $table->foreignId('daftar_ruangan_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('master_pegawai_id')->nullable()->constrained()->nullOnDelete();
             $table->string('deskripsi', 255); //from pengadu
             $table->string('no_hp', 25);
             $table->enum('status', ['pending', 'confirmed', 'cancelled']);
