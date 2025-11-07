@@ -84,11 +84,12 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
     const filteredRoles = roles.filter(
         (role) => role.name.toLowerCase().includes(searchTerm.toLowerCase()) || role.description.toLowerCase().includes(searchTerm.toLowerCase()),
     );
+    console.log(users);
 
     const filteredUsers = users.filter(
         (user) =>
-            user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             user.nip.toLowerCase().includes(searchTerm.toLowerCase()) ||
             user.role.toLowerCase().includes(searchTerm.toLowerCase()),
     );
