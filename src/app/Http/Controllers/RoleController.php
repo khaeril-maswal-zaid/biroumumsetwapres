@@ -14,18 +14,21 @@ class RoleController extends Controller
 {
     public function index()
     {
-        $users = User::with('roles')
-            ->where('instansi_id', Auth::user()->instansi_id)
+        $kodeUnit = Auth::user()?->pegawai?->kode_unit;
+
+        $users = User::with(['roles', 'pegawai.unit'])
+            ->whereHas('pegawai', fn($q) => $q->where('kode_unit', $kodeUnit))
             ->get()
             ->map(function ($user) {
                 return [
                     'id' => (string) $user->id,
-                    'name' => $user->name,
-                    'nip' => $user->nip,
+                    'name' => $user?->pegawai?->name,
+                    'nip' => $user?->pegawai?->nip,
                     'email' => $user->email,
                     'role' => $user->roles->pluck('name')->first() ?? '-',
                 ];
             });
+
 
         $roles =  Role::with(['permissions'])
             ->withCount('users')
