@@ -22,7 +22,7 @@ const schema = z.object({
 
 export type FormData = z.infer<typeof schema>;
 
-export function FormBooking({ unitKerja }: { unitKerja: any }) {
+export function FormBooking() {
     const { auth } = usePage<SharedData>().props;
 
     const {
@@ -56,7 +56,7 @@ export function FormBooking({ unitKerja }: { unitKerja: any }) {
                         id="unit"
                         type="text"
                         readOnly
-                        value={auth?.user.unit_kerja}
+                        value={auth?.user?.biro?.nama_biro ?? '-'}
                         className="mt-1 cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
                     />
                 </div>

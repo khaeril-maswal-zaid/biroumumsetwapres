@@ -88,7 +88,7 @@ class HomeController extends Controller
                 'code'               => $a->kode_pelaporan,
                 'title'              => count($a->daftar_kebutuhan) . ' item',
                 'ruangans'           => null,
-                'info'               => collect($a->daftar_kebutuhan)->map(fn($item) => "{$item['name']} {$item['requested']} {$item['unit']}")->join(', '),
+                'info'               => collect($a->daftar_kebutuhan)->map(fn($item) => "{$item['name']} {$item['requested']} {$item['satuan']}")->join(', '),
                 'daftarkebutuhan'    => $a->daftar_kebutuhan,
                 'subtitle'           => $a->urgensi,
                 'created_at'         => $a->created_at,
@@ -108,6 +108,7 @@ class HomeController extends Controller
 
     public function index()
     {
+
         $requestHistory = $this->queryRapat
             ->concat($this->queryKerusakan)
             ->concat($this->queryAtk)
@@ -157,7 +158,7 @@ class HomeController extends Controller
                     'id' => $item->id,
                     'type' => 'room',
                     'title' => 'Permintaan ' . ($item->ruangans->nama_ruangan ?? '-'),
-                    'user' => ($item->pemesan->name ?? '-') . ' - ' . ($item->pemesan->unit_kerja ?? '-'),
+                    'user' => ($item->pemesan->pegawai->name ?? '-') . ' - ' . ($item->pemesan->pegawai->biro->nama_biro ?? '-'),
                     'time' => $item->created_at->diffForHumans(),
                     'status' => $item->status,
                     'created_at' => $item->created_at,
@@ -173,7 +174,7 @@ class HomeController extends Controller
                     'id' => $item->id,
                     'type' => 'damage',
                     'title' => 'Kerusakan ' . $item->item . ' di ' . $item->lokasi,
-                    'user' => ($item->pelapor->name ?? '-') . ' - ' . ($item->pelapor->unit_kerja ?? '-'),
+                    'user' => ($item->pelapor->pegawai->name ?? '-') . ' - ' . ($item->pelapor->pegawai->biro->nama_biro ?? '-'),
                     'time' => $item->created_at->diffForHumans(),
                     'status' => $item->status,
                     'created_at' => $item->created_at,
@@ -188,8 +189,8 @@ class HomeController extends Controller
                 return [
                     'id' => $item->id,
                     'type' => 'supplies',
-                    'title' => 'Permintaan ATK - ' . ($item->pemesan->unit_kerja ?? '-'),
-                    'user' => ($item->pemesan->name ?? '-') . ' - ' . ($item->pemesan->unit_kerja ?? '-'),
+                    'title' => 'Permintaan ATK - ' . count($item->daftar_kebutuhan) . ' item',
+                    'user' => ($item->pemesan->pegawai->name ?? '-') . ' - ' . ($item->pemesan->pegawai->biro->nama_biro ?? '-'),
                     'time' => $item->created_at->diffForHumans(),
                     'status' => $item->status,
                     'created_at' => $item->created_at,
@@ -203,6 +204,8 @@ class HomeController extends Controller
             ->sortByDesc('created_at')
             ->take(6) // Ambil hanya 6 data terbaru
             ->values();
+
+
         // Jika pakai inertia
         return Inertia::render('admin/home', [
             'dashboardStats' => $dashboardStats,

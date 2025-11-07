@@ -27,7 +27,6 @@ type KategoriKerusakan = {
 const schema = z.object({
     location: z.string().min(5, 'Lokasi wajib diisi'),
     damageType: z.string().min(3, 'Nama Item wajib diisi'),
-    // unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
     kategori: z.string().min(3, 'Nama Item wajib diisi'),
     description: z.string().min(5, 'Keterangan wajib diisi'),
     // urgency: z.enum(['rendah', 'sedang', 'tinggi'], {
@@ -202,33 +201,10 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
                                             id="name"
                                             type="text"
                                             readOnly
-                                            value={auth?.user.unit_kerja}
+                                            value={auth?.user?.biro?.nama_biro ?? '-'}
                                             className="mt-1 cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500"
                                         />
                                     </div>
-
-                                    {/* <div>
-                                        <Label htmlFor="unitkerja">Unit Kerja</Label>
-                                        <Select
-                                            onValueChange={(value) => setValue('unit_kerja', value, { shouldValidate: true })}
-                                            value={watch('unit_kerja')}
-                                        >
-                                            <SelectTrigger className="mt-0.5" id="unitkerja">
-                                                <SelectValue placeholder="Pilih unit kerja" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    <SelectLabel>Unit Kerja</SelectLabel>
-                                                    {unitKerja.map((item: any, index: any) => (
-                                                        <SelectItem key={index} value={item}>
-                                                            {item}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                        {errors.unit_kerja && <p className="mt-1 text-sm text-red-500">{errors.unit_kerja.message}</p>}
-                                    </div> */}
 
                                     <div>
                                         <Label htmlFor="location">Lokasi Kerusakan</Label>

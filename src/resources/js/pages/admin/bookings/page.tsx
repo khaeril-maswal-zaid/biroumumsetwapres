@@ -69,7 +69,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
     // Filter bookings based on search term and status
     const filteredBookings = bookingRooms.data.filter((booking: any) => {
         const matchesSearch =
-            booking?.pemesan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            booking?.pemesan?.pegawai?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             booking.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()) ||
             booking.kode_booking.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -186,7 +186,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                                     <div className="font-mono text-sm font-medium">{booking.kode_booking}</div>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <div className="font-medium">{booking?.pemesan.name}</div>
+                                                    <div className="font-medium">{booking?.pemesan?.pegawai?.name}</div>
                                                     <div className="text-sm text-gray-500">{booking.unit_kerja}</div>
                                                 </TableCell>
                                                 <TableCell>{booking?.ruangans.nama_ruangan}</TableCell>

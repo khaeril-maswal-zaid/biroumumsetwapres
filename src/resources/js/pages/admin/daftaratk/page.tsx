@@ -27,7 +27,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [editingId, setEditingId] = useState('');
-    const [editData, setEditData] = useState({ name: '', category: '', unit: '' });
+    const [editData, setEditData] = useState({ name: '', category: '', satuan: '' });
 
     // Get unique categories
     const categories = Array.from(new Set(daftarAtk.data.map((item: any) => item.category)));
@@ -46,7 +46,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
         setEditData({
             name: item.name,
             category: item.category,
-            unit: item.unit,
+            satuan: item.satuan,
         });
     };
 
@@ -55,7 +55,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
             onSuccess: () => {
                 // Simulate API call
                 setEditingId('');
-                setEditData({ name: '', category: '', unit: '' });
+                setEditData({ name: '', category: '', satuan: '' });
             },
             onError: (error) => {
                 console.log(error);
@@ -65,7 +65,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
 
     const handleCancelEdit = () => {
         setEditingId('');
-        setEditData({ name: '', category: '', unit: '' });
+        setEditData({ name: '', category: '', satuan: '' });
     };
 
     const handleDelete = (item: any) => {
@@ -181,8 +181,8 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                                 <TableCell>
                                                     {editingId === item.id ? (
                                                         <Select
-                                                            value={editData.unit}
-                                                            onValueChange={(value) => setEditData({ ...editData, unit: value })}
+                                                            value={editData.satuan}
+                                                            onValueChange={(value) => setEditData({ ...editData, satuan: value })}
                                                         >
                                                             <SelectTrigger className="w-full">
                                                                 <SelectValue />
@@ -197,7 +197,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                                             </SelectContent>
                                                         </Select>
                                                     ) : (
-                                                        <span className="text-sm text-gray-600">{item.unit}</span>
+                                                        <span className="text-sm text-gray-600">{item.satuan}</span>
                                                     )}
                                                 </TableCell>
                                                 <TableCell className="text-right">

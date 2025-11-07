@@ -12,10 +12,17 @@ class InstansiScope implements Scope
     /**
      * Apply the scope to a given Eloquent query builder.
      */
+    // public function apply(Builder $builder, Model $model): void
+    // {
+    //     if (Auth::check()) {
+    //         $builder->where('instansi_id', Auth::user()->instansi_id);
+    //     }
+    // }
+
     public function apply(Builder $builder, Model $model): void
     {
-        if (Auth::check()) {
-            $builder->where('instansi_id', Auth::user()->instansi_id);
+        if (Auth::check() && Auth::user()->kode_unit) {
+            $builder->where('kode_unit', Auth::user()->kode_unit);
         }
     }
 }

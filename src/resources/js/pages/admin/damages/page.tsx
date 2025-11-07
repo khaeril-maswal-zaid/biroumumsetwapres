@@ -61,7 +61,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
     // Filter damages based on search term and status
     const filteredDamages = kerusakan.data.filter((damage: any) => {
         const matchesSearch =
-            damage?.pelapor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            damage?.pelapor?.pegawai?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             damage.lokasi.toLowerCase().includes(searchTerm.toLowerCase()) ||
             damage.kode_pelaporan.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -246,7 +246,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                 <TableCell>{index + 1}</TableCell>
                                                 <TableCell className="font-mono text-sm font-medium">{damage.kode_pelaporan}</TableCell>
                                                 <TableCell>
-                                                    <div className="font-medium">{damage?.pelapor.name}</div>
+                                                    <div className="font-medium">{damage?.pelapor?.pegawai?.name}</div>
                                                     <div className="text-sm text-gray-500">{damage.unit_kerja}</div>
                                                 </TableCell>
                                                 <TableCell>{damage.lokasi}</TableCell>
@@ -317,8 +317,8 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                         <div className="flex items-start gap-3">
                                             <Users className="my-auto h-5 w-5 text-blue-600" />
                                             <div>
-                                                <p className="font-medium text-gray-900">{selectedDamage?.pelapor?.name}</p>
-                                                <p className="text-xs text-gray-600">{selectedDamage.unit_kerja}</p>
+                                                <p className="font-medium text-gray-900">{selectedDamage?.pelapor?.pegawai?.name}</p>
+                                                <p className="text-xs text-gray-600">{selectedDamage?.pelapor?.pegawai?.biro?.nama_biro}</p>
                                                 <p className="text-xs text-gray-500">{selectedDamage.no_hp}</p>
                                             </div>
                                         </div>

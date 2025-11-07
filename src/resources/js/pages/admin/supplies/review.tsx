@@ -183,8 +183,8 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
                                         <div className="flex items-start gap-3">
                                             <User className="my-auto h-5 w-5 text-blue-600" />
                                             <div>
-                                                <p className="font-medium text-gray-900">{selectedRequest?.pemesan?.name}</p>
-                                                <p className="text-xs text-gray-600">{selectedRequest.unit_kerja}</p>
+                                                <p className="font-medium text-gray-900">{selectedRequest?.pemesan?.pegawai?.name}</p>
+                                                <p className="text-xs text-gray-600">{selectedRequest?.pemesan?.pegawai?.biro?.nama_biro}</p>
                                                 <p className="text-xs text-gray-500">{selectedRequest.no_hp}</p>
                                             </div>
                                         </div>
@@ -235,12 +235,12 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
                                                             <div className="flex items-center gap-4 text-sm text-gray-600">
                                                                 <span>
                                                                     Diminta: {item.requested}{' '}
-                                                                    {item.unit && item.unit.charAt(0).toUpperCase() + item.unit.slice(1)}
+                                                                    {item.satuan && item.satuan.charAt(0).toUpperCase() + item.satuan.slice(1)}
                                                                 </span>
                                                                 <span>•</span>
                                                                 <span>
                                                                     Disetujui: {approvedQty}{' '}
-                                                                    {item.unit && item.unit.charAt(0).toUpperCase() + item.unit.slice(1)}
+                                                                    {item.satuan && item.satuan.charAt(0).toUpperCase() + item.satuan.slice(1)}
                                                                 </span>
                                                             </div>
                                                             {percentage > 0 && percentage < 100 && (
@@ -273,7 +273,7 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
                                                                     }
                                                                     className="w-20"
                                                                 />
-                                                                <span className="text-sm text-gray-500">{item.unit}</span>
+                                                                <span className="text-sm text-gray-500">{item.satuan}</span>
                                                             </div>
                                                         )}
                                                     </div>

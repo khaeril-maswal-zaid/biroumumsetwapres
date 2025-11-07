@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { Calendar, ChevronLeft, ChevronRight, Clock, Filter, Hash, Mail, MapPin, Phone, User, Users } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Clock, Filter, Hash, House, MapPin, Phone, User, Users } from 'lucide-react';
 import { useState } from 'react';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
@@ -37,14 +37,6 @@ const getCurrentDay = () => {
     const dayMap = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     return dayMap[today];
 };
-
-const rooms = [
-    { value: 'all', label: 'Semua Ruangan' },
-    { value: 'Meeting A', label: 'Meeting A' },
-    { value: 'Meeting B', label: 'Meeting B' },
-    { value: 'Training', label: 'Training' },
-    { value: 'Seminar', label: 'Seminar' },
-];
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -449,7 +441,8 @@ export default function BookingReports({
                                         </Button>
 
                                         <CardTitle className="text-xl">
-                                            {getMonthName(currentDate)} {currentDate.getFullYear()}
+                                            {getMonthName(currentDate)}
+                                            {currentDate.getFullYear()}
                                         </CardTitle>
 
                                         <Button variant="outline" size="icon" onClick={() => navigateMonth(1)}>
@@ -597,11 +590,11 @@ export default function BookingReports({
                                                         </div>
                                                         <div className="flex items-center gap-2 text-muted-foreground">
                                                             <User className="h-4 w-4" />
-                                                            <span>{selectedSchedule.pemesan?.name}</span>
+                                                            <span>{selectedSchedule.pemesan?.pegawai?.name}</span>
                                                         </div>
                                                         <div className="flex items-center gap-2 text-muted-foreground">
-                                                            <Mail className="h-4 w-4" />
-                                                            <span>{selectedSchedule.pemesan?.email}</span>
+                                                            <House className="h-4 w-4" />
+                                                            <span>{selectedSchedule.pemesan?.pegawai?.biro?.nama_biro}</span>
                                                         </div>
                                                         <div className="flex items-center gap-2 text-muted-foreground">
                                                             <Phone className="h-4 w-4" />
@@ -635,7 +628,7 @@ export default function BookingReports({
                                                         {index + 1}
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium">{user.name}</p>
+                                                        <p className="font-medium">{user.user}</p>
                                                         <p className="text-sm text-gray-500">{user.division}</p>
                                                     </div>
                                                 </div>

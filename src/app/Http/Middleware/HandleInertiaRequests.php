@@ -42,9 +42,10 @@ class HandleInertiaRequests extends Middleware
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
         if (Auth::check()) {
-            $user = Auth::user();
+            $user = Auth::user()->load('pegawai.biro');
             $permissions = $user->getAllPermissions()->pluck('name')->toArray();
         } else {
+            $user = null;
             $permissions = [];
         }
 
@@ -52,10 +53,6 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
-            'auth' => [
-                'user' => $request->user()?->pegawai,
-                'permissions' => $permissions,
-            ],
             'ziggy' => fn(): array => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
@@ -69,6 +66,21 @@ class HandleInertiaRequests extends Middleware
                 'availableRoom' => fn() => $request->session()->get('availableRoom'),
             ],
 
+            'auth' => [
+                'user' => $user ? [
+                    'nip' => $user->pegawai->nip ?? null,
+                    'name' => $user->pegawai->name ?? null,
+                    'unit' => $user->pegawai->unit ? [
+                        'kode_unit' => $user->pegawai->unit->kode_unit,
+                        'nama_unit' => $user->pegawai->unit->nama_unit,
+                    ] : null,
+                    'biro' => $user->pegawai->biro ? [
+                        'kode_biro' => $user->pegawai->biro->kode_biro,
+                        'nama_biro' => $user->pegawai->biro->nama_biro,
+                    ] : null,
+                ] : null,
+                'permissions' => $permissions,
+            ],
         ];
     }
 }

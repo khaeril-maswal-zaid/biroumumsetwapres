@@ -54,28 +54,28 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
         setAdminMessage('');
     };
 
-    // const handleSubmit = async (bookingCode: string) => {
-    //     setIsProcessing(true);
+    const handleSubmitStatus = async (bookingCode: string) => {
+        setIsProcessing(true);
 
-    //     router.patch(
-    //         route('ruangrapat.status', bookingCode),
-    //         {
-    //             action: actionType,
-    //             message: adminMessage,
-    //         },
-    //         {
-    //             preserveScroll: true,
-    //             onSuccess: () => {
-    //                 setIsProcessing(false);
-    //                 setAdminMessage('');
-    //                 setActionType(null);
-    //             },
-    //             onError: (errors) => {
-    //                 console.log('Validation Errors: ', errors);
-    //             },
-    //         },
-    //     );
-    // };
+        router.patch(
+            route('ruangrapat.status', bookingCode),
+            {
+                action: actionType,
+                message: adminMessage,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setIsProcessing(false);
+                    setAdminMessage('');
+                    setActionType(null);
+                },
+                onError: (errors) => {
+                    console.log('Validation Errors: ', errors);
+                },
+            },
+        );
+    };
 
     const getStatusBadge = (status: string) => {
         switch (status) {
@@ -239,8 +239,8 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                         <div className="flex items-start gap-3">
                                             <Users className="my-auto h-5 w-5 text-blue-600" />
                                             <div>
-                                                <p className="font-medium text-gray-900">{selectedBooking?.pemesan.name}</p>
-                                                <p className="text-xs text-gray-600">{selectedBooking.unit_kerja}</p>
+                                                <p className="font-medium text-gray-900">{selectedBooking?.pemesan?.pegawai?.name}</p>
+                                                <p className="text-xs text-gray-600">{selectedBooking?.pemesan?.pegawai?.biro?.nama_biro}</p>
                                                 <p className="text-xs text-gray-500">{selectedBooking.no_hp}</p>
                                             </div>
                                         </div>
@@ -403,9 +403,9 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                                     <Button
                                                         onClick={() => {
                                                             if (actionType === 'confirmed') {
-                                                                handleSubmit(selectedBooking.kode_booking);
+                                                                handleSubmitStatus(selectedBooking.kode_booking);
                                                             } else {
-                                                                handleSubmit(selectedBooking.kode_booking);
+                                                                handleSubmitStatus(selectedBooking.kode_booking);
                                                             }
                                                         }}
                                                         disabled={isProcessing || (actionType === 'cancelled' && !adminMessage.trim())}
@@ -441,15 +441,6 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                         </DialogHeader>
 
                         <div className="space-y-4">
-                            {/* <FormProvider {...methods}>
-                                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                                    <FormBooking unitKerja={[]} initialData={selectedBooking} />
-                                    <Button type="submit" className="w-full">
-                                        Update Pemesanan
-                                    </Button>
-                                </form>
-                            </FormProvider> */}
-
                             <FormProvider {...methods}>
                                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                                     <FormBooking unitKerja={[]} />

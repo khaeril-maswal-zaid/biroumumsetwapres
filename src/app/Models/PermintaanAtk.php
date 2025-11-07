@@ -21,11 +21,9 @@ class PermintaanAtk extends Model
 
     protected $fillable = [
         'user_id',
-        'instansi_id',
-        // 'unit_kerja',
+        'kode_unit',
         'daftar_kebutuhan',
         'deskripsi',
-        // 'urgensi',
         'no_hp',
         'memo',
         'kode_pelaporan',
@@ -151,7 +149,7 @@ class PermintaanAtk extends Model
 
     public function topUsersStats()
     {
-        $data = $this->with('pemesan')
+        $data = $this->with('pemesan.pegawai.biro')
             ->get()
             ->groupBy('user_id')
             ->map(function ($rows, $userId) {
@@ -161,8 +159,8 @@ class PermintaanAtk extends Model
                 $rate = $requests > 0 ? round(($approved / $requests) * 100) : 0;
 
                 return [
-                    'name' => $user?->pemesan->name ?? 'Tidak diketahui',
-                    'division' => $user?->pemesan->unit_kerja ?? '-',
+                    'name' => $user?->pemesan->pegawai->name ?? 'Tidak diketahui',
+                    'division' => $user?->pemesan->pegawai->biro->nama_biro ?? '-',
                     'requests' => $requests,
                     'approved' => $approved,
                     'rate' => $rate,
@@ -177,10 +175,10 @@ class PermintaanAtk extends Model
 
     public function divisionStats()
     {
-        $data = $this->with('pemesan')
+        $data = $this->with('pemesan.pegawai.biro')
             ->get()
-            ->filter(fn($row) => $row->pemesan && $row->pemesan->unit_kerja) // filter yang punya divisi
-            ->groupBy(fn($row) => $row->pemesan->unit_kerja)
+            ->filter(fn($row) => $row->pemesan && $row->pemesan->pegawai->biro->nama_biro) // filter yang punya divisi
+            ->groupBy(fn($row) => $row->pemesan->pegawai->biro->nama_biro)
             ->map(function ($rows, $division) {
                 $requests = $rows->count();
                 $approved = $rows->where('status', 'approved')->count();

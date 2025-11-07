@@ -13,13 +13,13 @@ class Biro extends Model
 
     protected $fillable = ['kode_biro', 'nama_biro', 'kode_deputi'];
 
-    public function deputi()
-    {
-        return $this->belongsTo(Deputi::class, 'kode_deputi', 'kode_deputi');
-    }
+    // public function deputi()
+    // {
+    //     return $this->belongsTo(Deputi::class, 'kode_deputi', 'kode_deputi');
+    // }
 
-    public function bagians()
-    {
-        return $this->hasMany(Bagian::class, 'kode_biro', 'kode_biro');
-    }
+    // public function bagians()
+    // {
+    //     return $this->hasMany(Bagian::class, 'kode_biro', 'kode_biro');
+    // }
 }

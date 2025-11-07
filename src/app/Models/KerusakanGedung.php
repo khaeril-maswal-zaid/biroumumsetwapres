@@ -23,8 +23,7 @@ class KerusakanGedung extends Model
 
     protected $fillable = [
         'user_id',
-        'instansi_id',
-        // 'unit_kerja',
+        'kode_unit',
         'kategori_kerusakan_id',
         'lokasi',
         'item',
@@ -150,14 +149,14 @@ class KerusakanGedung extends Model
 
     public function reporterStats()
     {
-        $topReporters = $this->with('pelapor')
+        $topReporters = $this->with('pelapor.pegawai.biro')
             ->get()
             ->groupBy('user_id')
             ->map(function ($group) {
                 $user = $group->first();
                 return [
-                    'name' => $user?->pelapor->name ?? 'Tidak Diketahui',
-                    'division' => $user?->pelapor->unit_kerja ?? '-',
+                    'name' => $user?->pelapor->pegawai->name ?? 'Tidak Diketahui',
+                    'division' => $user?->pelapor->pegawai->biro->nama_biro ?? '-',
                     'reports' => $group->count(),
                 ];
             })
@@ -165,9 +164,9 @@ class KerusakanGedung extends Model
             ->take(5)
             ->values();
 
-        $divisionReports = $this->with('pelapor')
+        $divisionReports = $this->with('pelapor.pegawai.biro')
             ->get()
-            ->groupBy(fn($item) => $item?->pelapor->unit_kerja ?? 'Tidak Diketahui')
+            ->groupBy(fn($item) => $item?->pelapor->pegawai->biro->nama_biro  ?? 'Tidak Diketahui')
             ->map(function ($group, $division) {
                 return [
                     'division' => $division,

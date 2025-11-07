@@ -79,7 +79,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
     // Filter supplies based on search term and status
     const filteredSupplies = permintaanAtk.data.filter((supply: any) => {
         const matchesSearch =
-            supply?.pemesan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            supply?.pemesan?.pegawai?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             supply?.kode_pelaporan.toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesStatus = statusFilter === 'all' || supply.status === statusFilter;
@@ -262,7 +262,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                                     <div className="font-mono text-sm font-medium">{supply.kode_pelaporan}</div>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <div className="font-medium">{supply?.pemesan.name}</div>
+                                                    <div className="font-medium">{supply?.pemesan?.pegawai?.name}</div>
                                                     <div className="text-sm text-gray-500">{supply.unit_kerja}</div>
                                                 </TableCell>
                                                 <TableCell>

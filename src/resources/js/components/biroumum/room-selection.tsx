@@ -50,8 +50,6 @@ const facilityOptions = [
 export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, selectedStartTime, selectedEndTime }: RoomSelectionProps) {
     const { flash } = usePage<{ flash: { availableRoom?: Room[] } }>().props;
 
-    console.log(selectedRoom, onRoomChange, selectedDate, selectedStartTime, selectedEndTime);
-
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedRoomDetail, setSelectedRoomDetail] = useState<Room | null>(null);

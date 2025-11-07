@@ -167,8 +167,6 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
         setProcessLogs(selectedDamage?.log_progres ?? []);
     }, [selectedDamage?.log_progres]);
 
-    console.log(actionType, selectedDamage.status);
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Detal Laporan Kerusakan Gedung" />
@@ -213,8 +211,8 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                     <div className="flex items-start gap-3">
                                         <Users className="my-auto h-5 w-5 text-blue-600" />
                                         <div>
-                                            <p className="font-medium text-gray-900">{selectedDamage?.pelapor?.name}</p>
-                                            <p className="text-xs text-gray-600">{selectedDamage.unit_kerja}</p>
+                                            <p className="font-medium text-gray-900">{selectedDamage?.pelapor?.pegawai?.name}</p>
+                                            <p className="text-xs text-gray-600">{selectedDamage?.pelapor?.pegawai?.biro?.nama_biro}</p>
                                             <p className="text-xs text-gray-500">{selectedDamage.no_hp}</p>
                                         </div>
                                     </div>

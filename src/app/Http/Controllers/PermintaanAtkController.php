@@ -20,7 +20,7 @@ class PermintaanAtkController extends Controller
     public function index()
     {
         $data = [
-            'permintaanAtk' => PermintaanAtk::with('pemesan')->latest()->paginate(50)
+            'permintaanAtk' => PermintaanAtk::with('pemesan.pegawai')->latest()->paginate(50)
         ];
 
         return Inertia::render('admin/supplies/page', $data);
@@ -32,8 +32,7 @@ class PermintaanAtkController extends Controller
     public function create()
     {
         return Inertia::render('biroumum/supplies/page', [
-            'availableATK' => DaftarAtk::select(['id', 'name', 'unit'])->get(),
-            'unitKerja' => UnitKerja::select('label')->pluck('label')->all(),
+            'availableATK' => DaftarAtk::select(['id', 'name', 'unit', 'satuan'])->get(),
         ]);
     }
 
@@ -47,8 +46,7 @@ class PermintaanAtkController extends Controller
 
         PermintaanAtk::create([
             'user_id' => Auth::id(),
-            'instansi_id' => Auth::user()->instansi_id,
-            // 'unit_kerja' => $request->unit_kerja,
+            'kode_unit' => Auth::user()->pegawai?->unit?->kode_unit,
             'daftar_kebutuhan' => $request->items ?? [],
             'deskripsi' => $request->justification,
             // 'urgensi' => $request->urgency,
@@ -69,7 +67,7 @@ class PermintaanAtkController extends Controller
         ]));
 
         return Inertia::render('admin/supplies/review', [
-            'selectedRequest' => $permintaanAtk->load('pemesan')
+            'selectedRequest' => $permintaanAtk->load('pemesan.pegawai.biro')
         ]);
     }
 

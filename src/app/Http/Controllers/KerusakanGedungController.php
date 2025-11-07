@@ -20,7 +20,7 @@ class KerusakanGedungController extends Controller
     public function index()
     {
         $data = [
-            'kerusakan' => KerusakanGedung::with('pelapor')->with('kategori')->latest()->paginate(50)
+            'kerusakan' => KerusakanGedung::with('pelapor.pegawai')->with('kategori')->latest()->paginate(50)
         ];
 
         return Inertia::render('admin/damages/page', $data);
@@ -34,7 +34,6 @@ class KerusakanGedungController extends Controller
 
         return Inertia::render('biroumum/damage/page', [
             'kategoriKerusakan' => KategoriKerusakan::all(),
-            'unitKerja' => UnitKerja::select('label')->pluck('label')->all(),
         ]);
     }
 
@@ -46,15 +45,14 @@ class KerusakanGedungController extends Controller
         $photoPaths = [];
 
         foreach ($request->photos as $photo) {
-            $photoPaths[] = $photo->store('image/kerusakan-gedung', 'public');
+            $photoPaths[] = $photo->store('images/kerusakan-gedung', 'public');
         }
 
         $idKat  = KategoriKerusakan::where('kode_kerusakan', $request->kategori)->value('id');
 
         KerusakanGedung::create([
             'user_id' => Auth::id(),
-            'instansi_id' => Auth::user()->instansi_id,
-            // 'unit_kerja' => $request->unit_kerja,
+            'kode_unit' => Auth::user()->pegawai?->unit?->kode_unit,
             'kategori_kerusakan_id' => $idKat,
             'lokasi' => $request->location,
             'item' => $request->damageType,
@@ -77,7 +75,7 @@ class KerusakanGedungController extends Controller
         ]));
 
         return Inertia::render('admin/damages/review', [
-            'selectedDamage' => $kerusakanGedung->load('kategori', 'pelapor', 'logProgres'),
+            'selectedDamage' => $kerusakanGedung->load('kategori', 'pelapor.pegawai.biro', 'logProgres'),
         ]);
     }
 
