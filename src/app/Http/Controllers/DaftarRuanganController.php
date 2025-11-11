@@ -33,7 +33,7 @@ class DaftarRuanganController extends Controller
         $path = $request->photo->store('image/rooms', 'public');
 
         DaftarRuangan::create([
-            'instansi_id' => Auth::user()->instansi_id,
+            'kode_unit' => Auth::user()->pegawai?->unit?->kode_unit,
             'nama_ruangan' => $request->nama_ruangan,
             'kode_ruangan' => $request->kode_ruangan,
             'lokasi' => $request->lokasi,

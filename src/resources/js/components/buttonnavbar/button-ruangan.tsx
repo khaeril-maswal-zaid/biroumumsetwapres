@@ -7,25 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BreadcrumbItem } from '@/types';
 import { router } from '@inertiajs/react';
-import {
-    BookOpen,
-    Camera,
-    Car,
-    Computer,
-    Edit,
-    Folders,
-    Mic,
-    PenSquare,
-    Plus,
-    Projector,
-    Shield,
-    Snowflake,
-    Sofa,
-    Speaker,
-    Table,
-    Tv,
-    Wifi,
-} from 'lucide-react';
+import { Camera, Computer, Edit, Mic, Plus, Snowflake, Speaker, Tv, Wifi } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
 
@@ -50,22 +32,13 @@ interface Room {
 
 const facilityOptions = [
     { id: 'wifi', label: 'WiFi', icon: Wifi },
-    { id: 'projector', label: 'Proyektor', icon: Projector },
-    { id: 'lcd-proyektor', label: 'LCD Proyektor', icon: Projector },
     { id: 'tv-led', label: 'TV LED', icon: Tv },
     { id: 'sound-system', label: 'Sound System', icon: Speaker },
     { id: 'kamera-cctv', label: 'Kamera CCTV', icon: Camera },
     { id: 'mikrofon', label: 'Mikrofon', icon: Mic },
-    { id: 'meja-bundar', label: 'Meja Bundar', icon: Table },
-    { id: 'papan-tulis', label: 'Papan Tulis', icon: PenSquare },
     { id: 'whiteboard', label: 'Whiteboard', icon: Edit },
     { id: 'ac', label: 'AC', icon: Snowflake },
-    { id: 'parking', label: 'Parkir', icon: Car },
     { id: 'komputer', label: 'Komputer', icon: Computer },
-    { id: 'sofa', label: 'Sofa', icon: Sofa },
-    { id: 'majalah', label: 'Majalah', icon: BookOpen },
-    { id: 'rak-arsip', label: 'Rak Arsip', icon: Folders },
-    { id: 'lemari-besi', label: 'Lemari Besi', icon: Shield },
 ];
 
 export default function ButtonRooms() {

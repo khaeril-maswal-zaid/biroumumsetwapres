@@ -15,6 +15,6 @@ class DaftarAtk extends Model
         'instansi_id',
         'kode_atk',
         'category',
-        'unit',
+        'satuan',
     ];
 }

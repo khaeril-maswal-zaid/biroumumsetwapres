@@ -17,7 +17,7 @@ export default function ButtonAtk() {
         kode_atk: '',
         name: '',
         category: '',
-        unit: '',
+        satuan: '',
     });
 
     const handleAdd = () => {
@@ -25,7 +25,7 @@ export default function ButtonAtk() {
             kode_atk: '',
             name: '',
             category: '',
-            unit: '',
+            satuan: '',
         });
         setIsAddOpen(true);
     };
@@ -39,7 +39,7 @@ export default function ButtonAtk() {
                     kode_atk: '',
                     name: '',
                     category: '',
-                    unit: '',
+                    satuan: '',
                 });
             },
             onError: (er) => {
@@ -103,8 +103,8 @@ export default function ButtonAtk() {
                         </div>
 
                         <div>
-                            <Label htmlFor="unit">Satuan</Label>
-                            <Select value={formData.unit} onValueChange={(value) => setFormData({ ...formData, unit: value })}>
+                            <Label htmlFor="satuan">Satuan</Label>
+                            <Select value={formData.satuan} onValueChange={(value) => setFormData({ ...formData, satuan: value })}>
                                 <SelectTrigger className="mt-1">
                                     <SelectValue placeholder="Pilih satuan" />
                                 </SelectTrigger>

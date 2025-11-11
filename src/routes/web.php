@@ -55,7 +55,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Permintaan Kendaraan (create_vehicle_request)
     Route::get('/permintaan-kendaraan', [PermintaanKendaraanController::class, 'create'])
-        ->name('permintaankendaraan.create')->middleware('permission:create_vehicle_request');
+        ->name('permintaankendaraan.create');
+    // ->middleware('permission:create_vehicle_request');
 
 
 

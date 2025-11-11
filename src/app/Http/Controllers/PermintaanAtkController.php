@@ -32,7 +32,7 @@ class PermintaanAtkController extends Controller
     public function create()
     {
         return Inertia::render('biroumum/supplies/page', [
-            'availableATK' => DaftarAtk::select(['id', 'name', 'unit', 'satuan'])->get(),
+            'availableATK' => DaftarAtk::select(['id', 'name', 'category', 'satuan'])->get(),
         ]);
     }
 

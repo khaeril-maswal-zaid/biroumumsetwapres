@@ -36,14 +36,12 @@ class DaftarAtkController extends Controller
             'kode_atk' => 'required|string|max:250|unique:daftar_atks,kode_atk',
             'name' => 'required|string|max:250',
             'category' => 'required|string|max:250',
-            'unit' => 'required|string|max:250',
+            'satuan' => 'required|string|max:250',
         ]);
 
-        $query = array_merge($validated, [
-            'instansi_id' => Auth::user()->instansi_id
-        ]);
+        $validated['kode_unit'] = Auth::user()->pegawai?->unit?->kode_unit;
 
-        DaftarAtk::create($query);
+        DaftarAtk::create($validated);
     }
 
     public function destroy(DaftarAtk $daftarAtk)

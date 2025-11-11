@@ -19,10 +19,11 @@ class KategoriKerusakanController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'instansi_id' => Auth::user()->instansi_id,
             'name' => 'required|string|max:250',
             'kode_kerusakan' => 'required|string|max:50|unique:kategori_kerusakans,kode_kerusakan',
         ]);
+
+        $validated['kode_unit'] = Auth::user()->pegawai?->unit?->kode_unit;
 
         KategoriKerusakan::create($validated);
     }

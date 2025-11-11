@@ -23,7 +23,7 @@ class HomeController extends Controller
         $user = Auth::id();
 
         // Ambil Booking Rapat + relasi pemesan dan ruangans
-        $this->queryRapat = PemesananRuangRapat::with(['pemesan', 'ruangans'])
+        $this->queryRapat = PemesananRuangRapat::with(['pemesan.pegawai.biro', 'ruangans'])
             ->orderByDesc('created_at')
             ->get()
             ->where('user_id', $user)
@@ -50,7 +50,7 @@ class HomeController extends Controller
             ]);
 
         // Ambil data kerusakan + relasi pemesan
-        $this->queryKerusakan = KerusakanGedung::with(['pelapor', 'kategori'])
+        $this->queryKerusakan = KerusakanGedung::with(['pelapor.pegawai.biro', 'kategori'])
             ->orderByDesc('created_at')
             ->get()
             ->where('user_id', $user)
@@ -77,7 +77,7 @@ class HomeController extends Controller
             ]);
 
         // Ambil data permintaan ATK + relasi pemesan
-        $this->queryAtk = PermintaanAtk::with('pemesan')
+        $this->queryAtk = PermintaanAtk::with('pemesan.pegawai.biro')
             ->orderByDesc('created_at')
             ->get()
             ->where('user_id', $user)

@@ -286,8 +286,8 @@ export default function RequestHistory({ requestHistory }: any) {
                                         <div className="flex items-start gap-3">
                                             <User className="my-auto h-5 w-5 text-blue-600" />
                                             <div>
-                                                <p className="font-medium text-gray-900">{selectedRequest.user.name}</p>
-                                                <p className="text-xs text-gray-600">{selectedRequest?.unit_kerja}</p>
+                                                <p className="font-medium text-gray-900">{selectedRequest?.user?.pegawai?.name}</p>
+                                                <p className="text-xs text-gray-600">{selectedRequest?.user?.pegawai?.biro?.nama_biro}</p>
                                                 <p className="text-xs text-gray-500">{selectedRequest.no_hp}</p>
                                             </div>
                                         </div>
@@ -322,25 +322,25 @@ export default function RequestHistory({ requestHistory }: any) {
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center gap-3">
+                                                {/* <div className="flex items-center gap-3">
                                                     <AlertCircle className="h-5 w-5 text-orange-600" />
                                                     <div>
                                                         <p className="font-medium text-gray-900">Tingkat Urgensi</p>
                                                         {getUrgencyBadge(selectedRequest.subtitle)}
                                                     </div>
-                                                </div>
+                                                </div> */}
                                             </>
                                         )}
 
                                         {selectedRequest.id === 'supplies' && (
                                             <>
-                                                <div className="flex items-center gap-3">
+                                                {/* <div className="flex items-center gap-3">
                                                     <AlertCircle className="h-5 w-5 text-purple-600" />
                                                     <div>
                                                         <p className="font-medium text-gray-900">Tingkat Urgensi</p>
                                                         {getUrgencyBadge(selectedRequest.subtitle)}
                                                     </div>
-                                                </div>
+                                                </div> */}
 
                                                 <div className="flex items-center gap-3">
                                                     <Package className="h-5 w-5 text-green-600" />

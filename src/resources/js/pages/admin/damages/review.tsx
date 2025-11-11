@@ -268,11 +268,11 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                                 key={index}
                                                 className="relative aspect-video cursor-pointer overflow-hidden rounded-lg border transition-colors hover:border-blue-300"
                                                 onClick={() =>
-                                                    handleViewImage(`/placeholder.svg?height=300&width=400&query=damage report photo ${index + 1}`)
+                                                    handleViewImage(`${photo}?height=300&width=400&query=damage report photo ${index + 1}`)
                                                 }
                                             >
                                                 <img
-                                                    src={`/damage-report-photo-.jpg?height=300&width=400&query=damage report photo ${index + 1}`}
+                                                    src={`/storage/${photo}?height=300&width=400&query=damage report photo ${index + 1}`}
                                                     alt={`Foto kerusakan ${index + 1}`}
                                                     className="h-full w-full object-cover"
                                                 />
@@ -590,7 +590,11 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                     </DialogHeader>
                     {selectedImage && (
                         <div className="relative aspect-video w-full">
-                            <img src={selectedImage || '/placeholder.svg'} alt="Foto kerusakan" className="h-full w-full object-contain" />
+                            <img
+                                src={`/storage/${selectedImage}` || '/placeholder.svg'}
+                                alt="Foto kerusakan"
+                                className="h-full w-full object-contain"
+                            />
                         </div>
                     )}
                     <DialogFooter>
