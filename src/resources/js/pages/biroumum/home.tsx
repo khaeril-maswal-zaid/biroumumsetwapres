@@ -13,7 +13,6 @@ import { useEffect } from 'react';
 
 export default function Dashboard({ requestHistory }: any) {
     const { auth } = usePage<SharedData>().props;
-    console.log(auth);
 
     useEffect(() => {
         const interval = setInterval(() => {

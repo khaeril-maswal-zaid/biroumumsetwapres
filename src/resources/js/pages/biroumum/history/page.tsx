@@ -103,8 +103,8 @@ export default function RequestHistory({ requestHistory }: any) {
                 return <Badge className="mb-1 bg-green-100 text-green-800 hover:bg-green-200">Selesai</Badge>;
             case 'confirmed':
                 return <Badge className="mb-1 bg-green-100 text-green-800 hover:bg-green-200">Selesai</Badge>;
-            case 'partial':
-                return <Badge className="mb-1 bg-blue-100 text-blue-800 hover:bg-blue-200">Selesai</Badge>;
+            case 'process':
+                return <Badge className="mb-1 bg-blue-100 text-blue-800 hover:bg-blue-200">Proses</Badge>;
             case 'cancelled':
                 return <Badge className="mb-1 bg-red-100 text-red-800 hover:bg-red-200">Ditolak</Badge>;
             case 'rejected':
@@ -412,7 +412,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                         <div className="text-center">
                                                             <p className="mb-1 text-xs text-gray-500">Diminta</p>
                                                             <Badge variant="outline" className="border-blue-200 bg-blue-50 font-medium text-blue-700">
-                                                                {item.requested} {item.unit}
+                                                                {item.requested} {item.satuan}
                                                             </Badge>
                                                         </div>
 
@@ -428,7 +428,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                                         : 'border-gray-200 bg-gray-50 text-gray-500'
                                                                 }`}
                                                             >
-                                                                {item.approved ? `${item.approved} ${item.unit}` : 'Belum diproses'}
+                                                                {item.approved ? `${item.approved} ${item.satuan}` : 'Belum diproses'}
                                                             </Badge>
                                                         </div>
                                                     </div>

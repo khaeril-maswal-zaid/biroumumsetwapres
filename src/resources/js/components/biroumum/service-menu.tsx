@@ -31,7 +31,7 @@ export function ServiceMenu() {
         {
             icon: Car,
             label: 'Permintaan Kendaraan',
-            href: route('permintaankendaraan.create'),
+            href: '#', // Ganti nanti dengan route('permintaankendaraan.index') jika aktif
         },
     ];
 

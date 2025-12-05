@@ -13,12 +13,21 @@ class KategoriKerusakanSeeder extends Seeder
      */
     public function run(): void
     {
-        for ($i = 0; $i < 10; $i++) {
-            KategoriKerusakan::create([
-                'kode_kerusakan' => 'Krn-' . $i + 1,
-                'kode_unit' => '02',
-                'name' => 'Kerusakan ' . $i + 1,
-            ]);
+        $data = [
+            ['name' => 'Tata Udara', 'kode_kerusakan' => 'TU-051'],
+            ['name' => 'Tata Suara', 'kode_kerusakan' => 'TS-052'],
+            ['name' => 'Lift', 'kode_kerusakan' => 'KLK-053'],
+            ['name' => 'Kelistrikan', 'kode_kerusakan' => 'SNT-054'],
+            ['name' => 'Sanitasi', 'kode_kerusakan' => 'MS-055'],
+            ['name' => 'Mesin', 'kode_kerusakan' => 'MS-056'],
+            ['name' => 'Interior dan eksterior', 'kode_kerusakan' => 'IE-057'],
+            ['name' => 'Furniture', 'kode_kerusakan' => 'FRT-058'],
+            ['name' => 'Lingkungan', 'kode_kerusakan' => 'LKG-059'],
+            ['name' => 'Lain-lain', 'kode_kerusakan' => 'LL-060'],
+        ];
+
+        foreach ($data as $item) {
+            KategoriKerusakan::create($item);
         }
     }
 }

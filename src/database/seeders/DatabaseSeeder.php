@@ -20,11 +20,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // InstansiSeeder::class,
             RolePermissionSeeder::class,
-            // DaftarRuanganSeeder::class,
-            // KategoriKerusakanSeeder::class,
-            // DaftarAtkSeeder::class,
+            DaftarRuanganSeeder::class,
+            KategoriKerusakanSeeder::class,
+            DaftarAtkSeeder::class,
             UserSeeder::class,
-            // //UnitKerjaSeeder::class, // disabled seeder
+            MasterPegawaiSeeder::class
         ]);
 
         // User::factory(10)->create();
