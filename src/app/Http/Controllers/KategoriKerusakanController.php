@@ -12,7 +12,7 @@ class KategoriKerusakanController extends Controller
     public function index()
     {
         return Inertia::render('admin/kategorikerusakan/page', [
-            'kategoriKerusakan' => KategoriKerusakan::latest()->paginate(15),
+            'kategoriKerusakan' => KategoriKerusakan::latest()->get(),
         ]);
     }
 

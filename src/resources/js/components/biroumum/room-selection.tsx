@@ -218,7 +218,7 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                         }}
                     >
                         <div className="grid gap-4">
-                            {rooms.map((room) => {
+                            {rooms?.map((room) => {
                                 const hasConflict = isTimeSlotConflict(room);
                                 const isDisabled = hasConflict;
 

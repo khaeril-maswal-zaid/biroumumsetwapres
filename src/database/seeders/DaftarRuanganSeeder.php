@@ -108,7 +108,7 @@ class DaftarRuanganSeeder extends Seeder
                 'kode_ruangan' => $value['kode_ruangan'],
                 'lokasi' => $value['lokasi'],
                 'kapasitas' => $value['kapasitas'],
-                'image' => $value['image'],
+                'image' => 'images/rooms/' . $value['image'],
                 'status' => 'aktif',
                 'fasilitas' => ['tv-led', 'wifi', 'ac'],
             ]);

@@ -13,6 +13,7 @@ class UserSeeder extends Seeder
     /**
      * Run the database seeds.
      */
+
     public function run(): void
     {
         $data = [
@@ -67,6 +68,13 @@ class UserSeeder extends Seeder
             ]);
 
             $user->assignRole($value['role'] ?? 'pegawai');
+
+            MasterPegawai::create([
+                'nip' => $value['nip'],
+                'name' => $value['name'],
+                'kode_unit' => '02',
+                'kode_biro' => '0239',
+            ]);
         }
 
         die();

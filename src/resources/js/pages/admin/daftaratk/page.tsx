@@ -7,12 +7,12 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Check, Edit, Search, Trash2, X } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Edit, Search, Trash2, X } from 'lucide-react';
 
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -28,12 +28,14 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [editingId, setEditingId] = useState('');
     const [editData, setEditData] = useState({ name: '', category: '', satuan: '' });
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
 
     // Get unique categories
-    const categories = Array.from(new Set(daftarAtk.data.map((item: any) => item.category)));
+    const categories = Array.from(new Set(daftarAtk.map((item: any) => item.category)));
 
     // Filter items
-    const filteredItems = daftarAtk.data.filter((item: any) => {
+    const filteredItems = daftarAtk.filter((item: any) => {
         const matchesSearch =
             item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.category.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
@@ -85,6 +87,65 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
         });
     };
 
+    const totalItems = filteredItems.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+
+    const paginatedItems = useMemo(() => {
+        return filteredItems.slice(startIndex, endIndex);
+    }, [filteredItems, startIndex, endIndex]);
+
+    // Reset to page 1 when filter changes
+    const handleSearchChange = (value: string) => {
+        setSearchTerm(value);
+        setCurrentPage(1);
+    };
+
+    const handleCategoryChange = (value: string) => {
+        setCategoryFilter(value);
+        setCurrentPage(1);
+    };
+
+    const handleItemsPerPageChange = (value: string) => {
+        setItemsPerPage(Number(value));
+        setCurrentPage(1);
+    };
+
+    const goToFirstPage = () => setCurrentPage(1);
+    const goToLastPage = () => setCurrentPage(totalPages);
+    const goToPreviousPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+    const goToNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+
+    // Generate page numbers to display
+    const getPageNumbers = () => {
+        const pages: (number | string)[] = [];
+        const maxVisiblePages = 5;
+
+        if (totalPages <= maxVisiblePages) {
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i);
+            }
+        } else {
+            if (currentPage <= 3) {
+                for (let i = 1; i <= 4; i++) pages.push(i);
+                pages.push('...');
+                pages.push(totalPages);
+            } else if (currentPage >= totalPages - 2) {
+                pages.push(1);
+                pages.push('...');
+                for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
+            } else {
+                pages.push(1);
+                pages.push('...');
+                for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
+                pages.push('...');
+                pages.push(totalPages);
+            }
+        }
+        return pages;
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs} Button={ButtonAtk}>
             <Head title="Dashboard" />
@@ -126,6 +187,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
+                                        <TableHead>No</TableHead>
                                         <TableHead>Kode ATK</TableHead>
                                         <TableHead>Nama ATK</TableHead>
                                         <TableHead>Kategori</TableHead>
@@ -134,15 +196,18 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {filteredItems.length === 0 ? (
+                                    {paginatedItems.length === 0 ? (
                                         <TableRow>
                                             <TableCell colSpan={4} className="py-4 text-center text-gray-500">
                                                 Tidak ada data ATK yang ditemukan
                                             </TableCell>
                                         </TableRow>
                                     ) : (
-                                        filteredItems.map((item: any) => (
+                                        paginatedItems.map((item: any, index: number) => (
                                             <TableRow key={item.id}>
+                                                <TableCell>
+                                                    <div className="text-sm font-medium text-muted-foreground">{startIndex + index + 1}</div>
+                                                </TableCell>
                                                 <TableCell>
                                                     <div className="font-medium">{item.kode_atk}</div>
                                                 </TableCell>
@@ -232,6 +297,108 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                 </TableBody>
                             </Table>
                         </div>
+
+                        {/* Pagination */}
+                        {totalItems > 0 && (
+                            <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                {/* Left: Items per page selector & info */}
+                                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm text-muted-foreground">Tampilkan</span>
+                                        <Select value={String(itemsPerPage)} onValueChange={handleItemsPerPageChange}>
+                                            <SelectTrigger className="h-8 w-[70px]">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="5">5</SelectItem>
+                                                <SelectItem value="10">10</SelectItem>
+                                                <SelectItem value="20">20</SelectItem>
+                                                <SelectItem value="50">50</SelectItem>
+                                                <SelectItem value="100">100</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <span className="text-sm text-muted-foreground">data</span>
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">
+                                        Menampilkan <span className="font-medium text-foreground">{startIndex + 1}</span> -{' '}
+                                        <span className="font-medium text-foreground">{endIndex}</span> dari{' '}
+                                        <span className="font-medium text-foreground">{totalItems}</span> data
+                                    </div>
+                                </div>
+
+                                {/* Right: Pagination controls */}
+                                <div className="flex items-center gap-1">
+                                    {/* First Page */}
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-8 w-8 bg-transparent"
+                                        onClick={goToFirstPage}
+                                        disabled={currentPage === 1}
+                                    >
+                                        <ChevronsLeft className="h-4 w-4" />
+                                        <span className="sr-only">Halaman pertama</span>
+                                    </Button>
+
+                                    {/* Previous Page */}
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-8 w-8 bg-transparent"
+                                        onClick={goToPreviousPage}
+                                        disabled={currentPage === 1}
+                                    >
+                                        <ChevronLeft className="h-4 w-4" />
+                                        <span className="sr-only">Halaman sebelumnya</span>
+                                    </Button>
+
+                                    {/* Page Numbers */}
+                                    <div className="flex items-center gap-1">
+                                        {getPageNumbers().map((page, index) =>
+                                            page === '...' ? (
+                                                <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">
+                                                    ...
+                                                </span>
+                                            ) : (
+                                                <Button
+                                                    key={page}
+                                                    variant={currentPage === page ? 'default' : 'outline'}
+                                                    size="icon"
+                                                    className="h-8 w-8"
+                                                    onClick={() => setCurrentPage(page as number)}
+                                                >
+                                                    {page}
+                                                </Button>
+                                            ),
+                                        )}
+                                    </div>
+
+                                    {/* Next Page */}
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-8 w-8 bg-transparent"
+                                        onClick={goToNextPage}
+                                        disabled={currentPage === totalPages}
+                                    >
+                                        <ChevronRight className="h-4 w-4" />
+                                        <span className="sr-only">Halaman selanjutnya</span>
+                                    </Button>
+
+                                    {/* Last Page */}
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-8 w-8 bg-transparent"
+                                        onClick={goToLastPage}
+                                        disabled={currentPage === totalPages}
+                                    >
+                                        <ChevronsRight className="h-4 w-4" />
+                                        <span className="sr-only">Halaman terakhir</span>
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
 

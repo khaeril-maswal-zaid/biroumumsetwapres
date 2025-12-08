@@ -45,7 +45,7 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
     const [editingCategory, setEditingCategory] = useState<DamageCategory | null>(null);
     const [formData, setFormData] = useState({ name: '', kode_kerusakan: '' });
 
-    const filteredCategories = kategoriKerusakan.data.filter(
+    const filteredCategories = kategoriKerusakan.filter(
         (category: any) =>
             category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             category.kode_kerusakan.toLowerCase().includes(searchTerm.toLowerCase()),
