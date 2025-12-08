@@ -23,8 +23,8 @@ class DatabaseSeeder extends Seeder
             DaftarRuanganSeeder::class,
             KategoriKerusakanSeeder::class,
             DaftarAtkSeeder::class,
-            UserSeeder::class,
-            MasterPegawaiSeeder::class
+            // UserSeeder::class,
+            // MasterPegawaiSeeder::class
         ]);
 
         // User::factory(10)->create();

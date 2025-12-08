@@ -4109,12 +4109,30 @@ class MasterPegawaiSeeder extends Seeder
             ['id' => '3118', 'nip' => '198807032025211056', 'name' => 'Mochamad Suhendri Yuliawan', 'kode_instansi' => '0', 'kode_unit' => '01', 'kode_deputi' => '010', 'kode_biro' => '0100', 'kode_bagian' => NULL, 'kode_subbagian' => NULL, 'jabatan' => NULL, 'created_at' => NULL, 'updated_at' => NULL]
         ];
 
+          'id' => '1',
+                'nip' => 'Developer165#',
+                'name' => 'Developer Setwapres',
+                'kode_instansi' => NULL,
+                'kode_unit' => '02',
+                'kode_deputi' => NULL,
+                'kode_biro' => '0239',
+                'kode_bagian' => NULL,
+                'kode_subbagian' => NULL,
+                'jabatan' => NULL,
+                'created_at' => '2025-11-18 15:56:47',
+                'updated_at' => '2025-11-18 15:56:47'
+
         foreach ($master_pegawais as $key => $value) {
             MasterPegawai::create([
-                'nip' => $value['nip'],
+                'nip' =>$value['nip'],
                 'name' => $value['name'],
-                'kode_unit' => '02',
-                'kode_biro' => '0239',
+                'kode_instansi' $value['kode_instansi'],
+                'kode_unit' => $value['kode_unit'],
+                'kode_deputi' =>$value['kode_deputi'],
+                'kode_biro' => $value['kode_biro'],
+                'kode_bagian' =>$value['kode_bagian'],
+                'kode_subbagian' =>$value['kode_subbagian'],
+                'jabatan' =>$value['jabatan'],
             ]);
         }
     }

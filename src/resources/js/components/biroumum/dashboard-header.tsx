@@ -12,7 +12,7 @@ export function DashboardHeader({ userName }: DashboardHeaderProps) {
                     <AvatarImage src="/placeholder.svg?height=40&width=40" alt={userName} />
                     <AvatarFallback>
                         {userName
-                            .split(' ')
+                            ?.split(' ')
                             .map((n) => n[0])
                             .join('')}
                     </AvatarFallback>

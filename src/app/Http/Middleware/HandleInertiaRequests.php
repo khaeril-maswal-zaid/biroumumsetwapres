@@ -70,13 +70,13 @@ class HandleInertiaRequests extends Middleware
                 'user' => $user ? [
                     'nip' => $user->pegawai->nip ?? null,
                     'name' => $user->pegawai->name ?? null,
-                    'unit' => $user->pegawai->unit ? [
-                        'kode_unit' => $user->pegawai->unit->kode_unit,
-                        'nama_unit' => $user->pegawai->unit->nama_unit,
+                    'unit' => $user->pegawai?->unit ? [
+                        'kode_unit' => $user->pegawai?->unit->kode_unit,
+                        'nama_unit' => $user->pegawai?->unit->nama_unit,
                     ] : null,
-                    'biro' => $user->pegawai->biro ? [
-                        'kode_biro' => $user->pegawai->biro->kode_biro,
-                        'nama_biro' => $user->pegawai->biro->nama_biro,
+                    'biro' => $user->pegawai?->biro ? [
+                        'kode_biro' => $user->pegawai?->biro->kode_biro,
+                        'nama_biro' => $user->pegawai?->biro->nama_biro,
                     ] : null,
                 ] : null,
                 'permissions' => $permissions,
