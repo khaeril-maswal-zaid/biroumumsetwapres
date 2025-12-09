@@ -62,8 +62,8 @@ RUN mkdir -p storage/app/public/images \
     && cp -r public/images/. storage/app/public/images/
 
 
-# RUN composer install --optimize-autoloader --no-dev
-RUN composer install 
+RUN composer install --optimize-autoloader --no-dev
+# RUN composer install 
 RUN php artisan storage:link
 
 RUN npm install --legacy-peer-deps
