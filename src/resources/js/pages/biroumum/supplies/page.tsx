@@ -276,58 +276,81 @@ export default function SuppliesRequest({ availableATK }: any) {
                                     <Label>Daftar Barang</Label>
                                     {fields.map((field, index) => {
                                         const sel = field;
-
                                         const opts = getAvailableOptions(index);
+
                                         return (
-                                            <div key={field.id} className="mt-1 space-y-2">
-                                                <div className="grid grid-cols-12 gap-2">
-                                                    {/* Pilih ATK */}
-                                                    <div className="col-span-6">
+                                            <div key={field.id} className="mt-2 space-y-2">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="min-w-0 flex-1">
                                                         <Popover
                                                             open={openComboboxes[index]}
                                                             onOpenChange={(o) => setOpenComboboxes({ ...openComboboxes, [index]: o })}
                                                         >
                                                             <PopoverTrigger asChild>
-                                                                <Button variant="outline" className="w-full justify-between">
-                                                                    {sel.name || 'Pilih ATK...'}
-                                                                    <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
+                                                                <Button
+                                                                    variant="outline"
+                                                                    className={cn(
+                                                                        'w-full justify-between overflow-hidden',
+                                                                        sel.id && 'border-primary/50 bg-primary/5',
+                                                                    )}
+                                                                >
+                                                                    <span className="truncate text-left text-sm">{sel.name || 'Pilih ATK...'}</span>
+                                                                    <ChevronsUpDown className="ml-1 h-4 w-4 shrink-0 opacity-50" />
                                                                 </Button>
                                                             </PopoverTrigger>
-                                                            <PopoverContent align="start" className="w-full p-0">
+                                                            <PopoverContent
+                                                                align="start"
+                                                                className="w-[calc(100vw-3rem)] max-w-[380px] p-0"
+                                                                sideOffset={4}
+                                                            >
                                                                 <Command>
-                                                                    <CommandInput placeholder="Cari ATK..." />
-                                                                    <CommandList>
+                                                                    <CommandInput placeholder="Cari ATK..." className="text-sm" />
+                                                                    <CommandList className="max-h-[200px]">
                                                                         <CommandEmpty>Tidak ada ATK ditemukan.</CommandEmpty>
                                                                         <CommandGroup>
-                                                                            {opts.map((atk: any) => (
-                                                                                <CommandItem
-                                                                                    key={atk.id}
-                                                                                    onSelect={() => {
-                                                                                        update(index, {
-                                                                                            id: String(atk.id),
-                                                                                            name: atk.name,
-                                                                                            satuan: atk.satuan,
-                                                                                            requested: field.requested || 1,
-                                                                                            approved: 0,
-                                                                                        });
+                                                                            {opts.map((atk: any) => {
+                                                                                const isCurrentlySelected = sel.id === String(atk.id);
 
-                                                                                        setOpenComboboxes({ ...openComboboxes, [index]: false });
-                                                                                    }}
-                                                                                >
-                                                                                    <Check
+                                                                                return (
+                                                                                    <CommandItem
+                                                                                        key={atk.id}
+                                                                                        onSelect={() => {
+                                                                                            update(index, {
+                                                                                                id: String(atk.id),
+                                                                                                name: atk.name,
+                                                                                                satuan: atk.satuan,
+                                                                                                requested: field.requested || 1,
+                                                                                                approved: 0,
+                                                                                            });
+                                                                                            setOpenComboboxes({ ...openComboboxes, [index]: false });
+                                                                                        }}
                                                                                         className={cn(
-                                                                                            'mr-2 h-4 w-4',
-                                                                                            sel.id === atk.id ? 'opacity-100' : 'opacity-0',
+                                                                                            'flex items-center gap-2 py-2',
+                                                                                            isCurrentlySelected && 'bg-primary/10',
                                                                                         )}
-                                                                                    />
-                                                                                    <div className="flex flex-col">
-                                                                                        <span>{atk.name}</span>
-                                                                                        <span className="text-xs text-gray-500">
-                                                                                            Satuan: {atk.satuan}
-                                                                                        </span>
-                                                                                    </div>
-                                                                                </CommandItem>
-                                                                            ))}
+                                                                                    >
+                                                                                        <Check
+                                                                                            className={cn(
+                                                                                                'h-4 w-4 shrink-0',
+                                                                                                isCurrentlySelected
+                                                                                                    ? 'text-primary opacity-100'
+                                                                                                    : 'opacity-0',
+                                                                                            )}
+                                                                                        />
+                                                                                        <div className="flex min-w-0 flex-1 flex-col">
+                                                                                            <span className="truncate text-sm">{atk.name}</span>
+                                                                                            <span className="text-xs text-muted-foreground">
+                                                                                                Satuan: {atk.satuan}
+                                                                                            </span>
+                                                                                        </div>
+                                                                                        {isCurrentlySelected && (
+                                                                                            <span className="shrink-0 rounded bg-primary px-1.5 py-0.5 text-[10px] font-medium text-primary-foreground">
+                                                                                                Dipilih
+                                                                                            </span>
+                                                                                        )}
+                                                                                    </CommandItem>
+                                                                                );
+                                                                            })}
                                                                         </CommandGroup>
                                                                     </CommandList>
                                                                 </Command>
@@ -340,29 +363,34 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                     </div>
 
                                                     {/* Jumlah */}
-                                                    <div className="col-span-3">
+                                                    <div className="w-16 shrink-0">
                                                         <Input
                                                             type="number"
-                                                            placeholder="Jumlah"
+                                                            placeholder="Jml"
                                                             {...register(`items.${index}.requested` as const)}
                                                             min={1}
                                                             disabled={!sel.id}
+                                                            className="text-center text-sm"
                                                         />
                                                     </div>
 
                                                     {/* Satuan */}
-                                                    <div className="col-span-2">
-                                                        <Input readOnly value={sel.satuan} placeholder="Satuan" />
+                                                    <div className="w-14 shrink-0">
+                                                        <Input readOnly value={sel.satuan} placeholder="-" className="px-1 text-center text-xs" />
                                                     </div>
 
                                                     {/* Hapus item */}
-                                                    <div className="col-span-1 flex items-center">
-                                                        {fields.length > 1 && (
-                                                            <Button variant="outline" size="sm" onClick={() => remove(index)}>
-                                                                ×
-                                                            </Button>
-                                                        )}
-                                                    </div>
+                                                    {fields.length > 1 && (
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            size="icon"
+                                                            className="h-9 w-9 shrink-0 bg-transparent"
+                                                            onClick={() => remove(index)}
+                                                        >
+                                                            ×
+                                                        </Button>
+                                                    )}
                                                 </div>
                                             </div>
                                         );
@@ -373,7 +401,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                         size="sm"
                                         onClick={() => append({ id: '', name: '', requested: 0, approved: 0, satuan: '' })}
                                         disabled={fields.length >= availableATK.length}
-                                        className="mt-2"
+                                        className="mt-3"
                                     >
                                         + Tambah Barang
                                     </Button>
