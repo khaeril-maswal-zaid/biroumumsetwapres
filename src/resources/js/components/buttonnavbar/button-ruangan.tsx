@@ -95,25 +95,13 @@ export default function ButtonRooms() {
             return;
         }
 
-        const newRoom: Room = {
-            id: Date.now().toString(),
-            nama_ruangan: formData.nama_ruangan,
-            kode_ruangan: formData.kode_ruangan,
-            lokasi: formData.lokasi,
-            kapasitas: Number.parseInt(formData.kapasitas),
-            image: formData.image || '/placeholder.svg?height=200&width=300',
-            fasilitas: formData.fasilitas,
-            status: formData.status,
-            created_at: new Date().toISOString().split('T')[0],
-        };
-
         router.post(
             route('rooms.store'),
             {
                 nama_ruangan: formData.nama_ruangan,
                 kode_ruangan: formData.kode_ruangan,
                 lokasi: formData.lokasi,
-                kapasitas: Number.parseInt(formData.kapasitas),
+                kapasitas: formData.kapasitas,
                 fasilitas: formData.fasilitas,
                 status: formData.status,
                 photo: imageFile,
@@ -209,7 +197,7 @@ export default function ButtonRooms() {
                                 <Input
                                     className="mt-1"
                                     id="kapasitas"
-                                    type="number"
+                                    type=""
                                     value={formData.kapasitas}
                                     onChange={(e) => setFormData((prev) => ({ ...prev, kapasitas: e.target.value }))}
                                     placeholder="Jumlah orang"
