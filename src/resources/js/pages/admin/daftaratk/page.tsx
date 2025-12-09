@@ -96,16 +96,6 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
         return filteredItems.slice(startIndex, endIndex);
     }, [filteredItems, startIndex, endIndex]);
 
-    // Reset to page 1 when filter changes
-    const handleSearchChange = (value: string) => {
-        setSearchTerm(value);
-        setCurrentPage(1);
-    };
-
-    const handleCategoryChange = (value: string) => {
-        setCategoryFilter(value);
-        setCurrentPage(1);
-    };
 
     const handleItemsPerPageChange = (value: string) => {
         setItemsPerPage(Number(value));

@@ -24,7 +24,7 @@ class DaftarAtkController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:250',
             'category' => 'required|string|max:250',
-            'unit' => 'required|string|max:250',
+            'satuan' => 'required|string|max:250',
         ]);
 
         $daftarAtk->update($validated);
