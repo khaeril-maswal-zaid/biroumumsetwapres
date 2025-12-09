@@ -57,6 +57,12 @@ class RolePermissionSeeder extends Seeder
             ['name' => 'view_vehicles', 'label' => 'Lihat Permintaan Kendaraan', 'category' => 'Kendaraan'],
             ['name' => 'create_vehicle', 'label' => 'Ajukan Permintaan Kendaraan', 'category' => 'Kendaraan'],
             ['name' => 'change_vehicle_status', 'label' => 'Konfirmasi Permintaan Kendaraan', 'category' => 'Kendaraan'],
+            // Tambahan Permissions 🚗 Kendaraan
+            ['name' => 'view_drivers', 'label' => 'Lihat Data Pengemudi', 'category' => 'Kendaraan'],
+            ['name' => 'manage_drivers', 'label' => 'Kelola Data Pengemudi', 'category' => 'Kendaraan'],
+            ['name' => 'view_vehicles_master', 'label' => 'Lihat Daftar Kendaraan', 'category' => 'Kendaraan'],
+            ['name' => 'manage_vehicles_master', 'label' => 'Kelola Daftar Kendaraan', 'category' => 'Kendaraan'],
+
 
             // 📊 Umum
             ['name' => 'view_admin_dashboard', 'label' => 'Lihat Dashboard', 'category' => 'Umum'],
@@ -237,6 +243,60 @@ class RolePermissionSeeder extends Seeder
             [
                 'name' => 'super_admin',
                 'label' => 'Super Admin',
+                'guard_name' => 'web',
+                'description' => 'Memiliki akses tampilan dan monitoring seluruh data dan modul permintaan.'
+            ]
+        );
+        $super_adminRole->syncPermissions($superAdminPermissions);
+
+
+        // ---------------------------------------------------------
+        // 🎖️ Role: Developer--------------------------------
+        $superAdminPermissions = [
+            'view_rooms',
+            'create_rooms',
+            'edit_rooms',
+            'delete_rooms',
+            'view_atk',
+            'create_atk',
+            'edit_atk',
+            'delete_atk',
+            'view_category_damages',
+            'create_category_damages',
+            'edit_category_damages',
+            'delete_category_damages',
+            'create_log_proses',
+            'edit_log_proses',
+            'delete_log_proses',
+            'view_damages',
+            'report_damages',
+            'create_damage',
+            'change_damage_status',
+            'view_bookings',
+            'report_bookings',
+            'create_booking',
+            'change_booking_status',
+            'view_suppliess',
+            'report_suppliess',
+            'create_supplies',
+            'change_supplies_status',
+            'view_vehicles',
+            'create_vehicle',
+            'change_vehicle_status',
+            'view_admin_dashboard',
+            'view_history',
+            'view_homepage',
+            'management_access',
+            'view_drivers',
+            'manage_drivers',
+            'view_vehicles_master',
+            'manage_vehicles_master',
+        ];
+
+        $super_adminRole = Role::create(
+            [
+                'name' => 'developer_swp',
+                'label' => 'Developer Setwapres',
                 'guard_name' => 'web',
                 'description' => 'Memiliki akses tampilan dan monitoring seluruh data dan modul permintaan.'
             ]

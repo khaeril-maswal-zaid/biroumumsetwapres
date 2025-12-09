@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
                 'name' => 'Developer Setwapres',
                 'email' => 'developer.umum@set.wapresri.go.id',
                 'nip' => 'Developer165#',
-                'role' => 'super_admin',
+                'role' => 'developer_swp',
             ],
 
             // [

@@ -25,7 +25,7 @@ class StoreDaftarRuanganRequest extends FormRequest
             'nama_ruangan'  => 'required|string|max:255',
             'kode_ruangan'  => 'required|string|max:255|unique:daftar_ruangans,kode_ruangan',
             'lokasi'        => 'nullable|string|max:255',
-            'kapasitas'     => 'nullable|integer|min:0',
+            'kapasitas'     => 'nullable|string|max:255',
             'photo'         => 'nullable|file|image|mimes:jpg,jpeg,png,webp|max:5150',
             'status'        => 'nullable|in:aktif,maintenance,nonaktif',
             'fasilitas'     => 'nullable|array',
@@ -42,8 +42,7 @@ class StoreDaftarRuanganRequest extends FormRequest
             'kode_ruangan.unique'   => 'Kode ruangan sudah digunakan.',
             'kode_ruangan.max'      => 'Kode ruangan maksimal 255 karakter.',
             'lokasi.max'            => 'Lokasi maksimal 255 karakter.',
-            'kapasitas.integer'     => 'Kapasitas harus berupa angka.',
-            'kapasitas.min'         => 'Kapasitas tidak boleh negatif.',
+
             'photo.file'            => 'Foto harus berupa file.',
             'photo.photo'           => 'Foto harus berupa gambar.',
             'photo.mimes'           => 'Foto harus berformat jpg, jpeg, png, webp, gif, atau svg.',

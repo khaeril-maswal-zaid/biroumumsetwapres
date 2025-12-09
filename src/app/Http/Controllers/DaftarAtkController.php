@@ -41,7 +41,13 @@ class DaftarAtkController extends Controller
 
         $validated['kode_unit'] = Auth::user()->pegawai?->unit?->kode_unit;
 
-        DaftarAtk::create($validated);
+        DaftarAtk::create([
+            'kode_atk' => $validated['kode_atk'],
+            'name' => $validated['name'],
+            'category' => $validated['category'],
+            'satuan' => $validated['satuan'],
+            'kode_unit' => $validated['kode_unit'] ?? null,
+        ]);
     }
 
     public function destroy(DaftarAtk $daftarAtk)

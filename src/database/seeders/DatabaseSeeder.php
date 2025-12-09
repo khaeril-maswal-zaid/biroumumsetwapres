@@ -24,8 +24,11 @@ class DatabaseSeeder extends Seeder
             KategoriKerusakanSeeder::class,
             DaftarAtkSeeder::class,
             KerusakanGedungSeeder::class,
-            // UserSeeder::class,
+            UserSeeder::class,
             // MasterPegawaiSeeder::class
+
+            //kalau sudah ada pegawai di master pegawai dan di user, jangan jalankan seeder ini
+            // AssignRolesSeeder::class,
         ]);
 
         // User::factory(10)->create();
