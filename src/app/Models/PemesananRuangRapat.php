@@ -28,7 +28,10 @@ class PemesananRuangRapat extends Model
         'kode_booking',
         'status',
         'keterangan',
-        'is_read'
+        'is_hybrid',
+        'is_ti_support',
+        'jenis_rapat',
+        'is_read',
     ];
 
     public function ruangans(): BelongsTo

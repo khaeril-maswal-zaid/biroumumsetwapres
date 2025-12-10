@@ -16,7 +16,6 @@ import { Separator } from '@radix-ui/react-separator';
 import {
     AlertCircle,
     AlertTriangle,
-    ArrowLeft,
     Calendar,
     CheckCircle,
     ImageIcon,
@@ -180,12 +179,12 @@ export default function DamagesAdmin({ kerusakan }: any) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto bg-linear-to-br from-white to-blue-100 p-4">
-                <Link href={route('kerusakangedung.index')}>
+                {/* <Link href={route('kerusakangedung.index')}>
                     <Button variant="ghost" className="mb-1 flex items-center space-x-2 border">
                         <ArrowLeft className="h-4 w-4" />
                         <span>Kembali</span>
                     </Button>
-                </Link>
+                </Link> */}
                 <Card>
                     <CardHeader>
                         <CardTitle>Daftar Laporan Kerusakan</CardTitle>

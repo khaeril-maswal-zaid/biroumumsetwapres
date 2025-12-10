@@ -1,6 +1,7 @@
 'use client';
 
 import { BottomNavigation } from '@/components/biroumum/bottom-navigation';
+import { KategoriSelector } from '@/components/biroumum/kategori-kerusakan';
 import { PageHeader } from '@/components/biroumum/page-header';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,6 +18,7 @@ import type React from 'react';
 import { useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
+// import { cn } from '@/lib/utils';
 
 type KategoriKerusakan = {
     kode_kerusakan: string;
@@ -66,6 +67,8 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
     };
 
     const onSubmit = (data: FormData) => {
+        console.log(data);
+
         router.post(
             route('kerusakangedung.store'),
             { ...data, photos },
@@ -207,7 +210,9 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
                                     </div>
 
                                     <div>
-                                        <Label htmlFor="location">Lokasi Kerusakan</Label>
+                                        <Label htmlFor="location">
+                                            Lokasi Kerusakan <span className="text-red-500">*</span>
+                                        </Label>
                                         <Input
                                             id="location"
                                             {...register('location')}
@@ -217,7 +222,9 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
                                         {errors.location && <p className="mt-1 text-sm text-red-500">{errors.location.message}</p>}
                                     </div>
                                     <div>
-                                        <Label htmlFor="damageType">Nama Item Rusak</Label>
+                                        <Label htmlFor="damageType">
+                                            Nama Item Rusak <span className="text-red-500">*</span>
+                                        </Label>
                                         <Input
                                             id="damageType"
                                             {...register('damageType')}
@@ -225,31 +232,31 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
                                         />
                                         {errors.damageType && <p className="mt-1 text-sm text-red-500">{errors.damageType.message}</p>}
                                     </div>
+
                                     <div className="w-full">
-                                        <Label htmlFor="kategori">Kategori Kerusakan</Label>
+                                        <Label htmlFor="kategori">
+                                            Kategori Kerusakan <span className="text-red-500">*</span>
+                                        </Label>
                                         <Controller
                                             control={control}
                                             name="kategori"
                                             render={({ field }) => (
-                                                <Select onValueChange={field.onChange} value={field.value}>
-                                                    <SelectTrigger className="mt-1">
-                                                        <SelectValue placeholder="Pilih" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {kategoriKerusakan.map((item: KategoriKerusakan, index: number) => (
-                                                            <SelectItem key={index} value={item.kode_kerusakan}>
-                                                                {item.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
+                                                <div className="mt-2">
+                                                    <KategoriSelector
+                                                        kategoriList={kategoriKerusakan}
+                                                        selectedValue={field.value || ''}
+                                                        onSelect={field.onChange}
+                                                    />
+                                                </div>
                                             )}
                                         />
-
                                         {errors.kategori && <p className="mt-1 text-sm text-red-500">{errors.kategori.message}</p>}
                                     </div>
+
                                     <div>
-                                        <Label htmlFor="description">Keterangan</Label>
+                                        <Label htmlFor="description">
+                                            Keterangan <span className="text-red-500">*</span>
+                                        </Label>
                                         <Textarea
                                             id="description"
                                             {...register('description')}
@@ -258,7 +265,9 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
                                         {errors.description && <p className="mt-1 text-sm text-red-500">{errors.description.message}</p>}
                                     </div>
                                     <div>
-                                        <Label>Foto Kerusakan </Label>
+                                        <Label>
+                                            Foto Kerusakan <span className="text-red-500">*</span>
+                                        </Label>
                                         <p className="mt-1 text-xs text-gray-500">
                                             Maks. <span className="font-medium">2 file</span>, ukuran ≤ 5 MB, format{' '}
                                             <span className="font-medium">JPG, JPEG, PNG, atau HEIC</span>
@@ -301,7 +310,7 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
 
                                     {/* Creative Urgency Selection */}
                                     {/* <div>
-                                        <Label className="text-base font-medium">Tingkat Urgensi</Label>
+                                        <Label className="text-base font-medium">Tingkat Urgensi <span className="text-red-500">*</span></Label>
                                         <Controller
                                             name="urgency"
                                             control={control}
@@ -352,7 +361,9 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
                                     </div> */}
 
                                     <div>
-                                        <Label htmlFor="contact">No Hp</Label>
+                                        <Label htmlFor="contact">
+                                            No Hp <span className="text-red-500">*</span>
+                                        </Label>
                                         <Input id="contact" {...register('contact')} className={`mt-1 ${errors.contact && 'border-red-500'}`} />
                                         {errors.contact && <p className="mt-1 text-sm text-red-500">{errors.contact.message}</p>}
                                     </div>

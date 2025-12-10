@@ -39,6 +39,10 @@ export interface User {
     unit_kerja: string;
     role: string;
     email: string;
+    biro: {
+        id: number;
+        nama_biro: string;
+    };
     avatar?: string;
     email_verified_at: string | null;
     created_at: string;

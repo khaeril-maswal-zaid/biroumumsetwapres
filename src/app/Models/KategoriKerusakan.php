@@ -12,6 +12,11 @@ class KategoriKerusakan extends Model
     protected $fillable  = [
         'name',
         'kode_unit',
-        'kode_kerusakan'
+        'kode_kerusakan',
+        'sub_kategori'
+    ];
+
+    protected $casts = [
+        'sub_kategori' => 'array',
     ];
 }

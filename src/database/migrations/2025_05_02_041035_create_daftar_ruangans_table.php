@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('kode_ruangan')->unique();
             $table->string('lokasi')->nullable();
             $table->string('kapasitas')->nullable();
+            $table->string('kapasitas_max')->nullable();
             $table->string('image')->nullable();
             $table->enum('status', ['aktif', 'maintenance', 'nonaktif'])->nullable();
             $table->json('fasilitas')->nullable();

@@ -28,6 +28,9 @@ class StorePemesananRuangRapatRequest extends FormRequest
             'endTime'     => 'required|date_format:H:i|after_or_equal:startTime',
             'purpose'     => 'required|string|max:255',
             'contact'     => 'required|string|max:15',
+            'jenisRapat'  => 'string|in:internal,external',
+            'needItSupport' => 'boolean',
+            'isHybrid'  => 'boolean',
         ];
     }
 
@@ -46,6 +49,9 @@ class StorePemesananRuangRapatRequest extends FormRequest
             'purpose.required'      => 'Tujuan pemesanan wajib diisi.',
             'contact.required'      => 'Nomor kontak wajib diisi.',
             'contact.max'           => 'Nomor kontak maksimal 15 karakter.',
+            'jenisRapat.in'         => 'Jenis rapat harus berupa internal atau external.',
+            'needItSupport.boolean' => 'Need IT Support harus berupa nilai boolean.',
+            'isHybrid.boolean'      => 'Is Hybrid harus berupa nilai boolean.',
         ];
     }
 }

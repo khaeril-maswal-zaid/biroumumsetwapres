@@ -74,9 +74,12 @@ class PemesananRuangRapatController extends Controller
             'jam_selesai' => $request->endTime,
             'daftar_ruangan_id' => $room->id,
             'deskripsi' => $request->purpose,
+            'jenis_rapat' => $request->jenisRapat,
             'no_hp' => $request->contact,
             'kode_booking' => 'RRT-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'status' => 'pending',
+            'is_hybrid' => $request->isHybrid,
+            'is_ti_support' => $request->needItSupport,
         ]);
     }
 

@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Skeleton } from '@/components/ui/skeleton';
 import { router, usePage } from '@inertiajs/react';
-import { Info, Users } from 'lucide-react';
+import { Info, User, Users } from 'lucide-react';
 import { useState } from 'react';
 
 import { Camera, CheckCircle, Clock, Computer, Home, Mic, Monitor, PenSquare, Shield, Snowflake, Sofa, Speaker, Tv, Wifi, X } from 'lucide-react';
@@ -100,7 +100,7 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
             return (
                 <Badge className="flex items-center gap-1 bg-red-100 text-red-800 hover:bg-red-200">
                     <X className="h-3 w-3" />
-                    Dibooking
+                    Telah dipesan
                 </Badge>
             );
         }
@@ -242,16 +242,22 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                                                         >
                                                             <div className="space-y-1">
                                                                 <div className="text-lg font-medium">{room.nama_ruangan}</div>
-                                                                <div className="text-sm text-gray-500">{room.kode_ruangan}</div>
+                                                                <div className="text-sm text-gray-500">{room.lokasi}</div>
                                                             </div>
                                                         </Label>
                                                         {getStatusBadge(room)}
                                                     </div>
 
                                                     <div className="flex items-center justify-between text-sm text-gray-600">
-                                                        <div className="flex items-center gap-1">
-                                                            <Users className="h-4 w-4" />
-                                                            <span>Kapasitas: {room.kapasitas} Orang</span>
+                                                        <div className="">
+                                                            <div className="mb-1.5 flex items-center gap-1">
+                                                                <User className="h-4 w-4" />
+                                                                <span>Kapasitas: {room.kapasitas} Orang</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1">
+                                                                <Users className="h-4 w-4" />
+                                                                <span>Kapasitas Max: {room.kapasitas_max} Orang</span>
+                                                            </div>
                                                         </div>
 
                                                         <Button
@@ -353,7 +359,7 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                                         <div className="rounded-lg border border-red-200 bg-red-50 p-3">
                                             <div className="flex items-center gap-2 text-red-800">
                                                 <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                                                <span className="font-medium">Jadwal yang Sudah Dibooking:</span>
+                                                <span className="font-medium">Jadwal yang sudah dipesan:</span>
                                             </div>
                                             <div className="mt-2 space-y-1">
                                                 {selectedRoomDetail.bookedSlots.map((slot, index) => (
@@ -372,7 +378,7 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                                             <span className="font-medium">Ruangan Tersedia</span>
                                         </div>
                                         <p className="mt-1 text-sm text-green-600">
-                                            Ruangan dapat dibooking untuk waktu: {selectedStartTime} - {selectedEndTime}
+                                            Ruangan dapat dipesan untuk waktu: {selectedStartTime} - {selectedEndTime}
                                         </p>
                                     </div>
                                 )}

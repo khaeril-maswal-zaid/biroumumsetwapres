@@ -15,25 +15,14 @@ import { cn } from '@/lib/utils';
 import type { SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
-import {
-    AlertCircle,
-    AlertCircleIcon,
-    AlertOctagon,
-    AlertTriangle,
-    Check,
-    CheckCircle2,
-    ChevronsUpDown,
-    FileText,
-    PenTool,
-    Upload,
-} from 'lucide-react';
+import { AlertCircle, AlertCircleIcon, AlertOctagon, AlertTriangle, Check, CheckCircle2, ChevronsUpDown, PenTool } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker?url';
 
 // Set worker source
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -54,12 +43,12 @@ const FormSchema = z.object({
     // urgency: z.string().min(1, 'Pilih tingkat urgensi'),
     // satuan_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
     contact: z.string().min(1, 'Narahubung wajib diisi'),
-    memo: z
-        .any()
-        .refine((file) => file instanceof File, 'File memo wajib diupload')
-        .refine((file) => file?.type === 'application/pdf', 'File harus berformat PDF')
-        .refine((file) => file === null || file instanceof File, 'File memo wajib diupload')
-        .nullable(),
+    // memo: z
+    //     .any()
+    //     .refine((file) => file instanceof File, 'File memo wajib diupload')
+    //     .refine((file) => file?.type === 'application/pdf', 'File harus berformat PDF')
+    //     .refine((file) => file === null || file instanceof File, 'File memo wajib diupload')
+    //     .nullable(),
 });
 
 const urgencyOptions = [
@@ -117,69 +106,69 @@ export default function SuppliesRequest({ availableATK }: any) {
             justification: '',
             // urgency: '',
             contact: '',
-            memo: null,
+            // memo: null,
         },
     });
 
     const [errorServer, setErrorServer] = useState<null | Record<string, string[]>>(null);
 
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
-    const [isGeneratingThumbnail, setIsGeneratingThumbnail] = useState(false);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    // const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    // const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+    // const [isGeneratingThumbnail, setIsGeneratingThumbnail] = useState(false);
+    // const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const generatePDFThumbnail = async (file: File) => {
-        setIsGeneratingThumbnail(true);
-        try {
-            const arrayBuffer = await file.arrayBuffer();
-            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-            const page = await pdf.getPage(1);
+    // const generatePDFThumbnail = async (file: File) => {
+    //     setIsGeneratingThumbnail(true);
+    //     try {
+    //         const arrayBuffer = await file.arrayBuffer();
+    //         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    //         const page = await pdf.getPage(1);
 
-            const viewport = page.getViewport({ scale: 0.5 });
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
+    //         const viewport = page.getViewport({ scale: 0.5 });
+    //         const canvas = document.createElement('canvas');
+    //         const context = canvas.getContext('2d');
 
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
+    //         canvas.height = viewport.height;
+    //         canvas.width = viewport.width;
 
-            await page.render({
-                canvasContext: context!,
-                viewport: viewport,
-                canvas,
-            }).promise;
+    //         await page.render({
+    //             canvasContext: context!,
+    //             viewport: viewport,
+    //             canvas,
+    //         }).promise;
 
-            const imageUrl = canvas.toDataURL('image/png');
-            setThumbnailUrl(imageUrl);
-        } catch (error) {
-            console.error('Error generating PDF thumbnail:', error);
-            setThumbnailUrl(null);
-        } finally {
-            setIsGeneratingThumbnail(false);
-        }
-    };
+    //         const imageUrl = canvas.toDataURL('image/png');
+    //         setThumbnailUrl(imageUrl);
+    //     } catch (error) {
+    //         console.error('Error generating PDF thumbnail:', error);
+    //         setThumbnailUrl(null);
+    //     } finally {
+    //         setIsGeneratingThumbnail(false);
+    //     }
+    // };
 
-    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            if (file.type !== 'application/pdf') {
-                alert('Hanya file PDF yang diperbolehkan');
-                return;
-            }
+    // const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const file = event.target.files?.[0];
+    //     if (file) {
+    //         if (file.type !== 'application/pdf') {
+    //             alert('Hanya file PDF yang diperbolehkan');
+    //             return;
+    //         }
 
-            setSelectedFile(file);
-            setValue('memo', file, { shouldValidate: true });
-            await generatePDFThumbnail(file);
-        }
-    };
+    //         setSelectedFile(file);
+    //         setValue('memo', file, { shouldValidate: true });
+    //         await generatePDFThumbnail(file);
+    //     }
+    // };
 
-    const removeFile = () => {
-        setSelectedFile(null);
-        setThumbnailUrl(null);
-        setValue('memo', null);
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-        }
-    };
+    // const removeFile = () => {
+    //     setSelectedFile(null);
+    //     setThumbnailUrl(null);
+    //     setValue('memo', null);
+    //     if (fileInputRef.current) {
+    //         fileInputRef.current.value = '';
+    //     }
+    // };
 
     const { fields, append, remove, update } = useFieldArray({ control, name: 'items' });
     const items = watch('items');
@@ -195,11 +184,13 @@ export default function SuppliesRequest({ availableATK }: any) {
 
     const onSubmit = (data: FormData) => {
         const formData = new FormData();
+
         formData.append('justification', data.justification);
         formData.append('contact', data.contact);
-        if (data.memo) {
-            formData.append('memo', data.memo);
-        }
+
+        // if (data.memo) {
+        //     formData.append('memo', data.memo);
+        // }
 
         data.items.forEach((item, index) => {
             formData.append(`items[${index}][id]`, item.id);
@@ -217,8 +208,8 @@ export default function SuppliesRequest({ availableATK }: any) {
             onSuccess: () => {
                 setShowSuccessDialog(true);
                 reset();
-                setSelectedFile(null);
-                setThumbnailUrl(null);
+                // setSelectedFile(null);
+                // setThumbnailUrl(null);
                 setErrorServer(null);
             },
         });
@@ -273,7 +264,9 @@ export default function SuppliesRequest({ availableATK }: any) {
 
                                 {/* Daftar Barang */}
                                 <div>
-                                    <Label>Daftar Barang</Label>
+                                    <Label>
+                                        Daftar Barang <span className="text-red-500">*</span>
+                                    </Label>
                                     {fields.map((field, index) => {
                                         const sel = field;
                                         const opts = getAvailableOptions(index);
@@ -408,9 +401,11 @@ export default function SuppliesRequest({ availableATK }: any) {
                                     {errors.items && <p className="mt-1 text-sm text-red-600">{errors.items.message}</p>}
                                 </div>
 
-                                {/* Justifikasi */}
+                                {/* Keterangan */}
                                 <div>
-                                    <Label>Keterangan</Label>
+                                    <Label>
+                                        Keterangan <span className="text-red-500">*</span>
+                                    </Label>
                                     <Textarea
                                         {...register('justification')}
                                         placeholder="Jelaskan alasan kebutuhan..."
@@ -420,7 +415,7 @@ export default function SuppliesRequest({ availableATK }: any) {
 
                                 {/* Urgensi */}
                                 {/* <div>
-                                    <Label className="text-base font-medium">Tingkat Urgensi</Label>
+                                    <Label className="text-base font-medium">Tingkat Urgensi <span className="text-red-500">*</span></Label>
                                     <div className="mt-3 space-y-3">
                                         {urgencyOptions.map((opt) => {
                                             const isSel = selectedUrgency === opt.value;
@@ -454,8 +449,8 @@ export default function SuppliesRequest({ availableATK }: any) {
                                     </div>
                                 </div> */}
 
-                                <div>
-                                    <Label htmlFor="memo">Upload Memo (PDF) *</Label>
+                                {/* <div>
+                                    <Label htmlFor="memo">Upload Memo (PDF) * <span className="text-red-500">*</span></Label>
                                     <div className="mt-1 space-y-3">
                                         <div className="flex items-center space-x-2">
                                             <Input
@@ -518,11 +513,13 @@ export default function SuppliesRequest({ availableATK }: any) {
 
                                         {errors.memo && <p className="text-sm text-red-500">{errors.memo.message}</p>}
                                     </div>
-                                </div>
+                                </div> */}
 
                                 {/* Narahubung */}
                                 <div>
-                                    <Label htmlFor="contact">No Hp</Label>
+                                    <Label htmlFor="contact">
+                                        No Hp <span className="text-red-500">*</span>
+                                    </Label>
                                     <Input
                                         id="contact"
                                         {...register('contact')}

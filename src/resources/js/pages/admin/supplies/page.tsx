@@ -242,7 +242,7 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                         <TableHead>Nama Pemesan</TableHead>
                                         <TableHead>Jumlah Item</TableHead>
                                         <TableHead>Status</TableHead>
-                                        <TableHead>Memo</TableHead>
+                                        {/* <TableHead>Memo</TableHead> */}
                                         <TableHead className="text-right">Aksi</TableHead>
                                         {/* <TableHead className="text-right">Aksi</TableHead> */}
                                     </TableRow>
@@ -272,11 +272,11 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell>{getStatusBadge(supply.status, supply.is_read)}</TableCell>
-                                                <TableCell>
+                                                {/* <TableCell>
                                                     <Button variant="ghost" size="sm" onClick={() => handleViewMemo(supply)}>
                                                         Lihat memo
                                                     </Button>
-                                                </TableCell>
+                                                </TableCell> */}
                                                 <TableCell className="text-right">
                                                     <Link className="font-medium" href={route('permintaanatk.show', supply.kode_pelaporan)}>
                                                         Detail

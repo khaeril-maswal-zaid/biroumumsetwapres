@@ -23,6 +23,10 @@ const schema = z.object({
     endTime: z.string().min(1, 'Jam selesai wajib diisi'),
     purpose: z.string().min(1, 'Kegiatan wajib diisi'),
     contact: z.string().min(1, 'Kontak wajib diisi'),
+
+    jenisRapat: z.string().nullable(),
+    needItSupport: z.boolean(),
+    isHybrid: z.boolean(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -38,6 +42,10 @@ export default function RoomBooking() {
             endTime: '',
             purpose: '',
             contact: '',
+
+            jenisRapat: 'internal',
+            needItSupport: false,
+            isHybrid: false,
         },
     });
 
