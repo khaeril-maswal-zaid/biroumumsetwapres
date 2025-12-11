@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 import type { SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
-import { AlertCircle, AlertCircleIcon, AlertOctagon, AlertTriangle, Check, CheckCircle2, ChevronsUpDown, PenTool } from 'lucide-react';
+import { AlertCircle, AlertCircleIcon, AlertOctagon, AlertTriangle, Check, CheckCircle2, ChevronsUpDown, Package, PenTool } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker?url';
 
@@ -89,6 +89,8 @@ const urgencyOptions = [
 
 type FormData = z.infer<typeof FormSchema>;
 
+const LAIN_LAIN_OPTION = { id: 'lain-lain', name: '', satuan: '' };
+
 export default function SuppliesRequest({ availableATK }: any) {
     const { auth } = usePage<SharedData>().props;
     const {
@@ -102,7 +104,7 @@ export default function SuppliesRequest({ availableATK }: any) {
     } = useForm<FormData>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            items: [{ id: '', name: '', requested: 0, approved: 0, satuan: '' }],
+            items: [{ id: '', name: '', requested: 1, approved: 0, satuan: '' }],
             justification: '',
             // urgency: '',
             contact: '',
@@ -179,7 +181,7 @@ export default function SuppliesRequest({ availableATK }: any) {
 
     const getAvailableOptions = (index: number) => {
         const selectedIds = items.map((it, i) => (i !== index ? it.id : null)).filter(Boolean);
-        return availableATK.filter((atk: any) => !selectedIds.includes(atk.id));
+        return availableATK.filter((atk: any) => !selectedIds.includes(String(atk.id)));
     };
 
     const onSubmit = (data: FormData) => {
@@ -214,6 +216,8 @@ export default function SuppliesRequest({ availableATK }: any) {
             },
         });
     };
+
+    const isLainLain = (id: string) => id === 'lain-lain';
 
     return (
         <>
@@ -264,12 +268,11 @@ export default function SuppliesRequest({ availableATK }: any) {
 
                                 {/* Daftar Barang */}
                                 <div>
-                                    <Label>
-                                        Daftar Barang <span className="text-red-500">*</span>
-                                    </Label>
+                                    <Label>Daftar Barang</Label>
                                     {fields.map((field, index) => {
-                                        const sel = field;
+                                        const sel = items[index];
                                         const opts = getAvailableOptions(index);
+                                        const isCustomItem = isLainLain(sel?.id);
 
                                         return (
                                             <div key={field.id} className="mt-2 space-y-2">
@@ -284,10 +287,13 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                                     variant="outline"
                                                                     className={cn(
                                                                         'w-full justify-between overflow-hidden',
-                                                                        sel.id && 'border-primary/50 bg-primary/5',
+                                                                        sel?.id && 'border-primary/50 bg-primary/5',
+                                                                        isCustomItem && 'border-amber-500/50 bg-amber-50',
                                                                     )}
                                                                 >
-                                                                    <span className="truncate text-left text-sm">{sel.name || 'Pilih ATK...'}</span>
+                                                                    <span className="truncate text-left text-sm">
+                                                                        {isCustomItem ? 'Lain-lain' : sel?.name || 'Pilih ATK...'}
+                                                                    </span>
                                                                     <ChevronsUpDown className="ml-1 h-4 w-4 shrink-0 opacity-50" />
                                                                 </Button>
                                                             </PopoverTrigger>
@@ -300,9 +306,49 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                                     <CommandInput placeholder="Cari ATK..." className="text-sm" />
                                                                     <CommandList className="max-h-[200px]">
                                                                         <CommandEmpty>Tidak ada ATK ditemukan.</CommandEmpty>
-                                                                        <CommandGroup>
+                                                                        <CommandGroup heading="Opsi Lainnya">
+                                                                            <CommandItem
+                                                                                onSelect={() => {
+                                                                                    update(index, {
+                                                                                        id: LAIN_LAIN_OPTION.id,
+                                                                                        name: LAIN_LAIN_OPTION.name,
+                                                                                        satuan: '',
+                                                                                        requested: field.requested || 1,
+                                                                                        approved: 0,
+                                                                                    });
+                                                                                    setOpenComboboxes({ ...openComboboxes, [index]: false });
+                                                                                }}
+                                                                                className={cn(
+                                                                                    'flex items-center gap-2 py-2',
+                                                                                    isCustomItem && 'bg-amber-100',
+                                                                                )}
+                                                                            >
+                                                                                <div
+                                                                                    className={cn(
+                                                                                        'flex h-5 w-5 items-center justify-center rounded-full',
+                                                                                        isCustomItem
+                                                                                            ? 'bg-amber-500 text-white'
+                                                                                            : 'bg-amber-100 text-amber-600',
+                                                                                    )}
+                                                                                >
+                                                                                    <Package className="h-3 w-3" />
+                                                                                </div>
+                                                                                <div className="flex min-w-0 flex-1 flex-col">
+                                                                                    <span className="text-sm font-medium text-amber-700">
+                                                                                        Lain-lain
+                                                                                    </span>
+                                                                                    <span className="text-xs text-amber-600/70">
+                                                                                        Tulis nama barang manual
+                                                                                    </span>
+                                                                                </div>
+                                                                                {isCustomItem && (
+                                                                                    <Check className="h-4 w-4 shrink-0 text-amber-600" />
+                                                                                )}
+                                                                            </CommandItem>
+                                                                        </CommandGroup>
+                                                                        <CommandGroup heading="Daftar ATK">
                                                                             {opts.map((atk: any) => {
-                                                                                const isCurrentlySelected = sel.id === String(atk.id);
+                                                                                const isCurrentlySelected = sel?.id === String(atk.id);
 
                                                                                 return (
                                                                                     <CommandItem
@@ -355,22 +401,31 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                         <input type="hidden" {...register(`items.${index}.satuan`)} />
                                                     </div>
 
-                                                    {/* Jumlah */}
-                                                    <div className="w-16 shrink-0">
-                                                        <Input
-                                                            type="number"
-                                                            placeholder="Jml"
-                                                            {...register(`items.${index}.requested` as const)}
-                                                            min={1}
-                                                            disabled={!sel.id}
-                                                            className="text-center text-sm"
-                                                        />
-                                                    </div>
+                                                    {/* Jumlah - only show if NOT "Lain-lain" */}
+                                                    {!isCustomItem && (
+                                                        <>
+                                                            <div className="w-16 shrink-0">
+                                                                <Input
+                                                                    type="number"
+                                                                    placeholder="Jml"
+                                                                    {...register(`items.${index}.requested` as const)}
+                                                                    min={1}
+                                                                    disabled={!sel?.id}
+                                                                    className="text-center text-sm"
+                                                                />
+                                                            </div>
 
-                                                    {/* Satuan */}
-                                                    <div className="w-14 shrink-0">
-                                                        <Input readOnly value={sel.satuan} placeholder="-" className="px-1 text-center text-xs" />
-                                                    </div>
+                                                            {/* Satuan */}
+                                                            <div className="w-14 shrink-0">
+                                                                <Input
+                                                                    readOnly
+                                                                    value={sel?.satuan || ''}
+                                                                    placeholder="-"
+                                                                    className="px-1 text-center text-xs"
+                                                                />
+                                                            </div>
+                                                        </>
+                                                    )}
 
                                                     {/* Hapus item */}
                                                     {fields.length > 1 && (
@@ -385,6 +440,53 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                         </Button>
                                                     )}
                                                 </div>
+
+                                                {isCustomItem && (
+                                                    <div className="ml-0 space-y-3 rounded-lg border-2 border-dashed border-amber-300 bg-amber-50/50 p-3">
+                                                        <div className="mb-2 flex items-center gap-2 text-amber-700">
+                                                            <Package className="h-4 w-4" />
+                                                            <span className="text-xs font-medium">Detail Barang Lainnya</span>
+                                                        </div>
+
+                                                        {/* Nama Barang Custom */}
+                                                        <div>
+                                                            <Label className="text-xs text-amber-700">Nama Barang</Label>
+                                                            <Input
+                                                                placeholder="Tulis nama barang..."
+                                                                {...register(`items.${index}.name`)}
+                                                                className="mt-1 border-amber-200 bg-white focus:border-amber-400 focus:ring-amber-400"
+                                                            />
+                                                        </div>
+
+                                                        {/* Jumlah dan Satuan dalam satu baris */}
+                                                        <div className="flex gap-2">
+                                                            <div className="flex-1">
+                                                                <Label className="text-xs text-amber-700">Jumlah</Label>
+                                                                <Input
+                                                                    type="number"
+                                                                    placeholder="Jumlah"
+                                                                    {...register(`items.${index}.requested` as const)}
+                                                                    min={1}
+                                                                    className="mt-1 border-amber-200 bg-white focus:border-amber-400 focus:ring-amber-400"
+                                                                />
+                                                            </div>
+                                                            <div className="flex-1">
+                                                                <Label className="text-xs text-amber-700">Satuan</Label>
+                                                                <Input
+                                                                    placeholder="Pcs, Box, Rim..."
+                                                                    value={sel?.satuan || ''}
+                                                                    onChange={(e) => {
+                                                                        update(index, {
+                                                                            ...sel,
+                                                                            satuan: e.target.value,
+                                                                        });
+                                                                    }}
+                                                                    className="mt-1 border-amber-200 bg-white focus:border-amber-400 focus:ring-amber-400"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                         );
                                     })}
@@ -393,7 +495,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                         variant="outline"
                                         size="sm"
                                         onClick={() => append({ id: '', name: '', requested: 0, approved: 0, satuan: '' })}
-                                        disabled={fields.length >= availableATK.length}
+                                        disabled={fields.length >= availableATK.length + 1}
                                         className="mt-3"
                                     >
                                         + Tambah Barang
