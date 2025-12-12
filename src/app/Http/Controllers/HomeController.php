@@ -43,9 +43,12 @@ class HomeController extends Controller
                 'unit_kerja'        => $r->unit_kerja,
                 'no_hp'             => $r->no_hp,
                 'deskripsi'         => $r->deskripsi,
+                'jenis_rapat'       => $r->jenis_rapat,
+                'is_ti_support'     => $r->is_ti_support,
+                'is_hybrid'         => $r->is_hybrid,
                 'picture'           => null,
                 'keterangan'        => $r->keterangan,
-                'time'              => $r->jam_mulai . ' - ' . $r->jam_selesai,
+                'time' => substr($r->jam_mulai, 0, 5) . ' - ' . substr($r->jam_selesai, 0, 5),
                 'kategori'           => null,
             ]);
 
@@ -74,6 +77,9 @@ class HomeController extends Controller
                 'keterangan'         => $k->keterangan,
                 'time'               => null,
                 'kategori'           => $k->kategori,
+                'is_ti_support'     => null,
+                'is_hybrid'         => null,
+                'jenis_rapat'         => null,
             ]);
 
         // Ambil data permintaan ATK + relasi pemesan
@@ -101,6 +107,9 @@ class HomeController extends Controller
                 'keterangan'         => $a->keterangan,
                 'time'               => null,
                 'kategori'           => null,
+                'is_ti_support'     => null,
+                'is_hybrid'         => null,
+                'jenis_rapat'         => null,
             ]);
 
         // Gabungkan semuanya, urutkan, batasi 10

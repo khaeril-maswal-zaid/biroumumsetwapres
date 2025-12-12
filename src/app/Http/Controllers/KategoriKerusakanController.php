@@ -21,6 +21,8 @@ class KategoriKerusakanController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:250',
             'kode_kerusakan' => 'required|string|max:50|unique:kategori_kerusakans,kode_kerusakan',
+            'sub_kategori' => 'nullable|array',
+            'sub_kategori.*' => 'nullable|string|max:250',
         ]);
 
         $validated['kode_unit'] = Auth::user()->pegawai?->unit?->kode_unit;
@@ -29,10 +31,13 @@ class KategoriKerusakanController extends Controller
     }
 
 
+
     public function update(KategoriKerusakan $kategoriKerusakan, Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:250',
+            'sub_kategori' => 'nullable|array',
+            'sub_kategori.*' => 'nullable|string|max:250',
         ]);
 
         $kategoriKerusakan->update($validated);

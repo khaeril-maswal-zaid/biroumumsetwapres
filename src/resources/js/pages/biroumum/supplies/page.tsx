@@ -91,6 +91,8 @@ type FormData = z.infer<typeof FormSchema>;
 
 const LAIN_LAIN_OPTION = { id: 'lain-lain', name: '', satuan: '' };
 
+const generateUniqueLainLainId = () => `lain-lain-${Math.random().toString(36).substr(2, 7)}`;
+
 export default function SuppliesRequest({ availableATK }: any) {
     const { auth } = usePage<SharedData>().props;
     const {
@@ -217,7 +219,7 @@ export default function SuppliesRequest({ availableATK }: any) {
         });
     };
 
-    const isLainLain = (id: string) => id === 'lain-lain';
+    const isLainLain = (id: string) => id?.startsWith('lain-lain-');
 
     return (
         <>
@@ -310,7 +312,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                                             <CommandItem
                                                                                 onSelect={() => {
                                                                                     update(index, {
-                                                                                        id: LAIN_LAIN_OPTION.id,
+                                                                                        id: generateUniqueLainLainId(),
                                                                                         name: LAIN_LAIN_OPTION.name,
                                                                                         satuan: '',
                                                                                         requested: field.requested || 1,
@@ -474,13 +476,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                                 <Label className="text-xs text-amber-700">Satuan</Label>
                                                                 <Input
                                                                     placeholder="Pcs, Box, Rim..."
-                                                                    value={sel?.satuan || ''}
-                                                                    onChange={(e) => {
-                                                                        update(index, {
-                                                                            ...sel,
-                                                                            satuan: e.target.value,
-                                                                        });
-                                                                    }}
+                                                                    {...register(`items.${index}.satuan`)}
                                                                     className="mt-1 border-amber-200 bg-white focus:border-amber-400 focus:ring-amber-400"
                                                                 />
                                                             </div>

@@ -5,14 +5,15 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
 
 export default function ButtonAtk() {
-    const [isAddOpen, setIsAddOpen] = useState(false);
+    const { kategoriAtk } = usePage().props;
 
+    const [isAddOpen, setIsAddOpen] = useState(false);
     const [formData, setFormData] = useState({
         kode_atk: '',
         name: '',
@@ -94,10 +95,11 @@ export default function ButtonAtk() {
                                     <SelectValue placeholder="Pilih kategori" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="Alat Tulis">Alat Tulis</SelectItem>
-                                    <SelectItem value="Kertas">Kertas</SelectItem>
-                                    <SelectItem value="Alat Kantor">Alat Kantor</SelectItem>
-                                    <SelectItem value="Elektronik">Elektronik</SelectItem>
+                                    {kategoriAtk.map((kategori: string) => (
+                                        <SelectItem key={kategori} value={kategori}>
+                                            {kategori}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>

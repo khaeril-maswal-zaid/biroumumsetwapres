@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\DaftarAtk;
 use App\Models\Notification;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
@@ -66,10 +67,13 @@ class HandleInertiaRequests extends Middleware
                 'availableRoom' => fn() => $request->session()->get('availableRoom'),
             ],
 
+            'kategoriAtk' => DaftarAtk::select('category')->distinct()->pluck('category'),
+
             'auth' => [
                 'user' => $user ? [
                     'nip' => $user->pegawai->nip ?? null,
                     'name' => $user->pegawai->name ?? null,
+                    'email' => $user->email ?? null,
                     'unit' => $user->pegawai?->unit ? [
                         'kode_unit' => $user->pegawai?->unit->kode_unit,
                         'nama_unit' => $user->pegawai?->unit->nama_unit,

@@ -173,12 +173,15 @@ class PemesananRuangRapatController extends Controller
     {
         $reportsData = new PemesananRuangRapat();
 
-        $startOfWeek = Carbon::now()->startOfWeek(); // Senin minggu ini (00:00)
+        $startOfWeek = Carbon::now()->startOfWeek(); // Senin 00:00
+        $endOfWeek = Carbon::now()->endOfWeek();     // Minggu 23:59:59
 
-        $roomSchedules = $reportsData->where('status', 'confirmed')
-            ->where('tanggal_penggunaan', '<', $startOfWeek) // hanya yang sebelum pekan ini
+        $roomSchedules = $reportsData
+            ->where('status', 'confirmed')
+            ->whereNotBetween('tanggal_penggunaan', [$startOfWeek, $endOfWeek])
             ->with(['pemesan.pegawai.biro', 'ruangans'])
             ->get();
+
 
 
         // Kirim ke Inertia

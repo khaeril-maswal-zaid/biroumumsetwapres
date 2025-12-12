@@ -20,13 +20,17 @@ import {
     MapPin,
     MessageSquare,
     Package,
+    Presentation,
     Search,
     User,
+    Video,
     Wrench,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function RequestHistory({ requestHistory }: any) {
+    console.log(requestHistory);
+
     useEffect(() => {
         const interval = setInterval(() => {
             router.reload({ only: ['requestHistory'] });
@@ -198,7 +202,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                         <CardContent className="p-4">
                                             <div className="flex items-start justify-between">
                                                 <div className="flex flex-1 items-start space-x-3">
-                                                    <div className="mt-1 flex-shrink-0">{getTypeIcon(request.id)}</div>
+                                                    <div className="mt-1 shrink-0">{getTypeIcon(request.id)}</div>
                                                     <div className="min-w-0 flex-1">
                                                         <div className="mb-1 flex items-center gap-2">
                                                             <span className="font-mono text-xs text-gray-500">{request.code}</span>
@@ -309,6 +313,16 @@ export default function RequestHistory({ requestHistory }: any) {
                                                         <p className="text-sm text-gray-600">{selectedRequest.time}</p>
                                                     </div>
                                                 </div>
+
+                                                <div className="flex items-center gap-3">
+                                                    <Calendar className="h-5 w-5 text-purple-600" />
+                                                    <div>
+                                                        <p className="font-medium text-gray-900">Info Ruangan</p>
+                                                        <p className="text-xs text-gray-600">{selectedRequest.ruangans.nama_ruangan}</p>
+                                                        <p className="text-xs text-gray-600">{selectedRequest.ruangans.lokasi}</p>
+                                                        <p className="text-xs text-gray-600">Kapasitas {selectedRequest.ruangans.kapasitas} Orang</p>
+                                                    </div>
+                                                </div>
                                             </>
                                         )}
 
@@ -355,15 +369,82 @@ export default function RequestHistory({ requestHistory }: any) {
 
                                     <div className="space-y-4">
                                         {selectedRequest.id === 'booking' && (
-                                            <div className="flex items-center gap-3">
-                                                <Calendar className="h-5 w-5 text-purple-600" />
-                                                <div>
-                                                    <p className="font-medium text-gray-900">Info Ruangan</p>
-                                                    <p className="text-xs text-gray-600">{selectedRequest.ruangans.nama_ruangan}</p>
-                                                    <p className="text-xs text-gray-600">{selectedRequest.ruangans.lokasi}</p>
-                                                    <p className="text-xs text-gray-600">Kapasitas {selectedRequest.ruangans.kapasitas} Orang</p>
+                                            <>
+                                                <div className="flex items-center gap-3">
+                                                    <Presentation className="h-5 w-5 text-green-600" />
+                                                    <div>
+                                                        <p className="font-medium text-gray-900">Jenis Rapat</p>
+                                                        <p className="text-sm text-gray-600">{selectedRequest.jenis_rapat}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
+
+                                                <div>
+                                                    <p className="mb-2 font-medium text-gray-900">
+                                                        {selectedRequest && selectedRequest.id === 'booking' && 'Keperluan/ Kegiatan'}
+                                                        {selectedRequest && selectedRequest.id === 'supplies' && 'Keterangan'}
+                                                        {selectedRequest && selectedRequest.id === 'damage' && 'Keterangan'}
+                                                    </p>
+                                                    <p className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">{selectedRequest.deskripsi}</p>
+                                                </div>
+
+                                                {selectedRequest?.is_hybrid == '1' && (
+                                                    <div className="flex w-full items-center gap-4 rounded-xl bg-linear-to-r from-violet-50 to-purple-50 px-4 py-2.5 text-left transition-all duration-200">
+                                                        {/* Custom Checkbox */}
+                                                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-violet-600 bg-violet-600 transition-all duration-200">
+                                                            <svg
+                                                                className="h-4 w-4 text-white"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                                strokeWidth={3}
+                                                            >
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                            </svg>
+                                                        </div>
+
+                                                        {/* Icon & Label */}
+                                                        <div className="flex flex-1 items-center gap-3">
+                                                            <div className="rounded-lg bg-violet-100 p-2.5 transition-colors duration-200">
+                                                                <Video className="h-5 w-5 text-violet-600 transition-colors duration-200" />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-sm font-semibold text-violet-900 transition-colors duration-200">
+                                                                    Rapat Hybrid
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {selectedRequest?.is_ti_support == '1' && (
+                                                    <div className="flex w-full items-center gap-4 rounded-xl bg-linear-to-r from-teal-50 to-purple-50 px-4 py-2.5 text-left transition-all duration-200">
+                                                        {/* Custom Checkbox */}
+                                                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-teal-600 bg-teal-600 transition-all duration-200">
+                                                            <svg
+                                                                className="h-4 w-4 text-white"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                                strokeWidth={3}
+                                                            >
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                            </svg>
+                                                        </div>
+
+                                                        {/* Icon & Label */}
+                                                        <div className="flex flex-1 items-center gap-3">
+                                                            <div className="rounded-lg bg-teal-100 p-2.5 transition-colors duration-200">
+                                                                <Video className="h-5 w-5 text-teal-600 transition-colors duration-200" />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-sm font-semibold text-teal-900 transition-colors duration-200">
+                                                                    Dukungan TI
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </>
                                         )}
 
                                         {selectedRequest.id === 'damage' && (
@@ -386,14 +467,12 @@ export default function RequestHistory({ requestHistory }: any) {
                                             </>
                                         )}
 
-                                        <div>
-                                            <p className="mb-2 font-medium text-gray-900">
-                                                {selectedRequest && selectedRequest.id === 'booking' && 'Keperluan/ Kegiatan'}
-                                                {selectedRequest && selectedRequest.id === 'supplies' && 'Keterangan'}
-                                                {selectedRequest && selectedRequest.id === 'damage' && 'Keterangan'}
-                                            </p>
-                                            <p className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">{selectedRequest.deskripsi}</p>
-                                        </div>
+                                        {selectedRequest.id != 'booking' && (
+                                            <div>
+                                                <p className="mb-2 font-medium text-gray-900">Keterangan</p>
+                                                <p className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">{selectedRequest.deskripsi}</p>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -422,13 +501,14 @@ export default function RequestHistory({ requestHistory }: any) {
                                                                 variant="outline"
                                                                 className={`font-medium ${
                                                                     item.approved
-                                                                        ? item.approved === item.requested
+                                                                        ? item.approved == item.requested
                                                                             ? 'border-green-200 bg-green-50 text-green-700'
                                                                             : 'border-yellow-200 bg-yellow-50 text-yellow-700'
-                                                                        : 'border-gray-200 bg-gray-50 text-gray-500'
+                                                                        : 'border-red-200 bg-red-50 text-red-500'
                                                                 }`}
                                                             >
-                                                                {item.approved ? `${item.approved} ${item.satuan}` : 'Belum diproses'}
+                                                                {item.approved} {item.satuan}
+                                                                {/* {item.approved ? `${item.approved} ${item.satuan}` : 'Belum diproses'} */}
                                                             </Badge>
                                                         </div>
                                                     </div>
@@ -437,7 +517,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                     {selectedRequest.status !== 'pending' && (
                                                         <div className="mt-2 border-t border-gray-200 pt-2">
                                                             <div className="flex items-center justify-center gap-1">
-                                                                {item.approved === item.requested ? (
+                                                                {item.approved == item.requested ? (
                                                                     <>
                                                                         <CheckCircle className="h-3 w-3 text-green-600" />
                                                                         <span className="text-xs text-green-600">Disetujui penuh</span>
@@ -575,7 +655,7 @@ export default function RequestHistory({ requestHistory }: any) {
                 </Dialog>
 
                 {/* Image Viewer Dialog */}
-                <Dialog open={isImageViewerOpen} onOpenChange={setIsImageViewerOpen}>
+                {/* <Dialog open={isImageViewerOpen} onOpenChange={setIsImageViewerOpen}>
                     <DialogContent className="sm:max-w-3xl">
                         <DialogHeader>
                             <DialogTitle>Foto Kerusakan</DialogTitle>
@@ -586,6 +666,30 @@ export default function RequestHistory({ requestHistory }: any) {
                             </div>
                         )}
                         <DialogFooter>
+                            <Button variant="outline" onClick={() => setIsImageViewerOpen(false)}>
+                                Tutup
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog> */}
+
+                <Dialog open={isImageViewerOpen} onOpenChange={setIsImageViewerOpen}>
+                    <DialogContent className="overflow-hidden p-0 sm:max-w-3xl">
+                        <DialogHeader className="p-4 pb-2">
+                            <DialogTitle>Foto Kerusakan</DialogTitle>
+                        </DialogHeader>
+
+                        {selectedImage && (
+                            <div className="relative flex items-center justify-center bg-black/5 p-4">
+                                <img
+                                    src={selectedImage ? `/storage/${selectedImage}` : '/placeholder.svg'}
+                                    alt="Foto kerusakan"
+                                    className="max-h-[70vh] w-auto rounded-md object-contain"
+                                />
+                            </div>
+                        )}
+
+                        <DialogFooter className="p-4 pt-2">
                             <Button variant="outline" onClick={() => setIsImageViewerOpen(false)}>
                                 Tutup
                             </Button>

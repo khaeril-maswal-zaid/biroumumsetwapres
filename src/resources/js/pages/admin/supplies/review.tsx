@@ -78,8 +78,8 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
     };
 
     const getItemStatus = (requested: number, approved: number) => {
-        if (approved === 0) return 'rejected';
-        if (approved === requested) return 'approved';
+        if (approved == 0) return 'rejected';
+        if (approved == requested) return 'approved';
         return 'partial';
     };
 
@@ -121,17 +121,17 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
         items.forEach((item: any) => {
             const approvedQty = approvedQuantities[item.id] || 0;
 
-            if (approvedQty === 0) {
+            if (approvedQty == 0) {
                 rejectedCount++;
-            } else if (approvedQty === item.requested) {
+            } else if (approvedQty == item.requested) {
                 approvedCount++;
             } else {
                 partialCount++;
             }
         });
 
-        if (rejectedCount === items.length) return 'rejected';
-        if (approvedCount === items.length) return 'approved';
+        if (rejectedCount == items.length) return 'rejected';
+        if (approvedCount == items.length) return 'approved';
 
         return 'partial';
     };
@@ -243,7 +243,7 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
                                                                     {item.satuan && item.satuan.charAt(0).toUpperCase() + item.satuan.slice(1)}
                                                                 </span>
                                                             </div>
-                                                            {percentage > 0 && percentage < 100 && (
+                                                            {percentage > 0 && (
                                                                 <div className="mt-2">
                                                                     <Progress value={percentage} className="h-2" />
                                                                     <p className="mt-1 text-xs text-gray-500">
@@ -287,7 +287,7 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
                                 {selectedRequest.keterangan &&
                                     selectedRequest.status !== 'pending' &&
                                     (() => {
-                                        // Mapping warna berdasarkan status
+                                        // Mapping warna berdasarkan status (Meskipun sekarang hanya confirmed)
                                         const colorMap: any = {
                                             confirmed: {
                                                 border: 'border-green-200',
@@ -327,127 +327,130 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
                                         );
                                     })()}
 
-                                <Separator />
-
                                 {/* Action Section */}
                                 {selectedRequest.status === 'pending' && (
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-2">
-                                            <MessageSquare className="h-5 w-5 text-blue-600" />
-                                            <h4 className="font-medium text-gray-900">Keputusan Admin</h4>
-                                        </div>
-
-                                        {!actionType && (
-                                            <div className="flex gap-3">
-                                                <Button
-                                                    variant="outline"
-                                                    className="flex-1 border-red-200 bg-transparent text-red-700 hover:bg-red-50"
-                                                    onClick={() => handleActionClick('reject')}
-                                                >
-                                                    <X className="mr-2 h-4 w-4" />
-                                                    Tolak Permintaan
-                                                </Button>
-                                                <Button
-                                                    className="flex-1 bg-green-600 hover:bg-green-700"
-                                                    onClick={() => handleActionClick('confirmed')}
-                                                >
-                                                    <CheckCircle className="mr-2 h-4 w-4" />
-                                                    Proses Permintaan
-                                                </Button>
+                                    <>
+                                        <Separator />
+                                        <div className="space-y-4">
+                                            <div className="flex items-center gap-2">
+                                                <MessageSquare className="h-5 w-5 text-blue-600" />
+                                                <h4 className="font-medium text-gray-900">Keputusan Admin</h4>
                                             </div>
-                                        )}
 
-                                        {actionType && (
-                                            <div className="space-y-4 rounded-lg border bg-gray-50 p-4">
-                                                <div className="flex items-center gap-2">
-                                                    {actionType === 'confirmed' ? (
-                                                        <CheckCircle className="h-5 w-5 text-green-600" />
-                                                    ) : (
-                                                        <AlertCircle className="h-5 w-5 text-red-600" />
-                                                    )}
-                                                    <h5 className="font-medium">
-                                                        {actionType === 'confirmed' ? 'Memproses Permintaan ATK' : 'Menolak Permintaan ATK'}
-                                                    </h5>
-                                                </div>
-
-                                                {actionType === 'confirmed' && (
-                                                    <div className="rounded-md border border-blue-200 bg-blue-50 p-3">
-                                                        <p className="mb-2 text-sm text-blue-800">
-                                                            <strong>Status Permintaan:</strong>
-                                                            {calculateRequestStatus() === 'approved'
-                                                                ? ' Disetujui Penuh'
-                                                                : calculateRequestStatus() === 'partial'
-                                                                  ? ' Disetujui Sebagian'
-                                                                  : ' Ditolak'}
-                                                        </p>
-                                                        <p className="text-xs text-blue-600">
-                                                            Pastikan jumlah yang disetujui sudah sesuai dengan ketersediaan stok.
-                                                        </p>
-                                                    </div>
-                                                )}
-
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="admin-message">
-                                                        Pesan untuk Pemohon {actionType === 'reject' && <span className="text-red-500">*</span>}
-                                                    </Label>
-                                                    <Textarea
-                                                        id="admin-message"
-                                                        placeholder={
-                                                            actionType === 'confirmed'
-                                                                ? 'Tambahkan catatan atau instruksi pengambilan ATK (opsional)...'
-                                                                : 'Jelaskan alasan penolakan permintaan ATK...'
-                                                        }
-                                                        value={adminMessage}
-                                                        onChange={(e) => setAdminMessage(e.target.value)}
-                                                        rows={3}
-                                                        className="mt-1 resize-none"
-                                                    />
-                                                    {actionType === 'reject' && !adminMessage.trim() && (
-                                                        <p className="text-sm text-red-600">Pesan wajib diisi untuk penolakan</p>
-                                                    )}
-                                                </div>
-
-                                                <div className="flex gap-2 pt-2">
+                                            {!actionType && (
+                                                <div className="flex gap-3">
                                                     <Button
                                                         variant="outline"
-                                                        onClick={() => {
-                                                            setActionType(null);
-                                                            setAdminMessage('');
-                                                            // Reset approved quantities to original values
-                                                            const resetQuantities: { [key: string]: number } = {};
-                                                            selectedRequest.daftar_kebutuhan.forEach((item: any) => {
-                                                                resetQuantities[item.id] = item.approved;
-                                                            });
-                                                            setApprovedQuantities(resetQuantities);
-                                                        }}
-                                                        disabled={isProcessing}
+                                                        className="flex-1 border-red-200 bg-transparent text-red-700 hover:bg-red-50"
+                                                        onClick={() => handleActionClick('reject')}
                                                     >
-                                                        Batal
+                                                        <X className="mr-2 h-4 w-4" />
+                                                        Tolak Permintaan
                                                     </Button>
                                                     <Button
-                                                        onClick={() => {
-                                                            handleSubmit(selectedRequest.kode_pelaporan);
-                                                        }}
-                                                        disabled={
-                                                            isProcessing ||
-                                                            (actionType === 'reject' && selectedRequest.status === 'pending' && !adminMessage.trim())
-                                                        }
-                                                        className={
-                                                            actionType === 'confirmed'
-                                                                ? 'bg-green-600 hover:bg-green-700'
-                                                                : 'bg-red-600 hover:bg-red-700'
-                                                        }
+                                                        className="flex-1 bg-green-600 hover:bg-green-700"
+                                                        onClick={() => handleActionClick('confirmed')}
                                                     >
-                                                        {isProcessing
-                                                            ? 'Memproses...'
-                                                            : actionType === 'confirmed'
-                                                              ? 'Konfirmasi Persetujuan'
-                                                              : 'Konfirmasi Penolakan'}
+                                                        <CheckCircle className="mr-2 h-4 w-4" />
+                                                        Proses Permintaan
                                                     </Button>
                                                 </div>
-                                            </div>
-                                        )}
-                                    </div>
+                                            )}
+
+                                            {actionType && (
+                                                <div className="space-y-4 rounded-lg border bg-gray-50 p-4">
+                                                    <div className="flex items-center gap-2">
+                                                        {actionType === 'confirmed' ? (
+                                                            <CheckCircle className="h-5 w-5 text-green-600" />
+                                                        ) : (
+                                                            <AlertCircle className="h-5 w-5 text-red-600" />
+                                                        )}
+                                                        <h5 className="font-medium">
+                                                            {actionType === 'confirmed' ? 'Memproses Permintaan ATK' : 'Menolak Permintaan ATK'}
+                                                        </h5>
+                                                    </div>
+
+                                                    {actionType === 'confirmed' && (
+                                                        <div className="rounded-md border border-blue-200 bg-blue-50 p-3">
+                                                            <p className="mb-2 text-sm text-blue-800">
+                                                                <strong>Status Permintaan:</strong>
+                                                                {calculateRequestStatus() === 'approved'
+                                                                    ? ' Disetujui Penuh'
+                                                                    : calculateRequestStatus() === 'partial'
+                                                                      ? ' Disetujui Sebagian'
+                                                                      : ' Ditolak'}
+                                                            </p>
+                                                            <p className="text-xs text-blue-600">
+                                                                Pastikan jumlah yang disetujui sudah sesuai dengan ketersediaan stok.
+                                                            </p>
+                                                        </div>
+                                                    )}
+
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="admin-message">
+                                                            Pesan untuk Pemohon {actionType === 'reject' && <span className="text-red-500">*</span>}
+                                                        </Label>
+                                                        <Textarea
+                                                            id="admin-message"
+                                                            placeholder={
+                                                                actionType === 'confirmed'
+                                                                    ? 'Tambahkan catatan atau instruksi pengambilan ATK (opsional)...'
+                                                                    : 'Jelaskan alasan penolakan permintaan ATK...'
+                                                            }
+                                                            value={adminMessage}
+                                                            onChange={(e) => setAdminMessage(e.target.value)}
+                                                            rows={3}
+                                                            className="mt-1 resize-none"
+                                                        />
+                                                        {actionType === 'reject' && !adminMessage.trim() && (
+                                                            <p className="text-sm text-red-600">Pesan wajib diisi untuk penolakan</p>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="flex gap-2 pt-2">
+                                                        <Button
+                                                            variant="outline"
+                                                            onClick={() => {
+                                                                setActionType(null);
+                                                                setAdminMessage('');
+                                                                // Reset approved quantities to original values
+                                                                const resetQuantities: { [key: string]: number } = {};
+                                                                selectedRequest.daftar_kebutuhan.forEach((item: any) => {
+                                                                    resetQuantities[item.id] = item.approved;
+                                                                });
+                                                                setApprovedQuantities(resetQuantities);
+                                                            }}
+                                                            disabled={isProcessing}
+                                                        >
+                                                            Batal
+                                                        </Button>
+                                                        <Button
+                                                            onClick={() => {
+                                                                handleSubmit(selectedRequest.kode_pelaporan);
+                                                            }}
+                                                            disabled={
+                                                                isProcessing ||
+                                                                (actionType === 'reject' &&
+                                                                    selectedRequest.status === 'pending' &&
+                                                                    !adminMessage.trim())
+                                                            }
+                                                            className={
+                                                                actionType === 'confirmed'
+                                                                    ? 'bg-green-600 hover:bg-green-700'
+                                                                    : 'bg-red-600 hover:bg-red-700'
+                                                            }
+                                                        >
+                                                            {isProcessing
+                                                                ? 'Memproses...'
+                                                                : actionType === 'confirmed'
+                                                                  ? 'Konfirmasi Persetujuan'
+                                                                  : 'Konfirmasi Penolakan'}
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </>
                                 )}
                             </div>
                         )}

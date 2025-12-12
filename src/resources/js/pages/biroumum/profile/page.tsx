@@ -66,7 +66,7 @@ export default function Profile() {
                                         <Building className="h-5 w-5 text-gray-500" />
                                         <div>
                                             <Label className="text-sm text-gray-500">Unit Kerja</Label>
-                                            <p className="font-medium">{auth?.user?.unit_kerja}</p>
+                                            <p className="font-medium">{auth?.user?.biro?.nama_biro}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -75,7 +75,7 @@ export default function Profile() {
                                 <Button
                                     variant="outline"
                                     onClick={handleLogout}
-                                    className="flex items-center space-x-2 border-red-200 bg-red-50 hover:bg-red-300 text-red-600"
+                                    className="flex items-center space-x-2 border-red-200 bg-red-50 text-red-600 hover:bg-red-300"
                                 >
                                     <LogOut className="h-4 w-4" />
                                     <span>Logout</span>

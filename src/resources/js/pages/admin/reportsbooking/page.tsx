@@ -73,6 +73,8 @@ export default function BookingReports({
         return months[tanggal_penggunaan.getMonth()];
     };
 
+    console.log(roomSchedules);
+
     // Fungsi untuk mendapatkan jadwal berdasarkan tanggal
     const getSchedulesByDate = (tanggal_penggunaan: any) => {
         const dateStr = tanggal_penggunaan.toLocaleDateString('sv-SE'); // Format: YYYY-MM-DD

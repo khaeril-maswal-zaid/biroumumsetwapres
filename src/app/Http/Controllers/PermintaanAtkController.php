@@ -114,7 +114,7 @@ class PermintaanAtkController extends Controller
         $originalItems = collect($permintaanAtk->daftar_kebutuhan);
 
         $updatedItems = $originalItems->map(function ($item) use ($inputItems) {
-            $itemId = (int) $item['id'];
+            $itemId =  $item['id'];
             if (isset($inputItems[$itemId])) {
                 $item['approved'] = $inputItems[$itemId];
             }

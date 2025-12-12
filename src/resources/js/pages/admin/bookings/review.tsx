@@ -10,7 +10,7 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, Link, router } from '@inertiajs/react';
-import { AlertCircle, ArrowLeft, Calendar, CheckCircle, Clock, Edit3, MessageSquare, Users, X } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Building, Calendar, CheckCircle, Clock, Edit3, MessageSquare, Presentation, Users, Video, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
@@ -258,15 +258,13 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                             <div>
                                                 <p className="font-medium text-gray-900">Waktu kegiatan</p>
                                                 <p className="text-sm text-gray-600">
-                                                    {selectedBooking.jam_mulai} - {selectedBooking.jam_selesai}
+                                                    {selectedBooking.jam_mulai.slice(0, 5)} - {selectedBooking.jam_selesai.slice(0, 5)}
                                                 </p>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <div className="space-y-4">
                                         <div className="flex items-center gap-3">
-                                            <Calendar className="h-5 w-5 text-purple-600" />
+                                            <Building className="h-5 w-5 text-purple-600" />
                                             <div>
                                                 <p className="font-medium text-gray-900">Info Ruangan</p>
                                                 <p className="text-xs text-gray-600">{selectedBooking.ruangans.nama_ruangan}</p>
@@ -274,11 +272,79 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                                 <p className="text-xs text-gray-600">Kapasitas {selectedBooking.ruangans.kapasitas} Orang</p>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-3">
+                                            <Presentation className="h-5 w-5 text-green-600" />
+                                            <div>
+                                                <p className="font-medium text-gray-900">Jenis Rapat</p>
+                                                <p className="text-sm text-gray-600">{selectedBooking.jenis_rapat}</p>
+                                            </div>
+                                        </div>
 
                                         <div>
                                             <p className="mb-2 font-medium text-gray-900">Keperluan/ Kegiatan</p>
                                             <p className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">{selectedBooking.deskripsi}</p>
                                         </div>
+
+                                        {selectedBooking.is_hybrid == '1' && (
+                                            <div className="flex w-full items-center gap-4 rounded-xl bg-linear-to-r from-violet-50 to-purple-50 px-4 py-2.5 text-left transition-all duration-200">
+                                                {/* Custom Checkbox */}
+                                                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-violet-600 bg-violet-600 transition-all duration-200">
+                                                    <svg
+                                                        className="h-4 w-4 text-white"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke="currentColor"
+                                                        strokeWidth={3}
+                                                    >
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                </div>
+
+                                                {/* Icon & Label */}
+                                                <div className="flex flex-1 items-center gap-3">
+                                                    <div className="rounded-lg bg-violet-100 p-2.5 transition-colors duration-200">
+                                                        <Video className="h-5 w-5 text-violet-600 transition-colors duration-200" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-semibold text-violet-900 transition-colors duration-200">
+                                                            Rapat Hybrid
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {selectedBooking.is_ti_support == '1' && (
+                                            <div className="flex w-full items-center gap-4 rounded-xl bg-linear-to-r from-teal-50 to-purple-50 px-4 py-2.5 text-left transition-all duration-200">
+                                                {/* Custom Checkbox */}
+                                                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-teal-600 bg-teal-600 transition-all duration-200">
+                                                    <svg
+                                                        className="h-4 w-4 text-white"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke="currentColor"
+                                                        strokeWidth={3}
+                                                    >
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                </div>
+
+                                                {/* Icon & Label */}
+                                                <div className="flex flex-1 items-center gap-3">
+                                                    <div className="rounded-lg bg-teal-100 p-2.5 transition-colors duration-200">
+                                                        <Video className="h-5 w-5 text-teal-600 transition-colors duration-200" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-semibold text-teal-900 transition-colors duration-200">
+                                                            Dukungan TI
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 

@@ -134,8 +134,7 @@ export function FormBooking() {
                     </div>
                     <div>
                         <Label htmlFor="endTime">
-                            Jam Selesai
-                            <span className="text-red-500">*</span>
+                            Jam Selesai <span className="text-red-500">*</span>
                         </Label>
                         <Input className="mt-1" type="time" {...register('endTime')} min={formData.startTime} />
                         {errors.endTime && <p className="mt-1 text-sm text-red-500">{errors.endTime.message}</p>}

@@ -110,6 +110,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('kerusakangedung.status')
         ->middleware('permission:change_damage_status');
 
+    Route::patch('/dashboard/kerusakan-gedung/set-urgensi/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'urgensi'])
+        ->name('kerusakangedung.urgensi')
+        ->middleware('permission:change_damage_status');
+
 
 
     // Manajemen ATK (view_supplies_requests & change_supplies_status)

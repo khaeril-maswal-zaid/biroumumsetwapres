@@ -192,7 +192,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                                 <TableCell>{booking?.ruangans.nama_ruangan}</TableCell>
                                                 <TableCell className="hidden md:table-cell">{formatTanggalIna(booking.tanggal_penggunaan)}</TableCell>
                                                 <TableCell className="hidden md:table-cell">
-                                                    {booking.jam_mulai} - {booking.jam_selesai}
+                                                    {booking.jam_mulai.slice(0, 5)} - {booking.jam_selesai.slice(0, 5)}
                                                 </TableCell>
                                                 <TableCell>{getStatusBadge(booking.status, booking.is_read)}</TableCell>
                                                 <TableCell className="text-right">

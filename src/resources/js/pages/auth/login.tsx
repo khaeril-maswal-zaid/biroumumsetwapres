@@ -35,13 +35,13 @@ export default function Login({ status, canResetPassword }: LoginProps) {
     };
 
     return (
-        <AuthLayout title="Layanan Service Biro Umum" description="Silakan login untuk mengakses layanan">
+        <AuthLayout title="Help Desk Biro Umum" description="Silakan login untuk mengakses layanan">
             <Head title="Log in" />
 
             <form className="flex flex-col gap-6" onSubmit={submit}>
                 <div className="grid gap-6">
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Email address</Label>
+                        <Label htmlFor="email">Username</Label>
                         <Input
                             id="email"
                             type=""
@@ -51,7 +51,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                             autoComplete="email"
                             value={data.email}
                             onChange={(e) => setData('email', e.target.value)}
-                            placeholder="email@example.com"
+                            placeholder="email@set.wapresri.go.id"
                         />
                         <InputError message={errors.email} />
                     </div>

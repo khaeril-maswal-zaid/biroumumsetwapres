@@ -29,7 +29,7 @@ class KerusakanGedung extends Model
         'item',
         'deskripsi',
         'picture',
-        // 'urgensi',
+        'urgensi',
         'no_hp',
         'kode_pelaporan',
         'status',

@@ -58,7 +58,7 @@ class KerusakanGedungController extends Controller
             'item' => $request->damageType,
             'deskripsi' => $request->description,
             'picture' => $photoPaths,
-            // 'urgensi' => $request->urgency,
+            'urgensi' => null,
             'kode_pelaporan' => 'KGD-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'no_hp' => $request->contact,
             'status' => 'pending',
@@ -139,5 +139,14 @@ class KerusakanGedungController extends Controller
         ];
 
         return Inertia::render('admin/reportsdamages/page', $data);
+    }
+
+    public function urgensi(KerusakanGedung $kerusakanGedung, Request $request)
+    {
+        $validated = $request->validate([
+            'urgensi' => 'required|in:tinggi,rendah',
+        ]);
+
+        $kerusakanGedung->update($validated);
     }
 }
