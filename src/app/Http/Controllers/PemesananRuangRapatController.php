@@ -8,6 +8,7 @@ use App\Models\PemesananRuangRapat;
 use App\Http\Requests\StorePemesananRuangRapatRequest;
 use App\Http\Requests\UpdatePemesananRuangRapatRequest;
 use App\Models\DaftarRuangan;
+use App\Models\Notification;
 use App\Models\UnitKerja;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -66,7 +67,7 @@ class PemesananRuangRapatController extends Controller
             return back()->withErrors(['room' => 'Ruangan tidak tersedia pada waktu tersebut']);
         }
 
-        PemesananRuangRapat::create([
+        $permintaan = PemesananRuangRapat::create([
             'user_id' => Auth::id(),
             'kode_unit' => Auth::user()->pegawai?->unit?->kode_unit,
             'tanggal_penggunaan' => $request->date,
@@ -80,6 +81,21 @@ class PemesananRuangRapatController extends Controller
             'status' => 'pending',
             'is_hybrid' => $request->isHybrid,
             'is_ti_support' => $request->needItSupport,
+        ]);
+
+        $pegawai = $permintaan->pemesan->pegawai;
+        $message = "Pemesanan ruang rapat {$permintaan->ruangans->nama_ruangan} oleh {$pegawai->nama} ({$pegawai->jabatan}) menunggu peninjauan.";
+
+        // Buat notifikasi
+        Notification::create([
+            'kode_unit'   => $permintaan->kode_unit,
+            'permissions' => ['view_bookings'],
+            'type'        => 'new',
+            'category'    => 'room',
+            'title'       => 'Pemesanan Ruang Rapat Baru',
+            'message'     =>  $message,
+            'priority'    => 'medium',
+            'action_url'  => route('ruangrapat.show', $permintaan->kode_booking, false),
         ]);
     }
 

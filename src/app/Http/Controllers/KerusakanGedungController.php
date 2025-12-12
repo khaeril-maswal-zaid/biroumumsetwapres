@@ -6,6 +6,7 @@ use App\Models\KerusakanGedung;
 use App\Http\Requests\StoreKerusakanGedungRequest;
 use App\Http\Requests\UpdateKerusakanGedungRequest;
 use App\Models\KategoriKerusakan;
+use App\Models\Notification;
 use App\Models\UnitKerja;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -50,7 +51,7 @@ class KerusakanGedungController extends Controller
 
         $idKat  = KategoriKerusakan::where('kode_kerusakan', $request->kategori)->value('id');
 
-        KerusakanGedung::create([
+        $laporan = KerusakanGedung::create([
             'user_id' => Auth::id(),
             'kode_unit' => Auth::user()->pegawai?->unit?->kode_unit,
             'kategori_kerusakan_id' => $idKat,
@@ -62,6 +63,21 @@ class KerusakanGedungController extends Controller
             'kode_pelaporan' => 'KGD-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'no_hp' => $request->contact,
             'status' => 'pending',
+        ]);
+
+        $pegawai = $laporan->pelapor->pegawai;
+        $message = "Laporan kerusakan gedung oleh {$pegawai->name} ({$pegawai->jabatan}) memerlukan peninjauan.";
+
+        // Buat notifikasi
+        Notification::create([
+            'kode_unit'   => $laporan->kode_unit,
+            'permissions' => ['view_damages'],
+            'type'        => 'new',
+            'category'    => 'room',
+            'title'       => 'Laporan Kerusakan Gedung Baru',
+            'message'     =>  $message,
+            'priority'    => 'medium',
+            'action_url'  => route('kerusakangedung.show', $laporan->kode_pelaporan, false),
         ]);
     }
 

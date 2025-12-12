@@ -6,6 +6,7 @@ use App\Models\PermintaanAtk;
 use App\Http\Requests\StorePermintaanAtkRequest;
 use App\Http\Requests\UpdatePermintaanAtkRequest;
 use App\Models\DaftarAtk;
+use App\Models\Notification;
 use App\Models\UnitKerja;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -41,21 +42,35 @@ class PermintaanAtkController extends Controller
      */
     public function store(StorePermintaanAtkRequest $request)
     {
-
-        // $path = $request->file('memo')->store('memos', 'public');
-
-        PermintaanAtk::create([
-            'user_id' => Auth::id(),
-            'kode_unit' => Auth::user()->pegawai?->unit?->kode_unit,
+        // Simpan permintaan ATK
+        $permintaan = PermintaanAtk::create([
+            'user_id'         => Auth::id(),
+            'kode_unit'       => Auth::user()->pegawai?->unit?->kode_unit,
             'daftar_kebutuhan' => $request->items ?? [],
-            'deskripsi' => $request->justification,
-            // 'urgensi' => $request->urgency,
-            'no_hp' => $request->contact,
-            'kode_pelaporan' => 'ATK-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
-            'status' => 'pending',
-            // 'memo' => $path,
+            'deskripsi'       => $request->justification,
+            // 'urgensi'      => $request->urgency,
+            'no_hp'           => $request->contact,
+            'kode_pelaporan'  => 'ATK-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
+            'status'          => 'pending',
+            // 'memo'         => $path,
+        ]);
+
+        $pegawai = $permintaan->pemesan->pegawai;
+        $message = "Permintaan ATK dari {$pegawai->nama} ({$pegawai->jabatan}) menunggu tindak lanjut.";
+
+        // Buat notifikasi
+        Notification::create([
+            'kode_unit'   => $permintaan->kode_unit,
+            'permissions' => ['view_supplies'],
+            'type'        => 'new',
+            'category'    => 'supplies',
+            'title'       => 'Permintaan ATK Baru',
+            'message'     =>  $message,
+            'priority'    => 'medium',
+            'action_url'  => route('permintaanatk.show', $permintaan->kode_pelaporan, false),
         ]);
     }
+
 
     /**
      * Display the specified resource.

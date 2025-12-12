@@ -100,8 +100,8 @@ class RolePermissionSeeder extends Seeder
         ];
         $adminAtkRole = Role::create(
             [
-                'name' => 'admin_atk',
-                'label' => 'Admin ATK',
+                'name' => 'operator_atk',
+                'label' => 'Operator ATK',
                 'guard_name' => 'web',
                 'description' => 'Bertanggung jawab mengelola data permintaan dan ketersediaan ATK serta statusnya.'
             ]
@@ -125,8 +125,8 @@ class RolePermissionSeeder extends Seeder
         ];
         $adminRuanganRole = Role::create(
             [
-                'name' => 'admin_ruangan',
-                'label' => 'Admin Ruangan Rapat',
+                'name' => 'operator_ruangan',
+                'label' => 'Operator Ruangan Rapat',
                 'guard_name' => 'web',
                 'description' => 'Mengelola ruangan rapat dan seluruh permintaan booking yang masuk.'
             ]
@@ -150,8 +150,8 @@ class RolePermissionSeeder extends Seeder
         ];
         $adminKerusakanGedungRole = Role::create(
             [
-                'name' => 'admin_kerusakan_gedung',
-                'label' => 'Admin Kerusakan Gedung',
+                'name' => 'operator_kerusakan_gedung',
+                'label' => 'Operator Kerusakan Gedung',
                 'guard_name' => 'web',
                 'description' => 'Mengelola laporan kerusakan gedung serta kategori kerusakan.'
             ]
