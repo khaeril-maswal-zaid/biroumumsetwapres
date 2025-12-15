@@ -18,85 +18,105 @@ class DaftarRuanganSeeder extends Seeder
                 'nama_ruangan' => 'Ruang Rapat',
                 'lokasi' => 'Gedung Sekretariat I Lantai 2',
                 'kapasitas' => '26+1',
-                'image' => 'set-1-lt-2-v1.jpg',
-                'kode_ruangan' => 'RR-051',
+                'kapasitas_max' => '26+1',
+                'fasilitas' => ['TV LED dan Video Conference'],
+                'image' => 'set-1-lt-2-v1.jpg'
             ],
             [
                 'nama_ruangan' => 'Ruang Rapat',
                 'lokasi' => 'Gedung Sekretariat I Lantai 3',
                 'kapasitas' => '16+1',
-                'image' => 'set-1-lt-3.jpg',
-                'kode_ruangan' => 'RR-052',
+                'kapasitas_max' => '26+1',
+                'fasilitas' => ['TV LED'],
+                'image' => 'set-1-lt-3.jpg'
             ],
             [
                 'nama_ruangan' => 'Ruang Rapat',
                 'lokasi' => 'Gedung Sekretariat I Lantai 4',
                 'kapasitas' => '26+1',
-                'image' => 'set-1-lt-4-v2.jpg',
-                'kode_ruangan' => 'RR-053',
+                'kapasitas_max' => '26+1',
+                'fasilitas' => ['TV LED'],
+                'image' => 'set-1-lt-4-v2.jpg'
             ],
             [
                 'nama_ruangan' => 'Ruang Rapat',
                 'lokasi' => 'Gedung Sekretariat I Lantai 5',
                 'kapasitas' => '16+1',
-                'image' => 'set-1-lt-5.jpg',
-                'kode_ruangan' => 'RR-054',
+                'kapasitas_max' => '20+1',
+                'fasilitas' => ['TV LED'],
+                'image' => 'set-1-lt-5.jpg'
             ],
             [
                 'nama_ruangan' => 'Ruang Rapat',
                 'lokasi' => 'Gedung Sekretariat II Lantai 1',
                 'kapasitas' => '34+1',
-                'image' => 'set-2-lt-1-v1.jpg',
-                'kode_ruangan' => 'RR-055',
+                'kapasitas_max' => '50+1',
+                'fasilitas' => ['TV LED, TV Matador, Video Conference, dan Mic Conference'],
+                'image' => 'set-2-lt-1-v1.jpg'
             ],
             [
                 'nama_ruangan' => 'HOLDING TAMU SKWP I',
                 'lokasi' => 'Ruang Sinergi Gedung Sekretariat II Lantai 2',
                 'kapasitas' => '6',
-                'image' => 'sinergi-2-lt-2-v1.jpg',
-                'kode_ruangan' => 'RR-056',
+                'kapasitas_max' => '6',
+                'fasilitas' => ['TV LED dan Video Conference'],
+                'image' => 'sinergi-2-lt-2-v1.jpg'
             ],
             [
                 'nama_ruangan' => 'HOLDING TAMU SKWP II',
                 'lokasi' => 'Ruang Sinergi Gedung Sekretariat II Lantai 2',
                 'kapasitas' => '8',
-                'image' => 'sinergi-2-lt-2-v2.jpg',
-                'kode_ruangan' => 'HDT-057',
+                'kapasitas_max' => '8',
+                'fasilitas' => ['-'],
+                'image' => 'sinergi-2-lt-2-v2.jpg'
             ],
             [
                 'nama_ruangan' => 'Ruang Rapat',
                 'lokasi' => 'Gedung Sekretariat II Lantai 2',
                 'kapasitas' => '12+1',
-                'image' => 'set-2-lt-2-v1.jpg',
-                'kode_ruangan' => 'HDT-058',
+                'kapasitas_max' => '20+1',
+                'fasilitas' => ['TV LED'],
+                'image' => 'set-2-lt-2-v1.jpg'
             ],
             [
                 'nama_ruangan' => 'Ruang Rapat',
                 'lokasi' => 'Gedung Sekretariat II Lantai 3',
                 'kapasitas' => '16+1',
-                'image' => 'set-2-lt-3.jpg',
-                'kode_ruangan' => 'RR-059',
+                'kapasitas_max' => '20+1',
+                'fasilitas' => ['TV LED'],
+                'image' => 'set-2-lt-3.jpg'
             ],
             [
                 'nama_ruangan' => 'Ruang Rapat',
                 'lokasi' => 'Gedung Sekretariat II Lantai 4',
                 'kapasitas' => '26+1',
-                'image' => 'set-2-lt-4-v1.jpg',
-                'kode_ruangan' => 'RR-060',
+                'kapasitas_max' => '26+1',
+                'fasilitas' => ['TV LED'],
+                'image' => 'set-2-lt-4-v1.jpg'
             ],
             [
                 'nama_ruangan' => 'Ruang Rapat',
                 'lokasi' => 'Gedung Sekretariat II Lantai 5',
                 'kapasitas' => '6+1',
-                'image' => 'set-2-lt-5-v1.jpg',
-                'kode_ruangan' => 'RR-061',
+                'kapasitas_max' => '10+1',
+                'fasilitas' => ['TV LED'],
+                'image' => 'set-2-lt-5-v1.jpg'
+            ],
+            [
+                'nama_ruangan' => 'Ruang Rapat',
+                'lokasi' => 'Gedung Sekretariat III Lantai 2',
+                'kapasitas' => '31+1',
+                'kapasitas_max' => '31+1',
+                'fasilitas' => ['TV LED, TV Matador, Video Conference, dan Mic Conference'],
+                'image' => 'set-3-lt-2-v1.jpg'
             ],
             [
                 'nama_ruangan' => 'Ruang Rapat',
                 'lokasi' => 'Gedung Penunjang Lantai 2',
                 'kapasitas' => '8+1',
-                'image' => 'penunjang-lt-2.png',
-                'kode_ruangan' => 'RR-062',
+                'kapasitas_max' => '15+1',
+                'fasilitas' => ['TV LED'],
+                'image' => 'penunjang-lt-2.png'
             ],
         ];
 
@@ -108,9 +128,10 @@ class DaftarRuanganSeeder extends Seeder
                 'kode_ruangan' => $value['kode_ruangan'],
                 'lokasi' => $value['lokasi'],
                 'kapasitas' => $value['kapasitas'],
+                'kapasitas_max' => $value['kapasitas_max'],
                 'image' => 'images/rooms/' . $value['image'],
                 'status' => 'aktif',
-                'fasilitas' => ['tv-led', 'wifi', 'ac'],
+                'fasilitas' => $value['fasilitas'],
             ]);
         }
     }
