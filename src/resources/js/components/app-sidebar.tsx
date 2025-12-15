@@ -40,7 +40,7 @@ const mainNavItems: NavItem[] = [
         title: 'Permintaan ATK',
         href: route('permintaanatk.index'),
         icon: ClipboardList,
-        permission: 'view_suppliess',
+        permission: 'view_supplies',
     },
     {
         title: 'Permintaan Kendaraan',
@@ -67,7 +67,7 @@ const reportsNavItems: NavItem[] = [
         title: 'Permintaan ATK',
         href: route('permintaanatk.reports'),
         icon: FileText,
-        permission: 'report_suppliess',
+        permission: 'report_supplies',
     },
 ];
 

@@ -108,7 +108,7 @@ class DaftarRuanganSeeder extends Seeder
                 'kapasitas' => '31+1',
                 'kapasitas_max' => '31+1',
                 'fasilitas' => ['TV LED, TV Matador, Video Conference, dan Mic Conference'],
-                'image' => 'set-3-lt-2-v1.jpg'
+                'image' => 'set-3-lt-2.jpg'
             ],
             [
                 'nama_ruangan' => 'Ruang Rapat',
@@ -125,7 +125,7 @@ class DaftarRuanganSeeder extends Seeder
             DaftarRuangan::create([
                 'kode_unit' => '02',
                 'nama_ruangan' => $value['nama_ruangan'],
-                'kode_ruangan' => $value['kode_ruangan'],
+                'kode_ruangan' => 'RR-' . 51 + $key,
                 'lokasi' => $value['lokasi'],
                 'kapasitas' => $value['kapasitas'],
                 'kapasitas_max' => $value['kapasitas_max'],

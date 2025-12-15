@@ -16,17 +16,18 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth', 'verified'])->group(function () {
     // Halaman utama user (view_homepage)
     Route::get('/', [HomeController::class, 'index'])
-        ->name('home');
-    // ->middleware('permission:view_homepage');
+        ->name('home')
+        ->middleware('permission:view_homepage');
+
+    // History user (view_history)
+    Route::get('/history', [HomeController::class, 'history'])
+        ->name('history')
+        ->middleware('permission:view_history');
+
 
     // Profile user (bisa semua user terverifikasi)
     Route::get('/profile', [UserController::class, 'show'])
         ->name('user.create')->middleware('permission:view_homepage');
-
-    // History user (view_history)
-    Route::get('/history', [HomeController::class, 'history'])
-        ->name('history');
-    // ->middleware('permission:view_history');
 
 
     // Pengajuan Ruang Rapat (create_booking)
@@ -119,11 +120,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Manajemen ATK (view_supplies_requests & change_supplies_status)
     Route::get('/dashboard/permintaan-atk', [PermintaanAtkController::class, 'index'])
         ->name('permintaanatk.index')
-        ->middleware('permission:view_suppliess');
+        ->middleware('permission:view_supplies');
 
     Route::get('/dashboard/permintaan-atk-review/{permintaanAtk:kode_pelaporan}', [PermintaanAtkController::class, 'show'])
         ->name('permintaanatk.show')
-        ->middleware('permission:view_suppliess');
+        ->middleware('permission:view_supplies');
 
     Route::patch('/dashboard/permintaan-atk/{permintaanAtk:kode_pelaporan}', [PermintaanAtkController::class, 'status'])
         ->name('permintaanatk.status')
@@ -210,7 +211,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard/permintaan-atk/reports', [PermintaanAtkController::class, 'reports'])
         ->name('permintaanatk.reports')
-        ->middleware('permission:report_suppliess');
+        ->middleware('permission:report_supplies');
 
 
     Route::get('/dashboard/kerusakan-gedung/reports', [KerusakanGedungController::class, 'reports'])
