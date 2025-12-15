@@ -23,6 +23,7 @@ import {
     ImageIcon,
     MapPin,
     MessageSquare,
+    Play,
     Settings,
     Trash2,
     Users,
@@ -49,6 +50,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function BookingDetailsPage({ selectedDamage }: any) {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
+    const [selectedMedia, setSelectedMedia] = useState<{ path: string; isVideo: boolean } | null>(null);
+    const [isMediaViewerOpen, setIsMediaViewerOpen] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [adminMessage, setAdminMessage] = useState<string>('');
     const [actionType, setActionType] = useState<'cancelled' | 'confirmed' | 'process' | null>(null);
@@ -70,6 +73,12 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
     const handleViewImage = (imageUrl: string) => {
         setSelectedImage(imageUrl);
         setIsImageViewerOpen(true);
+    };
+
+    const handleViewMedia = (path: string, index: number) => {
+        const isVideo = path.includes('video/');
+        setSelectedMedia({ path, isVideo });
+        setIsMediaViewerOpen(true);
     };
 
     const handleSubmit = (raportCode: string) => {
@@ -333,29 +342,43 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                 </div>
                             </div>
 
-                            {/* Foto */}
+                            {/* Foto / Video */}
                             {selectedDamage.picture.length > 0 && (
                                 <>
-                                    <p className="mb-3 font-medium text-gray-900">Foto Kerusakan ({selectedDamage.picture.length})</p>
+                                    <p className="mb-3 font-medium text-gray-900">Foto / Video Kerusakan ({selectedDamage.picture.length})</p>
                                     <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-                                        {selectedDamage.picture.map((photo: string, index: number) => (
-                                            <div
-                                                key={index}
-                                                className="relative aspect-video cursor-pointer overflow-hidden rounded-lg border transition-colors hover:border-blue-300"
-                                                onClick={() =>
-                                                    handleViewImage(`${photo}?height=300&width=400&query=damage report photo ${index + 1}`)
-                                                }
-                                            >
-                                                <img
-                                                    src={`/storage/${photo}?height=300&width=400&query=damage report photo ${index + 1}`}
-                                                    alt={`Foto kerusakan ${index + 1}`}
-                                                    className="h-full w-full object-cover"
-                                                />
-                                                <div className="bg-opacity-0 hover:bg-opacity-10 absolute inset-0 flex items-center justify-center transition-all">
-                                                    <ImageIcon className="h-6 w-6 text-white opacity-0 transition-opacity hover:opacity-100" />
+                                        {selectedDamage.picture.map((media: string, index: number) => {
+                                            const isVideo = media.includes('video/');
+                                            return (
+                                                <div
+                                                    key={index}
+                                                    className="relative aspect-video cursor-pointer overflow-hidden rounded-lg border transition-colors hover:border-blue-300"
+                                                    onClick={() => handleViewMedia(media, index)}
+                                                >
+                                                    {isVideo ? (
+                                                        <video
+                                                            src={`/storage/${media}`}
+                                                            className="h-full w-full object-cover"
+                                                            muted
+                                                            preload="metadata"
+                                                        />
+                                                    ) : (
+                                                        <img
+                                                            src={`/storage/${media}?height=300&width=400&query=damage report media ${index + 1}`}
+                                                            alt={`Media kerusakan ${index + 1}`}
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                    )}
+                                                    <div className="bg-opacity-0 hover:bg-opacity-10 absolute inset-0 flex items-center justify-center transition-all">
+                                                        {isVideo ? (
+                                                            <Play className="h-6 w-6 text-white opacity-100" />
+                                                        ) : (
+                                                            <ImageIcon className="h-6 w-6 text-white opacity-0 transition-opacity hover:opacity-100" />
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 </>
                             )}
@@ -818,6 +841,34 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
 
                     <DialogFooter className="p-4 pt-2">
                         <Button variant="outline" onClick={() => setIsImageViewerOpen(false)}>
+                            Tutup
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={isMediaViewerOpen} onOpenChange={setIsMediaViewerOpen}>
+                <DialogContent className="overflow-hidden p-0 sm:max-w-3xl">
+                    <DialogHeader className="p-4 pb-2">
+                        <DialogTitle>Foto / Video Kerusakan</DialogTitle>
+                    </DialogHeader>
+
+                    {selectedMedia && (
+                        <div className="relative flex items-center justify-center bg-black/5 p-4">
+                            {selectedMedia.isVideo ? (
+                                <video src={`/storage/${selectedMedia.path}`} controls className="max-h-[70vh] w-auto rounded-md" />
+                            ) : (
+                                <img
+                                    src={`/storage/${selectedMedia.path}`}
+                                    alt="Media kerusakan"
+                                    className="max-h-[70vh] w-auto rounded-md object-contain"
+                                />
+                            )}
+                        </div>
+                    )}
+
+                    <DialogFooter className="p-4 pt-2">
+                        <Button variant="outline" onClick={() => setIsMediaViewerOpen(false)}>
                             Tutup
                         </Button>
                     </DialogFooter>

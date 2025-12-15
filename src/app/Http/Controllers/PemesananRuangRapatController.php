@@ -84,7 +84,7 @@ class PemesananRuangRapatController extends Controller
         ]);
 
         $pegawai = $permintaan->pemesan->pegawai;
-        $message = "Pemesanan ruang rapat {$permintaan->ruangans->nama_ruangan} oleh {$pegawai->nama} ({$pegawai->jabatan}) menunggu peninjauan.";
+        $message = "Pemesanan ruang rapat {$permintaan->ruangans->nama_ruangan} oleh {$pegawai->name} ({$pegawai->jabatan}) menunggu peninjauan.";
 
         // Buat notifikasi
         Notification::create([

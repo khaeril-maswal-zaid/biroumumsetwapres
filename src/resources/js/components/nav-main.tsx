@@ -5,7 +5,7 @@ import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, Sideba
 import { cn } from '@/lib/utils';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BarChart4, ChevronDown, ChevronRight } from 'lucide-react';
+import { BarChart4, ChevronDown, ChevronRight, Home } from 'lucide-react';
 import { useState } from 'react';
 
 function getPathnameFromHref(href: string): string {
@@ -37,10 +37,27 @@ export function NavMain({ items, itemsReport }: NavMainProps) {
 
     const [isManagementOpen, setIsManagementOpen] = useState(visibleReportItems.some((item: any) => isPathActive(pathname, item.href)));
 
+    const isActiveHome = isPathActive(pathname, route('dashboard'), true);
+
     return (
         <SidebarGroup className="px-2 py-0">
             <SidebarGroupLabel>Platform</SidebarGroupLabel>
             <SidebarMenu>
+                <SidebarMenuItem>
+                    <SidebarMenuButton
+                        asChild
+                        className={cn(
+                            'text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100',
+                            isActiveHome && 'border-r-2 border-blue-700 bg-blue-50 text-blue-700',
+                        )}
+                    >
+                        <Link href={route('dashboard')} rel="noopener noreferrer">
+                            <Home className="h-5 w-5" />
+                            <span>Home</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+
                 {visibleMainItems.map((item) => {
                     const isActive = isPathActive(pathname, item.href, true);
 
@@ -75,7 +92,7 @@ export function NavMain({ items, itemsReport }: NavMainProps) {
                                 )}
                             >
                                 <BarChart4 className="h-5 w-5" />
-                                Laporan
+                                Dashboard
                                 {isManagementOpen ? <ChevronDown className="ml-auto h-4 w-4" /> : <ChevronRight className="ml-auto h-4 w-4" />}
                             </Button>
                         </CollapsibleTrigger>

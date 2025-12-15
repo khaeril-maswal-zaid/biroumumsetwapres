@@ -56,12 +56,13 @@ class PermintaanAtkController extends Controller
         ]);
 
         $pegawai = $permintaan->pemesan->pegawai;
-        $message = "Permintaan ATK dari {$pegawai->nama} ({$pegawai->jabatan}) menunggu tindak lanjut.";
+        $message = "Permintaan ATK dari {$pegawai->name} ({$pegawai->jabatan}) menunggu tindak lanjut.";
 
         // Buat notifikasi
         Notification::create([
+            'kode_unit'   => $permintaan->pemesan->pegawai->unit->kode_unit,
             'kode_unit'   => $permintaan->kode_unit,
-            'permissions' => ['view_supplies'],
+            'permissions' => ["view_suppliess"],
             'type'        => 'new',
             'category'    => 'supplies',
             'title'       => 'Permintaan ATK Baru',

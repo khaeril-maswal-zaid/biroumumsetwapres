@@ -90,10 +90,26 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
     const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
             if (photos.length >= 2) {
-                alert('Maksimal 2 foto yang dapat diunggah');
+                alert('Maksimal 2 file yang dapat diunggah');
                 return;
             }
             const file = e.target.files[0];
+
+            const validImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/heic'];
+            const validVideoTypes = ['video/mp4', 'video/mov', 'video/avi', 'video/mkv', 'video/webm'];
+            const validTypes = [...validImageTypes, ...validVideoTypes];
+            const maxSize = 20 * 1024 * 1024; // 20MB
+
+            if (!validTypes.includes(file.type)) {
+                alert('Format file tidak didukung. Gunakan JPG, PNG, HEIC untuk foto atau MP4, MOV untuk video');
+                return;
+            }
+
+            if (file.size > maxSize) {
+                alert('Ukuran file terlalu besar. Maksimal 20MB');
+                return;
+            }
+
             setPhotos((prev) => [...prev, file]);
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -264,35 +280,41 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
                                         />
                                         {errors.description && <p className="mt-1 text-sm text-red-500">{errors.description.message}</p>}
                                     </div>
+
                                     <div>
-                                        <Label>
-                                            Foto Kerusakan <span className="text-red-500">*</span>
-                                        </Label>
+                                        <Label>Foto/Video Kerusakan</Label>
                                         <p className="mt-1 text-xs text-gray-500">
-                                            Maks. <span className="font-medium">2 file</span>, ukuran ≤ 5 MB, format{' '}
-                                            <span className="font-medium">JPG, JPEG, PNG, atau HEIC</span>
+                                            Maks. <span className="font-medium">2 file</span>, ukuran ≤ 20 MB, format{' '}
+                                            <span className="font-medium">JPG, PNG, HEIC (foto) atau MP4, MOV (video)</span>
                                         </p>
                                         <div className="mt-2 grid grid-cols-2 gap-4">
-                                            {photoPreviews.map((preview, index) => (
-                                                <div key={index} className="relative">
-                                                    <div className="relative aspect-square overflow-hidden rounded-md border">
-                                                        <img
-                                                            src={preview || '/placeholder.svg'}
-                                                            alt={`Foto kerusakan ${index + 1}`}
-                                                            className="h-full w-full object-cover"
-                                                        />
+                                            {photoPreviews.map((preview, index) => {
+                                                const isVideo = photos[index]?.type.startsWith('video/');
+                                                return (
+                                                    <div key={index} className="relative">
+                                                        <div className="relative aspect-square overflow-hidden rounded-md border">
+                                                            {isVideo ? (
+                                                                <video src={preview} className="h-full w-full object-cover" controls />
+                                                            ) : (
+                                                                <img
+                                                                    src={preview || '/placeholder.svg'}
+                                                                    alt={`Foto kerusakan ${index + 1}`}
+                                                                    className="h-full w-full object-cover"
+                                                                />
+                                                            )}
+                                                        </div>
+                                                        <Button
+                                                            type="button"
+                                                            variant="destructive"
+                                                            size="icon"
+                                                            className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                                                            onClick={() => removePhoto(index)}
+                                                        >
+                                                            <Trash2 className="h-3 w-3" />
+                                                        </Button>
                                                     </div>
-                                                    <Button
-                                                        type="button"
-                                                        variant="destructive"
-                                                        size="icon"
-                                                        className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
-                                                        onClick={() => removePhoto(index)}
-                                                    >
-                                                        <Trash2 className="h-3 w-3" />
-                                                    </Button>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                             {photos.length < 2 && (
                                                 <div
                                                     className="flex aspect-square cursor-pointer items-center justify-center rounded-md border border-dashed hover:bg-gray-50"
@@ -300,12 +322,18 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
                                                 >
                                                     <div className="flex flex-col items-center space-y-2">
                                                         <ImagePlus className="h-8 w-8 text-gray-400" />
-                                                        <span className="text-xs text-gray-500">Tambah Foto</span>
+                                                        <span className="text-xs text-gray-500">Tambah File</span>
                                                     </div>
                                                 </div>
                                             )}
                                         </div>
-                                        <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handlePhotoUpload} />
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            className="hidden"
+                                            accept="image/*,video/*"
+                                            onChange={handlePhotoUpload}
+                                        />
                                     </div>
 
                                     {/* Creative Urgency Selection */}

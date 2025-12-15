@@ -12,12 +12,17 @@ class Notification extends Model
     protected $fillable = [
         'user_id',
         'type',
-        // 'instansi_id',
+        'kode_unit',
         'category',
         'title',
         'message',
         'priority',
         'action_url',
         'is_read',
+        'permissions'
+    ];
+
+    protected $casts = [
+        'permissions' => 'array'
     ];
 }

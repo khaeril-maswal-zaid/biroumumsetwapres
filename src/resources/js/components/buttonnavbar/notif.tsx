@@ -26,10 +26,13 @@ export interface Notification {
     action_url?: string;
     is_read: boolean;
     created_at: string;
+    permissions?: string[] | null;
 }
 
 export default function Notification() {
     const { notifFromServer } = usePage<SharedData>().props;
+    const { auth } = usePage<SharedData>().props;
+
     useEffect(() => {
         const interval = setInterval(() => {
             router.reload({
@@ -42,12 +45,28 @@ export default function Notification() {
 
     const [notifications, setNotifications] = useState<Notification[]>([]);
 
+    // Filter notifikasi berdasarkan permissions
+    const filteredNotifications = notifications.filter((notification) => {
+        // Jika notifikasi tidak memiliki permissions requirement, tampilkan untuk semua user
+        if (!notification.permissions || notification.permissions.length === 0) {
+            return true;
+        }
+
+        // Jika user tidak memiliki permissions, jangan tampilkan
+        if (!auth.permissions || !Array.isArray(auth.permissions)) {
+            return false;
+        }
+
+        // Tampilkan notifikasi hanya jika user memiliki SALAH SATU dari permission yang diperlukan
+        return notification.permissions.some((permission) => auth.permissions?.includes(permission));
+    });
+
     useEffect(() => {
         setNotifications([...notifFromServer]);
     }, [notifFromServer]);
 
-    const unreadCount = notifications.filter((n: any) => !n.is_read).length;
-    const highPriorityCount = notifications.filter((n: any) => !n.is_read && n.priority === 'high').length;
+    const unreadCount = filteredNotifications.filter((n: any) => !n.is_read).length;
+    const highPriorityCount = filteredNotifications.filter((n: any) => !n.is_read && n.priority === 'high').length;
 
     const markAsRead = (id: number, url: string) => {
         router.patch(
@@ -165,14 +184,14 @@ export default function Notification() {
                 <DropdownMenuSeparator />
 
                 <ScrollArea className="h-96">
-                    {notifications.length === 0 ? (
+                    {filteredNotifications.length === 0 ? (
                         <div className="p-4 text-center text-gray-500">
                             <Bell className="mx-auto mb-2 h-8 w-8 text-gray-300" />
                             <p className="text-sm">Tidak ada notifikasi</p>
                         </div>
                     ) : (
                         <div className="space-y-0.5">
-                            {notifications.map((notification: any) => (
+                            {filteredNotifications.map((notification: any) => (
                                 <DropdownMenuItem
                                     key={notification.id}
                                     className={`mb-2 cursor-pointer p-3 ${getNotificationColor(notification.type, notification.priority)} ${
@@ -181,11 +200,11 @@ export default function Notification() {
                                     onClick={() => markAsRead(notification.id, notification.action_url)}
                                 >
                                     <div className="flex w-full items-start gap-3">
-                                        <div className="mt-1 flex-shrink-0">{getNotificationIcon(notification.category)}</div>
+                                        <div className="mt-1 shrink-0">{getNotificationIcon(notification.category)}</div>
                                         <div className="min-w-0 flex-1">
                                             <div className="mb-1 flex items-center justify-between">
                                                 <h4 className="truncate text-sm font-medium text-gray-900">{notification.title}</h4>
-                                                {!notification.is_read && <div className="ml-2 h-2 w-2 flex-shrink-0 rounded-full bg-blue-500" />}
+                                                {!notification.is_read && <div className="ml-2 h-2 w-2 shrink-0 rounded-full bg-blue-500" />}
                                             </div>
 
                                             {/* Deskripsi dan badge berdampingan */}
@@ -204,7 +223,7 @@ export default function Notification() {
                     )}
                 </ScrollArea>
 
-                {notifications.length > 0 && (
+                {filteredNotifications.length > 0 && (
                     <>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-center text-blue-600 hover:text-blue-800">

@@ -130,11 +130,11 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
     return (
         <AppLayout breadcrumbs={breadcrumbs} Button={ButtonKatKerusakan}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
                 <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Manajemen Kategori Kerusakan</h1>
-                        <p className="mt-1 text-gray-600">Kelola kategori kerusakan dan sub kategori untuk sistem pelaporan</p>
+                        <h1 className="text-lg font-bold text-gray-900">Manajemen Kategori Kerusakan</h1>
+                        <p className="mt-1 text-sm text-gray-600">Kelola kategori kerusakan dan sub kategori untuk sistem pelaporan</p>
                     </div>
                 </div>
 

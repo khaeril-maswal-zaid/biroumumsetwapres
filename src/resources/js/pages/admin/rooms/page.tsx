@@ -230,11 +230,11 @@ export default function RoomsPage({ ruangans }: any) {
     return (
         <AppLayout breadcrumbs={breadcrumbs} Button={ButtonRooms}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight">Manajemen Ruangan</h1>
-                        <p className="text-muted-foreground">Kelola data ruangan dan fasilitas</p>
+                        <h1 className="text-lg font-bold tracking-tight">Manajemen Ruangan</h1>
+                        <p className="text-sm text-muted-foreground">Kelola data ruangan dan fasilitas</p>
                     </div>
 
                     <div className="relative max-w-sm flex-1">
