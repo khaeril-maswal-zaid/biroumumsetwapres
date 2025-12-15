@@ -7,10 +7,10 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Skeleton } from '@/components/ui/skeleton';
 import { router, usePage } from '@inertiajs/react';
-import { Info, User, Users } from 'lucide-react';
+import { Camera, Info, MapPin, Mic, Speaker, User, Users } from 'lucide-react';
 import { useState } from 'react';
 
-import { Camera, CheckCircle, Clock, Computer, Home, Mic, Monitor, PenSquare, Shield, Snowflake, Sofa, Speaker, Tv, Wifi, X } from 'lucide-react';
+import { CheckCircle, Clock, Monitor, PenSquare, Tv, X } from 'lucide-react';
 import type React from 'react';
 import { useEffect } from 'react';
 
@@ -18,7 +18,8 @@ interface Room {
     id: string;
     nama_ruangan: string;
     kode_ruangan: string;
-    kapasitas: number;
+    kapasitas: string;
+    kapasitas_max: string;
     lokasi: string;
     status: 'available' | 'booked';
     bookedSlots?: string[];
@@ -34,17 +35,43 @@ interface RoomSelectionProps {
     selectedEndTime: string;
 }
 
-const facilityOptions = [
-    { id: 'wifi', label: 'WiFi', icon: Wifi },
-    { id: 'tv-led', label: 'TV LED', icon: Tv },
-    { id: 'sound-system', label: 'Sound System', icon: Speaker },
-    { id: 'kamera-cctv', label: 'Kamera CCTV', icon: Camera },
-    { id: 'mikrofon', label: 'Mikrofon', icon: Mic },
-    { id: 'papan-tulis', label: 'Papan Tulis', icon: PenSquare },
-    { id: 'ac', label: 'AC', icon: Snowflake },
-    { id: 'komputer', label: 'Komputer', icon: Computer },
-    { id: 'sofa', label: 'Sofa', icon: Sofa },
-    { id: 'lemari', label: 'Lemari', icon: Shield },
+export const facilityOptions = [
+    {
+        id: 'tv-led',
+        label: 'TV LED',
+        icon: Tv,
+        required: true,
+    },
+    {
+        id: 'papan-tulis',
+        label: 'Papan Tulis',
+        icon: PenSquare,
+        required: true,
+    },
+    {
+        id: 'tv-matador',
+        label: 'TV Matador',
+        icon: Monitor,
+        required: true,
+    },
+    {
+        id: 'kamera',
+        label: 'Kamera',
+        icon: Camera,
+        required: true,
+    },
+    {
+        id: 'mikrofon',
+        label: 'Mikrofon',
+        icon: Mic,
+        required: true,
+    },
+    {
+        id: 'sound-system',
+        label: 'Sound System',
+        icon: Speaker,
+        required: true,
+    },
 ];
 
 export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, selectedStartTime, selectedEndTime }: RoomSelectionProps) {
@@ -319,20 +346,30 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                             </div>
 
                             {/* Room Info */}
-                            <div className="space-y-3">
+                            <div className="space-y-5">
                                 <div>
                                     <h3 className="text-xl font-semibold">{selectedRoomDetail.nama_ruangan}</h3>
                                     <p className="text-sm text-gray-500">Kode Ruangan: {selectedRoomDetail.kode_ruangan}</p>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div className="space-y-3 text-sm">
+                                    {/* Lokasi */}
                                     <div className="flex items-center gap-2">
-                                        <Users className="h-4 w-4 text-gray-500" />
-                                        <span>Kapasitas: {selectedRoomDetail.kapasitas} orang</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Home className="h-4 w-4 text-gray-500" />
+                                        <MapPin className="h-4 w-4 text-gray-500" />
                                         <span>{selectedRoomDetail.lokasi}</span>
+                                    </div>
+
+                                    {/* Kapasitas */}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <User className="h-4 w-4 text-gray-500" />
+                                            <span>Kapasitas: {selectedRoomDetail.kapasitas} orang</span>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <Users className="h-4 w-4 text-gray-500" />
+                                            <span>Kapasitas Max: {selectedRoomDetail.kapasitas_max} orang</span>
+                                        </div>
                                     </div>
                                 </div>
 

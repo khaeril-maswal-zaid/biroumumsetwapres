@@ -19,7 +19,7 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Gedung Sekretariat I Lantai 2',
                 'kapasitas' => '26+1',
                 'kapasitas_max' => '26+1',
-                'fasilitas' => ['TV LED dan Video Conference'],
+                'fasilitas' => ['tv-led', 'kamera',],
                 'image' => 'set-1-lt-2-v1.jpg'
             ],
             [
@@ -27,7 +27,7 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Gedung Sekretariat I Lantai 3',
                 'kapasitas' => '16+1',
                 'kapasitas_max' => '26+1',
-                'fasilitas' => ['TV LED'],
+                'fasilitas' => ['tv-led'],
                 'image' => 'set-1-lt-3.jpg'
             ],
             [
@@ -35,7 +35,7 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Gedung Sekretariat I Lantai 4',
                 'kapasitas' => '26+1',
                 'kapasitas_max' => '26+1',
-                'fasilitas' => ['TV LED'],
+                'fasilitas' => ['tv-led'],
                 'image' => 'set-1-lt-4-v2.jpg'
             ],
             [
@@ -43,7 +43,7 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Gedung Sekretariat I Lantai 5',
                 'kapasitas' => '16+1',
                 'kapasitas_max' => '20+1',
-                'fasilitas' => ['TV LED'],
+                'fasilitas' => ['tv-led'],
                 'image' => 'set-1-lt-5.jpg'
             ],
             [
@@ -51,7 +51,7 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Gedung Sekretariat II Lantai 1',
                 'kapasitas' => '34+1',
                 'kapasitas_max' => '50+1',
-                'fasilitas' => ['TV LED, TV Matador, Video Conference, dan Mic Conference'],
+                'fasilitas' => ['tv-led', 'tv-matador', 'kamera', 'mikrofon',],
                 'image' => 'set-2-lt-1-v1.jpg'
             ],
             [
@@ -59,7 +59,7 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Ruang Sinergi Gedung Sekretariat II Lantai 2',
                 'kapasitas' => '6',
                 'kapasitas_max' => '6',
-                'fasilitas' => ['TV LED dan Video Conference'],
+                'fasilitas' => ['tv-led', 'kamera',],
                 'image' => 'sinergi-2-lt-2-v1.jpg'
             ],
             [
@@ -67,7 +67,7 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Ruang Sinergi Gedung Sekretariat II Lantai 2',
                 'kapasitas' => '8',
                 'kapasitas_max' => '8',
-                'fasilitas' => ['-'],
+                'fasilitas' => [''],
                 'image' => 'sinergi-2-lt-2-v2.jpg'
             ],
             [
@@ -75,7 +75,7 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Gedung Sekretariat II Lantai 2',
                 'kapasitas' => '12+1',
                 'kapasitas_max' => '20+1',
-                'fasilitas' => ['TV LED'],
+                'fasilitas' => ['tv-led'],
                 'image' => 'set-2-lt-2-v1.jpg'
             ],
             [
@@ -83,7 +83,7 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Gedung Sekretariat II Lantai 3',
                 'kapasitas' => '16+1',
                 'kapasitas_max' => '20+1',
-                'fasilitas' => ['TV LED'],
+                'fasilitas' => ['tv-led'],
                 'image' => 'set-2-lt-3.jpg'
             ],
             [
@@ -91,7 +91,7 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Gedung Sekretariat II Lantai 4',
                 'kapasitas' => '26+1',
                 'kapasitas_max' => '26+1',
-                'fasilitas' => ['TV LED'],
+                'fasilitas' => ['tv-led'],
                 'image' => 'set-2-lt-4-v1.jpg'
             ],
             [
@@ -99,7 +99,7 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Gedung Sekretariat II Lantai 5',
                 'kapasitas' => '6+1',
                 'kapasitas_max' => '10+1',
-                'fasilitas' => ['TV LED'],
+                'fasilitas' => ['tv-led'],
                 'image' => 'set-2-lt-5-v1.jpg'
             ],
             [
@@ -107,7 +107,7 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Gedung Sekretariat III Lantai 2',
                 'kapasitas' => '31+1',
                 'kapasitas_max' => '31+1',
-                'fasilitas' => ['TV LED, TV Matador, Video Conference, dan Mic Conference'],
+                'fasilitas' => ['tv-led', 'tv-matador', 'kamera', 'mikrofon',],
                 'image' => 'set-3-lt-2.jpg'
             ],
             [
@@ -115,7 +115,7 @@ class DaftarRuanganSeeder extends Seeder
                 'lokasi' => 'Gedung Penunjang Lantai 2',
                 'kapasitas' => '8+1',
                 'kapasitas_max' => '15+1',
-                'fasilitas' => ['TV LED'],
+                'fasilitas' => ['tv-led'],
                 'image' => 'penunjang-lt-2.png'
             ],
         ];

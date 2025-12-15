@@ -23,25 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import {
-    Building,
-    Camera,
-    Computer,
-    Edit,
-    MapPin,
-    Mic,
-    Monitor,
-    PenSquare,
-    Search,
-    Shield,
-    Snowflake,
-    Sofa,
-    Speaker,
-    Trash2,
-    Tv,
-    Users,
-    Wifi,
-} from 'lucide-react';
+import { Building, Camera, Edit, MapPin, Mic, Monitor, PenSquare, Search, Speaker, Trash2, Tv, Users } from 'lucide-react';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -65,16 +47,42 @@ interface Room {
 }
 
 const facilityOptions = [
-    { id: 'wifi', label: 'WiFi', icon: Wifi },
-    { id: 'tv-led', label: 'TV LED', icon: Tv },
-    { id: 'sound-system', label: 'Sound System', icon: Speaker },
-    { id: 'kamera-cctv', label: 'Kamera CCTV', icon: Camera },
-    { id: 'mikrofon', label: 'Mikrofon', icon: Mic },
-    { id: 'papan-tulis', label: 'Papan Tulis', icon: PenSquare },
-    { id: 'ac', label: 'AC', icon: Snowflake },
-    { id: 'komputer', label: 'Komputer', icon: Computer },
-    { id: 'sofa', label: 'Sofa', icon: Sofa },
-    { id: 'lemari', label: 'Lemari', icon: Shield },
+    {
+        id: 'tv-led',
+        label: 'TV LED',
+        icon: Tv,
+        required: true,
+    },
+    {
+        id: 'papan-tulis',
+        label: 'Papan Tulis',
+        icon: PenSquare,
+        required: true,
+    },
+    {
+        id: 'tv-matador',
+        label: 'TV Matador',
+        icon: Monitor,
+        required: true,
+    },
+    {
+        id: 'kamera',
+        label: 'Kamera',
+        icon: Camera,
+        required: true,
+    },
+    {
+        id: 'mikrofon',
+        label: 'Mikrofon',
+        icon: Mic,
+        required: true,
+    },
+    {
+        id: 'sound-system',
+        label: 'Sound System',
+        icon: Speaker,
+        required: true,
+    },
 ];
 
 export default function RoomsPage({ ruangans }: any) {

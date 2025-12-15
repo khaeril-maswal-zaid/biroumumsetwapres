@@ -438,6 +438,7 @@ class PemesananRuangRapat extends Model
                 'kode_ruangan',
                 'lokasi',
                 'kapasitas',
+                'kapasitas_max',
                 'image',
                 'fasilitas',
             ])->where('status', 'aktif')->get();
@@ -460,6 +461,7 @@ class PemesananRuangRapat extends Model
                     'nama_ruangan' => $r->nama_ruangan,
                     'kode_ruangan' => $r->kode_ruangan,
                     'kapasitas'    => $r->kapasitas,
+                    'kapasitas_max'    => $r->kapasitas_max,
                     'lokasi'       => $r->lokasi,
                     'status'       => count($slots) ? 'booked' : 'available',
                     'bookedSlots'  => $slots,
