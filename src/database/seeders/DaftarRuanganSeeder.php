@@ -124,7 +124,7 @@ class DaftarRuanganSeeder extends Seeder
         foreach ($data as $key => $value) {
             DaftarRuangan::create([
                 'kode_unit' => '02',
-                'nama_ruangan' => $value['nama_ruangan'],
+                'nama_ruangan' =>  $value['lokasi'], // $value['nama_ruangan'],
                 'kode_ruangan' => 'RR-' . 51 + $key,
                 'lokasi' => $value['lokasi'],
                 'kapasitas' => $value['kapasitas'],
