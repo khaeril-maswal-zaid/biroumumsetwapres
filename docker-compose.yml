@@ -10,7 +10,7 @@ services:
     volumes:
       - ./src:/var/www
     ports:
-      - "8003:8080"
+      - "8004:8080"
     networks:
       - alzaid-net
 
