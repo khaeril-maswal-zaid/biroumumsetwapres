@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DaftarAtk;
+use App\Models\StockOpname;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -16,6 +17,7 @@ class DaftarAtkController extends Controller
     {
         return Inertia::render('admin/daftaratk/page', [
             'daftarAtk' => DaftarAtk::latest()->get(),
+            'stockOpnames' => StockOpname::with('daftarAtk')->latest()->take(50)->get(),
         ]);
     }
 

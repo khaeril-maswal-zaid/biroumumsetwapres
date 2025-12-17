@@ -17,5 +17,6 @@ class DaftarAtk extends Model
         'category',
         'satuan',
         'kode_unit',
+        'quantity',
     ];
 }

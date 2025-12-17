@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('kode_atk', 250)->unique();
             $table->string('category', 250);
             $table->string('satuan', 250);
+            $table->integer('quantity')->default(0);
             $table->timestamps();
         });
     }

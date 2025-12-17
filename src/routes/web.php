@@ -10,6 +10,7 @@ use App\Http\Controllers\PemesananRuangRapatController;
 use App\Http\Controllers\PermintaanAtkController;
 use App\Http\Controllers\PermintaanKendaraanController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\StockOpnameController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -177,6 +178,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/dashboard/daftar-atk/destroy/{daftarAtk}', [DaftarAtkController::class, 'destroy'])
         ->name('daftaratk.destroy')
         ->middleware('permission:delete_atk');
+
+    Route::post('/dashboard/stock-opname-atk/store', [StockOpnameController::class, 'store'])
+        ->name('stockopname.store')
+        ->middleware('permission:create_atk');
 
 
 

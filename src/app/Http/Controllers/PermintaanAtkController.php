@@ -7,21 +7,37 @@ use App\Http\Requests\StorePermintaanAtkRequest;
 use App\Http\Requests\UpdatePermintaanAtkRequest;
 use App\Models\DaftarAtk;
 use App\Models\Notification;
-use App\Models\UnitKerja;
+use App\Models\StockOpname;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Inertia\Response;
 
 class PermintaanAtkController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): Response
     {
+        $permintaanAtk = PermintaanAtk::with('pemesan.pegawai')->latest()->paginate(50);
+
+        // Tambahkan stock ke daftar_kebutuhan
+        $permintaanAtk->getCollection()->transform(function ($permintaan) {
+            if ($permintaan->daftar_kebutuhan) {
+                $permintaan->daftar_kebutuhan = collect($permintaan->daftar_kebutuhan)->map(function ($item) {
+                    $daftarAtk = DaftarAtk::find($item['id']);
+                    $item['stock'] = $daftarAtk ? $daftarAtk->quantity : 0;
+                    return $item;
+                })->toArray();
+            }
+            return $permintaan;
+        });
+
+
         $data = [
-            'permintaanAtk' => PermintaanAtk::with('pemesan.pegawai')->latest()->paginate(50)
+            'permintaanAtk' =>  PermintaanAtk::with('pemesan.pegawai')->latest()->paginate(50),
         ];
 
         return Inertia::render('admin/supplies/page', $data);
@@ -78,14 +94,28 @@ class PermintaanAtkController extends Controller
      */
     public function show(PermintaanAtk $permintaanAtk)
     {
-        $permintaanAtk->update(([
-            'is_read' => true
-        ]));
+        $permintaanAtk->update([
+            'is_read' => true,
+        ]);
+
+        if ($permintaanAtk->daftar_kebutuhan) {
+            $permintaanAtk->daftar_kebutuhan = collect($permintaanAtk->daftar_kebutuhan)
+                ->map(function ($item) {
+                    $daftarAtk = DaftarAtk::find($item['id']);
+
+                    return array_merge($item, [
+                        'stock' => $daftarAtk?->quantity ?? 0,
+                    ]);
+                })
+                ->values()
+                ->toArray();
+        }
 
         return Inertia::render('admin/supplies/review', [
-            'selectedRequest' => $permintaanAtk->load('pemesan.pegawai.biro')
+            'selectedRequest' => $permintaanAtk->load('pemesan.pegawai.biro'),
         ]);
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -147,6 +177,26 @@ class PermintaanAtkController extends Controller
         }
 
         $permintaanAtk->update($updateData->all());
+
+        // Proses approved items: buat log StockOpname dan kurangi stock DaftarAtk
+        foreach ($updatedItems as $item) {
+            if (isset($item['approved']) && $item['approved'] > 0) {
+                $daftarAtk = DaftarAtk::find($item['id']);
+                if ($daftarAtk) {
+                    // Buat log StockOpname dengan type Keluar
+                    StockOpname::create([
+                        'daftar_atk_id' => $item['id'],
+                        'quantity' => $item['approved'],
+                        'type' => 'Keluar',
+                        'unit_price' => 0, // Atau ambil dari DaftarAtk jika ada field harga
+                        'total_price' => 0,
+                    ]);
+
+                    // Kurangi stock di DaftarAtk
+                    $daftarAtk->decrement('quantity', $item['approved']);
+                }
+            }
+        }
     }
 
 

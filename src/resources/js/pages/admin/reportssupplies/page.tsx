@@ -17,18 +17,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function SuppliesReports({
-    statusDistribution,
-    divisionStats,
-    topUsers,
-    monthlyTrend,
-    approvalRateTrend,
-    summaryData,
-    itemComparison,
-    urgencyData,
-}: any) {
-    const COLORS = ['#10b981', '#f59e0b', '#3b82f6', '#ef4444'];
-
+export default function SuppliesReports({ statusDistribution, divisionStats, topUsers, monthlyTrend, summaryData, itemComparison }: any) {
     const iconMap: any = {
         approved: CheckCircle,
         pending: Clock,
