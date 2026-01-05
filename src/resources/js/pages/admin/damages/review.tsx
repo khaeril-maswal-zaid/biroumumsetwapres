@@ -418,146 +418,144 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
 
                             <Separator />
 
-                            {selectedDamage.status != 'pending' && (
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-2">
-                                        <AlertTriangle className="h-5 w-5 text-amber-600" />
-                                        <h4 className="font-semibold text-gray-900">Tentukan Tingkat Urgensi Kerusakan</h4>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-3">
-                                        {/* Prioritas Tinggi */}
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                if (selectedDamage?.urgensi) return;
-                                                setSelectedUrgency('tinggi');
-                                            }}
-                                            disabled={!!selectedDamage?.urgensi}
-                                            className={cn(
-                                                'rounded-lg border-2 p-4 text-left transition-all duration-200',
-                                                activeUrgency === 'tinggi'
-                                                    ? 'border-red-500 bg-linear-to-r from-red-50 to-rose-50 ring-2 ring-red-200'
-                                                    : 'border-gray-200 bg-white hover:border-red-300 hover:bg-red-50/30',
-                                                selectedDamage?.urgensi && activeUrgency !== 'tinggi' && 'opacity-60',
-                                                selectedDamage?.urgensi && 'cursor-not-allowed',
-                                            )}
-                                        >
-                                            <div className="flex flex-col gap-1">
-                                                {/* Radio Button & Title */}
-                                                <div className="flex items-start gap-3">
-                                                    <div
-                                                        className={cn(
-                                                            'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200',
-                                                            activeUrgency === 'tinggi'
-                                                                ? 'border-red-600 bg-red-600'
-                                                                : 'border-gray-300 bg-white hover:border-red-400',
-                                                        )}
-                                                    >
-                                                        {activeUrgency === 'tinggi' && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center gap-2">
-                                                            <AlertOctagon
-                                                                className={cn(
-                                                                    'h-4 w-4 transition-colors duration-200',
-                                                                    activeUrgency === 'tinggi' ? 'text-red-600' : 'text-red-400',
-                                                                )}
-                                                            />
-                                                            <p className="font-semibold text-gray-900">Prioritas Tinggi</p>
-                                                        </div>
-                                                    </div>
-                                                    {activeUrgency === 'tinggi' && (
-                                                        <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-semibold whitespace-nowrap text-red-700">
-                                                            Dipilih
-                                                        </span>
-                                                    )}
-                                                </div>
-
-                                                {/* Description */}
-                                                <p className="text-xs text-gray-600">Urgensi: Tindakan segera diperlukan</p>
-                                            </div>
-                                        </button>
-
-                                        {/* Prioritas Rendah */}
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                if (selectedDamage?.urgensi) return;
-                                                setSelectedUrgency('rendah');
-                                            }}
-                                            disabled={!!selectedDamage?.urgensi}
-                                            className={cn(
-                                                'rounded-lg border-2 px-4 py-2.5 text-left transition-all duration-200',
-                                                activeUrgency === 'rendah'
-                                                    ? 'border-green-500 bg-linear-to-r from-green-50 to-emerald-50 ring-2 ring-green-200'
-                                                    : 'border-gray-200 bg-white hover:border-green-300 hover:bg-green-50/30',
-                                                selectedDamage?.urgensi && activeUrgency !== 'rendah' && 'opacity-60',
-                                                selectedDamage?.urgensi && 'cursor-not-allowed',
-                                            )}
-                                        >
-                                            <div className="flex flex-col gap-1">
-                                                {/* Radio Button & Title */}
-                                                <div className="flex items-start gap-3">
-                                                    <div
-                                                        className={cn(
-                                                            'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200',
-                                                            activeUrgency === 'rendah'
-                                                                ? 'border-green-600 bg-green-600'
-                                                                : 'border-gray-300 bg-white hover:border-green-400',
-                                                        )}
-                                                    >
-                                                        {activeUrgency === 'rendah' && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center gap-2">
-                                                            <AlertCircle
-                                                                className={cn(
-                                                                    'h-4 w-4 transition-colors duration-200',
-                                                                    activeUrgency === 'rendah' ? 'text-green-600' : 'text-green-400',
-                                                                )}
-                                                            />
-                                                            <p className="font-semibold text-gray-900">Prioritas Rendah</p>
-                                                        </div>
-                                                    </div>
-                                                    {activeUrgency === 'rendah' && (
-                                                        <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold whitespace-nowrap text-green-700">
-                                                            Dipilih
-                                                        </span>
-                                                    )}
-                                                </div>
-
-                                                {/* Description */}
-                                                <p className="text-xs text-gray-600">Urgensi: Tidak mendesak</p>
-                                            </div>
-                                        </button>
-                                    </div>
-
-                                    {/* Submit Button (only show when not already submitted on server) */}
-                                    {selectedUrgency && !selectedDamage?.urgensi && (
-                                        <div className="flex gap-2 border-t pt-4">
-                                            <button
-                                                type="button"
-                                                onClick={() => setSelectedUrgency(null)}
-                                                className="flex-1 rounded-lg border-2 border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
-                                            >
-                                                Batal
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={handleSubmitUrgency}
-                                                disabled={isProcessing}
-                                                className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:bg-gray-400"
-                                            >
-                                                {isProcessing ? 'Menyimpan...' : 'Simpan Urgensi'}
-                                            </button>
-                                        </div>
-                                    )}
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-2">
+                                    <AlertTriangle className="h-5 w-5 text-amber-600" />
+                                    <h4 className="font-semibold text-gray-900">Tentukan Tingkat Urgensi Kerusakan</h4>
                                 </div>
-                            )}
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    {/* Prioritas Tinggi */}
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (selectedDamage?.urgensi) return;
+                                            setSelectedUrgency('tinggi');
+                                        }}
+                                        disabled={!!selectedDamage?.urgensi}
+                                        className={cn(
+                                            'rounded-lg border-2 p-4 text-left transition-all duration-200',
+                                            activeUrgency === 'tinggi'
+                                                ? 'border-red-500 bg-linear-to-r from-red-50 to-rose-50 ring-2 ring-red-200'
+                                                : 'border-gray-200 bg-white hover:border-red-300 hover:bg-red-50/30',
+                                            selectedDamage?.urgensi && activeUrgency !== 'tinggi' && 'opacity-60',
+                                            selectedDamage?.urgensi && 'cursor-not-allowed',
+                                        )}
+                                    >
+                                        <div className="flex flex-col gap-1">
+                                            {/* Radio Button & Title */}
+                                            <div className="flex items-start gap-3">
+                                                <div
+                                                    className={cn(
+                                                        'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200',
+                                                        activeUrgency === 'tinggi'
+                                                            ? 'border-red-600 bg-red-600'
+                                                            : 'border-gray-300 bg-white hover:border-red-400',
+                                                    )}
+                                                >
+                                                    {activeUrgency === 'tinggi' && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <AlertOctagon
+                                                            className={cn(
+                                                                'h-4 w-4 transition-colors duration-200',
+                                                                activeUrgency === 'tinggi' ? 'text-red-600' : 'text-red-400',
+                                                            )}
+                                                        />
+                                                        <p className="font-semibold text-gray-900">Prioritas Tinggi</p>
+                                                    </div>
+                                                </div>
+                                                {activeUrgency === 'tinggi' && (
+                                                    <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-semibold whitespace-nowrap text-red-700">
+                                                        Dipilih
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {/* Description */}
+                                            <p className="text-xs text-gray-600">Urgensi: Tindakan segera diperlukan</p>
+                                        </div>
+                                    </button>
+
+                                    {/* Prioritas Rendah */}
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (selectedDamage?.urgensi) return;
+                                            setSelectedUrgency('rendah');
+                                        }}
+                                        disabled={!!selectedDamage?.urgensi}
+                                        className={cn(
+                                            'rounded-lg border-2 px-4 py-2.5 text-left transition-all duration-200',
+                                            activeUrgency === 'rendah'
+                                                ? 'border-green-500 bg-linear-to-r from-green-50 to-emerald-50 ring-2 ring-green-200'
+                                                : 'border-gray-200 bg-white hover:border-green-300 hover:bg-green-50/30',
+                                            selectedDamage?.urgensi && activeUrgency !== 'rendah' && 'opacity-60',
+                                            selectedDamage?.urgensi && 'cursor-not-allowed',
+                                        )}
+                                    >
+                                        <div className="flex flex-col gap-1">
+                                            {/* Radio Button & Title */}
+                                            <div className="flex items-start gap-3">
+                                                <div
+                                                    className={cn(
+                                                        'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200',
+                                                        activeUrgency === 'rendah'
+                                                            ? 'border-green-600 bg-green-600'
+                                                            : 'border-gray-300 bg-white hover:border-green-400',
+                                                    )}
+                                                >
+                                                    {activeUrgency === 'rendah' && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <AlertCircle
+                                                            className={cn(
+                                                                'h-4 w-4 transition-colors duration-200',
+                                                                activeUrgency === 'rendah' ? 'text-green-600' : 'text-green-400',
+                                                            )}
+                                                        />
+                                                        <p className="font-semibold text-gray-900">Prioritas Rendah</p>
+                                                    </div>
+                                                </div>
+                                                {activeUrgency === 'rendah' && (
+                                                    <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold whitespace-nowrap text-green-700">
+                                                        Dipilih
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {/* Description */}
+                                            <p className="text-xs text-gray-600">Urgensi: Tidak mendesak</p>
+                                        </div>
+                                    </button>
+                                </div>
+
+                                {/* Submit Button (only show when not already submitted on server) */}
+                                {selectedUrgency && !selectedDamage?.urgensi && (
+                                    <div className="flex gap-2 border-t pt-4">
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedUrgency(null)}
+                                            className="flex-1 rounded-lg border-2 border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                                        >
+                                            Batal
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleSubmitUrgency}
+                                            disabled={isProcessing}
+                                            className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:bg-gray-400"
+                                        >
+                                            {isProcessing ? 'Menyimpan...' : 'Simpan Urgensi'}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
 
                             {/* Tindakan Admin */}
-                            {(selectedDamage.status === 'pending' || (selectedDamage.status === 'process' && selectedDamage.urgensi)) && (
+                            {(selectedDamage.status === 'pending' || selectedDamage.status === 'process') && selectedDamage.urgensi && (
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2">
                                         <MessageSquare className="h-5 w-5 text-green-600" />

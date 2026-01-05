@@ -237,9 +237,11 @@ class HomeController extends Controller
 
     public function isReadNotfif(Notification $notification)
     {
-        $notification->update([
-            'is_read' => true,
-        ]);
+        $notification->delete();
+
+        // $notification->update([
+        //     'is_read' => true,
+        // ]);
     }
 
     public function isReadAllNotfif()

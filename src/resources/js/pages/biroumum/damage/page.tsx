@@ -26,17 +26,41 @@ type KategoriKerusakan = {
 };
 
 const schema = z.object({
-    location: z.string().min(5, 'Lokasi wajib diisi'),
-    damageType: z.string().min(3, 'Nama Item wajib diisi'),
-    kategori: z.string().min(3, 'Nama Item wajib diisi'),
-    description: z.string().min(5, 'Keterangan wajib diisi'),
-    // urgency: z.enum(['rendah', 'sedang', 'tinggi'], {
-    //     required_error: 'Tingkat urgensi wajib dipilih',
-    // }),
+    location: z
+        .string({
+            required_error: 'Lokasi wajib diisi',
+            invalid_type_error: 'Lokasi harus berupa teks',
+        })
+        .min(3, 'Lokasi minimal 3 karakter'),
+
+    damageType: z
+        .string({
+            required_error: 'Nama item wajib diisi',
+            invalid_type_error: 'Nama item harus berupa teks',
+        })
+        .min(3, 'Nama item minimal 3 karakter'),
+
+    kategori: z
+        .string({
+            required_error: 'Kategori wajib diisi',
+            invalid_type_error: 'Kategori harus berupa teks',
+        })
+        .min(3, 'Kategori minimal 3 karakter'),
+
+    description: z
+        .string({
+            required_error: 'Keterangan wajib diisi',
+            invalid_type_error: 'Keterangan harus berupa teks',
+        })
+        .min(5, 'Keterangan minimal 5 karakter'),
+
     contact: z
-        .string()
-        .min(5, 'No Hp wajib diisi')
-        .regex(/^(.{5,})$/, 'Format No Hp tidak valid'),
+        .string({
+            required_error: 'Nomor HP wajib diisi',
+            invalid_type_error: 'Nomor HP harus berupa teks',
+        })
+        .min(10, 'Nomor HP minimal 10 digit')
+        .regex(/^08\d{8,12}$/, 'Nomor HP harus diawali 08 dan berisi 10–14 digit'),
 });
 
 type FormData = z.infer<typeof schema>;

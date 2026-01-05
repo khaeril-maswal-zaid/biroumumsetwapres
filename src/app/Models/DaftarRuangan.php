@@ -21,6 +21,7 @@ class DaftarRuangan extends Model
         'kode_ruangan',
         'lokasi',
         'kapasitas',
+        'kapasitas_max',
         'image',
         'status',
         'fasilitas',

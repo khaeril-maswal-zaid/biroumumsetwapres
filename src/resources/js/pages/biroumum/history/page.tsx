@@ -29,8 +29,6 @@ import {
 import { useEffect, useState } from 'react';
 
 export default function RequestHistory({ requestHistory }: any) {
-    console.log(requestHistory);
-
     useEffect(() => {
         const interval = setInterval(() => {
             router.reload({ only: ['requestHistory'] });
@@ -74,20 +72,13 @@ export default function RequestHistory({ requestHistory }: any) {
     };
 
     // Filter requests based on search term, type, and status
-    const filteredRequests = requestHistory;
-    //  requestHistory.filter((request: any) => {
-    //     console.log(request);
-
-    //     const matchesSearch =
-    //         request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    //         request.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    //         request.code.toLowerCase().includes(searchTerm.toLowerCase());
-
-    //     const matchesType = typeFilter === 'all' || request.type === typeFilter;
-    //     const matchesStatus = statusFilter === 'all' || request.status === statusFilter;
-
-    //     return matchesSearch && matchesType && matchesStatus;
-    // });
+    const filteredRequests = requestHistory.filter((request: any) => {
+        const matchesSearch =
+            request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            request.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            request.code.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesSearch;
+    });
 
     const handleViewDetails = (request: any) => {
         setSelectedRequest(request);

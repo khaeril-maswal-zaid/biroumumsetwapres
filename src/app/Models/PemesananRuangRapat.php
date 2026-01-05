@@ -447,6 +447,7 @@ class PemesananRuangRapat extends Model
             $bookings = $this->where('tanggal_penggunaan', $tanggal)
                 ->where('jam_mulai', '<', $jamSelesai)
                 ->where('jam_selesai', '>', $jamMulai)
+                ->whereIn('status', ['pending', 'approved'])
                 ->get();
 
             // Proses ketersediaan tiap ruangan

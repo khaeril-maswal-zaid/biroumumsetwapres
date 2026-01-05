@@ -63,6 +63,7 @@ class DaftarRuanganController extends Controller
             'nama_ruangan' => $request->input('nama_ruangan'),
             'lokasi' => $request->input('lokasi'),
             'kapasitas' => $request->input('kapasitas'),
+            'kapasitas_max' => $request->input('kapasitas_max'),
             'image' => $path,
             'status' => $request->input('status'),
             'fasilitas' => $request->input('fasilitas'),
