@@ -115,6 +115,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('kerusakangedung.urgensi')
         ->middleware('permission:change_damage_status');
 
+    Route::delete('/dashboard/kerusakan-gedung/delete/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'destroy'])
+        ->name('kerusakangedung.destroy')
+        ->middleware('permission:change_damage_status');
+
 
 
     // Manajemen ATK (view_supplies_requests & change_supplies_status)

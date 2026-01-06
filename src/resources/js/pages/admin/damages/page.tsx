@@ -1,15 +1,25 @@
 'use client';
 
 import { StatusBadge } from '@/components/badges/StatusBadge';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ImageIcon, Search } from 'lucide-react';
+import { Eye, ImageIcon, Search, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -20,6 +30,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function DamagesAdmin({ kerusakan }: any) {
+    const { toast } = useToast();
+
     useEffect(() => {
         const interval = setInterval(() => {
             router.reload({
@@ -32,6 +44,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
     // Filter damages based on search term and status
     const filteredDamages = kerusakan.data.filter((damage: any) => {
@@ -44,6 +57,18 @@ export default function DamagesAdmin({ kerusakan }: any) {
 
         return matchesSearch && matchesStatus;
     });
+
+    const handleDelete = (kodePelaporan: string) => {
+        router.delete(route('kerusakangedung.destroy', kodePelaporan), {
+            onSuccess: () => {
+                setDeleteConfirm(null);
+                toast({ title: 'Berhasil', description: 'Laporan kerusakan berhasil dihapus.' });
+            },
+            onError: (errors) => {
+                toast({ title: 'Gagal', description: Object.values(errors)[0], variant: 'destructive' });
+            },
+        });
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -91,7 +116,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                         <TableHead className="hidden md:table-cell">Nama Item Rusak</TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead className="hidden md:table-cell">Foto</TableHead>
-                                        <TableHead className="text-right">Aksi</TableHead>
+                                        <TableHead className="text-center">Aksi</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -125,10 +150,29 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                         <span className="text-sm text-gray-500">-</span>
                                                     )}
                                                 </TableCell>
-                                                <TableCell className="text-right">
-                                                    <Link className="font-medium" href={route('kerusakangedung.show', damage.kode_pelaporan)}>
+                                                <TableCell className="text-center">
+                                                    <div className="inline-flex items-center justify-center">
+                                                        <Link
+                                                            href={route('kerusakangedung.show', damage.kode_pelaporan)}
+                                                            className="inline-flex items-center gap-1 font-medium text-green-600 hover:text-green-700"
+                                                        >
+                                                            <Eye className="h-4 w-4" />
+                                                            Lihat Detail
+                                                        </Link>
+
+                                                        <span className="mx-3">||</span>
+
+                                                        <button
+                                                            onClick={() => setDeleteConfirm(damage.kode_pelaporan)}
+                                                            className="inline-flex items-center gap-1 font-medium text-red-600 hover:text-red-800"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                            Hapus
+                                                        </button>
+                                                    </div>
+                                                    {/* <Link className="font-medium" href={route('kerusakangedung.show', damage.kode_pelaporan)}>
                                                         Detail
-                                                    </Link>
+                                                    </Link> */}
                                                 </TableCell>
                                             </TableRow>
                                         ))
@@ -138,6 +182,26 @@ export default function DamagesAdmin({ kerusakan }: any) {
                         </div>
                     </CardContent>
                 </Card>
+
+                <AlertDialog open={deleteConfirm !== null} onOpenChange={(open) => !open && setDeleteConfirm(null)}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Hapus Layanan</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Apakah Anda yakin ingin menghapus laporan ini? Tindakan ini tidak dapat dibatalkan.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <div className="mt-4 flex justify-end gap-3">
+                            <AlertDialogCancel>Batal</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={() => deleteConfirm !== null && handleDelete(deleteConfirm)}
+                                className="bg-red-600 hover:bg-red-700"
+                            >
+                                Hapus
+                            </AlertDialogAction>
+                        </div>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
         </AppLayout>
     );

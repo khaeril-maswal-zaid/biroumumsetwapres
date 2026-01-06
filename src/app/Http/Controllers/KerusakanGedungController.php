@@ -122,7 +122,7 @@ class KerusakanGedungController extends Controller
      */
     public function destroy(KerusakanGedung $kerusakanGedung)
     {
-        //
+        $kerusakanGedung->delete();
     }
 
     public function status(KerusakanGedung $kerusakanGedung, Request $request)
