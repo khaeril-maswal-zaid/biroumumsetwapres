@@ -2,6 +2,7 @@ import { AppContent } from '@/components/app-content';
 import { AppShell } from '@/components/app-shell';
 import { AppSidebar } from '@/components/app-sidebar';
 import { AppSidebarHeader } from '@/components/app-sidebar-header';
+import { Toaster } from '@/components/ui/toaster';
 import { type BreadcrumbItem } from '@/types';
 
 import type { ComponentType, ReactNode } from 'react';
@@ -19,6 +20,7 @@ export default function AppSidebarLayout({ Button, children, breadcrumbs = [] }:
             <AppContent variant="sidebar" className="overflow-x-hidden">
                 <AppSidebarHeader Button={Button} breadcrumbs={breadcrumbs} />
                 {children}
+                <Toaster />
             </AppContent>
         </AppShell>
     );

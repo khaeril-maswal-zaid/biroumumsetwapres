@@ -283,6 +283,8 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
                                     </div>
                                 </div>
 
+                                <Separator />
+
                                 {/* Admin Message Display for Approved/Rejected */}
                                 {selectedRequest.keterangan &&
                                     selectedRequest.status !== 'pending' &&

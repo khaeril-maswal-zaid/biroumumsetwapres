@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -45,11 +46,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function BookingDetailsPage({ selectedBooking }: any) {
-    const [actionType, setActionType] = useState<'confirmed' | 'cancelled' | null>(null);
+    const { toast } = useToast();
+
+    const [actionType, setActionType] = useState<'approved' | 'rejected' | null>(null);
     const [adminMessage, setAdminMessage] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
 
-    const handleActionClick = (action: 'confirmed' | 'cancelled') => {
+    const handleActionClick = (action: 'approved' | 'rejected') => {
         setActionType(action);
         setAdminMessage('');
     };
@@ -66,12 +69,20 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
             {
                 preserveScroll: true,
                 onSuccess: () => {
+                    toast({
+                        title: 'Berhasil',
+                        description: 'Status pemesanan berhasil diubah.',
+                    });
                     setIsProcessing(false);
                     setAdminMessage('');
                     setActionType(null);
                 },
                 onError: (errors) => {
-                    console.log('Validation Errors: ', errors);
+                    toast({
+                        title: 'Validasi gagal',
+                        description: Object.values(errors)[0],
+                    });
+                    setIsProcessing(false);
                 },
             },
         );
@@ -81,9 +92,9 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
         switch (status) {
             case 'pending':
                 return <Badge className="mb-1 bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Pengajuan</Badge>;
-            case 'confirmed':
+            case 'approved':
                 return <Badge className="mb-1 bg-green-100 text-green-800 hover:bg-green-200">Disetujui</Badge>;
-            case 'cancelled':
+            case 'rejected':
                 return <Badge className="mb-1 bg-red-100 text-red-800 hover:bg-red-200">Dibatalkan</Badge>;
             default:
                 return <Badge variant="outline">Unknown</Badge>;
@@ -114,16 +125,16 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
 
     const { handleSubmit, reset } = methods;
 
-    const [errorServer, setErrorServer] = useState<null | Record<string, string[]>>(null);
-
     const onSubmit = (data: FormData) => {
         router.put(route('ruangrapat.update', selectedBooking.kode_booking), data, {
             onSuccess: () => {
                 reset();
-                setErrorServer(null);
             },
-            onError: (err) => {
-                setErrorServer(err);
+            onError: (errors) => {
+                toast({
+                    title: 'Validasi gagal',
+                    description: Object.values(errors)[0],
+                });
             },
         });
     };
@@ -179,6 +190,12 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
         }
     }, [showRescheduleDialog]);
 
+    // useEffect(() => {
+    //     if (flash.success) {
+    //         toast({ title: 'Berhasil', description: flash.success });
+    //     }
+    // }, [flash.success]);
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
@@ -220,7 +237,7 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                     <div className="text-right">{getStatusBadge(selectedBooking.status)}</div>
                                 </div>
 
-                                {(selectedBooking.status === 'confirmed' || selectedBooking.status === 'pending') && (
+                                {(selectedBooking.status === 'approved' || selectedBooking.status === 'pending') && (
                                     <div className="flex justify-end">
                                         <Button
                                             variant="outline"
@@ -354,7 +371,7 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                     (() => {
                                         // Mapping warna berdasarkan status
                                         const colorMap: any = {
-                                            confirmed: {
+                                            approved: {
                                                 border: 'border-green-200',
                                                 bg: 'bg-green-50',
                                                 icon: 'text-green-600',
@@ -368,7 +385,7 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                                 title: 'text-blue-900',
                                                 text: 'text-blue-800',
                                             },
-                                            cancelled: {
+                                            rejected: {
                                                 border: 'border-red-200',
                                                 bg: 'bg-red-50',
                                                 icon: 'text-red-600',
@@ -405,14 +422,14 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                                 <Button
                                                     variant="outline"
                                                     className="flex-1 border-red-200 bg-transparent text-red-700 hover:bg-red-50"
-                                                    onClick={() => handleActionClick('cancelled')}
+                                                    onClick={() => handleActionClick('rejected')}
                                                 >
                                                     <X className="mr-2 h-4 w-4" />
                                                     Tolak Pemesanan
                                                 </Button>
                                                 <Button
                                                     className="flex-1 bg-green-600 hover:bg-green-700"
-                                                    onClick={() => handleActionClick('confirmed')}
+                                                    onClick={() => handleActionClick('approved')}
                                                 >
                                                     <CheckCircle className="mr-2 h-4 w-4" />
                                                     Setujui Pemesanan
@@ -423,25 +440,25 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                         {actionType && (
                                             <div className="space-y-4 rounded-lg border bg-gray-50 p-4">
                                                 <div className="flex items-center gap-2">
-                                                    {actionType === 'confirmed' ? (
+                                                    {actionType === 'approved' ? (
                                                         <CheckCircle className="h-5 w-5 text-green-600" />
                                                     ) : (
                                                         <AlertCircle className="h-5 w-5 text-red-600" />
                                                     )}
                                                     <h5 className="font-medium">
-                                                        {actionType === 'confirmed' ? 'Menyetujui Pemesanan' : 'Menolak Pemesanan'}
+                                                        {actionType === 'approved' ? 'Menyetujui Pemesanan' : 'Menolak Pemesanan'}
                                                     </h5>
                                                 </div>
 
                                                 <div className="space-y-2">
                                                     <Label htmlFor="admin-message">
                                                         Pesan untuk Pengaju
-                                                        {actionType === 'cancelled' && <span className="text-red-500">*</span>}
+                                                        {actionType === 'rejected' && <span className="text-red-500">*</span>}
                                                     </Label>
                                                     <Textarea
                                                         id="admin-message"
                                                         placeholder={
-                                                            actionType === 'confirmed'
+                                                            actionType === 'approved'
                                                                 ? 'Tambahkan catatan atau instruksi khusus (opsional)...'
                                                                 : 'Jelaskan alasan penolakan pemesanan...'
                                                         }
@@ -450,7 +467,7 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                                         rows={3}
                                                         className="mt-1 resize-none"
                                                     />
-                                                    {actionType === 'cancelled' && !adminMessage.trim() && (
+                                                    {actionType === 'rejected' && !adminMessage.trim() && (
                                                         <p className="text-sm text-red-600">Pesan wajib diisi untuk penolakan</p>
                                                     )}
                                                 </div>
@@ -468,22 +485,22 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                                     </Button>
                                                     <Button
                                                         onClick={() => {
-                                                            if (actionType === 'confirmed') {
+                                                            if (actionType === 'approved') {
                                                                 handleSubmitStatus(selectedBooking.kode_booking);
                                                             } else {
                                                                 handleSubmitStatus(selectedBooking.kode_booking);
                                                             }
                                                         }}
-                                                        disabled={isProcessing || (actionType === 'cancelled' && !adminMessage.trim())}
+                                                        disabled={isProcessing || (actionType === 'rejected' && !adminMessage.trim())}
                                                         className={
-                                                            actionType === 'confirmed'
+                                                            actionType === 'approved'
                                                                 ? 'bg-green-600 hover:bg-green-700'
                                                                 : 'bg-red-600 hover:bg-red-700'
                                                         }
                                                     >
                                                         {isProcessing
                                                             ? 'Memproses...'
-                                                            : actionType === 'confirmed'
+                                                            : actionType === 'approved'
                                                               ? 'Konfirmasi Setuju'
                                                               : 'Konfirmasi Tolak'}
                                                     </Button>

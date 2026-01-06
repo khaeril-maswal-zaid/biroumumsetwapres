@@ -44,15 +44,25 @@ export function FormBooking() {
     } = useFormContext<FormData>();
 
     // daftar fields manual
+    // di dalam FormBooking
     useEffect(() => {
+        // daftar fields manual
         register('jenisRapat');
         register('needItSupport');
         register('isHybrid');
 
-        // Set initial values ke form
+        // register room fields agar watch dan controlled RadioGroup stabil
+        register('room_code');
+        register('room_name');
+
+        // Set initial values ke form (pastikan terdefinisi)
         setValue('jenisRapat', jenisRapat);
         setValue('needItSupport', needItSupport);
         setValue('isHybrid', isHybrid);
+
+        // Pastikan initial room_code / room_name tidak undefined
+        setValue('room_code', formData.room_code ?? '');
+        setValue('room_name', formData.room_name ?? '');
     }, [register, setValue]);
 
     const formData = watch();
@@ -141,7 +151,7 @@ export function FormBooking() {
                     </div>
                 </div>
 
-                {formData.startTime && formData.endTime && formData.startTime >= formData.endTime && (
+                {formData.startTime && formData.endTime && formData.startTime > formData.endTime && (
                     <div className="rounded border border-red-200 bg-red-50 p-2 text-sm text-red-600">
                         ⚠️ Jam selesai harus lebih besar dari jam mulai
                     </div>
@@ -153,7 +163,7 @@ export function FormBooking() {
                 <h3 className="text-md border-b pb-2 font-medium text-gray-900">
                     Pilih Ruangan <span className="text-red-500">*</span>
                 </h3>
-                {formData.startTime && formData.endTime && formData.startTime <= formData.endTime && (
+                {formData.startTime && formData.endTime && formData.startTime < formData.endTime && (
                     <RoomSelection
                         selectedRoom={formData.room_code}
                         onRoomChange={(id, name) => {

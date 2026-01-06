@@ -104,9 +104,9 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                         Menunggu
                     </Badge>
                 );
-            case 'confirmed':
+            case 'approved':
                 return <Badge className="mb-1 bg-green-100 text-green-800 hover:bg-green-200">Disetujui</Badge>;
-            case 'cancelled':
+            case 'rejected':
                 return <Badge className="mb-1 bg-red-100 text-red-800 hover:bg-red-200">Dibatalkan</Badge>;
             default:
                 return <Badge variant="outline">Unknown</Badge>;

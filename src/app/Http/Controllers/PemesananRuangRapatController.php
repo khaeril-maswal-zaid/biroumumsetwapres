@@ -173,10 +173,21 @@ class PemesananRuangRapatController extends Controller
 
     public function status(PemesananRuangRapat $pemesananRuangRapat, Request $request)
     {
-        $validated = $request->validate([
-            'action' => 'required|in:confirmed,cancelled',
-            'message' => 'required_if:action,cancelled|nullable|string|max:255',
-        ]);
+        $validated = $request->validate(
+            [
+                'action'  => 'required|in:approved,rejected',
+                'message' => 'required_if:action,rejected|nullable|string|max:255',
+            ],
+            [
+                'action.required'  => 'Aksi wajib dipilih.',
+                'action.in'        => 'Aksi yang dipilih tidak valid.',
+
+                'message.required_if' => 'Pesan wajib diisi jika permintaan ditolak.',
+                'message.string'      => 'Pesan harus berupa teks.',
+                'message.max'         => 'Pesan maksimal 255 karakter.',
+            ]
+        );
+
 
         $pemesananRuangRapat->update([
             'status' => $validated['action'],

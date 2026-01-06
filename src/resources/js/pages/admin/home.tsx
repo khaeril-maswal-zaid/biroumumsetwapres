@@ -31,16 +31,20 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
         return () => clearInterval(interval);
     }, []);
 
+    console.log(recentActivities);
+
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'pending':
                 return <Badge className="bg-yellow-100 text-yellow-800">Menunggu</Badge>;
             case 'confirmed':
-                return <Badge className="bg-green-100 text-green-800">Disetujui</Badge>;
-            case 'cancelled':
+                return <Badge className="bg-green-100 text-green-800">Selesai</Badge>;
+            case 'rejected':
                 return <Badge className="bg-red-100 text-red-800">Ditolak</Badge>;
             case 'partial':
                 return <Badge className="bg-blue-100 text-blue-800">Sebagian</Badge>;
+            case 'process':
+                return <Badge className="bg-blue-100 text-blue-800">Proses</Badge>;
             case 'approved':
                 return <Badge className="bg-green-100 text-green-800">Disetujui</Badge>;
             default:
@@ -69,8 +73,8 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4 xl:gap-6">
-                    {Object.entries(dashboardStats).map(([key, item]) => (
-                        <Card key={key} className="gap-2">
+                    {Object.entries(dashboardStats).map(([key, item], index: any) => (
+                        <Card key={index} className="gap-2">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">{item.title}</CardTitle>
                                 {iconMap[item.icon]}
@@ -115,8 +119,8 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
-                                {recentActivities.map((activity: any) => (
-                                    <div key={activity.id} className="mb-2 flex items-center justify-between rounded-lg border p-3">
+                                {recentActivities.map((activity: any, index: any) => (
+                                    <div key={index} className="mb-2 flex items-center justify-between rounded-lg border p-3">
                                         <div className="flex items-center gap-3">
                                             {getActivityIcon(activity.type)}
                                             <div className="pe-3">
@@ -140,8 +144,8 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
-                                {upcomingBookings.map((booking: any) => (
-                                    <div key={booking.id} className="flex items-center justify-between rounded-lg border p-3">
+                                {upcomingBookings.map((booking: any, index: any) => (
+                                    <div key={index} className="flex items-center justify-between rounded-lg border p-3">
                                         <div className="flex min-w-0 flex-1 items-center gap-3">
                                             <Calendar className="h-7 w-7 text-blue-600" />
                                             <div>
