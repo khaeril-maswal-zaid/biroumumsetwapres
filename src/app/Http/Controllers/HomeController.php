@@ -31,6 +31,7 @@ class HomeController extends Controller
             ->map(fn($r) => [
                 'id'                => 'booking',
                 'type'              => 'Ruangan Rapat',
+                'is_read'           => $r->is_read,
                 'code'              => $r->kode_booking,
                 'title'             => $r->ruangans->nama_ruangan,
                 'ruangans'          => $r->ruangans,
@@ -61,6 +62,7 @@ class HomeController extends Controller
             ->map(fn($k) => [
                 'id'                 => 'damage',
                 'type'               => 'Kerusakan',
+                'is_read'            => $k->is_read,
                 'code'               => $k->kode_pelaporan,
                 'title'              => $k->item,
                 'ruangans'           => null,
@@ -91,6 +93,7 @@ class HomeController extends Controller
             ->map(fn($a) => [
                 'id'                 => 'supplies',
                 'type'               => 'ATK',
+                'is_read'            => $a->is_read,
                 'code'               => $a->kode_pelaporan,
                 'title'              => count($a->daftar_kebutuhan) . ' item',
                 'ruangans'           => null,

@@ -1,3 +1,4 @@
+import { StatusBadge } from '@/components/badges/StatusBadge';
 import { FormBooking } from '@/components/biroumum/form-booking';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,9 @@ const schema = z.object({
     endTime: z.string().min(1, 'Jam selesai wajib diisi'),
     purpose: z.string().min(1, 'Kegiatan wajib diisi'),
     contact: z.string().min(1, 'Kontak wajib diisi'),
+    jenisRapat: z.string().nullable(),
+    isHybrid: z.boolean(),
+    needItSupport: z.boolean(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -120,6 +124,10 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
             endTime: '',
             purpose: '',
             contact: '',
+
+            jenisRapat: 'internal',
+            isHybrid: false,
+            needItSupport: false,
         },
     });
 
@@ -134,6 +142,7 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                 toast({
                     title: 'Validasi gagal',
                     description: Object.values(errors)[0],
+                    variant: 'destructive',
                 });
             },
         });
@@ -168,11 +177,15 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
         return {
             room_code: data?.ruangans?.kode_ruangan ?? '',
             room_name: data?.ruangans?.nama_ruangan ?? '',
-            date: toDate(data?.tanggal_penggunaan) ?? '',
-            startTime: toTime(data?.jam_mulai) ?? '',
-            endTime: toTime(data?.jam_selesai) ?? '',
+            date: toDate(data?.tanggal_penggunaan),
+            startTime: toTime(data?.jam_mulai),
+            endTime: toTime(data?.jam_selesai),
             purpose: data?.deskripsi ?? '',
             contact: data?.no_hp ?? '',
+
+            jenisRapat: data?.jenis_rapat ?? 'internal',
+            isHybrid: data?.is_hybrid === '1',
+            needItSupport: data?.is_ti_support === '1',
         };
     }
 
@@ -188,18 +201,12 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
         if (showRescheduleDialog && selectedBooking) {
             methods.reset(mapBookingToForm(selectedBooking));
         }
-    }, [showRescheduleDialog]);
-
-    // useEffect(() => {
-    //     if (flash.success) {
-    //         toast({ title: 'Berhasil', description: flash.success });
-    //     }
-    // }, [flash.success]);
+    }, [showRescheduleDialog, selectedBooking]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto bg-gradient-to-br from-white to-blue-100 p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto bg-linear-to-br from-white to-blue-100 p-4">
                 <Link href={route('ruangrapat.index')}>
                     <Button
                         variant="default"
@@ -234,7 +241,9 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="text-right">{getStatusBadge(selectedBooking.status)}</div>
+                                    <div className="text-right">
+                                        <StatusBadge status={selectedBooking.status} />
+                                    </div>
                                 </div>
 
                                 {(selectedBooking.status === 'approved' || selectedBooking.status === 'pending') && (
@@ -526,7 +535,7 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                         <div className="space-y-4">
                             <FormProvider {...methods}>
                                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                                    <FormBooking unitKerja={[]} />
+                                    <FormBooking />
                                     <Button type="submit" className="w-full">
                                         Update Pemesanan
                                     </Button>

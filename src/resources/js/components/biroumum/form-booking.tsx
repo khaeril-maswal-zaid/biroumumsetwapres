@@ -33,8 +33,6 @@ export function FormBooking() {
     const { auth } = usePage<SharedData>().props;
 
     const [jenisRapat, setJenisRapat] = useState<JenisRapat>('internal');
-    const [needItSupport, setNeedItSupport] = useState<boolean>(false);
-    const [isHybrid, setIsHybrid] = useState<boolean>(false);
 
     const {
         register,
@@ -43,26 +41,24 @@ export function FormBooking() {
         formState: { errors },
     } = useFormContext<FormData>();
 
-    // daftar fields manual
+    const isHybrid = watch('isHybrid') ?? false;
+    const needItSupport = watch('needItSupport') ?? false;
+
     // di dalam FormBooking
     useEffect(() => {
-        // daftar fields manual
         register('jenisRapat');
         register('needItSupport');
         register('isHybrid');
 
-        // register room fields agar watch dan controlled RadioGroup stabil
         register('room_code');
         register('room_name');
 
-        // Set initial values ke form (pastikan terdefinisi)
         setValue('jenisRapat', jenisRapat);
-        setValue('needItSupport', needItSupport);
-        setValue('isHybrid', isHybrid);
+        // setValue('needItSupport', needItSupport);
+        // setValue('isHybrid', isHybrid);
 
-        // Pastikan initial room_code / room_name tidak undefined
-        setValue('room_code', formData.room_code ?? '');
-        setValue('room_name', formData.room_name ?? '');
+        // setValue('room_code', formData.room_code ?? '');
+        // setValue('room_name', formData.room_name ?? '');
     }, [register, setValue]);
 
     const formData = watch();
@@ -151,7 +147,7 @@ export function FormBooking() {
                     </div>
                 </div>
 
-                {formData.startTime && formData.endTime && formData.startTime > formData.endTime && (
+                {formData.startTime && formData.endTime && formData.startTime >= formData.endTime && (
                     <div className="rounded border border-red-200 bg-red-50 p-2 text-sm text-red-600">
                         ⚠️ Jam selesai harus lebih besar dari jam mulai
                     </div>
@@ -182,10 +178,6 @@ export function FormBooking() {
                 <h3 className="text-md border-b pb-2 font-medium text-gray-900">Informasi Tambahan</h3>
 
                 <div className="space-y-3">
-                    {/* <Label className="flex items-center gap-2 text-base font-semibold text-gray-800">
-                        <FileText className="h-4 w-4 text-teal-600" />
-                        Jenis Rapat <span className="text-red-500">*</span>
-                    </Label> */}
                     <Label>
                         Jenis Rapat <span className="text-red-500">*</span>
                     </Label>
@@ -244,10 +236,7 @@ export function FormBooking() {
 
                 <button
                     type="button"
-                    onClick={() => {
-                        setIsHybrid(!isHybrid);
-                        setValue('isHybrid', !isHybrid);
-                    }}
+                    onClick={() => setValue('isHybrid', !isHybrid)}
                     className={cn(
                         'flex w-full items-center gap-4 rounded-xl border-2 px-4 py-2.5 text-left transition-all duration-200',
                         isHybrid
@@ -278,20 +267,16 @@ export function FormBooking() {
                             <p className={cn('text-sm font-semibold transition-colors duration-200', isHybrid ? 'text-violet-900' : 'text-gray-700')}>
                                 Rapat Hybrid
                             </p>
-                            <p className="mt-0.5 text-xs text-gray-500">Peserta dapat bergabung secara online </p>
+                            <p className="mt-0.5 text-xs text-gray-500">Peserta dapat bergabung secara online</p>
                         </div>
                     </div>
 
-                    {/* Status Badge */}
                     {isHybrid && <span className="rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700">Aktif</span>}
                 </button>
 
                 <button
                     type="button"
-                    onClick={() => {
-                        setNeedItSupport(!needItSupport);
-                        setValue('needItSupport', !needItSupport);
-                    }}
+                    onClick={() => setValue('needItSupport', !needItSupport)}
                     className={cn(
                         'flex w-full items-center gap-4 rounded-xl border-2 px-4 py-2.5 text-left transition-all duration-200',
                         needItSupport
@@ -331,7 +316,6 @@ export function FormBooking() {
                         </div>
                     </div>
 
-                    {/* Status Badge */}
                     {needItSupport && <span className="rounded-full bg-teal-100 px-2.5 py-1 text-xs font-semibold text-teal-700">Aktif</span>}
                 </button>
             </div>

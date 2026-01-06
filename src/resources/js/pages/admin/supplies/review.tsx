@@ -1,3 +1,4 @@
+import { StatusBadge } from '@/components/badges/StatusBadge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -99,19 +100,6 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
         }
     };
 
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case 'pending':
-                return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Menunggu</Badge>;
-            case 'process':
-                return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Proses</Badge>;
-            case 'confirmed':
-                return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Selesai</Badge>;
-            default:
-                return <Badge variant="outline">Unknown</Badge>;
-        }
-    };
-
     const calculateRequestStatus = () => {
         const items = selectedRequest.daftar_kebutuhan;
         let approvedCount = 0;
@@ -139,7 +127,7 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-gradient-to-br from-white to-blue-100 p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
                 <Link href={route('permintaanatk.index')}>
                     <Button
                         variant="ghost"
@@ -174,7 +162,9 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="text-right">{getStatusBadge(selectedRequest.status)}</div>
+                                    <div className="text-right">
+                                        <StatusBadge status={selectedRequest.status} />
+                                    </div>
                                 </div>
 
                                 {/* Request Details */}
