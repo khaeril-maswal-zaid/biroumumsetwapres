@@ -62,7 +62,7 @@ class PermintaanAtkController extends Controller
         Notification::create([
             'kode_unit'   => $permintaan->pemesan->pegawai->unit->kode_unit,
             'kode_unit'   => $permintaan->kode_unit,
-            'permissions' => ["view_suppliess"],
+            'permissions' => ["view_supplies"],
             'type'        => 'new',
             'category'    => 'supplies',
             'title'       => 'Permintaan ATK Baru',

@@ -169,6 +169,7 @@ class HomeController extends Controller
                 return [
                     'id' => $item->id,
                     'type' => 'room',
+                    'isRead' => $item->is_read,
                     'title' => 'Permintaan ' . ($item->ruangans->nama_ruangan ?? '-'),
                     'user' => ($item->pemesan->pegawai->name ?? '-') . ' - ' . ($item->pemesan->pegawai->biro->nama_biro ?? '-'),
                     'time' => $item->created_at->diffForHumans(),
@@ -185,6 +186,7 @@ class HomeController extends Controller
                 return [
                     'id' => $item->id,
                     'type' => 'damage',
+                    'isRead' => $item->is_read,
                     'title' => 'Kerusakan ' . $item->item . ' di ' . $item->lokasi,
                     'user' => ($item->pelapor->pegawai->name ?? '-') . ' - ' . ($item->pelapor->pegawai->biro->nama_biro ?? '-'),
                     'time' => $item->created_at->diffForHumans(),
@@ -201,6 +203,7 @@ class HomeController extends Controller
                 return [
                     'id' => $item->id,
                     'type' => 'supplies',
+                    'isRead' => $item->is_read,
                     'title' => 'Permintaan ATK - ' . count($item->daftar_kebutuhan) . ' item',
                     'user' => ($item->pemesan->pegawai->name ?? '-') . ' - ' . ($item->pemesan->pegawai->biro->nama_biro ?? '-'),
                     'time' => $item->created_at->diffForHumans(),

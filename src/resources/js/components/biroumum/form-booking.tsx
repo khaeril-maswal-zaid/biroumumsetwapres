@@ -1,3 +1,4 @@
+// Ganti seluruh FormBooking (file: form-booking.tsx) dengan versi ini
 'use client';
 
 import { RoomSelection } from '@/components/biroumum/room-selection';
@@ -8,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { type SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { Building2, Calendar, CheckCircle2, Monitor, Users, Video } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -32,8 +33,6 @@ type JenisRapat = 'internal' | 'external' | null;
 export function FormBooking() {
     const { auth } = usePage<SharedData>().props;
 
-    const [jenisRapat, setJenisRapat] = useState<JenisRapat>('internal');
-
     const {
         register,
         setValue,
@@ -41,27 +40,21 @@ export function FormBooking() {
         formState: { errors },
     } = useFormContext<FormData>();
 
+    // Read values from RHF (single source of truth)
+    const formData = watch();
     const isHybrid = watch('isHybrid') ?? false;
     const needItSupport = watch('needItSupport') ?? false;
+    const jenisRapat = (watch('jenisRapat') as JenisRapat) ?? 'internal';
 
-    // di dalam FormBooking
+    // Register fields only — DO NOT overwrite values coming from parent
     useEffect(() => {
-        register('jenisRapat');
         register('needItSupport');
         register('isHybrid');
-
+        register('jenisRapat');
         register('room_code');
         register('room_name');
+    }, [register]);
 
-        setValue('jenisRapat', jenisRapat);
-        // setValue('needItSupport', needItSupport);
-        // setValue('isHybrid', isHybrid);
-
-        // setValue('room_code', formData.room_code ?? '');
-        // setValue('room_name', formData.room_name ?? '');
-    }, [register, setValue]);
-
-    const formData = watch();
     const today = new Date().toISOString().split('T')[0];
 
     const jenisRapatOptions = [
@@ -190,7 +183,7 @@ export function FormBooking() {
                                     key={option.value}
                                     type="button"
                                     onClick={() => {
-                                        setJenisRapat(option.value as JenisRapat);
+                                        // set directly into RHF (no local state)
                                         setValue('jenisRapat', option.value);
                                     }}
                                     className={cn(
@@ -234,6 +227,7 @@ export function FormBooking() {
                     {errors.contact && <p className="mt-1 text-sm text-red-500">{errors.contact.message}</p>}
                 </div>
 
+                {/* Rapat Hybrid (fully RHF-controlled) */}
                 <button
                     type="button"
                     onClick={() => setValue('isHybrid', !isHybrid)}
@@ -244,7 +238,6 @@ export function FormBooking() {
                             : 'border-gray-200 bg-white hover:border-violet-300 hover:bg-violet-50/50',
                     )}
                 >
-                    {/* Custom Checkbox */}
                     <div
                         className={cn(
                             'flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200',
@@ -258,7 +251,6 @@ export function FormBooking() {
                         )}
                     </div>
 
-                    {/* Icon & Label */}
                     <div className="flex flex-1 items-center gap-3">
                         <div className={cn('rounded-lg p-2.5 transition-colors duration-200', isHybrid ? 'bg-violet-100' : 'bg-gray-100')}>
                             <Video className={cn('h-5 w-5 transition-colors duration-200', isHybrid ? 'text-violet-600' : 'text-gray-400')} />
@@ -274,6 +266,7 @@ export function FormBooking() {
                     {isHybrid && <span className="rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700">Aktif</span>}
                 </button>
 
+                {/* Dukungan TI (fully RHF-controlled) */}
                 <button
                     type="button"
                     onClick={() => setValue('needItSupport', !needItSupport)}
@@ -284,7 +277,6 @@ export function FormBooking() {
                             : 'border-gray-200 bg-white hover:border-teal-300 hover:bg-teal-50/50',
                     )}
                 >
-                    {/* Custom Checkbox */}
                     <div
                         className={cn(
                             'flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200',
@@ -298,7 +290,6 @@ export function FormBooking() {
                         )}
                     </div>
 
-                    {/* Icon & Label */}
                     <div className="flex flex-1 items-center gap-3">
                         <div className={cn('rounded-lg p-2.5 transition-colors duration-200', needItSupport ? 'bg-teal-100' : 'bg-gray-100')}>
                             <Monitor className={cn('h-5 w-5 transition-colors duration-200', needItSupport ? 'text-teal-600' : 'text-gray-400')} />

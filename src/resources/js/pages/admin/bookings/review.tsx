@@ -1,6 +1,5 @@
 import { StatusBadge } from '@/components/badges/StatusBadge';
 import { FormBooking } from '@/components/biroumum/form-booking';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -92,26 +91,8 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
         );
     };
 
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case 'pending':
-                return <Badge className="mb-1 bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Pengajuan</Badge>;
-            case 'approved':
-                return <Badge className="mb-1 bg-green-100 text-green-800 hover:bg-green-200">Disetujui</Badge>;
-            case 'rejected':
-                return <Badge className="mb-1 bg-red-100 text-red-800 hover:bg-red-200">Dibatalkan</Badge>;
-            default:
-                return <Badge variant="outline">Unknown</Badge>;
-        }
-    };
-
     //--------------------------------------
     const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
-
-    // const handleReschedule = () => {
-    //     setShowRescheduleDialog(true);
-    //     // Pre-fill with current booking data
-    // };
 
     //--------------------------------------
     const methods = useForm<FormData>({
@@ -137,13 +118,19 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
         router.put(route('ruangrapat.update', selectedBooking.kode_booking), data, {
             onSuccess: () => {
                 reset();
+                toast({
+                    title: 'Berhasil',
+                    description: 'Pemesanan berhasil diupdate.',
+                });
+                setShowRescheduleDialog(false);
             },
             onError: (errors) => {
                 toast({
                     title: 'Validasi gagal',
                     description: Object.values(errors)[0],
-                    variant: 'destructive',
+                    // variant: 'destructive',
                 });
+                setShowRescheduleDialog(false);
             },
         });
     };
@@ -184,8 +171,8 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
             contact: data?.no_hp ?? '',
 
             jenisRapat: data?.jenis_rapat ?? 'internal',
-            isHybrid: data?.is_hybrid === '1',
-            needItSupport: data?.is_ti_support === '1',
+            isHybrid: data?.is_hybrid == '1',
+            needItSupport: data?.is_ti_support == '1',
         };
     }
 

@@ -389,7 +389,7 @@ class PemesananRuangRapat extends Model
 
         $upcomingBookings = $this->with(['ruangans', 'pemesan'])
             ->whereBetween('tanggal_penggunaan', [$today, $daysLater])
-            ->where('status', 'confirmed') // Optional: hanya ambil yang sudah dikonfirmasi
+            ->where('status', 'approved') // Optional: hanya ambil yang sudah dikonfirmasi
             ->orderBy('tanggal_penggunaan')
             ->orderBy('jam_mulai')
             ->get()

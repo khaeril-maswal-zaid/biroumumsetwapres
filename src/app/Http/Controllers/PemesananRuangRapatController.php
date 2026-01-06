@@ -153,13 +153,15 @@ class PemesananRuangRapatController extends Controller
         $pemesananRuangRapat->update([
             'user_id' => Auth::id(),
             'instansi_id' => Auth::user()->instansi_id,
-            // 'unit_kerja' => $request->unit_kerja,
             'tanggal_penggunaan' => $request->date,
             'jam_mulai' => $request->startTime,
             'jam_selesai' => $request->endTime,
             'daftar_ruangan_id' => $room->id,
             'deskripsi' => $request->purpose,
             'no_hp' => $request->contact,
+            'jenis_rapat' => $request->jenisRapat,
+            'is_hybrid' => $request->isHybrid,
+            'is_ti_support' => $request->needItSupport,
         ]);
     }
 

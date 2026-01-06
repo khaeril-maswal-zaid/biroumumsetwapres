@@ -103,13 +103,6 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
         }
     }, [selectedDate, selectedStartTime, selectedEndTime]);
 
-    // Kalau useEffect kedua error, pakai yang ini:
-    // useEffect(() => {
-    //     if (flash.availableRoom) {
-    //         setRooms(flash.availableRoom);
-    //     }
-    // }, [flash.availableRoom]);
-
     useEffect(() => {
         setRooms(Array.isArray(flash.availableRoom) ? flash.availableRoom : []);
     }, [flash.availableRoom]);
