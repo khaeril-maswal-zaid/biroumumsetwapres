@@ -14,6 +14,17 @@ services:
     networks:
       - alzaid-net
 
+  scheduler:
+    image: umumswp
+    container_name: umumswp-scheduler
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./src:/var/www
+    command: php artisan schedule:work
+    networks:
+      - alzaid-net
+
 networks:
   alzaid-net:
     external: true
