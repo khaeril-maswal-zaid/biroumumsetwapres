@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MasterPegawai;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,17 +20,22 @@ class RoleController extends Controller
         $users = User::with(['roles', 'pegawai.unit'])
             ->whereHas('pegawai', fn($q) => $q->where('kode_unit', $kodeUnit))
             ->whereNot('nip', 'Developer165#')
+            ->orderBy(
+                MasterPegawai::select('name')
+                    ->whereColumn('master_pegawais.nip', 'users.nip')
+            )
             ->get()
             ->map(function ($user) {
+                $nip = $user?->pegawai?->nip;
+
                 return [
-                    'id' => (string) $user->id,
-                    'name' => $user?->pegawai?->name,
-                    'nip' => $user?->pegawai?->nip,
-                    'email' => $user->email,
-                    'role' => $user->roles->pluck('name')->first() ?? '-',
+                    'id'    => (string) $user->id,
+                    'name'  => $user?->pegawai?->name,
+                    'nip'   => $nip ? substr($nip, 0, -4) . '****' : null,
+                    'email' => $user->email ?? 'NIP SSO',
+                    'role'  => $user->roles->pluck('name')->first() ?? '-',
                 ];
             });
-
 
         $roles =  Role::with(['permissions'])
             ->whereNot('name', 'developer_swp')
