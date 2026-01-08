@@ -406,7 +406,7 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                 <Separator />
 
                                 {/* Action Section */}
-                                {selectedBooking.status === 'pending' && (
+                                {selectedBooking.status != 'rejected' && (
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2">
                                             <MessageSquare className="h-5 w-5 text-blue-600" />
@@ -423,13 +423,10 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                                     <X className="mr-2 h-4 w-4" />
                                                     Tolak Pemesanan
                                                 </Button>
-                                                <Button
-                                                    className="flex-1 bg-green-600 hover:bg-green-700"
-                                                    onClick={() => handleActionClick('approved')}
-                                                >
-                                                    <CheckCircle className="mr-2 h-4 w-4" />
-                                                    Setujui Pemesanan
-                                                </Button>
+                                                {/* <Button className="flex-1 bg-green-600 hover:bg-green-700" onClick={() => handleActionClick('approved')}>
+                                                <CheckCircle className="mr-2 h-4 w-4" />
+                                                Setujui Pemesanan
+                                            </Button> */}
                                             </div>
                                         )}
 

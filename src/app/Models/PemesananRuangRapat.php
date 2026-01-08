@@ -18,7 +18,6 @@ class PemesananRuangRapat extends Model
     protected $fillable = [
         'user_id',
         'kode_unit',
-        // 'unit_kerja',
         'tanggal_penggunaan',
         'jam_mulai',
         'jam_selesai',
@@ -60,7 +59,7 @@ class PemesananRuangRapat extends Model
         $endOfWeek = Carbon::now()->endOfWeek(Carbon::SUNDAY);
 
         $bookings = $this->with(['pemesan', 'ruangans'])
-            ->where('status', 'confirmed')
+            ->where('status', 'booked')
             ->whereBetween('tanggal_penggunaan', [$startOfWeek, $endOfWeek])
             ->get();
 
@@ -95,52 +94,29 @@ class PemesananRuangRapat extends Model
     public function summaryData(): array
     {
         $now = Carbon::now();
-        $startOfThisMonth = $now->copy()->startOfMonth();
-        $startOfLastMonth = $now->copy()->subMonth()->startOfMonth();
-        $endOfLastMonth = $now->copy()->subMonth()->endOfMonth();
 
         // Total data all time
         $totalAllTime = $this->count();
-        $totalApproved = $this->where('status', 'confirmed')->count();
-        $totalRejected = $this->where('status', 'cancelled')->count();
+        $totalBooked = $this->where('status', 'booked')->count();
+        $totalRejected = $this->where('status', 'rejected')->count();
         $totalPending  = $this->where('status', 'pending')->count();
-
-        // Data bulan ini
-        $thisMonthTotal = $this->whereBetween('tanggal_penggunaan', [$startOfThisMonth, $now])->count();
-        $thisMonthApproved = $this->where('status', 'confirmed')->whereBetween('tanggal_penggunaan', [$startOfThisMonth, $now])->count();
-        $thisMonthRejected = $this->where('status', 'cancelled')->whereBetween('tanggal_penggunaan', [$startOfThisMonth, $now])->count();
-        $thisMonthPending  = $this->where('status', 'pending')->whereBetween('tanggal_penggunaan', [$startOfThisMonth, $now])->count();
-
-        // Data bulan lalu
-        $lastMonthTotal = $this->whereBetween('tanggal_penggunaan', [$startOfLastMonth, $endOfLastMonth])->count();
-        $lastMonthApproved = $this->where('status', 'confirmed')->whereBetween('tanggal_penggunaan', [$startOfLastMonth, $endOfLastMonth])->count();
-        $lastMonthRejected = $this->where('status', 'cancelled')->whereBetween('tanggal_penggunaan', [$startOfLastMonth, $endOfLastMonth])->count();
-        $lastMonthPending  = $this->where('status', 'pending')->whereBetween('tanggal_penggunaan', [$startOfLastMonth, $endOfLastMonth])->count();
 
         // Hitung change dan trend
         return  [
             'totalBookings' => [
                 'value' => $totalAllTime,
-                'change' => $thisMonthTotal - $lastMonthTotal,
-                'trend' => ($thisMonthTotal - $lastMonthTotal) >= 0 ? 'up' : 'down',
                 'title' => 'Total Pemesanan',
             ],
-            'approved' => [
-                'value' => $totalApproved,
-                'change' => $thisMonthApproved - $lastMonthApproved,
-                'trend' => ($thisMonthApproved - $lastMonthApproved) >= 0 ? 'up' : 'down',
-                'title' => 'Disetujui',
+            'booked' => [
+                'value' => $totalBooked,
+                'title' => 'Telah dipesan',
             ],
             'rejected' => [
                 'value' => $totalRejected,
-                'change' => $thisMonthRejected - $lastMonthRejected,
-                'trend' => ($thisMonthRejected - $lastMonthRejected) >= 0 ? 'up' : 'down',
                 'title' => 'Ditolak',
             ],
             'pending' => [
                 'value' => $totalPending,
-                'change' => $thisMonthPending - $lastMonthPending,
-                'trend' => ($thisMonthPending - $lastMonthPending) >= 0 ? 'up' : 'down',
                 'title' => 'Menunggu',
             ],
         ];
@@ -247,13 +223,13 @@ class PemesananRuangRapat extends Model
 
             $records = $grouped[$i] ?? collect();
             $bookings = $records->count();
-            $approved = $records->where('status', 'confirmed')->count();
-            $rejected = $records->where('status', 'cancelled')->count();
+            $booked = $records->where('status', 'booked')->count();
+            $rejected = $records->where('status', 'rejected')->count();
 
             $result[] = [
                 'month' => $bulan[$i],
                 'bookings' => $bookings,
-                'approved' => $approved,
+                'booked' => $booked,
                 'rejected' => $rejected,
             ];
         }
@@ -364,13 +340,13 @@ class PemesananRuangRapat extends Model
     {
         return [
             [
-                'name'  => 'Disetujui',
-                'value' => $this->where('status', 'confirmed')->count(),
+                'name'  => 'Telah dipesan',
+                'value' => $this->where('status', 'booked')->count(),
                 'color' => '#10b981',
             ],
             [
                 'name'  => 'Ditolak',
-                'value' => $this->where('status', 'cancelled')->count(),
+                'value' => $this->where('status', 'rejected')->count(),
                 'color' => '#ef4444',
             ],
             [
@@ -389,7 +365,7 @@ class PemesananRuangRapat extends Model
 
         $upcomingBookings = $this->with(['ruangans', 'pemesan'])
             ->whereBetween('tanggal_penggunaan', [$today, $daysLater])
-            ->where('status', 'approved') // Optional: hanya ambil yang sudah dikonfirmasi
+            ->where('status', 'booked') // Optional: hanya ambil yang sudah dikonfirmasi
             ->orderBy('tanggal_penggunaan')
             ->orderBy('jam_mulai')
             ->get()
@@ -447,7 +423,7 @@ class PemesananRuangRapat extends Model
             $bookings = $this->where('tanggal_penggunaan', $tanggal)
                 ->where('jam_mulai', '<', $jamSelesai)
                 ->where('jam_selesai', '>', $jamMulai)
-                ->whereIn('status', ['pending', 'approved'])
+                ->whereIn('status', ['pending', 'booked'])
                 ->get();
 
             // Proses ketersediaan tiap ruangan

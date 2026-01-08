@@ -542,6 +542,13 @@ export default function RequestHistory({ requestHistory }: any) {
                                                 title: 'text-red-900',
                                                 text: 'text-red-800',
                                             },
+                                            rejected: {
+                                                border: 'border-red-200',
+                                                bg: 'bg-red-50',
+                                                icon: 'text-red-600',
+                                                title: 'text-red-900',
+                                                text: 'text-red-800',
+                                            },
                                         };
 
                                         const color = colorMap[selectedRequest.status] ?? colorMap['in_progress'];
