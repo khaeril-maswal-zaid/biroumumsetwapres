@@ -77,7 +77,7 @@ class PemesananRuangRapatController extends Controller
             'jenis_rapat' => $request->jenisRapat,
             'no_hp' => $request->contact,
             'kode_booking' => 'RRT-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
-            'status' => 'pending',
+            'status' => 'approved',
             'is_hybrid' => $request->isHybrid,
             'is_ti_support' => $request->needItSupport,
         ]);
