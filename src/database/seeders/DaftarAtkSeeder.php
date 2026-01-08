@@ -260,7 +260,7 @@ class DaftarAtkSeeder extends Seeder
             ['kode_atk' => 'AT_057', 'name' => 'Spidol Permanent Art Line 107R (Merah)', 'category' => 'Alat Tulis', 'satuan' => 'Buah'],
         ];
 
-        foreach ($datax as $key => $value) {
+        foreach ($data as $key => $value) {
             DaftarAtk::create([
                 'kode_unit' => '02',
                 'name' => $value['name'],
