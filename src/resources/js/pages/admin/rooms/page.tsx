@@ -23,25 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import {
-    Building,
-    Camera,
-    Computer,
-    Edit,
-    MapPin,
-    Mic,
-    Monitor,
-    PenSquare,
-    Search,
-    Shield,
-    Snowflake,
-    Sofa,
-    Speaker,
-    Trash2,
-    Tv,
-    Users,
-    Wifi,
-} from 'lucide-react';
+import { Building, Camera, Edit, MapPin, Mic, Monitor, PenSquare, Search, Speaker, Trash2, Tv, Users } from 'lucide-react';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -58,6 +40,7 @@ interface Room {
     kode_ruangan: string;
     lokasi: string;
     kapasitas: number;
+    kapasitas_max: number;
     image: string;
     fasilitas: string[];
     status: 'aktif' | 'maintenance' | 'nonaktif';
@@ -65,16 +48,42 @@ interface Room {
 }
 
 const facilityOptions = [
-    { id: 'wifi', label: 'WiFi', icon: Wifi },
-    { id: 'tv-led', label: 'TV LED', icon: Tv },
-    { id: 'sound-system', label: 'Sound System', icon: Speaker },
-    { id: 'kamera-cctv', label: 'Kamera CCTV', icon: Camera },
-    { id: 'mikrofon', label: 'Mikrofon', icon: Mic },
-    { id: 'papan-tulis', label: 'Papan Tulis', icon: PenSquare },
-    { id: 'ac', label: 'AC', icon: Snowflake },
-    { id: 'komputer', label: 'Komputer', icon: Computer },
-    { id: 'sofa', label: 'Sofa', icon: Sofa },
-    { id: 'lemari', label: 'Lemari', icon: Shield },
+    {
+        id: 'tv-led',
+        label: 'TV LED',
+        icon: Tv,
+        required: true,
+    },
+    {
+        id: 'papan-tulis',
+        label: 'Papan Tulis',
+        icon: PenSquare,
+        required: true,
+    },
+    {
+        id: 'tv-matador',
+        label: 'TV Matador',
+        icon: Monitor,
+        required: true,
+    },
+    {
+        id: 'kamera',
+        label: 'Kamera',
+        icon: Camera,
+        required: true,
+    },
+    {
+        id: 'mikrofon',
+        label: 'Mikrofon',
+        icon: Mic,
+        required: true,
+    },
+    {
+        id: 'sound-system',
+        label: 'Sound System',
+        icon: Speaker,
+        required: true,
+    },
 ];
 
 export default function RoomsPage({ ruangans }: any) {
@@ -88,6 +97,7 @@ export default function RoomsPage({ ruangans }: any) {
         kode_ruangan: '',
         lokasi: '',
         kapasitas: '',
+        kapasitas_max: '',
         fasilitas: [] as string[],
         status: 'aktif' as 'aktif' | 'maintenance' | 'nonaktif',
         image: '' as string,
@@ -112,6 +122,7 @@ export default function RoomsPage({ ruangans }: any) {
             kode_ruangan: '',
             lokasi: '',
             kapasitas: '',
+            kapasitas_max: '',
             fasilitas: [],
             status: 'aktif',
             image: '',
@@ -140,6 +151,7 @@ export default function RoomsPage({ ruangans }: any) {
             kode_ruangan: room.kode_ruangan,
             lokasi: room.lokasi,
             kapasitas: room.kapasitas.toString(),
+            kapasitas_max: room.kapasitas_max?.toString(),
             fasilitas: room.fasilitas,
             status: room.status,
             image: room.image,
@@ -165,6 +177,7 @@ export default function RoomsPage({ ruangans }: any) {
         form.append('nama_ruangan', formData.nama_ruangan);
         form.append('lokasi', formData.lokasi);
         form.append('kapasitas', formData.kapasitas);
+        form.append('kapasitas_max', formData.kapasitas_max);
         form.append('status', formData.status);
         formData.fasilitas.forEach((f) => form.append('fasilitas[]', f));
         if (imageFile) {
@@ -230,11 +243,11 @@ export default function RoomsPage({ ruangans }: any) {
     return (
         <AppLayout breadcrumbs={breadcrumbs} Button={ButtonRooms}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight">Manajemen Ruangan</h1>
-                        <p className="text-muted-foreground">Kelola data ruangan dan fasilitas</p>
+                        <h1 className="text-lg font-bold tracking-tight">Manajemen Ruangan</h1>
+                        <p className="text-sm text-muted-foreground">Kelola data ruangan dan fasilitas</p>
                     </div>
 
                     <div className="relative max-w-sm flex-1">
@@ -270,6 +283,10 @@ export default function RoomsPage({ ruangans }: any) {
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <Users className="h-4 w-4" />
                                     <span>Kapasitas: {room.kapasitas} orang</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <Users className="h-4 w-4" />
+                                    <span>Kapasitas Max: {room.kapasitas_max} orang</span>
                                 </div>
                                 <div className="space-y-2">
                                     <p className="text-sm font-medium">Fasilitas:</p>
@@ -376,11 +393,20 @@ export default function RoomsPage({ ruangans }: any) {
                                 <div className="space-y-2">
                                     <Label htmlFor="edit_kapasitas">Kapasitas</Label>
                                     <Input
-                                        className="mt-1"
                                         id="edit_kapasitas"
-                                        type="number"
+                                        type=""
                                         value={formData.kapasitas}
                                         onChange={(e) => setFormData((prev) => ({ ...prev, kapasitas: e.target.value }))}
+                                        placeholder="Jumlah orang"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="edit_kapasitas">Kapasitas Max</Label>
+                                    <Input
+                                        id="edit_kapasitas"
+                                        type=""
+                                        value={formData.kapasitas_max}
+                                        onChange={(e) => setFormData((prev) => ({ ...prev, kapasitas_max: e.target.value }))}
                                         placeholder="Jumlah orang"
                                     />
                                 </div>

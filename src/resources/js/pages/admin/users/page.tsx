@@ -66,63 +66,61 @@ export default function UsersAdmin({ users }: any) {
 
     //----------- PAGINATE ------------------
 
-        const totalItems = users.length;
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+    const totalItems = users.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
 
-        const paginatedItems = useMemo(() => {
-            return filteredUsers.slice(startIndex, endIndex);
-        }, [filteredUsers, startIndex, endIndex]);
+    const paginatedItems = useMemo(() => {
+        return filteredUsers.slice(startIndex, endIndex);
+    }, [filteredUsers, startIndex, endIndex]);
 
+    const handleItemsPerPageChange = (value: string) => {
+        setItemsPerPage(Number(value));
+        setCurrentPage(1);
+    };
 
-        const handleItemsPerPageChange = (value: string) => {
-            setItemsPerPage(Number(value));
-            setCurrentPage(1);
-        };
+    const goToFirstPage = () => setCurrentPage(1);
+    const goToLastPage = () => setCurrentPage(totalPages);
+    const goToPreviousPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+    const goToNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
-        const goToFirstPage = () => setCurrentPage(1);
-        const goToLastPage = () => setCurrentPage(totalPages);
-        const goToPreviousPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
-        const goToNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+    // Generate page numbers to display
+    const getPageNumbers = () => {
+        const pages: (number | string)[] = [];
+        const maxVisiblePages = 5;
 
-        // Generate page numbers to display
-        const getPageNumbers = () => {
-            const pages: (number | string)[] = [];
-            const maxVisiblePages = 5;
-
-            if (totalPages <= maxVisiblePages) {
-                for (let i = 1; i <= totalPages; i++) {
-                    pages.push(i);
-                }
-            } else {
-                if (currentPage <= 3) {
-                    for (let i = 1; i <= 4; i++) pages.push(i);
-                    pages.push('...');
-                    pages.push(totalPages);
-                } else if (currentPage >= totalPages - 2) {
-                    pages.push(1);
-                    pages.push('...');
-                    for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
-                } else {
-                    pages.push(1);
-                    pages.push('...');
-                    for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
-                    pages.push('...');
-                    pages.push(totalPages);
-                }
+        if (totalPages <= maxVisiblePages) {
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i);
             }
-            return pages;
-        };
-
+        } else {
+            if (currentPage <= 3) {
+                for (let i = 1; i <= 4; i++) pages.push(i);
+                pages.push('...');
+                pages.push(totalPages);
+            } else if (currentPage >= totalPages - 2) {
+                pages.push(1);
+                pages.push('...');
+                for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
+            } else {
+                pages.push(1);
+                pages.push('...');
+                for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
+                pages.push('...');
+                pages.push(totalPages);
+            }
+        }
+        return pages;
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Manajemen PenggunaX</h1>
-                    <p className="text-gray-500">Kelola semua pengguna sistem Biro Umum.</p>
+                    <h1 className="text-lg font-bold tracking-tight">Manajemen PenggunaX</h1>
+                    <p className="text-sm text-gray-500">Kelola semua pengguna sistem Biro Umum.</p>
                 </div>
 
                 <Card>
@@ -218,7 +216,7 @@ export default function UsersAdmin({ users }: any) {
                             </Table>
                         </div>
 
-                          {/* Pagination */}
+                        {/* Pagination */}
                         {totalItems > 0 && (
                             <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                 {/* Left: Items per page selector & info */}

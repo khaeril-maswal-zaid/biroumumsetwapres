@@ -46,7 +46,13 @@ class KerusakanGedungController extends Controller
         $photoPaths = [];
 
         foreach ($request->photos as $photo) {
-            $photoPaths[] = $photo->store('images/kerusakan-gedung', 'public');
+            $mime = $photo->getMimeType();
+            if (str_starts_with($mime, 'image/')) {
+                $path = $photo->store('images/kerusakan-gedung', 'public');
+            } elseif (str_starts_with($mime, 'video/')) {
+                $path = $photo->store('video/kerusakan-gedung', 'public');
+            }
+            $photoPaths[] = $path;
         }
 
         $idKat  = KategoriKerusakan::where('kode_kerusakan', $request->kategori)->value('id');
@@ -73,7 +79,7 @@ class KerusakanGedungController extends Controller
             'kode_unit'   => $laporan->kode_unit,
             'permissions' => ['view_damages'],
             'type'        => 'new',
-            'category'    => 'room',
+            'category'    => 'damage',
             'title'       => 'Laporan Kerusakan Gedung Baru',
             'message'     =>  $message,
             'priority'    => 'medium',
@@ -116,7 +122,7 @@ class KerusakanGedungController extends Controller
      */
     public function destroy(KerusakanGedung $kerusakanGedung)
     {
-        //
+        $kerusakanGedung->delete();
     }
 
     public function status(KerusakanGedung $kerusakanGedung, Request $request)

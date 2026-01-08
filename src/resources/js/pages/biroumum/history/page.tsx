@@ -1,5 +1,6 @@
 'use client';
 
+import { StatusBadge } from '@/components/badges/StatusBadge';
 import { BottomNavigation } from '@/components/biroumum/bottom-navigation';
 import { PageHeader } from '@/components/biroumum/page-header';
 import { Badge } from '@/components/ui/badge';
@@ -29,8 +30,6 @@ import {
 import { useEffect, useState } from 'react';
 
 export default function RequestHistory({ requestHistory }: any) {
-    console.log(requestHistory);
-
     useEffect(() => {
         const interval = setInterval(() => {
             router.reload({ only: ['requestHistory'] });
@@ -74,20 +73,13 @@ export default function RequestHistory({ requestHistory }: any) {
     };
 
     // Filter requests based on search term, type, and status
-    const filteredRequests = requestHistory;
-    //  requestHistory.filter((request: any) => {
-    //     console.log(request);
-
-    //     const matchesSearch =
-    //         request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    //         request.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    //         request.code.toLowerCase().includes(searchTerm.toLowerCase());
-
-    //     const matchesType = typeFilter === 'all' || request.type === typeFilter;
-    //     const matchesStatus = statusFilter === 'all' || request.status === statusFilter;
-
-    //     return matchesSearch && matchesType && matchesStatus;
-    // });
+    const filteredRequests = requestHistory.filter((request: any) => {
+        const matchesSearch =
+            request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            request.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            request.code.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesSearch;
+    });
 
     const handleViewDetails = (request: any) => {
         setSelectedRequest(request);
@@ -99,24 +91,6 @@ export default function RequestHistory({ requestHistory }: any) {
         setIsImageViewerOpen(true);
     };
 
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case 'pending':
-                return <Badge className="mb-1 bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Menunggu</Badge>;
-            case 'approved':
-                return <Badge className="mb-1 bg-green-100 text-green-800 hover:bg-green-200">Selesai</Badge>;
-            case 'confirmed':
-                return <Badge className="mb-1 bg-green-100 text-green-800 hover:bg-green-200">Selesai</Badge>;
-            case 'process':
-                return <Badge className="mb-1 bg-blue-100 text-blue-800 hover:bg-blue-200">Proses</Badge>;
-            case 'cancelled':
-                return <Badge className="mb-1 bg-red-100 text-red-800 hover:bg-red-200">Ditolak</Badge>;
-            case 'rejected':
-                return <Badge className="mb-1 bg-red-100 text-red-800 hover:bg-red-200">Ditolak</Badge>;
-            default:
-                return <Badge variant="outline">Unknown</Badge>;
-        }
-    };
     const getTypeIcon = (type: string) => {
         switch (type) {
             case 'booking':
@@ -139,25 +113,6 @@ export default function RequestHistory({ requestHistory }: any) {
             month: 'long',
             year: 'numeric',
         }).format(date);
-    };
-
-    const getUrgencyBadge = (urgency: string) => {
-        switch (urgency) {
-            case 'rendah':
-                return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">Rendah</Badge>;
-            case 'sedang':
-                return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Sedang</Badge>;
-            case 'tinggi':
-                return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Tinggi</Badge>;
-            case 'normal':
-                return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">Normal</Badge>;
-            case 'mendesak':
-                return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Mendesak</Badge>;
-            case 'segera':
-                return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Segera</Badge>;
-            default:
-                return <Badge variant="outline">Unknown</Badge>;
-        }
     };
 
     return (
@@ -212,19 +167,10 @@ export default function RequestHistory({ requestHistory }: any) {
                                                         </div>
                                                         <h3 className="truncate font-semibold text-gray-900">{request.title}</h3>
                                                         <p className="line-clamp-1 text-sm text-gray-600">{request?.info}</p>
-                                                        {/* <div className="mt-2 flex items-center gap-4 text-xs text-gray-500">
-                                                            {request ? (
-                                                                request.id !== 'booking' ? (
-                                                                    getUrgencyBadge(request.subtitle)
-                                                                ) : (
-                                                                    <span>{request.subtitle}</span>
-                                                                )
-                                                            ) : null}
-                                                        </div> */}
                                                     </div>
                                                 </div>
                                                 <div className="flex flex-col items-end gap-2">
-                                                    {getStatusBadge(request.status)}
+                                                    <StatusBadge status={request.status} isRead={request.is_read} />
                                                     <Button variant="ghost" size="sm" onClick={() => handleViewDetails(request)} className="text-xs">
                                                         Detail
                                                     </Button>
@@ -282,7 +228,9 @@ export default function RequestHistory({ requestHistory }: any) {
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="text-right">{getStatusBadge(selectedRequest.status)}</div>
+                                    <div className="text-right">
+                                        <StatusBadge status={selectedRequest.status} />
+                                    </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -654,25 +602,7 @@ export default function RequestHistory({ requestHistory }: any) {
                     </DialogContent>
                 </Dialog>
 
-                {/* Image Viewer Dialog */}
-                {/* <Dialog open={isImageViewerOpen} onOpenChange={setIsImageViewerOpen}>
-                    <DialogContent className="sm:max-w-3xl">
-                        <DialogHeader>
-                            <DialogTitle>Foto Kerusakan</DialogTitle>
-                        </DialogHeader>
-                        {selectedImage && (
-                            <div className="relative aspect-video w-full">
-                                <img src={`/storage/${selectedImage}` || '/placeholder.svg'} alt="Foto kerusakan" className="object-contain" />
-                            </div>
-                        )}
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setIsImageViewerOpen(false)}>
-                                Tutup
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog> */}
-
+                {/* Image & Video Viewer Dialog */}
                 <Dialog open={isImageViewerOpen} onOpenChange={setIsImageViewerOpen}>
                     <DialogContent className="overflow-hidden p-0 sm:max-w-3xl">
                         <DialogHeader className="p-4 pb-2">

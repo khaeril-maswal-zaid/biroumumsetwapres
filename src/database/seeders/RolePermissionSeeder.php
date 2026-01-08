@@ -10,6 +10,9 @@ class RolePermissionSeeder extends Seeder
 {
     public function run(): void
     {
+        // di paling atas run()
+        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+
         $permissions = [
             // 🔐 Ruangan
             ['name' => 'view_rooms', 'label' => 'Lihat Data Ruangan', 'category' => 'Ruangan'],
@@ -48,8 +51,8 @@ class RolePermissionSeeder extends Seeder
             ['name' => 'change_booking_status', 'label' => 'Konfirmasi Pemesanan Ruang', 'category' => 'Pemesanan Ruang Rapat'],
 
             // 🖊️ ATK
-            ['name' => 'view_suppliess', 'label' => 'Lihat Permintaan ATK', 'category' => 'Permintaan ATK'],
-            ['name' => 'report_suppliess', 'label' => 'Laporan Permintaan ATK', 'category' => 'Permintaan ATK'],
+            ['name' => 'view_supplies', 'label' => 'Lihat Permintaan ATK', 'category' => 'Permintaan ATK'],
+            ['name' => 'report_supplies', 'label' => 'Laporan Permintaan ATK', 'category' => 'Permintaan ATK'],
             ['name' => 'create_supplies', 'label' => 'Ajukan Permintaan ATK', 'category' => 'Permintaan ATK'],
             ['name' => 'change_supplies_status', 'label' => 'Konfirmasi Permintaan ATK', 'category' => 'Permintaan ATK'],
 
@@ -75,10 +78,11 @@ class RolePermissionSeeder extends Seeder
         // 🔁 Buat atau update semua permission dengan label & kategori
         foreach ($permissions as $perm) {
             Permission::updateOrCreate(
+                ['name' => $perm['name']],
                 [
-                    'name' => $perm['name'],
                     'label' => $perm['label'],
-                    'category' => $perm['category']
+                    'category' => $perm['category'],
+                    'guard_name' => 'web',
                 ]
             );
         }
@@ -90,23 +94,48 @@ class RolePermissionSeeder extends Seeder
 
             'change_supplies_status',
             'create_supplies',
-            'view_suppliess',
-            'report_suppliess',
+            'view_supplies',
+            'report_supplies',
 
             'delete_atk',
             'edit_atk',
             'create_atk',
             'view_atk',
+
+            'view_homepage',
+            'view_history',
         ];
         $adminAtkRole = Role::create(
             [
-                'name' => 'operator_atk',
-                'label' => 'Operator ATK',
+                'name' => 'admin_atk',
+                'label' => 'Admin ATK',
                 'guard_name' => 'web',
                 'description' => 'Bertanggung jawab mengelola data permintaan dan ketersediaan ATK serta statusnya.'
             ]
         );
         $adminAtkRole->syncPermissions($adminAtkPermissions);
+
+        // 🛡️ Role: Operator ATK---------------------------------------------
+        $operatorAtkPermissions = [
+            'view_admin_dashboard',
+
+            'change_supplies_status',
+            'create_supplies',
+            'view_supplies',
+            'report_supplies',
+
+            'view_homepage',
+            'view_history',
+        ];
+        $operatorAtkRole = Role::create(
+            [
+                'name' => 'operator_atk',
+                'label' => 'Operator ATK',
+                'guard_name' => 'web',
+                'description' => 'Bertanggung jawab mengelola data permintaan ATK serta statusnya.'
+            ]
+        );
+        $operatorAtkRole->syncPermissions($operatorAtkPermissions);
 
 
         // 🛡️ Role: Admin Ruangan--------------------------------------
@@ -122,8 +151,33 @@ class RolePermissionSeeder extends Seeder
             'edit_rooms',
             'create_rooms',
             'view_rooms',
+
+            'view_homepage',
+            'view_history',
         ];
         $adminRuanganRole = Role::create(
+            [
+                'name' => 'admin_ruangan',
+                'label' => 'Admin Ruangan Rapat',
+                'guard_name' => 'web',
+                'description' => 'Mengelola ruangan rapat dan seluruh permintaan booking yang masuk serta mengelola daftar dan status ruangan.'
+            ]
+        );
+        $adminRuanganRole->syncPermissions($adminRuanganPermissions);
+
+        // 🛡️ Role: Operator Ruangan--------------------------------------
+        $operatorRuanganPermissions = [
+            'view_admin_dashboard',
+
+            'change_booking_status',
+            'create_booking',
+            'view_bookings',
+            'report_bookings',
+
+            'view_homepage',
+            'view_history',
+        ];
+        $operatorRuanganRole = Role::create(
             [
                 'name' => 'operator_ruangan',
                 'label' => 'Operator Ruangan Rapat',
@@ -131,7 +185,7 @@ class RolePermissionSeeder extends Seeder
                 'description' => 'Mengelola ruangan rapat dan seluruh permintaan booking yang masuk.'
             ]
         );
-        $adminRuanganRole->syncPermissions($adminRuanganPermissions);
+        $operatorRuanganRole->syncPermissions($operatorRuanganPermissions);
 
 
         // 🛡️ Role: Admin Kerusakan Gedung--------------------------------------
@@ -147,16 +201,41 @@ class RolePermissionSeeder extends Seeder
             'edit_category_damages',
             'create_category_damages',
             'view_category_damages',
+
+            'view_homepage',
+            'view_history',
         ];
         $adminKerusakanGedungRole = Role::create(
             [
-                'name' => 'operator_kerusakan_gedung',
-                'label' => 'Operator Kerusakan Gedung',
+                'name' => 'admin_kerusakan_gedung',
+                'label' => 'Admin Kerusakan Gedung',
                 'guard_name' => 'web',
                 'description' => 'Mengelola laporan kerusakan gedung serta kategori kerusakan.'
             ]
         );
         $adminKerusakanGedungRole->syncPermissions($adminKerusakanGedungPermissions);
+
+        // 🛡️ Role: Operator Kerusakan Gedung--------------------------------------
+        $operatorKerusakanGedungPermissions = [
+            'view_admin_dashboard',
+
+            'change_damage_status',
+            'create_damage',
+            'view_damages',
+            'report_damages',
+
+            'view_homepage',
+            'view_history',
+        ];
+        $operatorKerusakanGedungRole = Role::create(
+            [
+                'name' => 'operator_kerusakan_gedung',
+                'label' => 'Operator Kerusakan Gedung',
+                'guard_name' => 'web',
+                'description' => 'Mengelola laporan kerusakan gedung.'
+            ]
+        );
+        $operatorKerusakanGedungRole->syncPermissions($operatorKerusakanGedungPermissions);
 
 
         // 👤 Role: Pegawai------------------------------
@@ -164,7 +243,6 @@ class RolePermissionSeeder extends Seeder
             'view_homepage',
             'view_history',
 
-            'create_booking',
             'create_vehicle',
             'create_damage',
             'create_supplies',
@@ -179,18 +257,39 @@ class RolePermissionSeeder extends Seeder
         );
         $pegawaiRole->syncPermissions($pegawaiPermissions);
 
+
+        // 👤 Role: Pegawai------------------------------
+        $superPegawaiPermissions = [
+            'view_homepage',
+            'view_history',
+
+            'create_vehicle',
+            'create_damage',
+            'create_supplies',
+            'create_booking',
+        ];
+        $superPegawaiRole = Role::create(
+            [
+                'name' => 'super_pegawai',
+                'label' => 'Super Pegawai',
+                'guard_name' => 'web',
+                'description' => 'Dapat mengajukan berbagai permintaan seperti booking ruangan, kendaraan, ATK, dan pelaporan kerusakan.'
+            ]
+        );
+        $superPegawaiRole->syncPermissions($superPegawaiPermissions);
+
         // 👤 Role: Pimpinan------------------------------
-        $atsanPermissions = [
+        $atasanPermissions = [
             'view_rooms',
             'view_admin_dashboard',
             'view_vehicles',
-            'view_suppliess',
+            'view_supplies',
             'view_bookings',
             'view_damages',
             'view_category_damages',
             'view_atk',
         ];
-        $pegawaiRole = Role::create(
+        $atasanRole = Role::create(
             [
                 'name' => 'pimpinan',
                 'label' => 'Pimpinan',
@@ -198,7 +297,7 @@ class RolePermissionSeeder extends Seeder
                 'description' => 'Dapat melihat berbagai permintaan seperti booking ruangan, kendaraan, ATK, dan pelaporan kerusakan.'
             ]
         );
-        $pegawaiRole->syncPermissions($atsanPermissions);
+        $atasanRole->syncPermissions($atasanPermissions);
 
 
         // 🎖️ Role: Super Admin--------------------------------
@@ -226,8 +325,8 @@ class RolePermissionSeeder extends Seeder
             'report_bookings',
             'create_booking',
             'change_booking_status',
-            'view_suppliess',
-            'report_suppliess',
+            'view_supplies',
+            'report_supplies',
             'create_supplies',
             'change_supplies_status',
             'view_vehicles',
@@ -252,7 +351,7 @@ class RolePermissionSeeder extends Seeder
 
         // ---------------------------------------------------------
         // 🎖️ Role: Developer--------------------------------
-        $superAdminPermissions = [
+        $developerPermissions = [
             'view_rooms',
             'create_rooms',
             'edit_rooms',
@@ -276,8 +375,8 @@ class RolePermissionSeeder extends Seeder
             'report_bookings',
             'create_booking',
             'change_booking_status',
-            'view_suppliess',
-            'report_suppliess',
+            'view_supplies',
+            'report_supplies',
             'create_supplies',
             'change_supplies_status',
             'view_vehicles',
@@ -293,7 +392,7 @@ class RolePermissionSeeder extends Seeder
             'manage_vehicles_master',
         ];
 
-        $super_adminRole = Role::create(
+        $developerRole = Role::create(
             [
                 'name' => 'developer_swp',
                 'label' => 'Developer Setwapres',
@@ -301,6 +400,6 @@ class RolePermissionSeeder extends Seeder
                 'description' => 'Memiliki akses tampilan dan monitoring seluruh data dan modul permintaan.'
             ]
         );
-        $super_adminRole->syncPermissions($superAdminPermissions);
+        $developerRole->syncPermissions($developerPermissions);
     }
 }

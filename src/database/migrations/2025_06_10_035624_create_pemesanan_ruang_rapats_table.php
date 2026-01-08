@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('deskripsi', 255); //from pengadu
             $table->enum('jenis_rapat', ['internal', 'external']);
             $table->string('no_hp', 25);
-            $table->enum('status', ['pending', 'confirmed', 'cancelled']);
+            $table->enum('status', ['pending', 'approved', 'rejected']);
             $table->string('kode_booking', 255)->unique();
             $table->string('keterangan', 255)->default(''); //from admin
             $table->boolean('is_hybrid')->default(false);

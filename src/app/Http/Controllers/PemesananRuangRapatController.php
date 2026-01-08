@@ -9,7 +9,6 @@ use App\Http\Requests\StorePemesananRuangRapatRequest;
 use App\Http\Requests\UpdatePemesananRuangRapatRequest;
 use App\Models\DaftarRuangan;
 use App\Models\Notification;
-use App\Models\UnitKerja;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -84,7 +83,7 @@ class PemesananRuangRapatController extends Controller
         ]);
 
         $pegawai = $permintaan->pemesan->pegawai;
-        $message = "Pemesanan ruang rapat {$permintaan->ruangans->nama_ruangan} oleh {$pegawai->nama} ({$pegawai->jabatan}) menunggu peninjauan.";
+        $message = "Pemesanan ruang rapat {$permintaan->ruangans->nama_ruangan} oleh {$pegawai->name} ({$pegawai->jabatan}) menunggu peninjauan.";
 
         // Buat notifikasi
         Notification::create([
@@ -154,13 +153,15 @@ class PemesananRuangRapatController extends Controller
         $pemesananRuangRapat->update([
             'user_id' => Auth::id(),
             'instansi_id' => Auth::user()->instansi_id,
-            // 'unit_kerja' => $request->unit_kerja,
             'tanggal_penggunaan' => $request->date,
             'jam_mulai' => $request->startTime,
             'jam_selesai' => $request->endTime,
             'daftar_ruangan_id' => $room->id,
             'deskripsi' => $request->purpose,
             'no_hp' => $request->contact,
+            'jenis_rapat' => $request->jenisRapat,
+            'is_hybrid' => $request->isHybrid,
+            'is_ti_support' => $request->needItSupport,
         ]);
     }
 
@@ -174,10 +175,21 @@ class PemesananRuangRapatController extends Controller
 
     public function status(PemesananRuangRapat $pemesananRuangRapat, Request $request)
     {
-        $validated = $request->validate([
-            'action' => 'required|in:confirmed,cancelled',
-            'message' => 'required_if:action,cancelled|nullable|string|max:255',
-        ]);
+        $validated = $request->validate(
+            [
+                'action'  => 'required|in:approved,rejected',
+                'message' => 'required_if:action,rejected|nullable|string|max:255',
+            ],
+            [
+                'action.required'  => 'Aksi wajib dipilih.',
+                'action.in'        => 'Aksi yang dipilih tidak valid.',
+
+                'message.required_if' => 'Pesan wajib diisi jika permintaan ditolak.',
+                'message.string'      => 'Pesan harus berupa teks.',
+                'message.max'         => 'Pesan maksimal 255 karakter.',
+            ]
+        );
+
 
         $pemesananRuangRapat->update([
             'status' => $validated['action'],

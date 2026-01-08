@@ -31,6 +31,7 @@ class HomeController extends Controller
             ->map(fn($r) => [
                 'id'                => 'booking',
                 'type'              => 'Ruangan Rapat',
+                'is_read'           => $r->is_read,
                 'code'              => $r->kode_booking,
                 'title'             => $r->ruangans->nama_ruangan,
                 'ruangans'          => $r->ruangans,
@@ -61,6 +62,7 @@ class HomeController extends Controller
             ->map(fn($k) => [
                 'id'                 => 'damage',
                 'type'               => 'Kerusakan',
+                'is_read'            => $k->is_read,
                 'code'               => $k->kode_pelaporan,
                 'title'              => $k->item,
                 'ruangans'           => null,
@@ -91,6 +93,7 @@ class HomeController extends Controller
             ->map(fn($a) => [
                 'id'                 => 'supplies',
                 'type'               => 'ATK',
+                'is_read'            => $a->is_read,
                 'code'               => $a->kode_pelaporan,
                 'title'              => count($a->daftar_kebutuhan) . ' item',
                 'ruangans'           => null,
@@ -166,6 +169,7 @@ class HomeController extends Controller
                 return [
                     'id' => $item->id,
                     'type' => 'room',
+                    'isRead' => $item->is_read,
                     'title' => 'Permintaan ' . ($item->ruangans->nama_ruangan ?? '-'),
                     'user' => ($item->pemesan->pegawai->name ?? '-') . ' - ' . ($item->pemesan->pegawai->biro->nama_biro ?? '-'),
                     'time' => $item->created_at->diffForHumans(),
@@ -182,6 +186,7 @@ class HomeController extends Controller
                 return [
                     'id' => $item->id,
                     'type' => 'damage',
+                    'isRead' => $item->is_read,
                     'title' => 'Kerusakan ' . $item->item . ' di ' . $item->lokasi,
                     'user' => ($item->pelapor->pegawai->name ?? '-') . ' - ' . ($item->pelapor->pegawai->biro->nama_biro ?? '-'),
                     'time' => $item->created_at->diffForHumans(),
@@ -198,6 +203,7 @@ class HomeController extends Controller
                 return [
                     'id' => $item->id,
                     'type' => 'supplies',
+                    'isRead' => $item->is_read,
                     'title' => 'Permintaan ATK - ' . count($item->daftar_kebutuhan) . ' item',
                     'user' => ($item->pemesan->pegawai->name ?? '-') . ' - ' . ($item->pemesan->pegawai->biro->nama_biro ?? '-'),
                     'time' => $item->created_at->diffForHumans(),
@@ -237,9 +243,11 @@ class HomeController extends Controller
 
     public function isReadNotfif(Notification $notification)
     {
-        $notification->update([
-            'is_read' => true,
-        ]);
+        $notification->delete();
+
+        // $notification->update([
+        //     'is_read' => true,
+        // ]);
     }
 
     public function isReadAllNotfif()

@@ -129,13 +129,13 @@ export default function BookingReports({
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div>
-                            <h1 className="text-2xl font-bold tracking-tight">Laporan Pemesanan Ruangan</h1>
-                            <p className="text-gray-500">Analisis dan statistik pemesanan ruangan fasilitas</p>
+                        <div className="ps-2">
+                            <h1 className="text-lg font-bold tracking-tight">Dashboard Pemesanan Ruangan</h1>
+                            <p className="text-sm text-gray-500">Analisis dan statistik pemesanan ruangan fasilitas</p>
                         </div>
                     </div>
                 </div>

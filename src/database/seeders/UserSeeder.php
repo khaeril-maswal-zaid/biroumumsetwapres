@@ -54,7 +54,7 @@ class UserSeeder extends Seeder
                 'email' => 'layananbiroumum@set.wapresri.go.id',
                 'nip' => 'User165#',
                 'nipsso' => '0',
-                'role' => 'pegawai',
+                'role' => 'super_pegawai',
                 'biro' => '0238',
                 'jabatan' => 'Operator',
             ],

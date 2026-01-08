@@ -11,8 +11,6 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Building, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Mail,  } from 'lucide-react';
-import { useMemo,  } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,8 +24,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { Edit, Search, Shield, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Edit, Search, Shield, Trash2 } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -88,7 +86,6 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
     const filteredRoles = roles.filter(
         (role) => role.name.toLowerCase().includes(searchTerm.toLowerCase()) || role.description.toLowerCase().includes(searchTerm.toLowerCase()),
     );
-
 
     const filteredUsers = users.filter(
         (user) =>
@@ -222,56 +219,55 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
         );
     };
 
-     //----------- PAGINATE ------------------
+    //----------- PAGINATE ------------------
 
-        const totalItems = users.length;
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+    const totalItems = users.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
 
-        const paginatedItems = useMemo(() => {
-            return filteredUsers.slice(startIndex, endIndex);
-        }, [filteredUsers, startIndex, endIndex]);
+    const paginatedItems = useMemo(() => {
+        return filteredUsers.slice(startIndex, endIndex);
+    }, [filteredUsers, startIndex, endIndex]);
 
+    const handleItemsPerPageChange = (value: string) => {
+        setItemsPerPage(Number(value));
+        setCurrentPage(1);
+    };
 
-        const handleItemsPerPageChange = (value: string) => {
-            setItemsPerPage(Number(value));
-            setCurrentPage(1);
-        };
+    const goToFirstPage = () => setCurrentPage(1);
+    const goToLastPage = () => setCurrentPage(totalPages);
+    const goToPreviousPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+    const goToNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
-        const goToFirstPage = () => setCurrentPage(1);
-        const goToLastPage = () => setCurrentPage(totalPages);
-        const goToPreviousPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
-        const goToNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+    // Generate page numbers to display
+    const getPageNumbers = () => {
+        const pages: (number | string)[] = [];
+        const maxVisiblePages = 5;
 
-        // Generate page numbers to display
-        const getPageNumbers = () => {
-            const pages: (number | string)[] = [];
-            const maxVisiblePages = 5;
-
-            if (totalPages <= maxVisiblePages) {
-                for (let i = 1; i <= totalPages; i++) {
-                    pages.push(i);
-                }
-            } else {
-                if (currentPage <= 3) {
-                    for (let i = 1; i <= 4; i++) pages.push(i);
-                    pages.push('...');
-                    pages.push(totalPages);
-                } else if (currentPage >= totalPages - 2) {
-                    pages.push(1);
-                    pages.push('...');
-                    for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
-                } else {
-                    pages.push(1);
-                    pages.push('...');
-                    for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
-                    pages.push('...');
-                    pages.push(totalPages);
-                }
+        if (totalPages <= maxVisiblePages) {
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i);
             }
-            return pages;
-        };
+        } else {
+            if (currentPage <= 3) {
+                for (let i = 1; i <= 4; i++) pages.push(i);
+                pages.push('...');
+                pages.push(totalPages);
+            } else if (currentPage >= totalPages - 2) {
+                pages.push(1);
+                pages.push('...');
+                for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
+            } else {
+                pages.push(1);
+                pages.push('...');
+                for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i);
+                pages.push('...');
+                pages.push(totalPages);
+            }
+        }
+        return pages;
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs} Button={() => <ButtonPermission availablePermissions={availablePermissions} />}>
@@ -279,8 +275,8 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight">Manajemen Hak Akses</h1>
-                        <p className="text-muted-foreground">Kelola role dan permission pengguna sistem</p>
+                        <h1 className="text-lg font-bold tracking-tight">Manajemen Hak Akses</h1>
+                        <p className="text-sm text-muted-foreground">Kelola role dan permission pengguna sistem</p>
                     </div>
                 </div>
 
@@ -488,110 +484,108 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                                     </TableBody>
                                 </Table>
 
-                                          {/* Pagination */}
-                        {totalItems > 0 && (
-                            <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                                {/* Left: Items per page selector & info */}
-                                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-sm text-muted-foreground">Tampilkan</span>
-                                        <Select value={String(itemsPerPage)} onValueChange={handleItemsPerPageChange}>
-                                            <SelectTrigger className="h-8 w-[70px]">
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="5">5</SelectItem>
-                                                <SelectItem value="10">10</SelectItem>
-                                                <SelectItem value="20">20</SelectItem>
-                                                <SelectItem value="50">50</SelectItem>
-                                                <SelectItem value="100">100</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <span className="text-sm text-muted-foreground">data</span>
+                                {/* Pagination */}
+                                {totalItems > 0 && (
+                                    <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                        {/* Left: Items per page selector & info */}
+                                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-sm text-muted-foreground">Tampilkan</span>
+                                                <Select value={String(itemsPerPage)} onValueChange={handleItemsPerPageChange}>
+                                                    <SelectTrigger className="h-8 w-[70px]">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="5">5</SelectItem>
+                                                        <SelectItem value="10">10</SelectItem>
+                                                        <SelectItem value="20">20</SelectItem>
+                                                        <SelectItem value="50">50</SelectItem>
+                                                        <SelectItem value="100">100</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <span className="text-sm text-muted-foreground">data</span>
+                                            </div>
+                                            <div className="text-sm text-muted-foreground">
+                                                Menampilkan <span className="font-medium text-foreground">{startIndex + 1}</span> -{' '}
+                                                <span className="font-medium text-foreground">{endIndex}</span> dari{' '}
+                                                <span className="font-medium text-foreground">{totalItems}</span> data
+                                            </div>
+                                        </div>
+
+                                        {/* Right: Pagination controls */}
+                                        <div className="flex items-center gap-1">
+                                            {/* First Page */}
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="h-8 w-8 bg-transparent"
+                                                onClick={goToFirstPage}
+                                                disabled={currentPage === 1}
+                                            >
+                                                <ChevronsLeft className="h-4 w-4" />
+                                                <span className="sr-only">Halaman pertama</span>
+                                            </Button>
+
+                                            {/* Previous Page */}
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="h-8 w-8 bg-transparent"
+                                                onClick={goToPreviousPage}
+                                                disabled={currentPage === 1}
+                                            >
+                                                <ChevronLeft className="h-4 w-4" />
+                                                <span className="sr-only">Halaman sebelumnya</span>
+                                            </Button>
+
+                                            {/* Page Numbers */}
+                                            <div className="flex items-center gap-1">
+                                                {getPageNumbers().map((page, index) =>
+                                                    page === '...' ? (
+                                                        <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">
+                                                            ...
+                                                        </span>
+                                                    ) : (
+                                                        <Button
+                                                            key={page}
+                                                            variant={currentPage === page ? 'default' : 'outline'}
+                                                            size="icon"
+                                                            className="h-8 w-8"
+                                                            onClick={() => setCurrentPage(page as number)}
+                                                        >
+                                                            {page}
+                                                        </Button>
+                                                    ),
+                                                )}
+                                            </div>
+
+                                            {/* Next Page */}
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="h-8 w-8 bg-transparent"
+                                                onClick={goToNextPage}
+                                                disabled={currentPage === totalPages}
+                                            >
+                                                <ChevronRight className="h-4 w-4" />
+                                                <span className="sr-only">Halaman selanjutnya</span>
+                                            </Button>
+
+                                            {/* Last Page */}
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className="h-8 w-8 bg-transparent"
+                                                onClick={goToLastPage}
+                                                disabled={currentPage === totalPages}
+                                            >
+                                                <ChevronsRight className="h-4 w-4" />
+                                                <span className="sr-only">Halaman terakhir</span>
+                                            </Button>
+                                        </div>
                                     </div>
-                                    <div className="text-sm text-muted-foreground">
-                                        Menampilkan <span className="font-medium text-foreground">{startIndex + 1}</span> -{' '}
-                                        <span className="font-medium text-foreground">{endIndex}</span> dari{' '}
-                                        <span className="font-medium text-foreground">{totalItems}</span> data
-                                    </div>
-                                </div>
-
-                                {/* Right: Pagination controls */}
-                                <div className="flex items-center gap-1">
-                                    {/* First Page */}
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="h-8 w-8 bg-transparent"
-                                        onClick={goToFirstPage}
-                                        disabled={currentPage === 1}
-                                    >
-                                        <ChevronsLeft className="h-4 w-4" />
-                                        <span className="sr-only">Halaman pertama</span>
-                                    </Button>
-
-                                    {/* Previous Page */}
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="h-8 w-8 bg-transparent"
-                                        onClick={goToPreviousPage}
-                                        disabled={currentPage === 1}
-                                    >
-                                        <ChevronLeft className="h-4 w-4" />
-                                        <span className="sr-only">Halaman sebelumnya</span>
-                                    </Button>
-
-                                    {/* Page Numbers */}
-                                    <div className="flex items-center gap-1">
-                                        {getPageNumbers().map((page, index) =>
-                                            page === '...' ? (
-                                                <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">
-                                                    ...
-                                                </span>
-                                            ) : (
-                                                <Button
-                                                    key={page}
-                                                    variant={currentPage === page ? 'default' : 'outline'}
-                                                    size="icon"
-                                                    className="h-8 w-8"
-                                                    onClick={() => setCurrentPage(page as number)}
-                                                >
-                                                    {page}
-                                                </Button>
-                                            ),
-                                        )}
-                                    </div>
-
-                                    {/* Next Page */}
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="h-8 w-8 bg-transparent"
-                                        onClick={goToNextPage}
-                                        disabled={currentPage === totalPages}
-                                    >
-                                        <ChevronRight className="h-4 w-4" />
-                                        <span className="sr-only">Halaman selanjutnya</span>
-                                    </Button>
-
-                                    {/* Last Page */}
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="h-8 w-8 bg-transparent"
-                                        onClick={goToLastPage}
-                                        disabled={currentPage === totalPages}
-                                    >
-                                        <ChevronsRight className="h-4 w-4" />
-                                        <span className="sr-only">Halaman terakhir</span>
-                                    </Button>
-                                </div>
-                            </div>
-                        )}
+                                )}
                             </CardContent>
-
-
                         </Card>
                     </TabsContent>
                 </Tabs>

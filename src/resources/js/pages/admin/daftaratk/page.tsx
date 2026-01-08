@@ -96,7 +96,6 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
         return filteredItems.slice(startIndex, endIndex);
     }, [filteredItems, startIndex, endIndex]);
 
-
     const handleItemsPerPageChange = (value: string) => {
         setItemsPerPage(Number(value));
         setCurrentPage(1);
@@ -139,7 +138,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
     return (
         <AppLayout breadcrumbs={breadcrumbs} Button={ButtonAtk}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
                 <Card>
                     <CardHeader>
                         <CardTitle>Daftar ATK</CardTitle>

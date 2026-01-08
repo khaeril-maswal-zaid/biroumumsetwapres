@@ -2,25 +2,33 @@
 
 namespace App\Console\Commands;
 
-use App\Services\NotificationService;
 use Illuminate\Console\Command;
+use App\Services\NotificationService;
 
-class GenerateNotifications extends Command
+class SendNotifications extends Command
 {
-    protected $signature = 'notifications:generate';
-    protected $description = 'Generate overdue and reminder notifications.';
+    protected $signature = 'notifications:send';
+    protected $description = 'Kirim notifikasi pengingat rapat dan overdue pending items';
 
+    protected NotificationService $service;
 
-    /**
-     * Execute the console command.
-     */
-    // Method yang dijalankan saat command dipanggil
-    public function handle(NotificationService $notificationService)
+    public function __construct(NotificationService $service)
     {
-        $notificationService->generateOverdueNotifications();
-        $notificationService->generateReminderNotifications();
-        $notificationService->destroyOldNotifications();
+        parent::__construct();
+        $this->service = $service;
+    }
 
-        $this->info('Notifications generated & old read notifications cleaned up.');
+    public function handle()
+    {
+        $this->info('Mulai proses pengiriman notifikasi...');
+
+        $countReminders = $this->service->sendRoomReminders();
+        $this->info("Room reminders created: {$countReminders}");
+
+        $countOverdue = $this->service->sendPendingOverdueNotifications();
+        $this->info("Pending overdue notifications created: {$countOverdue}");
+
+        $this->info('Selesai.');
+        return 0;
     }
 }
