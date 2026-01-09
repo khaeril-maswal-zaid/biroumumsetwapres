@@ -93,13 +93,10 @@ class PemesananRuangRapat extends Model
 
     public function summaryData(): array
     {
-        $now = Carbon::now();
-
         // Total data all time
         $totalAllTime = $this->count();
         $totalBooked = $this->where('status', 'booked')->count();
         $totalRejected = $this->where('status', 'rejected')->count();
-        $totalPending  = $this->where('status', 'pending')->count();
 
         // Hitung change dan trend
         return  [
@@ -115,10 +112,7 @@ class PemesananRuangRapat extends Model
                 'value' => $totalRejected,
                 'title' => 'Ditolak',
             ],
-            'pending' => [
-                'value' => $totalPending,
-                'title' => 'Menunggu',
-            ],
+
         ];
     }
 
@@ -348,11 +342,6 @@ class PemesananRuangRapat extends Model
                 'name'  => 'Ditolak',
                 'value' => $this->where('status', 'rejected')->count(),
                 'color' => '#ef4444',
-            ],
-            [
-                'name'  => 'Menunggu',
-                'value' => $this->where('status', 'pending')->count(),
-                'color' => '#f59e0b',
             ],
         ];
     }

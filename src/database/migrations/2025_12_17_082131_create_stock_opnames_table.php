@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('stock_opnames', function (Blueprint $table) {
             $table->id();
+            $table->string('kode_unit')->nullable();
             $table->foreignId('daftar_atk_id')->nullable()->constrained()->nullOnDelete();
             $table->integer('quantity');
-            $table->enum('type', ['Masuk', 'Keluar']);
+            $table->enum('type', ['Prolehan', 'Pemakaian']);
             $table->integer('unit_price');
             $table->integer('total_price');
             $table->timestamps();

@@ -183,8 +183,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('daftaratk.destroy')
         ->middleware('permission:delete_atk');
 
+
+
+    Route::get('/dashboard/stock-opname-atk', [StockOpnameController::class, 'index'])
+        ->name('stockopname.index')
+        ->middleware('permission:create_atk');
+
     Route::post('/dashboard/stock-opname-atk/store', [StockOpnameController::class, 'store'])
         ->name('stockopname.store')
+        ->middleware('permission:create_atk');
+
+    Route::get('/dashboard/stock-opname-atk/buku-persediaan', [StockOpnameController::class, 'bukuPersediaan'])
+        ->name('stockopname.buku_persediaan')
+        ->middleware('permission:create_atk');
+
+    Route::get('/dashboard/stock-opname-atk/buku-persediaan/{id}', [StockOpnameController::class, 'bukuPersediaan'])
+        ->name('stockopname.detailpemakaian')
         ->middleware('permission:create_atk');
 
 

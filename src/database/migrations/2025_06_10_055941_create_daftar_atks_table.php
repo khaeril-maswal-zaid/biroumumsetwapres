@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('daftar_atks', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('unit')->constrained()->cascadeOnDelete();
             $table->string('kode_unit')->nullable();
             $table->string('name', 250);
             $table->string('kode_atk', 250)->unique();

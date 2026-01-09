@@ -64,7 +64,6 @@ class PermintaanAtkController extends Controller
             'kode_unit'       => Auth::user()->pegawai?->unit?->kode_unit,
             'daftar_kebutuhan' => $request->items ?? [],
             'deskripsi'       => $request->justification,
-            // 'urgensi'      => $request->urgency,
             'no_hp'           => $request->contact,
             'kode_pelaporan'  => 'ATK-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'status'          => 'pending',

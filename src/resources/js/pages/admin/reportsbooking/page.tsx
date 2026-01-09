@@ -150,7 +150,7 @@ export default function BookingReports({
                     {/* Summary Tab */}
                     <TabsContent value="summary" className="space-y-6">
                         {/* Summary Cards */}
-                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                             {Object.entries(summaryData).map(([key, item]: any) => {
                                 const Icon = iconMap[key] || Calendar;
 

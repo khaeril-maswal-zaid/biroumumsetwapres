@@ -4,7 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Scopes\InstansiScope;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 
+
+#[ScopedBy([InstansiScope::class])]
 class StockOpname extends Model
 {
     /** @use HasFactory<\Database\Factories\StockOpnameFactory> */
@@ -16,6 +20,7 @@ class StockOpname extends Model
         'type',
         'unit_price',
         'total_price',
+        'kode_unit'
     ];
 
     public function daftarAtk()

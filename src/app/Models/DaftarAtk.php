@@ -19,4 +19,9 @@ class DaftarAtk extends Model
         'kode_unit',
         'quantity',
     ];
+
+    public function stockOpnames()
+    {
+        return $this->hasMany(StockOpname::class);
+    }
 }
