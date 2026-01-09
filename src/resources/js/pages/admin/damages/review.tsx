@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/badges/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import type { BreadcrumbItem } from '@/types';
@@ -48,8 +49,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function BookingDetailsPage({ selectedDamage }: any) {
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
+    const { toast } = useToast();
+
     const [selectedMedia, setSelectedMedia] = useState<{ path: string; isVideo: boolean } | null>(null);
     const [isMediaViewerOpen, setIsMediaViewerOpen] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -68,11 +69,6 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
         }
         setActionType(action);
         setAdminMessage('');
-    };
-
-    const handleViewImage = (imageUrl: string) => {
-        setSelectedImage(imageUrl);
-        setIsImageViewerOpen(true);
     };
 
     const handleViewMedia = (path: string, index: number) => {
@@ -101,9 +97,11 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                 setIsProcessing(false);
                 setAdminMessage('');
                 setActionType(null);
+                toast({ title: 'Berhasil', description: 'Status kerusakan berhasil diperbarui' });
             },
             onError: (errors) => {
-                console.log('Validation Errors: ', errors);
+                toast({ title: 'Gagal', description: Object.values(errors)[0], variant: 'destructive' });
+                setIsProcessing(false);
             },
         });
     };
@@ -121,13 +119,14 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
             },
             {
                 onSuccess: () => {
+                    toast({ title: 'Berhasil', description: 'Log proses berhasil ditambahkan' });
                     setIsProcessing(false);
                     setIsUpdateProcessOpen(false);
                     setProcessDate('');
                     setProcessText('');
                 },
-                onError: (errors: any) => {
-                    console.log('Validation Errors: ', errors);
+                onError: (errors: object) => {
+                    toast({ title: 'Gagal', description: Object.values(errors)[0], variant: 'destructive' });
                     setIsProcessing(false);
                 },
             },
@@ -135,7 +134,14 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
     };
 
     const handleLogProcessDelete = (LogProcess: string | number) => {
-        router.delete(route('logproses.destroy', LogProcess));
+        router.delete(route('logproses.destroy', LogProcess), {
+            onSuccess: () => {
+                toast({ title: 'Berhasil', description: 'Log proses berhasil dihapus' });
+            },
+            onError: (errors: object) => {
+                toast({ title: 'Gagal', description: Object.values(errors)[0], variant: 'destructive' });
+            },
+        });
     };
 
     const handleSubmitUrgency = () => {
@@ -156,28 +162,15 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                 onSuccess: () => {
                     // keep the selection visible after success (UI will reflect saved urgency)
                     setIsProcessing(false);
-                    alert('Urgensi kerusakan berhasil diperbarui');
+                    toast({ title: 'Berhasil', description: 'Urgensi kerusakan berhasil diperbarui' });
                 },
                 onError: (errors) => {
                     console.log('Validation Errors: ', errors);
                     setIsProcessing(false);
-                    alert('Gagal memperbarui urgensi. Silakan coba lagi.');
+                    toast({ title: 'Gagal', description: 'Urgensi kerusakan gagal diperbarui', variant: 'destructive' });
                 },
             },
         );
-    };
-
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case 'pending':
-                return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Menunggu</Badge>;
-            case 'process':
-                return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Proses</Badge>;
-            case 'confirmed':
-                return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Selesai</Badge>;
-            default:
-                return <Badge variant="outline">Unknown</Badge>;
-        }
     };
 
     const getLogTypeStyle = (type: string, index: number) => {
@@ -191,19 +184,6 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
         };
     };
 
-    // const getUrgencyBadge = (urgency: string) => {
-    //     switch (urgency) {
-    //         case 'rendah':
-    //             return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">Rendah</Badge>;
-    //         case 'sedang':
-    //             return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Sedang</Badge>;
-    //         case 'tinggi':
-    //             return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Tinggi</Badge>;
-    //         default:
-    //             return <Badge variant="outline">Unknown</Badge>;
-    //     }
-    // };
-
     useEffect(() => {
         setProcessLogs(selectedDamage?.log_progres ?? []);
     }, [selectedDamage?.log_progres]);
@@ -212,42 +192,6 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
     useEffect(() => {
         setSelectedUrgency(selectedDamage?.urgensi ?? null);
     }, [selectedDamage?.urgensi]);
-
-    const urgencyOptions = [
-        {
-            value: 'rendah' as const,
-            label: 'Prioritas Rendah',
-            description: 'Tidak mengganggu aktivitas',
-            detail: 'Dapat ditangani dalam 1-2 minggu',
-            icon: AlertCircle,
-            color: 'bg-green-50 border-green-200 text-green-800',
-            selectedColor: 'bg-green-100 border-green-400 shadow-green-100',
-            iconColor: 'text-green-600',
-            badgeColor: 'bg-green-500',
-        },
-        // {
-        //     value: 'sedang' as const,
-        //     label: 'Prioritas Sedang',
-        //     description: 'Sedikit mengganggu aktivitas',
-        //     detail: 'Perlu ditangani dalam 3-5 hari',
-        //     icon: AlertTriangle,
-        //     color: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-        //     selectedColor: 'bg-yellow-100 border-yellow-400 shadow-yellow-100',
-        //     iconColor: 'text-yellow-600',
-        //     badgeColor: 'bg-yellow-500',
-        // },
-        {
-            value: 'tinggi' as const,
-            label: 'Prioritas Tinggi',
-            description: 'Sangat mengganggu aktivitas',
-            detail: 'Harus segera ditangani hari ini/ besok',
-            icon: AlertOctagon,
-            color: 'bg-red-50 border-red-200 text-red-800',
-            selectedColor: 'bg-red-100 border-red-400 shadow-red-100',
-            iconColor: 'text-red-600',
-            badgeColor: 'bg-red-500',
-        },
-    ];
 
     const activeUrgency = selectedUrgency ?? selectedDamage?.urgensi ?? null;
 
@@ -287,7 +231,9 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                         </span>
                                     </div>
                                 </div>
-                                <div className="text-right">{getStatusBadge(selectedDamage.status)}</div>
+                                <div className="text-right">
+                                    <StatusBadge status={selectedDamage.status} />
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -418,146 +364,144 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
 
                             <Separator />
 
-                            {selectedDamage.status != 'pending' && (
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-2">
-                                        <AlertTriangle className="h-5 w-5 text-amber-600" />
-                                        <h4 className="font-semibold text-gray-900">Tentukan Tingkat Urgensi Kerusakan</h4>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-3">
-                                        {/* Prioritas Tinggi */}
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                if (selectedDamage?.urgensi) return;
-                                                setSelectedUrgency('tinggi');
-                                            }}
-                                            disabled={!!selectedDamage?.urgensi}
-                                            className={cn(
-                                                'rounded-lg border-2 p-4 text-left transition-all duration-200',
-                                                activeUrgency === 'tinggi'
-                                                    ? 'border-red-500 bg-linear-to-r from-red-50 to-rose-50 ring-2 ring-red-200'
-                                                    : 'border-gray-200 bg-white hover:border-red-300 hover:bg-red-50/30',
-                                                selectedDamage?.urgensi && activeUrgency !== 'tinggi' && 'opacity-60',
-                                                selectedDamage?.urgensi && 'cursor-not-allowed',
-                                            )}
-                                        >
-                                            <div className="flex flex-col gap-1">
-                                                {/* Radio Button & Title */}
-                                                <div className="flex items-start gap-3">
-                                                    <div
-                                                        className={cn(
-                                                            'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200',
-                                                            activeUrgency === 'tinggi'
-                                                                ? 'border-red-600 bg-red-600'
-                                                                : 'border-gray-300 bg-white hover:border-red-400',
-                                                        )}
-                                                    >
-                                                        {activeUrgency === 'tinggi' && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center gap-2">
-                                                            <AlertOctagon
-                                                                className={cn(
-                                                                    'h-4 w-4 transition-colors duration-200',
-                                                                    activeUrgency === 'tinggi' ? 'text-red-600' : 'text-red-400',
-                                                                )}
-                                                            />
-                                                            <p className="font-semibold text-gray-900">Prioritas Tinggi</p>
-                                                        </div>
-                                                    </div>
-                                                    {activeUrgency === 'tinggi' && (
-                                                        <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-semibold whitespace-nowrap text-red-700">
-                                                            Dipilih
-                                                        </span>
-                                                    )}
-                                                </div>
-
-                                                {/* Description */}
-                                                <p className="text-xs text-gray-600">Urgensi: Tindakan segera diperlukan</p>
-                                            </div>
-                                        </button>
-
-                                        {/* Prioritas Rendah */}
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                if (selectedDamage?.urgensi) return;
-                                                setSelectedUrgency('rendah');
-                                            }}
-                                            disabled={!!selectedDamage?.urgensi}
-                                            className={cn(
-                                                'rounded-lg border-2 px-4 py-2.5 text-left transition-all duration-200',
-                                                activeUrgency === 'rendah'
-                                                    ? 'border-green-500 bg-linear-to-r from-green-50 to-emerald-50 ring-2 ring-green-200'
-                                                    : 'border-gray-200 bg-white hover:border-green-300 hover:bg-green-50/30',
-                                                selectedDamage?.urgensi && activeUrgency !== 'rendah' && 'opacity-60',
-                                                selectedDamage?.urgensi && 'cursor-not-allowed',
-                                            )}
-                                        >
-                                            <div className="flex flex-col gap-1">
-                                                {/* Radio Button & Title */}
-                                                <div className="flex items-start gap-3">
-                                                    <div
-                                                        className={cn(
-                                                            'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200',
-                                                            activeUrgency === 'rendah'
-                                                                ? 'border-green-600 bg-green-600'
-                                                                : 'border-gray-300 bg-white hover:border-green-400',
-                                                        )}
-                                                    >
-                                                        {activeUrgency === 'rendah' && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center gap-2">
-                                                            <AlertCircle
-                                                                className={cn(
-                                                                    'h-4 w-4 transition-colors duration-200',
-                                                                    activeUrgency === 'rendah' ? 'text-green-600' : 'text-green-400',
-                                                                )}
-                                                            />
-                                                            <p className="font-semibold text-gray-900">Prioritas Rendah</p>
-                                                        </div>
-                                                    </div>
-                                                    {activeUrgency === 'rendah' && (
-                                                        <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold whitespace-nowrap text-green-700">
-                                                            Dipilih
-                                                        </span>
-                                                    )}
-                                                </div>
-
-                                                {/* Description */}
-                                                <p className="text-xs text-gray-600">Urgensi: Tidak mendesak</p>
-                                            </div>
-                                        </button>
-                                    </div>
-
-                                    {/* Submit Button (only show when not already submitted on server) */}
-                                    {selectedUrgency && !selectedDamage?.urgensi && (
-                                        <div className="flex gap-2 border-t pt-4">
-                                            <button
-                                                type="button"
-                                                onClick={() => setSelectedUrgency(null)}
-                                                className="flex-1 rounded-lg border-2 border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
-                                            >
-                                                Batal
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={handleSubmitUrgency}
-                                                disabled={isProcessing}
-                                                className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:bg-gray-400"
-                                            >
-                                                {isProcessing ? 'Menyimpan...' : 'Simpan Urgensi'}
-                                            </button>
-                                        </div>
-                                    )}
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-2">
+                                    <AlertTriangle className="h-5 w-5 text-amber-600" />
+                                    <h4 className="font-semibold text-gray-900">Tentukan Tingkat Urgensi Kerusakan</h4>
                                 </div>
-                            )}
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    {/* Prioritas Tinggi */}
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (selectedDamage?.urgensi) return;
+                                            setSelectedUrgency('tinggi');
+                                        }}
+                                        disabled={!!selectedDamage?.urgensi}
+                                        className={cn(
+                                            'rounded-lg border-2 p-4 text-left transition-all duration-200',
+                                            activeUrgency === 'tinggi'
+                                                ? 'border-red-500 bg-linear-to-r from-red-50 to-rose-50 ring-2 ring-red-200'
+                                                : 'border-gray-200 bg-white hover:border-red-300 hover:bg-red-50/30',
+                                            selectedDamage?.urgensi && activeUrgency !== 'tinggi' && 'opacity-60',
+                                            selectedDamage?.urgensi && 'cursor-not-allowed',
+                                        )}
+                                    >
+                                        <div className="flex flex-col gap-1">
+                                            {/* Radio Button & Title */}
+                                            <div className="flex items-start gap-3">
+                                                <div
+                                                    className={cn(
+                                                        'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200',
+                                                        activeUrgency === 'tinggi'
+                                                            ? 'border-red-600 bg-red-600'
+                                                            : 'border-gray-300 bg-white hover:border-red-400',
+                                                    )}
+                                                >
+                                                    {activeUrgency === 'tinggi' && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <AlertOctagon
+                                                            className={cn(
+                                                                'h-4 w-4 transition-colors duration-200',
+                                                                activeUrgency === 'tinggi' ? 'text-red-600' : 'text-red-400',
+                                                            )}
+                                                        />
+                                                        <p className="font-semibold text-gray-900">Prioritas Tinggi</p>
+                                                    </div>
+                                                </div>
+                                                {activeUrgency === 'tinggi' && (
+                                                    <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-semibold whitespace-nowrap text-red-700">
+                                                        Dipilih
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {/* Description */}
+                                            <p className="text-xs text-gray-600">Urgensi: Tindakan segera diperlukan</p>
+                                        </div>
+                                    </button>
+
+                                    {/* Prioritas Rendah */}
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (selectedDamage?.urgensi) return;
+                                            setSelectedUrgency('rendah');
+                                        }}
+                                        disabled={!!selectedDamage?.urgensi}
+                                        className={cn(
+                                            'rounded-lg border-2 px-4 py-2.5 text-left transition-all duration-200',
+                                            activeUrgency === 'rendah'
+                                                ? 'border-green-500 bg-linear-to-r from-green-50 to-emerald-50 ring-2 ring-green-200'
+                                                : 'border-gray-200 bg-white hover:border-green-300 hover:bg-green-50/30',
+                                            selectedDamage?.urgensi && activeUrgency !== 'rendah' && 'opacity-60',
+                                            selectedDamage?.urgensi && 'cursor-not-allowed',
+                                        )}
+                                    >
+                                        <div className="flex flex-col gap-1">
+                                            {/* Radio Button & Title */}
+                                            <div className="flex items-start gap-3">
+                                                <div
+                                                    className={cn(
+                                                        'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200',
+                                                        activeUrgency === 'rendah'
+                                                            ? 'border-green-600 bg-green-600'
+                                                            : 'border-gray-300 bg-white hover:border-green-400',
+                                                    )}
+                                                >
+                                                    {activeUrgency === 'rendah' && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <AlertCircle
+                                                            className={cn(
+                                                                'h-4 w-4 transition-colors duration-200',
+                                                                activeUrgency === 'rendah' ? 'text-green-600' : 'text-green-400',
+                                                            )}
+                                                        />
+                                                        <p className="font-semibold text-gray-900">Prioritas Rendah</p>
+                                                    </div>
+                                                </div>
+                                                {activeUrgency === 'rendah' && (
+                                                    <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold whitespace-nowrap text-green-700">
+                                                        Dipilih
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {/* Description */}
+                                            <p className="text-xs text-gray-600">Urgensi: Tidak mendesak</p>
+                                        </div>
+                                    </button>
+                                </div>
+
+                                {/* Submit Button (only show when not already submitted on server) */}
+                                {selectedUrgency && !selectedDamage?.urgensi && (
+                                    <div className="flex gap-2 border-t pt-4">
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedUrgency(null)}
+                                            className="flex-1 rounded-lg border-2 border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                                        >
+                                            Batal
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleSubmitUrgency}
+                                            disabled={isProcessing}
+                                            className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:bg-gray-400"
+                                        >
+                                            {isProcessing ? 'Menyimpan...' : 'Simpan Urgensi'}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
 
                             {/* Tindakan Admin */}
-                            {(selectedDamage.status === 'pending' || (selectedDamage.status === 'process' && selectedDamage.urgensi)) && (
+                            {(selectedDamage.status === 'pending' || selectedDamage.status === 'process') && selectedDamage.urgensi && (
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2">
                                         <MessageSquare className="h-5 w-5 text-green-600" />
@@ -818,30 +762,6 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                             className="bg-blue-600 hover:bg-blue-700"
                         >
                             {isProcessing ? 'Memproses...' : 'Update Proses'}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
-            <Dialog open={isImageViewerOpen} onOpenChange={setIsImageViewerOpen}>
-                <DialogContent className="overflow-hidden p-0 sm:max-w-3xl">
-                    <DialogHeader className="p-4 pb-2">
-                        <DialogTitle>Foto Kerusakan</DialogTitle>
-                    </DialogHeader>
-
-                    {selectedImage && (
-                        <div className="relative flex items-center justify-center bg-black/5 p-4">
-                            <img
-                                src={selectedImage ? `/storage/${selectedImage}` : '/placeholder.svg'}
-                                alt="Foto kerusakan"
-                                className="max-h-[70vh] w-auto rounded-md object-contain"
-                            />
-                        </div>
-                    )}
-
-                    <DialogFooter className="p-4 pt-2">
-                        <Button variant="outline" onClick={() => setIsImageViewerOpen(false)}>
-                            Tutup
                         </Button>
                     </DialogFooter>
                 </DialogContent>

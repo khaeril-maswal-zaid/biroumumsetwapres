@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 #[ScopedBy([InstansiScope::class])]
 class KerusakanGedung extends Model
@@ -243,5 +244,18 @@ class KerusakanGedung extends Model
                 ];
             })
             ->values();
+    }
+
+    protected static function booted()
+    {
+        static::deleting(function ($kerusakanGedung) {
+            if (is_array($kerusakanGedung->picture)) {
+                foreach ($kerusakanGedung->picture as $path) {
+                    if ($path && Storage::disk('public')->exists($path)) {
+                        Storage::disk('public')->delete($path);
+                    }
+                }
+            }
+        });
     }
 }

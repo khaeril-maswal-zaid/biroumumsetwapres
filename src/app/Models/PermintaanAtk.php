@@ -200,10 +200,10 @@ class PermintaanAtk extends Model
     public function statusDistribution()
     {
         $labels = [
-            'approved' => ['name' => 'Disetujui', 'color' => '#10b981'],
-            'partial'  => ['name' => 'Sebagian', 'color' => '#f59e0b'],
+            'confirmed' => ['name' => 'Selesai', 'color' => '#10b981'],
+            // 'partial'  => ['name' => 'Sebagian', 'color' => '#f59e0b'],
             'pending'  => ['name' => 'Menunggu', 'color' => '#3b82f6'],
-            'rejected' => ['name' => 'Ditolak', 'color' => '#ef4444'],
+            // 'rejected' => ['name' => 'Ditolak', 'color' => '#ef4444'],
         ];
 
         return collect($labels)->map(function ($label, $status) {

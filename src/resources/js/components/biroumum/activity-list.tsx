@@ -1,3 +1,4 @@
+import { StatusBadge } from '@/components/badges/StatusBadge';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Calendar, Car, Package, Wrench } from 'lucide-react';
@@ -27,25 +28,6 @@ export function ActivityList({ activities }: ActivityListProps) {
                 return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Mendesak</Badge>;
             case 'segera':
                 return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Segera</Badge>;
-            default:
-                return <Badge variant="outline">Unknown</Badge>;
-        }
-    };
-
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case 'pending':
-                return <Badge className="mb-1 bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Menunggu</Badge>;
-            case 'approved':
-                return <Badge className="mb-1 bg-green-100 text-green-800 hover:bg-green-200">Selesai</Badge>;
-            case 'confirmed':
-                return <Badge className="mb-1 bg-green-100 text-green-800 hover:bg-green-200">Selesai</Badge>;
-            case 'partial':
-                return <Badge className="mb-1 bg-blue-100 text-blue-800 hover:bg-blue-200">Selesai</Badge>;
-            case 'cancelled':
-                return <Badge className="mb-1 bg-red-100 text-red-800 hover:bg-red-200">Ditolak</Badge>;
-            case 'rejected':
-                return <Badge className="mb-1 bg-red-100 text-red-800 hover:bg-red-200">Ditolak</Badge>;
             default:
                 return <Badge variant="outline">Unknown</Badge>;
         }
@@ -83,7 +65,7 @@ export function ActivityList({ activities }: ActivityListProps) {
                                 <CardContent className="p-4">
                                     <div className="flex items-start justify-between">
                                         <div className="flex flex-1 items-start space-x-3">
-                                            <div className="mt-1 flex-shrink-0">{getTypeIcon(request.id)}</div>
+                                            <div className="mt-1 shrink-0">{getTypeIcon(request.id)}</div>
                                             <div className="min-w-0 flex-1">
                                                 <div className="mb-1 flex items-center gap-2">
                                                     <span className="font-mono text-xs text-gray-500">{request.code}</span>
@@ -104,7 +86,9 @@ export function ActivityList({ activities }: ActivityListProps) {
                                                 </div> */}
                                             </div>
                                         </div>
-                                        <div className="flex flex-col items-end gap-2">{getStatusBadge(request.status)}</div>
+                                        <div className="flex flex-col items-end gap-2">
+                                            <StatusBadge status={request.status} />
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>

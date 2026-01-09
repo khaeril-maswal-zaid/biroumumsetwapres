@@ -1,32 +1,25 @@
 'use client';
 
+import { StatusBadge } from '@/components/badges/StatusBadge';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { Label } from '@radix-ui/react-label';
-import { Separator } from '@radix-ui/react-separator';
-import {
-    AlertCircle,
-    AlertTriangle,
-    Calendar,
-    CheckCircle,
-    ImageIcon,
-    MapPin,
-    MessageSquare,
-    Search,
-    Settings,
-    Users,
-    Wrench,
-    X,
-} from 'lucide-react';
+import { SharedData, type BreadcrumbItem } from '@/types';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Eye, ImageIcon, Search, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -37,6 +30,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function DamagesAdmin({ kerusakan }: any) {
+    const { toast } = useToast();
+    const { auth } = usePage<SharedData>().props;
+
     useEffect(() => {
         const interval = setInterval(() => {
             router.reload({
@@ -49,13 +45,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
-    const [selectedDamage, setSelectedDamage] = useState<any>(null);
-    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [adminMessage, setAdminMessage] = useState<string>('');
-    const [actionType, setActionType] = useState<'cancelled' | 'confirmed' | null>(null);
+    const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
     // Filter damages based on search term and status
     const filteredDamages = kerusakan.data.filter((damage: any) => {
@@ -69,122 +59,22 @@ export default function DamagesAdmin({ kerusakan }: any) {
         return matchesSearch && matchesStatus;
     });
 
-    const handleViewDetails = (damage: any) => {
-        if (damage.status === 'pending') {
-            router.patch(
-                route('kerusakangedung.status', damage.kode_pelaporan),
-                {
-                    action: 'process',
-                },
-                {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        //
-                    },
-                    onError: (errors) => {
-                        console.log('Validation Errors: ', errors);
-                    },
-                },
-            );
-        }
-
-        setActionType(null);
-        setSelectedDamage(damage);
-        setIsDetailsOpen(true);
-    };
-
-    const handleActionClick = (action: 'cancelled' | 'confirmed') => {
-        setActionType(action);
-        setAdminMessage('');
-    };
-
-    const handleViewImage = (imageUrl: string) => {
-        setSelectedImage(imageUrl);
-        setIsImageViewerOpen(true);
-    };
-
-    const handleSubmit = (raportCode: string) => {
-        setIsProcessing(true);
-
-        const trimmedMessage = adminMessage.trim();
-
-        const payload: Record<string, any> = {
-            action: actionType,
-        };
-
-        // Hanya kirim jika tidak kosong
-        if (trimmedMessage !== '') {
-            payload.message = trimmedMessage;
-        }
-
-        router.patch(route('kerusakangedung.status', raportCode), payload, {
-            preserveScroll: true,
+    const handleDelete = (kodePelaporan: string) => {
+        router.delete(route('kerusakangedung.destroy', kodePelaporan), {
             onSuccess: () => {
-                setIsProcessing(false);
-                setIsDetailsOpen(false);
-                setAdminMessage('');
-                setActionType(null);
+                setDeleteConfirm(null);
+                toast({ title: 'Berhasil', description: 'Laporan kerusakan berhasil dihapus.' });
             },
             onError: (errors) => {
-                console.log('Validation Errors: ', errors);
+                toast({ title: 'Gagal', description: Object.values(errors)[0], variant: 'destructive' });
             },
         });
-    };
-
-    const getStatusBadge = (status: string, isRead: boolean) => {
-        switch (status) {
-            case 'pending':
-                return (
-                    <Badge
-                        className={
-                            isRead
-                                ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' // versi memudar
-                                : 'bg-yellow-300 text-yellow-800 hover:bg-yellow-300' // versi normal
-                        }
-                    >
-                        Menunggu
-                    </Badge>
-                );
-            case 'process':
-                return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Proses</Badge>;
-            case 'confirmed':
-                return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Selesai</Badge>;
-            default:
-                return <Badge variant="outline">Unknown</Badge>;
-        }
-    };
-
-    const getUrgencyBadge = (urgency: string) => {
-        switch (urgency) {
-            case 'rendah':
-                return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">Rendah</Badge>;
-            case 'sedang':
-                return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Sedang</Badge>;
-            case 'tinggi':
-                return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Tinggi</Badge>;
-            default:
-                return <Badge variant="outline">Unknown</Badge>;
-        }
-    };
-
-    const formatTanggalIna = (tanggal: string) => {
-        return new Intl.DateTimeFormat('id-ID', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-        }).format(new Date(tanggal));
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto bg-linear-to-br from-white to-blue-100 p-4">
-                {/* <Link href={route('kerusakangedung.index')}>
-                    <Button variant="ghost" className="mb-1 flex items-center space-x-2 border">
-                        <ArrowLeft className="h-4 w-4" />
-                        <span>Kembali</span>
-                    </Button>
-                </Link> */}
                 <Card>
                     <CardHeader>
                         <CardTitle>Daftar Laporan Kerusakan</CardTitle>
@@ -225,11 +115,9 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                         <TableHead>Nama Pelapor</TableHead>
                                         <TableHead>Lokasi</TableHead>
                                         <TableHead className="hidden md:table-cell">Nama Item Rusak</TableHead>
-                                        {/* <TableHead className="hidden lg:table-cell">Urgensi</TableHead> */}
                                         <TableHead>Status</TableHead>
                                         <TableHead className="hidden md:table-cell">Foto</TableHead>
-                                        <TableHead className="text-right">Aksi</TableHead>
-                                        {/* <TableHead className="text-right">Aksi</TableHead> */}
+                                        <TableHead className="text-center">Aksi</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -250,8 +138,9 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                 </TableCell>
                                                 <TableCell>{damage.lokasi}</TableCell>
                                                 <TableCell className="hidden md:table-cell">{damage.item}</TableCell>
-                                                {/* <TableCell className="hidden lg:table-cell">{getUrgencyBadge(damage.urgensi)}</TableCell> */}
-                                                <TableCell>{getStatusBadge(damage.status, damage.is_read)}</TableCell>
+                                                <TableCell>
+                                                    <StatusBadge status={damage.status} isRead={damage.is_read} />
+                                                </TableCell>
                                                 <TableCell className="hidden md:table-cell">
                                                     {damage.picture.length > 0 ? (
                                                         <Badge variant="outline" className="flex items-center gap-1">
@@ -262,16 +151,31 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                         <span className="text-sm text-gray-500">-</span>
                                                     )}
                                                 </TableCell>
-                                                <TableCell className="text-right">
-                                                    <Link className="font-medium" href={route('kerusakangedung.show', damage.kode_pelaporan)}>
-                                                        Detail
-                                                    </Link>
+                                                <TableCell className="text-center">
+                                                    <div className="inline-flex items-center justify-center">
+                                                        <Link
+                                                            href={route('kerusakangedung.show', damage.kode_pelaporan)}
+                                                            className="inline-flex items-center gap-1 font-medium"
+                                                        >
+                                                            <Eye className="h-4 w-4" />
+                                                            Lihat Detail
+                                                        </Link>
+
+                                                        {auth?.permissions?.includes('delete_all_requests') && (
+                                                            <>
+                                                                <span className="mx-3">||</span>
+
+                                                                <button
+                                                                    onClick={() => setDeleteConfirm(damage.kode_pelaporan)}
+                                                                    className="inline-flex items-center gap-1 font-medium text-red-600 hover:text-red-800"
+                                                                >
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                    Hapus
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                    </div>
                                                 </TableCell>
-                                                {/* <TableCell className="text-right">
-                                                    <Button variant="ghost" size="sm" onClick={() => handleViewDetails(damage)}>
-                                                        Detail
-                                                    </Button>
-                                                </TableCell> */}
                                             </TableRow>
                                         ))
                                     )}
@@ -281,279 +185,25 @@ export default function DamagesAdmin({ kerusakan }: any) {
                     </CardContent>
                 </Card>
 
-                {/* Booking Details Dialog */}
-                <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-                    <DialogContent className="max-h-[90vh] overflow-y-auto px-10 pt-12 sm:max-w-2xl">
-                        <DialogHeader className="mb-4">
-                            <DialogTitle className="flex items-center gap-2">
-                                <Wrench className="h-5 w-5" />
-                                Detail Laporan Kerusakan
-                            </DialogTitle>
-                            <DialogDescription>Tinjau informasi laporan kerusakan dan berikan tindakan dengan pesan untuk pelapor.</DialogDescription>
-                        </DialogHeader>
-
-                        {selectedDamage && (
-                            <div className="space-y-6">
-                                {/* Status and Room Info */}
-                                <div className="flex flex-col gap-4 rounded-lg bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
-                                    <div>
-                                        <div className="mb-2 flex items-center gap-1">
-                                            <Calendar className="h-4 w-4 text-gray-500" />
-                                            <span className="text-xs text-gray-600">{formatTanggalIna(selectedDamage.created_at)}</span>
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            <span className="font-mono text-sm font-medium text-gray-700">
-                                                Kode Laporan: {selectedDamage.kode_pelaporan}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="text-right">{getStatusBadge(selectedDamage.status, selectedDamage.is_read)}</div>
-                                </div>
-
-                                {/* Booking Details */}
-                                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                                    <div className="space-y-4">
-                                        <div className="flex items-start gap-3">
-                                            <Users className="my-auto h-5 w-5 text-blue-600" />
-                                            <div>
-                                                <p className="font-medium text-gray-900">{selectedDamage?.pelapor?.pegawai?.name}</p>
-                                                <p className="text-xs text-gray-600">{selectedDamage?.pelapor?.pegawai?.biro?.nama_biro}</p>
-                                                <p className="text-xs text-gray-500">{selectedDamage.no_hp}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-start gap-3">
-                                            <MapPin className="mt-0.5 h-5 w-5 text-green-600" />
-                                            <div>
-                                                <p className="font-medium text-gray-900">Lokasi</p>
-                                                <p className="text-sm text-gray-600">{selectedDamage.lokasi}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-center gap-3">
-                                            <AlertCircle className="h-5 w-5 text-orange-600" />
-                                            <div>
-                                                <p className="font-medium text-gray-900">Tingkat Urgensi</p>
-                                                {getUrgencyBadge(selectedDamage.urgensi)}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-3">
-                                            <Wrench className="h-5 w-5 text-purple-600" />
-                                            <div>
-                                                <p className="font-medium text-gray-900">Nama Item Rusak</p>
-                                                <p className="text-sm text-gray-600">{selectedDamage.item}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-center gap-3">
-                                            <AlertTriangle className="h-5 w-5 text-purple-600" />
-                                            <div>
-                                                <p className="font-medium text-gray-900">Kategori Kerusakan</p>
-                                                <p className="text-sm text-gray-600">{selectedDamage?.kategori.name}</p>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <p className="mb-2 font-medium text-gray-900">Keterangan</p>
-                                            <p className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">{selectedDamage.deskripsi}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Photos Section */}
-                                {selectedDamage.picture.length > 0 && (
-                                    <>
-                                        <p className="mb-3 font-medium text-gray-900">Foto Kerusakan ({selectedDamage.picture.length})</p>
-                                        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-                                            {selectedDamage.picture.map((photo: string, index: number) => (
-                                                <div
-                                                    key={index}
-                                                    className="relative aspect-video cursor-pointer overflow-hidden rounded-lg border transition-colors hover:border-blue-300"
-                                                    onClick={() => handleViewImage(photo)}
-                                                >
-                                                    <img
-                                                        src={`/storage/${photo}` || '/placeholder.svg'}
-                                                        alt={`Foto kerusakan ${index + 1}`}
-                                                        className="object-cover"
-                                                    />
-                                                    <div className="bg-opacity-0 hover:bg-opacity-10 absolute inset-0 flex items-center justify-center transition-all">
-                                                        <ImageIcon className="h-6 w-6 text-white opacity-0 transition-opacity hover:opacity-100" />
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </>
-                                )}
-
-                                {/* Admin Message Display for Approved/Rejected */}
-                                {selectedDamage.keterangan &&
-                                    selectedDamage.status === 'confirmed' &&
-                                    (() => {
-                                        // Mapping warna berdasarkan status
-                                        const colorMap: any = {
-                                            confirmed: {
-                                                border: 'border-green-200',
-                                                bg: 'bg-green-50',
-                                                icon: 'text-green-600',
-                                                title: 'text-green-900',
-                                                text: 'text-green-800',
-                                            },
-
-                                            cancelled: {
-                                                border: 'border-red-200',
-                                                bg: 'bg-red-50',
-                                                icon: 'text-red-600',
-                                                title: 'text-red-900',
-                                                text: 'text-red-800',
-                                            },
-                                        };
-
-                                        const color = colorMap[selectedDamage.status] ?? colorMap['confirmed'];
-
-                                        return (
-                                            <div className={`rounded-lg border ${color.border} ${color.bg} p-4`}>
-                                                <div className="mb-2 flex items-center gap-2">
-                                                    <MessageSquare className={`h-4 w-4 ${color.icon}`} />
-                                                    <h4 className={`font-medium ${color.title}`}>Pesan dari Admin</h4>
-                                                </div>
-                                                <p className={`text-sm ${color.text}`}>{selectedDamage.keterangan}</p>
-                                            </div>
-                                        );
-                                    })()}
-
-                                <Separator />
-
-                                {/* Action Section */}
-                                {(selectedDamage.status === 'pending' || selectedDamage.status === 'process') && (
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-2">
-                                            <MessageSquare className="h-5 w-5 text-green-600" />
-                                            <h4 className="font-medium text-gray-900">Tindakan Admin</h4>
-                                        </div>
-
-                                        {!actionType && (
-                                            <div className="flex gap-2">
-                                                {(selectedDamage.status === 'pending' || selectedDamage.status === 'process') && (
-                                                    <>
-                                                        <Button
-                                                            variant="outline"
-                                                            className="flex-1 border-red-200 bg-transparent text-red-700 hover:bg-red-50"
-                                                            onClick={() => handleActionClick('cancelled')}
-                                                        >
-                                                            <X className="mr-2 h-4 w-4" />
-                                                            Tolak Laporan
-                                                        </Button>
-                                                        <Button
-                                                            variant="outline"
-                                                            className="flex-1 border-green-200 bg-transparent text-green-700 hover:bg-green-50"
-                                                            onClick={() => handleActionClick('confirmed')}
-                                                        >
-                                                            <Settings className="mr-2 h-4 w-4" />
-                                                            Terima Laporan
-                                                        </Button>
-                                                    </>
-                                                )}
-                                            </div>
-                                        )}
-
-                                        {actionType && (
-                                            <div className="space-y-4 rounded-lg border bg-gray-50 p-4">
-                                                <div className="flex items-center gap-2">
-                                                    {actionType === 'confirmed' && <CheckCircle className="h-5 w-5 text-green-600" />}
-                                                    {actionType === 'cancelled' && <AlertCircle className="h-5 w-5 text-red-600" />}
-                                                    <h5 className="font-medium">
-                                                        {actionType === 'confirmed' && 'Menyelesaikan Perbaikan'}
-                                                        {actionType === 'cancelled' && 'Menolak Laporan'}
-                                                    </h5>
-                                                </div>
-
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="admin-message">
-                                                        Pesan untuk Pelapor {actionType === 'cancelled' && <span className="text-red-500">*</span>}
-                                                    </Label>
-                                                    <Textarea
-                                                        id="admin-message"
-                                                        placeholder={
-                                                            actionType === 'confirmed'
-                                                                ? 'Konfirmasi bahwa perbaikan telah selesai dan berikan informasi terkait...'
-                                                                : 'Jelaskan alasan penolakan laporan kerusakan...'
-                                                        }
-                                                        value={adminMessage}
-                                                        onChange={(e) => setAdminMessage(e.target.value)}
-                                                        rows={3}
-                                                        className="mt-1 resize-none"
-                                                    />
-
-                                                    {actionType === 'cancelled' && !adminMessage.trim() && (
-                                                        <p className="text-sm text-red-600">Pesan wajib diisi untuk penolakan</p>
-                                                    )}
-                                                </div>
-
-                                                <div className="flex gap-2 pt-2">
-                                                    <Button
-                                                        variant="outline"
-                                                        onClick={() => {
-                                                            setActionType(null);
-                                                            setAdminMessage('');
-                                                        }}
-                                                        disabled={isProcessing}
-                                                    >
-                                                        Batal
-                                                    </Button>
-                                                    <Button
-                                                        onClick={() => {
-                                                            handleSubmit(selectedDamage.kode_pelaporan);
-                                                        }}
-                                                        disabled={isProcessing || (actionType === 'cancelled' && !adminMessage.trim())}
-                                                        className={
-                                                            actionType === 'confirmed'
-                                                                ? 'bg-green-600 hover:bg-green-700'
-                                                                : 'bg-red-600 hover:bg-red-700'
-                                                        }
-                                                    >
-                                                        {isProcessing
-                                                            ? 'Memproses...'
-                                                            : actionType === 'confirmed'
-                                                              ? 'Konfirmasi Penyetujuan'
-                                                              : 'Konfirmasi Penolakan'}
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setIsDetailsOpen(false)} disabled={isProcessing}>
-                                Tutup
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-
-                {/* Image Viewer Dialog */}
-                <Dialog open={isImageViewerOpen} onOpenChange={setIsImageViewerOpen}>
-                    <DialogContent className="sm:max-w-3xl">
-                        <DialogHeader>
-                            <DialogTitle>Foto Kerusakan</DialogTitle>
-                        </DialogHeader>
-                        {selectedImage && (
-                            <div className="relative aspect-video w-full">
-                                <img src={selectedImage || '/placeholder.svg'} alt="Foto kerusakan" className="object-contain" />
-                            </div>
-                        )}
-                        <DialogFooter>
-                            <Button variant="outline" onClick={() => setIsImageViewerOpen(false)}>
-                                Tutup
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                <AlertDialog open={deleteConfirm !== null} onOpenChange={(open) => !open && setDeleteConfirm(null)}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Hapus Layanan</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Apakah Anda yakin ingin menghapus laporan ini? Tindakan ini tidak dapat dibatalkan.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <div className="mt-4 flex justify-end gap-3">
+                            <AlertDialogCancel>Batal</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={() => deleteConfirm !== null && handleDelete(deleteConfirm)}
+                                className="bg-red-600 hover:bg-red-700"
+                            >
+                                Hapus
+                            </AlertDialogAction>
+                        </div>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
         </AppLayout>
     );

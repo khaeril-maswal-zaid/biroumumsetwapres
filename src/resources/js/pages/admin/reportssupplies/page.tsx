@@ -125,7 +125,7 @@ export default function SuppliesReports({ statusDistribution, divisionStats, top
                                                         <p className="text-sm text-gray-500">{item.requested} diminta</p>
                                                     </div>
                                                 </div>
-                                                <Badge className="bg-green-100 text-green-800">{item.approvalRate} %</Badge>
+                                                <Badge className="bg-green-100 text-green-800">Dikasi {item.approvalRate} %</Badge>
                                             </div>
                                         ))}
                                     </div>

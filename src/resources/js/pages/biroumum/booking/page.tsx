@@ -14,21 +14,38 @@ import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-const schema = z.object({
-    room_code: z.string().min(1, 'Ruangan wajib dipilih'),
-    room_name: z.string().min(1, 'Nama ruangan wajib diisi'),
-    date: z.string().min(1, 'Tanggal wajib diisi'),
-    startTime: z.string().min(1, 'Jam mulai wajib diisi'),
-    // unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
-    endTime: z.string().min(1, 'Jam selesai wajib diisi'),
-    purpose: z.string().min(1, 'Kegiatan wajib diisi'),
-    contact: z.string().min(1, 'Kontak wajib diisi'),
+const schema = z
+    .object({
+        room_code: z.string().min(1, 'Silakan pilih ruangan yang akan digunakan'),
 
-    jenisRapat: z.string().nullable(),
-    needItSupport: z.boolean(),
-    isHybrid: z.boolean(),
-});
+        room_name: z.string().min(1, 'Nama ruangan tidak boleh kosong'),
 
+        date: z.string().min(1, 'Tanggal rapat wajib ditentukan'),
+
+        startTime: z.string().min(1, 'Jam mulai rapat wajib diisi'),
+
+        endTime: z.string().min(1, 'Jam selesai rapat wajib diisi'),
+
+        purpose: z.string().min(1, 'Mohon jelaskan tujuan atau agenda rapat'),
+
+        contact: z
+            .string({
+                required_error: 'Nomor HP wajib diisi',
+                invalid_type_error: 'Nomor HP harus berupa teks',
+            })
+            .min(10, 'Nomor HP minimal 10 digit')
+            .regex(/^08\d{8,12}$/, 'Nomor HP harus diawali 08 dan berisi 10–14 digit'),
+
+        jenisRapat: z.string().nullable(),
+
+        needItSupport: z.boolean(),
+
+        isHybrid: z.boolean(),
+    })
+    .refine((data) => data.endTime > data.startTime, {
+        message: 'Jam selesai harus lebih besar dari jam mulai',
+        path: ['endTime'],
+    });
 type FormData = z.infer<typeof schema>;
 
 export default function RoomBooking() {

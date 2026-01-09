@@ -1,3 +1,4 @@
+// Ganti seluruh FormBooking (file: form-booking.tsx) dengan versi ini
 'use client';
 
 import { RoomSelection } from '@/components/biroumum/room-selection';
@@ -8,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { type SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { Building2, Calendar, CheckCircle2, Monitor, Users, Video } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -32,10 +33,6 @@ type JenisRapat = 'internal' | 'external' | null;
 export function FormBooking() {
     const { auth } = usePage<SharedData>().props;
 
-    const [jenisRapat, setJenisRapat] = useState<JenisRapat>('internal');
-    const [needItSupport, setNeedItSupport] = useState<boolean>(false);
-    const [isHybrid, setIsHybrid] = useState<boolean>(false);
-
     const {
         register,
         setValue,
@@ -43,19 +40,21 @@ export function FormBooking() {
         formState: { errors },
     } = useFormContext<FormData>();
 
-    // daftar fields manual
+    // Read values from RHF (single source of truth)
+    const formData = watch();
+    const isHybrid = watch('isHybrid') ?? false;
+    const needItSupport = watch('needItSupport') ?? false;
+    const jenisRapat = (watch('jenisRapat') as JenisRapat) ?? 'internal';
+
+    // Register fields only — DO NOT overwrite values coming from parent
     useEffect(() => {
-        register('jenisRapat');
         register('needItSupport');
         register('isHybrid');
+        register('jenisRapat');
+        register('room_code');
+        register('room_name');
+    }, [register]);
 
-        // Set initial values ke form
-        setValue('jenisRapat', jenisRapat);
-        setValue('needItSupport', needItSupport);
-        setValue('isHybrid', isHybrid);
-    }, [register, setValue]);
-
-    const formData = watch();
     const today = new Date().toISOString().split('T')[0];
 
     const jenisRapatOptions = [
@@ -153,7 +152,7 @@ export function FormBooking() {
                 <h3 className="text-md border-b pb-2 font-medium text-gray-900">
                     Pilih Ruangan <span className="text-red-500">*</span>
                 </h3>
-                {formData.startTime && formData.endTime && formData.startTime <= formData.endTime && (
+                {formData.startTime && formData.endTime && formData.startTime < formData.endTime && (
                     <RoomSelection
                         selectedRoom={formData.room_code}
                         onRoomChange={(id, name) => {
@@ -172,10 +171,6 @@ export function FormBooking() {
                 <h3 className="text-md border-b pb-2 font-medium text-gray-900">Informasi Tambahan</h3>
 
                 <div className="space-y-3">
-                    {/* <Label className="flex items-center gap-2 text-base font-semibold text-gray-800">
-                        <FileText className="h-4 w-4 text-teal-600" />
-                        Jenis Rapat <span className="text-red-500">*</span>
-                    </Label> */}
                     <Label>
                         Jenis Rapat <span className="text-red-500">*</span>
                     </Label>
@@ -188,7 +183,7 @@ export function FormBooking() {
                                     key={option.value}
                                     type="button"
                                     onClick={() => {
-                                        setJenisRapat(option.value as JenisRapat);
+                                        // set directly into RHF (no local state)
                                         setValue('jenisRapat', option.value);
                                     }}
                                     className={cn(
@@ -232,12 +227,10 @@ export function FormBooking() {
                     {errors.contact && <p className="mt-1 text-sm text-red-500">{errors.contact.message}</p>}
                 </div>
 
+                {/* Rapat Hybrid (fully RHF-controlled) */}
                 <button
                     type="button"
-                    onClick={() => {
-                        setIsHybrid(!isHybrid);
-                        setValue('isHybrid', !isHybrid);
-                    }}
+                    onClick={() => setValue('isHybrid', !isHybrid)}
                     className={cn(
                         'flex w-full items-center gap-4 rounded-xl border-2 px-4 py-2.5 text-left transition-all duration-200',
                         isHybrid
@@ -245,7 +238,6 @@ export function FormBooking() {
                             : 'border-gray-200 bg-white hover:border-violet-300 hover:bg-violet-50/50',
                     )}
                 >
-                    {/* Custom Checkbox */}
                     <div
                         className={cn(
                             'flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200',
@@ -259,7 +251,6 @@ export function FormBooking() {
                         )}
                     </div>
 
-                    {/* Icon & Label */}
                     <div className="flex flex-1 items-center gap-3">
                         <div className={cn('rounded-lg p-2.5 transition-colors duration-200', isHybrid ? 'bg-violet-100' : 'bg-gray-100')}>
                             <Video className={cn('h-5 w-5 transition-colors duration-200', isHybrid ? 'text-violet-600' : 'text-gray-400')} />
@@ -268,20 +259,17 @@ export function FormBooking() {
                             <p className={cn('text-sm font-semibold transition-colors duration-200', isHybrid ? 'text-violet-900' : 'text-gray-700')}>
                                 Rapat Hybrid
                             </p>
-                            <p className="mt-0.5 text-xs text-gray-500">Peserta dapat bergabung secara online </p>
+                            <p className="mt-0.5 text-xs text-gray-500">Peserta dapat bergabung secara online</p>
                         </div>
                     </div>
 
-                    {/* Status Badge */}
                     {isHybrid && <span className="rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700">Aktif</span>}
                 </button>
 
+                {/* Dukungan TI (fully RHF-controlled) */}
                 <button
                     type="button"
-                    onClick={() => {
-                        setNeedItSupport(!needItSupport);
-                        setValue('needItSupport', !needItSupport);
-                    }}
+                    onClick={() => setValue('needItSupport', !needItSupport)}
                     className={cn(
                         'flex w-full items-center gap-4 rounded-xl border-2 px-4 py-2.5 text-left transition-all duration-200',
                         needItSupport
@@ -289,7 +277,6 @@ export function FormBooking() {
                             : 'border-gray-200 bg-white hover:border-teal-300 hover:bg-teal-50/50',
                     )}
                 >
-                    {/* Custom Checkbox */}
                     <div
                         className={cn(
                             'flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200',
@@ -303,7 +290,6 @@ export function FormBooking() {
                         )}
                     </div>
 
-                    {/* Icon & Label */}
                     <div className="flex flex-1 items-center gap-3">
                         <div className={cn('rounded-lg p-2.5 transition-colors duration-200', needItSupport ? 'bg-teal-100' : 'bg-gray-100')}>
                             <Monitor className={cn('h-5 w-5 transition-colors duration-200', needItSupport ? 'text-teal-600' : 'text-gray-400')} />
@@ -321,7 +307,6 @@ export function FormBooking() {
                         </div>
                     </div>
 
-                    {/* Status Badge */}
                     {needItSupport && <span className="rounded-full bg-teal-100 px-2.5 py-1 text-xs font-semibold text-teal-700">Aktif</span>}
                 </button>
             </div>

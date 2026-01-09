@@ -40,6 +40,7 @@ interface Room {
     kode_ruangan: string;
     lokasi: string;
     kapasitas: number;
+    kapasitas_max: number;
     image: string;
     fasilitas: string[];
     status: 'aktif' | 'maintenance' | 'nonaktif';
@@ -96,6 +97,7 @@ export default function RoomsPage({ ruangans }: any) {
         kode_ruangan: '',
         lokasi: '',
         kapasitas: '',
+        kapasitas_max: '',
         fasilitas: [] as string[],
         status: 'aktif' as 'aktif' | 'maintenance' | 'nonaktif',
         image: '' as string,
@@ -120,6 +122,7 @@ export default function RoomsPage({ ruangans }: any) {
             kode_ruangan: '',
             lokasi: '',
             kapasitas: '',
+            kapasitas_max: '',
             fasilitas: [],
             status: 'aktif',
             image: '',
@@ -148,6 +151,7 @@ export default function RoomsPage({ ruangans }: any) {
             kode_ruangan: room.kode_ruangan,
             lokasi: room.lokasi,
             kapasitas: room.kapasitas.toString(),
+            kapasitas_max: room.kapasitas_max?.toString(),
             fasilitas: room.fasilitas,
             status: room.status,
             image: room.image,
@@ -173,6 +177,7 @@ export default function RoomsPage({ ruangans }: any) {
         form.append('nama_ruangan', formData.nama_ruangan);
         form.append('lokasi', formData.lokasi);
         form.append('kapasitas', formData.kapasitas);
+        form.append('kapasitas_max', formData.kapasitas_max);
         form.append('status', formData.status);
         formData.fasilitas.forEach((f) => form.append('fasilitas[]', f));
         if (imageFile) {
@@ -279,6 +284,10 @@ export default function RoomsPage({ ruangans }: any) {
                                     <Users className="h-4 w-4" />
                                     <span>Kapasitas: {room.kapasitas} orang</span>
                                 </div>
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <Users className="h-4 w-4" />
+                                    <span>Kapasitas Max: {room.kapasitas_max} orang</span>
+                                </div>
                                 <div className="space-y-2">
                                     <p className="text-sm font-medium">Fasilitas:</p>
                                     <div className="flex flex-wrap gap-1">
@@ -384,11 +393,20 @@ export default function RoomsPage({ ruangans }: any) {
                                 <div className="space-y-2">
                                     <Label htmlFor="edit_kapasitas">Kapasitas</Label>
                                     <Input
-                                        className="mt-1"
                                         id="edit_kapasitas"
-                                        type="number"
+                                        type=""
                                         value={formData.kapasitas}
                                         onChange={(e) => setFormData((prev) => ({ ...prev, kapasitas: e.target.value }))}
+                                        placeholder="Jumlah orang"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="edit_kapasitas">Kapasitas Max</Label>
+                                    <Input
+                                        id="edit_kapasitas"
+                                        type=""
+                                        value={formData.kapasitas_max}
+                                        onChange={(e) => setFormData((prev) => ({ ...prev, kapasitas_max: e.target.value }))}
                                         placeholder="Jumlah orang"
                                     />
                                 </div>

@@ -2,7 +2,6 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
@@ -219,12 +218,12 @@ export default function DamageReports({
                                                         <div className="text-sm text-gray-500">{location.reports} laporan</div>
                                                     </div>
                                                 </div>
-                                                <div className="text-right">
+                                                {/* <div className="text-right">
                                                     <div className="font-medium">{location.resolved} selesai</div>
                                                     <div className="text-xs text-gray-500">
                                                         {location.reports > 0 ? Math.round((location.resolved / location.reports) * 100) : 0}% selesai
                                                     </div>
-                                                </div>
+                                                </div> */}
                                             </div>
                                         ))}
                                     </div>
@@ -278,7 +277,7 @@ export default function DamageReports({
                                                             {division.reports} laporan • {division.resolved} selesai
                                                         </p>
                                                     </div>
-                                                    <Badge
+                                                    {/* <Badge
                                                         className={
                                                             division.resolved / division.reports >= 0.8
                                                                 ? 'bg-green-100 text-green-800'
@@ -288,9 +287,9 @@ export default function DamageReports({
                                                         }
                                                     >
                                                         {Math.round((division.resolved / division.reports) * 100)}% selesai
-                                                    </Badge>
+                                                    </Badge> */}
                                                 </div>
-                                                <Progress value={(division.resolved / division.reports) * 100} className="h-2" />
+                                                {/* <Progress value={(division.resolved / division.reports) * 100} className="h-2" /> */}
                                             </div>
                                         ))}
                                     </div>

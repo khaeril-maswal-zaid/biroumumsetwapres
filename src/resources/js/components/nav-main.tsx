@@ -41,13 +41,13 @@ export function NavMain({ items, itemsReport }: NavMainProps) {
 
     return (
         <SidebarGroup className="px-2 py-0">
-            <SidebarGroupLabel>Platform</SidebarGroupLabel>
+            <SidebarGroupLabel>Modul</SidebarGroupLabel>
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton
                         asChild
                         className={cn(
-                            'text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100',
+                            'text-neutral-600 hover:text-neutral-800',
                             isActiveHome && 'border-r-2 border-blue-700 bg-blue-50 text-blue-700',
                         )}
                     >
@@ -66,7 +66,7 @@ export function NavMain({ items, itemsReport }: NavMainProps) {
                             <SidebarMenuButton
                                 asChild
                                 className={cn(
-                                    'text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100',
+                                    'text-neutral-600 hover:text-neutral-800',
                                     isActive && 'border-r-2 border-blue-700 bg-blue-50 text-blue-700',
                                 )}
                             >

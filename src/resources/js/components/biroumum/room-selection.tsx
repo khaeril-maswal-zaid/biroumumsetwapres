@@ -104,9 +104,7 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
     }, [selectedDate, selectedStartTime, selectedEndTime]);
 
     useEffect(() => {
-        if (flash.availableRoom) {
-            setRooms(flash.availableRoom);
-        }
+        setRooms(Array.isArray(flash.availableRoom) ? flash.availableRoom : []);
     }, [flash.availableRoom]);
 
     const handleViewDetail = (e: React.MouseEvent, room: Room) => {
@@ -235,85 +233,88 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                         ))}
                     </div>
                 ) : (
+                    // RadioGroup controlled value: pastikan string (bukan undefined)
                     <RadioGroup
-                        value={selectedRoom}
+                        value={selectedRoom ?? ''}
                         onValueChange={(value) => {
                             const room = rooms.find((r) => r.id === value);
                             if (room) {
-                                handleCardClick(room);
+                                onRoomChange(room.id, room.nama_ruangan);
                             }
                         }}
                     >
                         <div className="grid gap-4">
-                            {rooms?.map((room) => {
-                                const hasConflict = isTimeSlotConflict(room);
-                                const isDisabled = hasConflict;
+                            {Array.isArray(rooms) &&
+                                rooms.map((room) => {
+                                    const hasConflict = isTimeSlotConflict(room);
+                                    const isDisabled = hasConflict;
+                                    const radioId = `room-${room.id}`; // <-- prefix supaya unique / safe
 
-                                return (
-                                    <Card
-                                        key={room.id}
-                                        className={`cursor-pointer py-0 transition-all hover:shadow-md ${
-                                            isDisabled ? 'cursor-not-allowed opacity-60' : ''
-                                        } ${selectedRoom === room.id ? 'shadow-md ring-2 ring-blue-500' : ''}`}
-                                        onClick={() => handleCardClick(room)}
-                                    >
-                                        <CardContent className="p-4">
-                                            <div className="flex items-start space-x-4">
-                                                <RadioGroupItem value={room.id} id={room.id} disabled={isDisabled} className="mt-1" />
+                                    return (
+                                        <Card
+                                            key={room.id}
+                                            className={`py-0 transition-all hover:shadow-md ${isDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} ${
+                                                selectedRoom === room.id ? 'shadow-md ring-2 ring-blue-500' : ''
+                                            }`}
+                                        >
+                                            <CardContent className="p-4">
+                                                <Label htmlFor={radioId} className={`${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                                                    <div className="flex items-start space-x-4">
+                                                        {/* Radio input */}
+                                                        <RadioGroupItem value={room.id} id={radioId} disabled={isDisabled} className="mt-1" />
 
-                                                <div className="flex-1 space-y-3">
-                                                    <div className="flex items-start justify-between">
-                                                        <Label
-                                                            htmlFor={room.id}
-                                                            className={`cursor-pointer ${isDisabled ? 'cursor-not-allowed' : ''}`}
-                                                        >
-                                                            <div className="space-y-1">
-                                                                <div className="text-lg font-medium">{room.nama_ruangan}</div>
-                                                                <div className="text-sm text-gray-500">{room.lokasi}</div>
-                                                            </div>
-                                                        </Label>
-                                                        {getStatusBadge(room)}
-                                                    </div>
+                                                        <div className="flex-1 space-y-3">
+                                                            <div className="flex items-start justify-between">
+                                                                {/* Label terhubung ke radio via htmlFor */}
 
-                                                    <div className="flex items-center justify-between text-sm text-gray-600">
-                                                        <div className="">
-                                                            <div className="mb-1.5 flex items-center gap-1">
-                                                                <User className="h-4 w-4" />
-                                                                <span>Kapasitas: {room.kapasitas} Orang</span>
+                                                                <div className="space-y-1">
+                                                                    <div className="text-lg font-medium">{room.nama_ruangan}</div>
+                                                                    <div className="text-sm text-gray-500">{room.lokasi}</div>
+                                                                </div>
+
+                                                                {getStatusBadge(room)}
                                                             </div>
-                                                            <div className="flex items-center gap-1">
-                                                                <Users className="h-4 w-4" />
-                                                                <span>Kapasitas Max: {room.kapasitas_max} Orang</span>
+
+                                                            <div className="flex items-center justify-between text-sm text-gray-600">
+                                                                <div className="">
+                                                                    <div className="mb-1.5 flex items-center gap-1">
+                                                                        <User className="h-4 w-4" />
+                                                                        <span>Kapasitas: {room.kapasitas} Orang</span>
+                                                                    </div>
+                                                                    <div className="flex items-center gap-1">
+                                                                        <Users className="h-4 w-4" />
+                                                                        <span>Kapasitas Max: {room.kapasitas_max} Orang</span>
+                                                                    </div>
+                                                                </div>
+
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    type="button"
+                                                                    onClick={(e) => handleViewDetail(e, room)}
+                                                                    className="flex items-center gap-1 text-blue-600 hover:text-blue-700"
+                                                                >
+                                                                    <Info className="h-4 w-4" />
+                                                                    Detail
+                                                                </Button>
                                                             </div>
+
+                                                            {hasConflict && room.bookedSlots && room.bookedSlots.length > 0 && (
+                                                                <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                                                                    <div className="flex items-center gap-2 text-sm text-red-800">
+                                                                        <X className="h-4 w-4" />
+                                                                        <span className="font-medium">Ruang rapat sedang digunakan:</span>
+                                                                    </div>
+                                                                    <div className="mt-1 text-xs text-red-600">{room.bookedSlots.join(', ')}</div>
+                                                                </div>
+                                                            )}
                                                         </div>
-
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            type="button"
-                                                            onClick={(e) => handleViewDetail(e, room)}
-                                                            className="flex items-center gap-1 text-blue-600 hover:text-blue-700"
-                                                        >
-                                                            <Info className="h-4 w-4" />
-                                                            Detail
-                                                        </Button>
                                                     </div>
-
-                                                    {hasConflict && room.bookedSlots && room.bookedSlots.length > 0 && (
-                                                        <div className="rounded-lg border border-red-200 bg-red-50 p-3">
-                                                            <div className="flex items-center gap-2 text-sm text-red-800">
-                                                                <X className="h-4 w-4" />
-                                                                <span className="font-medium">Ruang rapat sedang digunakan:</span>
-                                                            </div>
-                                                            <div className="mt-1 text-xs text-red-600">{room.bookedSlots.join(', ')}</div>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                );
-                            })}
+                                                </Label>
+                                            </CardContent>
+                                        </Card>
+                                    );
+                                })}
                         </div>
                     </RadioGroup>
                 )}
