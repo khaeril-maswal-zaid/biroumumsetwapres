@@ -259,8 +259,8 @@ class RolePermissionSeeder extends Seeder
         $pegawaiRole->syncPermissions($pegawaiPermissions);
 
 
-        // 👤 Role: Pegawai------------------------------
-        $superPegawaiPermissions = [
+        // 👤 Role: superVisorRole------------------------------
+        $superVisorPermissions = [
             'view_homepage',
             'view_history',
 
@@ -269,7 +269,7 @@ class RolePermissionSeeder extends Seeder
             'create_supplies',
             'create_booking',
         ];
-        $superPegawaiRole = Role::create(
+        $superVisorRole = Role::create(
             [
                 'name' => 'supervisor',
                 'label' => 'Supervisor',
@@ -277,7 +277,7 @@ class RolePermissionSeeder extends Seeder
                 'description' => 'Dapat mengajukan berbagai permintaan seperti booking ruangan, kendaraan, ATK, dan pelaporan kerusakan.'
             ]
         );
-        $superPegawaiRole->syncPermissions($superPegawaiPermissions);
+        $superVisorRole->syncPermissions($superVisorPermissions);
 
         // 👤 Role: Pimpinan------------------------------
         $atasanPermissions = [
