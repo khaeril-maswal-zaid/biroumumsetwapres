@@ -17,8 +17,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { SharedData, type BreadcrumbItem } from '@/types';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Eye, ImageIcon, Search, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -31,6 +31,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function DamagesAdmin({ kerusakan }: any) {
     const { toast } = useToast();
+    const { auth } = usePage<SharedData>().props;
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -154,25 +155,26 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                     <div className="inline-flex items-center justify-center">
                                                         <Link
                                                             href={route('kerusakangedung.show', damage.kode_pelaporan)}
-                                                            className="inline-flex items-center gap-1 font-medium text-green-600 hover:text-green-700"
+                                                            className="inline-flex items-center gap-1 font-medium"
                                                         >
                                                             <Eye className="h-4 w-4" />
                                                             Lihat Detail
                                                         </Link>
 
-                                                        <span className="mx-3">||</span>
+                                                        {auth?.permissions?.includes('delete_all_requests') && (
+                                                            <>
+                                                                <span className="mx-3">||</span>
 
-                                                        <button
-                                                            onClick={() => setDeleteConfirm(damage.kode_pelaporan)}
-                                                            className="inline-flex items-center gap-1 font-medium text-red-600 hover:text-red-800"
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                            Hapus
-                                                        </button>
+                                                                <button
+                                                                    onClick={() => setDeleteConfirm(damage.kode_pelaporan)}
+                                                                    className="inline-flex items-center gap-1 font-medium text-red-600 hover:text-red-800"
+                                                                >
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                    Hapus
+                                                                </button>
+                                                            </>
+                                                        )}
                                                     </div>
-                                                    {/* <Link className="font-medium" href={route('kerusakangedung.show', damage.kode_pelaporan)}>
-                                                        Detail
-                                                    </Link> */}
                                                 </TableCell>
                                             </TableRow>
                                         ))

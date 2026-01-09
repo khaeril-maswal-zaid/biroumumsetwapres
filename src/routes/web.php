@@ -117,7 +117,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::delete('/dashboard/kerusakan-gedung/delete/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'destroy'])
         ->name('kerusakangedung.destroy')
-        ->middleware('permission:change_damage_status');
+        ->middleware('permission:delete_all_requests');
 
 
 

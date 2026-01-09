@@ -6,6 +6,7 @@ use App\Models\MasterPegawai;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -88,21 +89,22 @@ class RoleController extends Controller
     public function update(Request $request, Role $role)
     {
         $request->validate([
-            'name' => 'required|string',
+            'label' => 'required|string',
             'description' => 'nullable|string',
             'permissions' => 'nullable|array',
             'permissions.*' => 'exists:permissions,name',
         ]);
 
-        $role->name = $request->name;
+        $role->label = $request->label;
         $role->description = $request->description;
         $role->save();
 
 
         // Update name & description
         $role->update([
-            'name' => $request->name,
+            'name' => Str::slug($request->label, '_'),
             'description' => $request->description,
+            'label' => $request->label
         ]);
 
         // Update permissions
