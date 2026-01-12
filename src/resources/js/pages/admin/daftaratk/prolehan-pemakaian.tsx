@@ -22,6 +22,7 @@ import {
     Search,
 } from 'lucide-react';
 
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { BreadcrumbItem } from '@/types';
@@ -78,6 +79,8 @@ function AtkTabs({ active }: { active: 'daftar-atk' | 'prolehan-pemakaian' | 'bo
 }
 
 export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any) {
+    const { toast } = useToast();
+
     const [daftarAtkState] = useState(daftarAtk);
     const [logCategoryFilter, setLogCategoryFilter] = useState('all');
     const [isAddLogOpen, setIsAddLogOpen] = useState(false);
@@ -87,7 +90,7 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
     const [newLog, setNewLog] = useState({
         daftar_atk_id: '',
         quantity: '',
-        type: 'Prolehan',
+        type: 'Perolehan',
         unit_price: '',
         total_price: '',
     });
@@ -150,9 +153,13 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
         router.post(route('stockopname.store'), newLog, {
             onSuccess: () => {
                 setIsAddLogOpen(false);
-                setNewLog({ daftar_atk_id: '', quantity: '', type: 'Masuk', unit_price: '', total_price: '' });
+                setNewLog({ daftar_atk_id: '', quantity: '', type: 'Perolehan', unit_price: '', total_price: '' });
                 setSelectedATK(null);
                 setAtkSearchTerm('');
+            },
+            onError: (errors) => {
+                console.error('Error adding log:', errors);
+                toast({ title: 'Gagal', description: Object.values(errors)[0], variant: 'destructive' });
             },
         });
     };
@@ -175,7 +182,7 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
                             </div>
                             <Button onClick={() => setIsAddLogOpen(true)} className="gap-2 bg-white text-indigo-600 shadow-lg hover:bg-indigo-50">
                                 <Plus className="h-4 w-4" />
-                                Tambah Log Stok
+                                Tambah Perolehan
                             </Button>
                         </div>
                     </CardHeader>
@@ -243,9 +250,9 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
                                                     <TableCell>{log.quantity}</TableCell>
                                                     <TableCell>
                                                         <Badge
-                                                            className={`gap-1 ${log.type == 'Masuk' ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}`}
+                                                            className={`gap-1 ${log.type == 'Perolehan' ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}`}
                                                         >
-                                                            {log.type == 'Masuk' ? (
+                                                            {log.type == 'Perolehan' ? (
                                                                 <ArrowDownCircle className="h-3 w-3" />
                                                             ) : (
                                                                 <ArrowUpCircle className="h-3 w-3" />
@@ -360,7 +367,7 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
                             setNewLog({
                                 daftar_atk_id: '',
                                 quantity: '',
-                                type: 'Masuk',
+                                type: 'Perolehan',
                                 unit_price: '',
                                 total_price: '',
                             });
@@ -372,7 +379,7 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
                         <DialogHeader>
                             <DialogTitle className="flex items-center gap-2 text-xl">
                                 <Plus className="h-5 w-5 text-indigo-600" />
-                                Tambah Log Stok Masuk
+                                Tambah Perolehan
                             </DialogTitle>
                             <DialogDescription>Masukkan detail stok ATK yang masuk ke gudang.</DialogDescription>
                         </DialogHeader>

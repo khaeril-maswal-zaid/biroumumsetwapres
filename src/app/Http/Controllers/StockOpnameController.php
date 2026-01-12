@@ -16,7 +16,7 @@ class StockOpnameController extends Controller
     public function index()
     {
         $data = [
-            'daftarAtk' => DaftarAtk::latest()->get(),
+            'daftarAtk' => DaftarAtk::orderBy('name', 'asc')->get(),
             'stockOpnames' => StockOpname::with('daftarAtk')->latest()->take(100)->get(),
         ];
 
@@ -28,7 +28,7 @@ class StockOpnameController extends Controller
         $validated = $request->validate([
             'daftar_atk_id' => 'required|exists:daftar_atks,id',
             'quantity' => 'required|integer|min:1',
-            'type' => 'required|in:Prolehan,Pemakaian',
+            'type' => 'required|in:Perolehan',
             'unit_price' => 'required|numeric|min:0',
             'total_price' => 'required|numeric|min:0',
         ]);
@@ -39,11 +39,8 @@ class StockOpnameController extends Controller
 
         // Update quantity di DaftarAtk
         $daftarAtk = DaftarAtk::find($validated['daftar_atk_id']);
-        if ($validated['type'] === 'Prolehan') {
-            $daftarAtk->increment('quantity', $validated['quantity']);
-        } else {
-            $daftarAtk->decrement('quantity', $validated['quantity']);
-        }
+
+        $daftarAtk->increment('quantity', $validated['quantity']);
 
         return redirect()->back();
     }
@@ -65,7 +62,7 @@ class StockOpnameController extends Controller
 
         $items = DaftarAtk::query()
             ->withSum(['stockOpnames as total_perolehan' => function ($q) use ($start, $end) {
-                $q->where('type', 'Prolehan');
+                $q->where('type', 'Perolehan');
 
                 if ($start && $end) {
                     $q->whereBetween('created_at', [$start, $end]);
@@ -81,6 +78,7 @@ class StockOpnameController extends Controller
             }], 'quantity')
 
             ->when($itemKode, fn($q) => $q->where('kode_atk', $itemKode))
+            ->orderBy('name', 'asc')
             ->get()
             ->map(function ($item) {
                 $item->sisa = ($item->total_perolehan ?? 0) - ($item->total_pemakaian ?? 0);
@@ -99,6 +97,44 @@ class StockOpnameController extends Controller
                 'saldo'     => (int) ($i->sisa ?? 0),
             ]),
             'filters' => $request->only(['bulan', 'tahun', 'daftar_atk_id']),
+        ]);
+    }
+
+    public function detailPemakaian(Request $request)
+    {
+        $kodeAtk = $request->kodeAtk;
+        $bulan   = $request->bulan;
+        $tahun   = $request->tahun;
+
+        $start = Carbon::create($tahun, $bulan)->startOfMonth();
+        $end   = Carbon::create($tahun, $bulan)->endOfMonth();
+
+        $data = StockOpname::query()
+            ->where('type', 'Pemakaian')
+            ->whereBetween('created_at', [$start, $end])
+            ->whereHas(
+                'daftarAtk',
+                fn($q) =>
+                $q->where('kode_atk', $kodeAtk)
+            )
+            ->with([
+                'daftarAtk:id,name,satuan',
+                'permintaanAtk.pemesan.pegawai',
+            ])
+            ->get()
+            ->map(fn($row) => [
+                'tanggal'        => $row->created_at,
+                'jumlah'         => $row->quantity,
+                'itemAtk'       => $row->daftarAtk,
+                'satuan'         => $row->daftarAtk->satuan,
+                'digunakan_oleh' => $row->permintaanAtk?->pemesan->pegawai?->name,
+                'unit_kerja'     => $row->permintaanAtk?->kode_unit,
+                'keterangan'     => $row->permintaanAtk?->deskripsi,
+            ]);
+
+        return Inertia::render('admin/daftaratk/detail-pemakain', [
+            'Persediaan' => $data,
+            'filters' => $request->only(['kode_atk', 'bulan', 'tahun']),
         ]);
     }
 }

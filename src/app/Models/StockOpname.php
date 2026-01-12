@@ -27,4 +27,9 @@ class StockOpname extends Model
     {
         return $this->belongsTo(DaftarAtk::class);
     }
+
+    public function permintaanAtk()
+    {
+        return $this->belongsTo(PermintaanAtk::class, 'permintaan_atk_id');
+    }
 }

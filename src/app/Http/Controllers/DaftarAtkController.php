@@ -15,7 +15,7 @@ class DaftarAtkController extends Controller
     public function index()
     {
         return Inertia::render('admin/daftaratk/page', [
-            'daftarAtk' => DaftarAtk::latest()->get(),
+            'daftarAtk' => DaftarAtk::orderBy('name', 'asc')->get(),
         ]);
     }
 

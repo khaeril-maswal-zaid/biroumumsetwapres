@@ -49,7 +49,7 @@ class PermintaanAtkController extends Controller
     public function create()
     {
         return Inertia::render('biroumum/supplies/page', [
-            'availableATK' => DaftarAtk::select(['id', 'name', 'category', 'satuan'])->get(),
+            'availableATK' => DaftarAtk::select(['id', 'name', 'category', 'satuan'])->orderBy('name', 'asc')->get(),
         ]);
     }
 
@@ -182,12 +182,14 @@ class PermintaanAtkController extends Controller
             if (isset($item['approved']) && $item['approved'] > 0) {
                 $daftarAtk = DaftarAtk::find($item['id']);
                 if ($daftarAtk) {
-                    // Buat log StockOpname dengan type Keluar
+
                     StockOpname::create([
                         'daftar_atk_id' => $item['id'],
+                        'kode_unit' => Auth::user()->pegawai?->unit?->kode_unit,
                         'quantity' => $item['approved'],
-                        'type' => 'Keluar',
-                        'unit_price' => 0, // Atau ambil dari DaftarAtk jika ada field harga
+                        'type' => 'Pemakaian',
+                        'permintaan_atk_id' => $permintaanAtk->id,
+                        'unit_price' => 0,
                         'total_price' => 0,
                     ]);
 

@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('kode_unit')->nullable();
             $table->foreignId('daftar_atk_id')->nullable()->constrained()->nullOnDelete();
             $table->integer('quantity');
-            $table->enum('type', ['Prolehan', 'Pemakaian']);
+            $table->enum('type', ['Perolehan', 'Pemakaian']);
+            $table->foreignId('permintaan_atk_id')->nullable()->constrained()->nullOnDelete();
             $table->integer('unit_price');
             $table->integer('total_price');
             $table->timestamps();

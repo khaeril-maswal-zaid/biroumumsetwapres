@@ -124,8 +124,6 @@ export default function SupplieDetailsPage({ selectedRequest }: any) {
         return 'partial';
     };
 
-    console.log(selectedRequest);
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />

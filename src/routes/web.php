@@ -201,6 +201,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('stockopname.detailpemakaian')
         ->middleware('permission:create_atk');
 
+    Route::get('/dashboard/stock-opname-atk/detail-pemakaian', [StockOpnameController::class, 'detailPemakaian'])
+        ->name('stockopname.detail_pemakaian')
+        ->middleware('permission:create_atk');
+
 
 
     //Kategori Kerusakan
