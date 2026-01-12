@@ -20,7 +20,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-function AtkTabs({ active }: { active: 'daftar-atk' | 'prolehan-pemakaian' | 'book-stay' }) {
+function AtkTabs({ active }: { active: 'daftar-atk' | 'perolehan-pemakaian' | 'book-stay' }) {
     return (
         <nav className="grid w-full grid-cols-3 rounded-lg bg-muted p-1">
             <Link
@@ -39,12 +39,12 @@ function AtkTabs({ active }: { active: 'daftar-atk' | 'prolehan-pemakaian' | 'bo
                 href={route('stockopname.index')}
                 className={cn(
                     'flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition',
-                    active === 'prolehan-pemakaian'
+                    active === 'perolehan-pemakaian'
                         ? 'bg-background text-foreground shadow-sm'
                         : 'text-muted-foreground hover:bg-background/60 hover:text-foreground',
                 )}
             >
-                Prolehan & Pemakaian
+                Perolehan & Pemakaian
             </Link>
 
             <Link

@@ -36,7 +36,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-function AtkTabs({ active }: { active: 'daftar-atk' | 'prolehan-pemakaian' | 'book-stay' }) {
+function AtkTabs({ active }: { active: 'daftar-atk' | 'perolehan-pemakaian' | 'book-stay' }) {
     return (
         <nav className="grid w-full grid-cols-3 rounded-lg bg-muted p-1">
             <Link
@@ -55,12 +55,12 @@ function AtkTabs({ active }: { active: 'daftar-atk' | 'prolehan-pemakaian' | 'bo
                 href={route('stockopname.index')}
                 className={cn(
                     'flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition',
-                    active === 'prolehan-pemakaian'
+                    active === 'perolehan-pemakaian'
                         ? 'bg-background text-foreground shadow-sm'
                         : 'text-muted-foreground hover:bg-background/60 hover:text-foreground',
                 )}
             >
-                Prolehan & Pemakaian
+                Perolehan & Pemakaian
             </Link>
 
             <Link
@@ -168,7 +168,7 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
-                <AtkTabs active="prolehan-pemakaian" />
+                <AtkTabs active="perolehan-pemakaian" />
 
                 <Card className="pt-0">
                     <CardHeader className="rounded-t-md bg-linear-to-r from-blue-500 to-indigo-600 py-2.5 text-white">
@@ -176,7 +176,7 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
                             <div className="space-y-0">
                                 <CardTitle className="flex items-center gap-2.5">
                                     <ClipboardList className="h-5 w-5" />
-                                    Prolehan & Pemakaian
+                                    Perolehan & Pemakaian
                                 </CardTitle>
                                 <CardDescription className="text-indigo-50">Riwayat pergerakan stok alat tulis kantor.</CardDescription>
                             </div>
