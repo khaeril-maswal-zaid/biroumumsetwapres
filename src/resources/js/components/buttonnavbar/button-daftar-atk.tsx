@@ -65,17 +65,17 @@ export default function ButtonAtk() {
                     </DialogHeader>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
+                        {/* <div>
                             <Label htmlFor="name">Kode ATK</Label>
                             <Input
                                 className="mt-1"
                                 id="kode_atk"
-                                value={formData.kode_atk}
+                                value='1234567'
                                 onChange={(e) => setFormData({ ...formData, kode_atk: e.target.value })}
                                 required
                                 autoFocus
                             />
-                        </div>
+                        </div> */}
 
                         <div>
                             <Label htmlFor="name">Nama ATK</Label>

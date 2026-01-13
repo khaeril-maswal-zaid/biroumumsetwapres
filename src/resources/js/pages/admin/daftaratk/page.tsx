@@ -231,7 +231,6 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>No</TableHead>
-                                        <TableHead>Kode ATK</TableHead>
                                         <TableHead>Nama ATK</TableHead>
                                         <TableHead>Kategori</TableHead>
                                         <TableHead>Satuan</TableHead>
@@ -251,9 +250,6 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                             <TableRow key={item.id}>
                                                 <TableCell>
                                                     <div className="text-sm font-medium text-muted-foreground">{startIndex + index + 1}</div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="font-medium">{item.kode_atk}</div>
                                                 </TableCell>
                                                 <TableCell>
                                                     {editingId === item.id ? (

@@ -478,7 +478,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                                 ) : (
                                                                     <>
                                                                         <AlertTriangle className="h-3 w-3 text-red-600" />
-                                                                        <span className="text-xs text-red-600">Tidak disetujui</span>
+                                                                        <span className="text-xs text-red-600">Tidak disetujui/ Belum terpenuhi</span>
                                                                     </>
                                                                 )}
                                                             </div>

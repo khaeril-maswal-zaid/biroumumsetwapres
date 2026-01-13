@@ -233,10 +233,7 @@ export default function ATKItemsManagement({ Persediaan }: any) {
                                         return (
                                             <TableRow key={item.id} className="transition-colors hover:bg-muted/50">
                                                 <TableCell className="font-medium text-muted-foreground">{logStartIndex + idx + 1}</TableCell>
-                                                <TableCell>
-                                                    <div className="font-medium">{item.name}</div>
-                                                    <div className="text-xs text-muted-foreground">{item.kode_atk}</div>
-                                                </TableCell>
+                                                <TableCell className="font-medium">{item.name}</TableCell>
                                                 <TableCell className="text-muted-foreground">{item.kategori}</TableCell>
                                                 <TableCell className="text-muted-foreground">{item.satuan}</TableCell>
                                                 <TableCell className="text-right font-medium">{item?.jumlah || 0}</TableCell>

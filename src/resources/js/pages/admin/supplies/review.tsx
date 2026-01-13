@@ -196,7 +196,7 @@ export default function SupplieDetailsPage({ selectedRequest }: any) {
 
                                 {/* Items List */}
                                 <div>
-                                    <h4 className="mb-4 font-medium text-gray-900">Daftar Item yang Dimintas</h4>
+                                    <h4 className="mb-4 font-medium text-gray-900">Daftar Item yang Diminta</h4>
                                     <div className="space-y-3">
                                         {selectedRequest.daftar_kebutuhan.map((item: any, index: number) => {
                                             const approvedQty = approvedQuantities[item.id] || item.approved;
@@ -289,8 +289,6 @@ export default function SupplieDetailsPage({ selectedRequest }: any) {
                                     </div>
                                 </div>
 
-                                <Separator />
-
                                 {/* Admin Message Display for Approved/Rejected */}
                                 {selectedRequest.keterangan &&
                                     selectedRequest.status !== 'pending' &&
@@ -326,7 +324,7 @@ export default function SupplieDetailsPage({ selectedRequest }: any) {
 
                                         return (
                                             <>
-                                                <Separator />{' '}
+                                                <Separator />
                                                 <div className={`rounded-lg border ${color.border} ${color.bg} p-4`}>
                                                     <div className="mb-2 flex items-center gap-2">
                                                         <MessageSquare className={`h-4 w-4 ${color.icon}`} />
