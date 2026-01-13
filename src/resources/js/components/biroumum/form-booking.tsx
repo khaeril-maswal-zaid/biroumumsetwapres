@@ -48,11 +48,11 @@ export function FormBooking() {
 
     // Register fields only — DO NOT overwrite values coming from parent
     useEffect(() => {
-        register('needItSupport');
-        register('isHybrid');
-        register('jenisRapat');
+        // register('needItSupport');
+        // register('isHybrid');
+        // register('jenisRapat');
         register('room_code');
-        register('room_name');
+        // register('room_name');
     }, [register]);
 
     const today = new Date().toISOString().split('T')[0];

@@ -1,11 +1,11 @@
 import { Icon } from '@/components/icon';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BarChart4, ChevronDown, ChevronRight, Home } from 'lucide-react';
+import { BarChart4, ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
 function getPathnameFromHref(href: string): string {
@@ -37,27 +37,9 @@ export function NavMain({ items, itemsReport }: NavMainProps) {
 
     const [isManagementOpen, setIsManagementOpen] = useState(visibleReportItems.some((item: any) => isPathActive(pathname, item.href)));
 
-    const isActiveHome = isPathActive(pathname, route('dashboard'), true);
-
     return (
         <SidebarGroup className="px-2 py-0">
-            <SidebarGroupLabel>Platform</SidebarGroupLabel>
             <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton
-                        asChild
-                        className={cn(
-                            'text-neutral-600 hover:text-neutral-800',
-                            isActiveHome && 'border-r-2 border-blue-700 bg-blue-50 text-blue-700',
-                        )}
-                    >
-                        <Link href={route('dashboard')} rel="noopener noreferrer">
-                            <Home className="h-5 w-5" />
-                            <span>Home</span>
-                        </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-
                 {visibleMainItems.map((item) => {
                     const isActive = isPathActive(pathname, item.href, true);
 

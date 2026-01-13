@@ -139,7 +139,7 @@ class HomeController extends Controller
 
         $dashboardStats = [
             'roomBookings' => [
-                'title' => 'Booking Ruangan',
+                'title' => 'Pemesanan Ruangan',
                 'icon' => 'room',
                 'total' => PemesananRuangRapat::count(),
                 'pending' => PemesananRuangRapat::where('status', 'pending')->count(),

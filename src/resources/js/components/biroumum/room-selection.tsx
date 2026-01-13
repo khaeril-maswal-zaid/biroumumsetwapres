@@ -167,10 +167,6 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
         );
     }
 
-    const handleCardClick = (room: Room) => {
-        onRoomChange(room.id, room.nama_ruangan);
-    };
-
     const isTimeSlotConflict = (room: Room) => {
         if (!selectedStartTime || !selectedEndTime) return false;
 

@@ -29,7 +29,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function BookingDetailsPage({ selectedRequest }: any) {
+export default function SupplieDetailsPage({ selectedRequest }: any) {
     const [isProcessing, setIsProcessing] = useState(false);
     const [adminMessage, setAdminMessage] = useState('');
     const [actionType, setActionType] = useState<'confirmed' | 'reject' | null>(null);
@@ -196,12 +196,13 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
 
                                 {/* Items List */}
                                 <div>
-                                    <h4 className="mb-4 font-medium text-gray-900">Daftar Item yang Diminta</h4>
+                                    <h4 className="mb-4 font-medium text-gray-900">Daftar Item yang Dimintas</h4>
                                     <div className="space-y-3">
                                         {selectedRequest.daftar_kebutuhan.map((item: any, index: number) => {
                                             const approvedQty = approvedQuantities[item.id] || item.approved;
                                             const status = getItemStatus(item.requested, approvedQty);
                                             const percentage = item.requested > 0 ? (approvedQty / item.requested) * 100 : 0;
+                                            const remainingStock = item.stock - approvedQty;
 
                                             return (
                                                 <div
@@ -233,8 +234,23 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
                                                                     {item.satuan && item.satuan.charAt(0).toUpperCase() + item.satuan.slice(1)}
                                                                 </span>
                                                             </div>
+                                                            {selectedRequest.status === 'pending' && actionType === 'confirmed' && (
+                                                                <div className="mt-2 flex items-center gap-4 text-sm">
+                                                                    <span className="font-medium text-blue-700">
+                                                                        Stok Tersedia: {item.stock}{' '}
+                                                                        {item.satuan && item.satuan.charAt(0).toUpperCase() + item.satuan.slice(1)}
+                                                                    </span>
+                                                                    <span>•</span>
+                                                                    <span
+                                                                        className={`font-medium ${remainingStock < 0 ? 'text-red-600' : 'text-green-700'}`}
+                                                                    >
+                                                                        Sisa Stok: {remainingStock}{' '}
+                                                                        {item.satuan && item.satuan.charAt(0).toUpperCase() + item.satuan.slice(1)}
+                                                                    </span>
+                                                                </div>
+                                                            )}
                                                             {percentage > 0 && (
-                                                                <div className="mt-2">
+                                                                <div className="mt-4">
                                                                     <Progress value={percentage} className="h-2" />
                                                                     <p className="mt-1 text-xs text-gray-500">
                                                                         {Math.round(percentage)}% dari yang diminta
@@ -282,24 +298,24 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
                                         // Mapping warna berdasarkan status (Meskipun sekarang hanya confirmed)
                                         const colorMap: any = {
                                             confirmed: {
-                                                border: 'border-green-200',
-                                                bg: 'bg-green-50',
-                                                icon: 'text-green-600',
-                                                title: 'text-green-900',
-                                                text: 'text-green-800',
+                                                border: 'border-green-600',
+                                                bg: 'bg-green-400',
+                                                icon: '',
+                                                title: '',
+                                                text: '',
                                             },
 
                                             rejected: {
-                                                border: 'border-red-200',
-                                                bg: 'bg-red-50',
+                                                border: 'border-red-300',
+                                                bg: 'bg-red-300',
                                                 icon: 'text-red-600',
                                                 title: 'text-red-900',
                                                 text: 'text-red-800',
                                             },
 
                                             partial: {
-                                                border: 'border-blue-200',
-                                                bg: 'bg-blue-50',
+                                                border: 'border-blue-300',
+                                                bg: 'bg-blue-300',
                                                 icon: 'text-blue-600',
                                                 title: 'text-blue-900',
                                                 text: 'text-blue-800',
@@ -309,13 +325,16 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
                                         const color = colorMap[selectedRequest.status] ?? colorMap['confirmed'];
 
                                         return (
-                                            <div className={`rounded-lg border ${color.border} ${color.bg} p-4`}>
-                                                <div className="mb-2 flex items-center gap-2">
-                                                    <MessageSquare className={`h-4 w-4 ${color.icon}`} />
-                                                    <h4 className={`font-medium ${color.title}`}>Pesan dari Admin</h4>
+                                            <>
+                                                <Separator />{' '}
+                                                <div className={`rounded-lg border ${color.border} ${color.bg} p-4`}>
+                                                    <div className="mb-2 flex items-center gap-2">
+                                                        <MessageSquare className={`h-4 w-4 ${color.icon}`} />
+                                                        <h4 className={`font-medium ${color.title}`}>Pesan dari Admin</h4>
+                                                    </div>
+                                                    <p className={`text-sm ${color.text}`}>{selectedRequest.keterangan}</p>
                                                 </div>
-                                                <p className={`text-sm ${color.text}`}>{selectedRequest.keterangan}</p>
-                                            </div>
+                                            </>
                                         );
                                     })()}
 
@@ -366,9 +385,9 @@ export default function BookingDetailsPage({ selectedRequest }: any) {
                                                         <div className="rounded-md border border-blue-200 bg-blue-50 p-3">
                                                             <p className="mb-2 text-sm text-blue-800">
                                                                 <strong>Status Permintaan:</strong>
-                                                                {calculateRequestStatus() === 'approved'
+                                                                {calculateRequestStatus() == 'approved'
                                                                     ? ' Disetujui Penuh'
-                                                                    : calculateRequestStatus() === 'partial'
+                                                                    : calculateRequestStatus() == 'partial'
                                                                       ? ' Disetujui Sebagian'
                                                                       : ' Ditolak'}
                                                             </p>

@@ -1,0 +1,140 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\StockOpname;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\DaftarAtk;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
+
+class StockOpnameController extends Controller
+{
+    public function index()
+    {
+        $data = [
+            'daftarAtk' => DaftarAtk::orderBy('name', 'asc')->get(),
+            'stockOpnames' => StockOpname::with('daftarAtk')->latest()->take(100)->get(),
+        ];
+
+        return Inertia::render('admin/daftaratk/prolehan-pemakaian', $data);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'daftar_atk_id' => 'required|exists:daftar_atks,id',
+            'quantity' => 'required|integer|min:1',
+            'type' => 'required|in:Perolehan',
+            'unit_price' => 'required|numeric|min:0',
+            'total_price' => 'required|numeric|min:0',
+        ]);
+
+        $validated['kode_unit'] = Auth::user()->pegawai?->unit?->kode_unit;
+
+        StockOpname::create($validated);
+
+        // Update quantity di DaftarAtk
+        $daftarAtk = DaftarAtk::find($validated['daftar_atk_id']);
+
+        $daftarAtk->increment('quantity', $validated['quantity']);
+
+        return redirect()->back();
+    }
+
+    public function bukuPersediaan(Request $request)
+    {
+        $bulan  = $request->bulan;
+        $tahun  = $request->tahun;
+        $itemKode = $request->daftar_atk_kode;
+
+        // Tentukan range tanggal jika bulan & tahun ada
+        $start = null;
+        $end   = null;
+
+        if ($bulan && $tahun) {
+            $start = Carbon::create($tahun, $bulan)->startOfMonth();
+            $end   = Carbon::create($tahun, $bulan)->endOfMonth();
+        }
+
+        $items = DaftarAtk::query()
+            ->withSum(['stockOpnames as total_perolehan' => function ($q) use ($start, $end) {
+                $q->where('type', 'Perolehan');
+
+                if ($start && $end) {
+                    $q->whereBetween('created_at', [$start, $end]);
+                }
+            }], 'quantity')
+
+            ->withSum(['stockOpnames as total_pemakaian' => function ($q) use ($start, $end) {
+                $q->where('type', 'Pemakaian');
+
+                if ($start && $end) {
+                    $q->whereBetween('created_at', [$start, $end]);
+                }
+            }], 'quantity')
+
+            ->when($itemKode, fn($q) => $q->where('kode_atk', $itemKode))
+            ->orderBy('name', 'asc')
+            ->get()
+            ->map(function ($item) {
+                $item->sisa = ($item->total_perolehan ?? 0) - ($item->total_pemakaian ?? 0);
+                return $item;
+            });
+
+        return Inertia::render('admin/daftaratk/buku-persediaan', [
+            'Persediaan' => $items->map(fn($i) => [
+                'id'        => $i->id,
+                'name'      => $i->name,
+                'kode_atk'  => $i->kode_atk,
+                'kategori'  => $i->category,
+                'satuan'    => $i->satuan,
+                'jumlah'    => (int) ($i->total_perolehan ?? 0),
+                'pemakaian' => (int) ($i->total_pemakaian ?? 0),
+                'saldo'     => (int) ($i->sisa ?? 0),
+            ]),
+            'filters' => $request->only(['bulan', 'tahun', 'daftar_atk_id']),
+        ]);
+    }
+
+    public function detailPemakaian(Request $request)
+    {
+        $kodeAtk = $request->kodeAtk;
+        $bulan   = $request->bulan;
+        $tahun   = $request->tahun;
+
+        $start = Carbon::create($tahun, $bulan)->startOfMonth();
+        $end   = Carbon::create($tahun, $bulan)->endOfMonth();
+
+        $data = StockOpname::query()
+            ->where('type', 'Pemakaian')
+            ->whereBetween('created_at', [$start, $end])
+            ->whereHas(
+                'daftarAtk',
+                fn($q) =>
+                $q->where('kode_atk', $kodeAtk)
+            )
+            ->with([
+                'daftarAtk:id,name,satuan',
+                'permintaanAtk.pemesan.pegawai',
+            ])
+            ->get()
+            ->map(fn($row) => [
+                'tanggal'        => $row->created_at,
+                'jumlah'         => $row->quantity,
+                'itemAtk'       => $row->daftarAtk,
+                'satuan'         => $row->daftarAtk->satuan,
+                'digunakan_oleh' => $row->permintaanAtk?->pemesan->pegawai?->name,
+                'unit_kerja'     => $row->permintaanAtk?->kode_unit,
+                'keterangan'     => $row->permintaanAtk?->deskripsi,
+            ]);
+
+        return Inertia::render('admin/daftaratk/detail-pemakain', [
+            'Persediaan' => $data,
+            'filters' => $request->only(['kode_atk', 'bulan', 'tahun']),
+        ]);
+    }
+}

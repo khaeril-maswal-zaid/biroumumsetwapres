@@ -29,7 +29,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Pengaturan Hak Akses',
         href: '/dashboard',
     },
 ];
@@ -67,7 +67,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
     const [selectedRole, setSelectedRole] = useState<Role | null>(null);
     const [roleFormData, setRoleFormData] = useState({
         id: '',
-        name: '',
+        label: '',
         description: '',
         permissions: [] as string[],
     });
@@ -98,7 +98,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
     const resetRoleForm = () => {
         setRoleFormData({
             id: '',
-            name: '',
+            label: '',
             description: '',
             permissions: [],
         });
@@ -108,7 +108,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
         setSelectedRole(role);
         setRoleFormData({
             id: role.id,
-            name: role.name,
+            label: role.label,
             description: role.description,
             permissions: role.permissions,
         });
@@ -119,7 +119,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
         if (!selectedRole) return;
 
         // Validate required fields
-        if (!roleFormData.name || !roleFormData.description) {
+        if (!roleFormData.label || !roleFormData.description) {
             alert('Mohon lengkapi nama role dan deskripsi');
             return;
         }
@@ -378,8 +378,8 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                                             <Input
                                                 className="mt-1"
                                                 id="edit_role_name"
-                                                value={roleFormData.name}
-                                                onChange={(e) => setRoleFormData((prev) => ({ ...prev, name: e.target.value }))}
+                                                value={roleFormData.label}
+                                                onChange={(e) => setRoleFormData((prev) => ({ ...prev, label: e.target.value }))}
                                                 placeholder="Masukkan nama role"
                                             />
                                         </div>
@@ -425,7 +425,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                                     </Button>
                                     <Button
                                         onClick={handleUpdateRole}
-                                        disabled={!roleFormData.name || !roleFormData.description || roleFormData.permissions.length === 0}
+                                        disabled={!roleFormData.label || !roleFormData.description || roleFormData.permissions.length === 0}
                                     >
                                         Simpan Perubahan
                                     </Button>
@@ -456,7 +456,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead>Nama</TableHead>
-                                            <TableHead>Email</TableHead>
+                                            <TableHead>Username</TableHead>
                                             <TableHead>NIP</TableHead>
                                             <TableHead>Role</TableHead>
                                             <TableHead>Aksi</TableHead>

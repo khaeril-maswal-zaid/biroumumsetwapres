@@ -73,6 +73,7 @@ class RolePermissionSeeder extends Seeder
             ['name' => 'view_homepage', 'label' => 'Lihat Beranda', 'category' => 'Umum'],
 
             ['name' => 'management_access', 'label' => 'Akses Manajement', 'category' => 'Khusus'],
+            ['name' => 'delete_all_requests', 'label' => 'Hapus Permintaan User', 'category' => 'Khusus'],
         ];
 
         // 🔁 Buat atau update semua permission dengan label & kategori
@@ -258,8 +259,8 @@ class RolePermissionSeeder extends Seeder
         $pegawaiRole->syncPermissions($pegawaiPermissions);
 
 
-        // 👤 Role: Pegawai------------------------------
-        $superPegawaiPermissions = [
+        // 👤 Role: superVisorRole------------------------------
+        $superVisorPermissions = [
             'view_homepage',
             'view_history',
 
@@ -268,15 +269,15 @@ class RolePermissionSeeder extends Seeder
             'create_supplies',
             'create_booking',
         ];
-        $superPegawaiRole = Role::create(
+        $superVisorRole = Role::create(
             [
-                'name' => 'super_pegawai',
-                'label' => 'Super Pegawai',
+                'name' => 'supervisor',
+                'label' => 'Supervisor',
                 'guard_name' => 'web',
                 'description' => 'Dapat mengajukan berbagai permintaan seperti booking ruangan, kendaraan, ATK, dan pelaporan kerusakan.'
             ]
         );
-        $superPegawaiRole->syncPermissions($superPegawaiPermissions);
+        $superVisorRole->syncPermissions($superVisorPermissions);
 
         // 👤 Role: Pimpinan------------------------------
         $atasanPermissions = [
@@ -336,6 +337,7 @@ class RolePermissionSeeder extends Seeder
             'view_history',
             'view_homepage',
             'management_access',
+            'delete_all_requests'
         ];
 
         $super_adminRole = Role::create(
@@ -390,6 +392,7 @@ class RolePermissionSeeder extends Seeder
             'manage_drivers',
             'view_vehicles_master',
             'manage_vehicles_master',
+            'delete_all_requests'
         ];
 
         $developerRole = Role::create(

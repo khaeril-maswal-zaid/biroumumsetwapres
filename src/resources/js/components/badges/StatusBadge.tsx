@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 
-type Status = 'pending' | 'approved' | 'confirmed' | 'partial' | 'process' | 'cancelled' | 'rejected';
+type Status = 'pending' | 'approved' | 'booked' | 'confirmed' | 'partial' | 'process' | 'cancelled' | 'rejected';
 
 interface StatusBadgeProps {
     status: Status | string;
@@ -21,6 +21,10 @@ const STATUS_BADGE_CONFIG: Record<
     },
     approved: {
         label: 'Disetujui',
+        className: 'bg-green-100 text-green-800 hover:bg-green-200',
+    },
+    booked: {
+        label: 'Dipesan',
         className: 'bg-green-100 text-green-800 hover:bg-green-200',
     },
     confirmed: {

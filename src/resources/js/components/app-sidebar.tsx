@@ -13,17 +13,18 @@ import {
     FileText,
     FileWarning,
     Hammer,
+    Home,
     LockKeyhole,
     PackageCheck,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 const mainNavItems: NavItem[] = [
-    // {
-    //     title: 'Home',
-    //     href: route('dashboard'),
-    //     icon: LayoutDashboard,
-    //     permission: 'view_admin_dashboard',
-    // },
+    {
+        title: 'Home',
+        href: route('dashboard'),
+        icon: Home,
+        permission: 'view_admin_dashboard',
+    },
     {
         title: 'Pemesanan Ruang Rapat',
         href: route('ruangrapat.index'),
@@ -65,6 +66,27 @@ const reportsNavItems: NavItem[] = [
     },
     {
         title: 'Permintaan ATK',
+        href: route('permintaanatk.reports'),
+        icon: FileText,
+        permission: 'report_supplies',
+    },
+];
+
+const manajementAtkNavItems: NavItem[] = [
+    {
+        title: 'Daftar Persediaan',
+        href: route('daftaratk.index'),
+        icon: FileBarChart2,
+        permission: 'report_bookings',
+    },
+    {
+        title: 'Prolehan & Pemakaian',
+        href: route('kerusakangedung.reports'),
+        icon: FileWarning,
+        permission: 'report_damages',
+    },
+    {
+        title: 'Buku Persediaan',
         href: route('permintaanatk.reports'),
         icon: FileText,
         permission: 'report_supplies',

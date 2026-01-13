@@ -2,6 +2,7 @@ import { Icon } from '@/components/icon';
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
+
 import { type ComponentPropsWithoutRef } from 'react';
 
 export function NavFooter({
@@ -13,7 +14,6 @@ export function NavFooter({
 }) {
     const { url } = usePage();
     const { permissions }: any = usePage().props.auth;
-
     return (
         <SidebarGroup {...props} className={`group-data-[collapsible=icon]:p-0 ${className || ''}`}>
             <SidebarGroupContent>

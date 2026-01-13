@@ -51,7 +51,7 @@ export default function ButtonAtk() {
 
     return (
         <>
-            <Button onClick={handleAdd} className="flex items-center gap-2">
+            <Button onClick={handleAdd} className="flex items-center gap-2 bg-white text-indigo-600 shadow-lg hover:bg-indigo-50">
                 <Plus className="h-4 w-4" />
                 Tambah ATK
             </Button>

@@ -7,19 +7,63 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Edit, Search, Trash2, X } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Edit, Package, Search, Trash2, X } from 'lucide-react';
 
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Manajemen ATK',
         href: '/dashboard',
     },
 ];
+
+import { cn } from '@/lib/utils';
+
+function AtkTabs({ active }: { active: 'daftar-atk' | 'prolehan-pemakaian' | 'book-stay' }) {
+    return (
+        <nav className="grid w-full grid-cols-3 rounded-lg bg-muted p-1">
+            <Link
+                href={route('daftaratk.index')}
+                className={cn(
+                    'flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition',
+                    active === 'daftar-atk'
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:bg-background/60 hover:text-foreground',
+                )}
+            >
+                Daftar Persediaan ATK
+            </Link>
+
+            <Link
+                href={route('stockopname.index')}
+                className={cn(
+                    'flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition',
+                    active === 'prolehan-pemakaian'
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:bg-background/60 hover:text-foreground',
+                )}
+            >
+                Perolehan & Pemakaian
+            </Link>
+
+            <Link
+                href={route('stockopname.buku_persediaan')}
+                className={cn(
+                    'flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition',
+                    active === 'book-stay'
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:bg-background/60 hover:text-foreground',
+                )}
+            >
+                Buku Persediaan
+            </Link>
+        </nav>
+    );
+}
 
 export default function ATKItemsManagement({ daftarAtk }: any) {
     const [searchTerm, setSearchTerm] = useState('');
@@ -136,13 +180,23 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs} Button={ButtonAtk}>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Daftar ATK</CardTitle>
-                        <CardDescription>Semua alat tulis kantor yang tersedia dalam sistem.</CardDescription>
+                <AtkTabs active="daftar-atk" />
+
+                <Card className="pt-0">
+                    <CardHeader className="rounded-t-md bg-linear-to-r from-blue-500 to-indigo-600 py-2.5 text-white">
+                        <div className="flex items-center justify-between">
+                            <div className="space-y-0">
+                                <CardTitle className="flex items-center gap-2">
+                                    <Package className="h-5 w-5" />
+                                    Daftar Persediaan ATK
+                                </CardTitle>
+                                <CardDescription className="text-blue-50">Semua alat tulis kantor yang tersedia dalam sistem.</CardDescription>
+                            </div>
+                            <ButtonAtk />
+                        </div>
                     </CardHeader>
                     <CardContent>
                         <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -163,8 +217,8 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                     <SelectContent>
                                         <SelectItem value="all">Semua Kategori</SelectItem>
                                         {categories.map((category, index) => (
-                                            <SelectItem key={index} value={category}>
-                                                {category}
+                                            <SelectItem key={index} value={String(category)}>
+                                                {String(category)}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -181,6 +235,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                         <TableHead>Nama ATK</TableHead>
                                         <TableHead>Kategori</TableHead>
                                         <TableHead>Satuan</TableHead>
+                                        <TableHead>Stok</TableHead>
                                         <TableHead className="text-right">Aksi</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -246,6 +301,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                                                 <SelectItem value="Box">Box</SelectItem>
                                                                 <SelectItem value="Pack">Pack</SelectItem>
                                                                 <SelectItem value="Rim">Rim</SelectItem>
+                                                                <SelectItem value="Buah">Buah</SelectItem>
                                                                 <SelectItem value="Lusin">Lusin</SelectItem>
                                                                 <SelectItem value="Botol">Botol</SelectItem>
                                                             </SelectContent>
@@ -253,6 +309,9 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                                     ) : (
                                                         <span className="text-sm text-gray-600">{item.satuan}</span>
                                                     )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <span className="text-sm font-medium">{item.quantity}</span>
                                                 </TableCell>
                                                 <TableCell className="text-right">
                                                     {editingId === item.id ? (
