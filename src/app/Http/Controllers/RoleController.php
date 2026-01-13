@@ -32,8 +32,8 @@ class RoleController extends Controller
                 return [
                     'id'    => (string) $user->id,
                     'name'  => $user?->pegawai?->name,
-                    'nip'   => $nip ? substr($nip, 0, -4) . '****' : null,
-                    'email' => $user->email ?? 'NIP SSO',
+                    'nip'   => $nip,
+                    'email' => $user->email ?? $user->nip_sso,
                     'role'  => $user->roles->pluck('name')->first() ?? '-',
                 ];
             });

@@ -31,7 +31,7 @@ import { useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Manajemen ATK',
         href: '/dashboard',
     },
 ];

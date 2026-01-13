@@ -15,7 +15,7 @@ import { Head, Link, router } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Manajemen ATK',
         href: '/dashboard',
     },
 ];

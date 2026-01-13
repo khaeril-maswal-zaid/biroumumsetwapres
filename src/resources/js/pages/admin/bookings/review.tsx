@@ -233,7 +233,7 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                     </div>
                                 </div>
 
-                                {(selectedBooking.status === 'approved' || selectedBooking.status === 'pending') && (
+                                {selectedBooking.status == 'booked' && (
                                     <div className="flex justify-end">
                                         <Button
                                             variant="outline"
@@ -367,19 +367,12 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                     (() => {
                                         // Mapping warna berdasarkan status
                                         const colorMap: any = {
-                                            approved: {
+                                            booked: {
                                                 border: 'border-green-200',
                                                 bg: 'bg-green-50',
                                                 icon: 'text-green-600',
                                                 title: 'text-green-900',
                                                 text: 'text-green-800',
-                                            },
-                                            in_progress: {
-                                                border: 'border-blue-200',
-                                                bg: 'bg-blue-50',
-                                                icon: 'text-blue-600',
-                                                title: 'text-blue-900',
-                                                text: 'text-blue-800',
                                             },
                                             rejected: {
                                                 border: 'border-red-200',

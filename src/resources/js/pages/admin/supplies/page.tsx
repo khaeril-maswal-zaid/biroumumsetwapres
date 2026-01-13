@@ -3,7 +3,7 @@
 import { StatusBadge } from '@/components/badges/StatusBadge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Permintaan ATK',
         href: '/dashboard',
     },
 ];
@@ -58,10 +58,6 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto bg-linear-to-br from-white to-blue-100 p-4">
                 <Card>
-                    <CardHeader>
-                        <CardTitle>Daftar Permintaan ATK</CardTitle>
-                        <CardDescription>Semua permintaan alat tulis kantor yang telah diajukan.</CardDescription>
-                    </CardHeader>
                     <CardContent>
                         <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                             <div className="flex w-full max-w-sm items-center space-x-2">

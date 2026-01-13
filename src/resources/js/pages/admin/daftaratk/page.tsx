@@ -16,7 +16,7 @@ import { useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Manajemen ATK',
         href: '/dashboard',
     },
 ];
@@ -47,7 +47,7 @@ function AtkTabs({ active }: { active: 'daftar-atk' | 'prolehan-pemakaian' | 'bo
                         : 'text-muted-foreground hover:bg-background/60 hover:text-foreground',
                 )}
             >
-                Prolehan & Pemakaian
+                Perolehan & Pemakaian
             </Link>
 
             <Link

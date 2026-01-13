@@ -29,7 +29,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Pengaturan Hak Akses',
         href: '/dashboard',
     },
 ];
@@ -456,7 +456,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead>Nama</TableHead>
-                                            <TableHead>Email</TableHead>
+                                            <TableHead>Username</TableHead>
                                             <TableHead>NIP</TableHead>
                                             <TableHead>Role</TableHead>
                                             <TableHead>Aksi</TableHead>

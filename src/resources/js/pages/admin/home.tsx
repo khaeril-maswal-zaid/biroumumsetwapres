@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Home',
         href: '/dashboard',
     },
 ];
@@ -48,7 +48,7 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard" />
+            <Head title="Home" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4 xl:gap-6">

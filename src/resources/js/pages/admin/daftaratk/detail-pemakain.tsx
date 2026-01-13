@@ -19,7 +19,7 @@ const formatTanggalIna = (tanggal: string) => {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Manajemen ATK',
         href: '/dashboard',
     },
 ];

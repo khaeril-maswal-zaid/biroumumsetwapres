@@ -11,7 +11,7 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -24,7 +24,7 @@ import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Kerusakan Gedung',
         href: '/dashboard',
     },
 ];
@@ -76,10 +76,6 @@ export default function DamagesAdmin({ kerusakan }: any) {
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto bg-linear-to-br from-white to-blue-100 p-4">
                 <Card>
-                    <CardHeader>
-                        <CardTitle>Daftar Laporan Kerusakan</CardTitle>
-                        <CardDescription>Semua laporan kerusakan gedung yang telah diajukan.</CardDescription>
-                    </CardHeader>
                     <CardContent>
                         <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                             <div className="flex w-full max-w-sm items-center space-x-2">
