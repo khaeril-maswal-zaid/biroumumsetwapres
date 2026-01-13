@@ -15,6 +15,7 @@ class StockOpname extends Model
     use HasFactory;
 
     protected $fillable = [
+        'permintaan_atk_id',
         'daftar_atk_id',
         'quantity',
         'type',
