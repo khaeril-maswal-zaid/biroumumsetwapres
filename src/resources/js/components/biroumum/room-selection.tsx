@@ -167,10 +167,6 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
         );
     }
 
-    const handleCardClick = (room: Room) => {
-        onRoomChange(room.id, room.nama_ruangan);
-    };
-
     const isTimeSlotConflict = (room: Room) => {
         if (!selectedStartTime || !selectedEndTime) return false;
 
@@ -350,7 +346,7 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                             <div className="space-y-5">
                                 <div>
                                     <h3 className="text-xl font-semibold">{selectedRoomDetail.nama_ruangan}</h3>
-                                    <p className="text-sm text-gray-500">Kode Ruangan: {selectedRoomDetail.kode_ruangan}</p>
+                                    {/* <p className="text-sm text-gray-500">Kode Ruangan: {selectedRoomDetail.kode_ruangan}</p> */}
                                 </div>
 
                                 <div className="space-y-3 text-sm">

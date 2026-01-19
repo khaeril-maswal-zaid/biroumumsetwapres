@@ -1,7 +1,7 @@
 'use client';
 
 import { StatusBadge } from '@/components/badges/StatusBadge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Pemesanan Ruang Rapat',
         href: '/dashboard',
     },
 ];
@@ -54,13 +54,9 @@ export default function BookingsAdmin({ bookingRooms }: any) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard" />
+            <Head title="Pemesanan Ruang Rapat" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
                 <Card>
-                    <CardHeader>
-                        <CardTitle>Daftar Pemesanan</CardTitle>
-                        <CardDescription>Semua pemesanan ruang rapat yang telah diajukan.</CardDescription>
-                    </CardHeader>
                     <CardContent>
                         <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                             <div className="flex w-full max-w-sm items-center space-x-2">

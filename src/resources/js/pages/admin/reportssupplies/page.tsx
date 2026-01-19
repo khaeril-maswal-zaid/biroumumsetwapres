@@ -17,18 +17,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function SuppliesReports({
-    statusDistribution,
-    divisionStats,
-    topUsers,
-    monthlyTrend,
-    approvalRateTrend,
-    summaryData,
-    itemComparison,
-    urgencyData,
-}: any) {
-    const COLORS = ['#10b981', '#f59e0b', '#3b82f6', '#ef4444'];
-
+export default function SuppliesReports({ statusDistribution, divisionStats, topUsers, monthlyTrend, summaryData, itemComparison }: any) {
     const iconMap: any = {
         approved: CheckCircle,
         pending: Clock,
@@ -136,7 +125,7 @@ export default function SuppliesReports({
                                                         <p className="text-sm text-gray-500">{item.requested} diminta</p>
                                                     </div>
                                                 </div>
-                                                <Badge className="bg-green-100 text-green-800">{item.approvalRate} %</Badge>
+                                                <Badge className="bg-green-100 text-green-800">Dikasi {item.approvalRate} %</Badge>
                                             </div>
                                         ))}
                                     </div>

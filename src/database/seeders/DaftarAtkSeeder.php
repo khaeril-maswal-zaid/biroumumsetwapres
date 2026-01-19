@@ -250,16 +250,6 @@ class DaftarAtkSeeder extends Seeder
             ['kode_atk' => 'BB_284', 'name' => 'Penghapus Faber Castell 20-L', 'category' => 'Batu Baterai', 'satuan' => 'Buah'],
         ];
 
-        $datax = [
-            ['kode_atk' => 'AT_051', 'name' => 'Bollpoint Bolliner Pilot', 'category' => 'Alat Tulis', 'satuan' => 'Buah'],
-            ['kode_atk' => 'AT_052', 'name' => 'Bollpoint Boxy Uniball', 'category' => 'Alat Tulis', 'satuan' => 'Lusin'],
-            ['kode_atk' => 'AT_053', 'name' => 'Bollpoint Hi-Tech Point V.5', 'category' => 'Alat Tulis', 'satuan' => 'Buah'],
-            ['kode_atk' => 'AT_054', 'name' => 'Bollpoint Uniball Signo', 'category' => 'Alat Tulis', 'satuan' => 'Buah'],
-            ['kode_atk' => 'AT_055', 'name' => 'Pensil Staedtler 2B', 'category' => 'Alat Tulis', 'satuan' => 'Buah'],
-            ['kode_atk' => 'AT_056', 'name' => 'Spidol Gold/Silver besar', 'category' => 'Alat Tulis', 'satuan' => 'Buah'],
-            ['kode_atk' => 'AT_057', 'name' => 'Spidol Permanent Art Line 107R (Merah)', 'category' => 'Alat Tulis', 'satuan' => 'Buah'],
-        ];
-
         foreach ($data as $key => $value) {
             DaftarAtk::create([
                 'kode_unit' => '02',

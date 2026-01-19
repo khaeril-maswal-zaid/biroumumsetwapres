@@ -17,15 +17,19 @@ import {
     Car,
     CheckCircle,
     Clock,
+    Cookie,
     ImageIcon,
     MapPin,
     MessageSquare,
+    Monitor,
     Package,
     Presentation,
     Search,
     User,
+    Utensils,
     Video,
     Wrench,
+    XCircle,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -114,6 +118,29 @@ export default function RequestHistory({ requestHistory }: any) {
             year: 'numeric',
         }).format(date);
     };
+
+    const kebutuhanDanDukungan = [
+        {
+            label: 'Snack/ Makanan Ringan',
+            icon: Cookie,
+            isCheck: selectedRequest?.is_makanan_ringan,
+        },
+        {
+            label: 'Makan Siang',
+            icon: Utensils,
+            isCheck: selectedRequest?.is_makanan_berat,
+        },
+        {
+            label: 'Rapat Hybrid',
+            icon: Video,
+            isCheck: selectedRequest?.is_hybrid,
+        },
+        {
+            label: 'Dukungan IT',
+            icon: Monitor,
+            isCheck: selectedRequest?.is_ti_support,
+        },
+    ];
 
     return (
         <>
@@ -271,6 +298,11 @@ export default function RequestHistory({ requestHistory }: any) {
                                                         <p className="text-xs text-gray-600">Kapasitas {selectedRequest.ruangans.kapasitas} Orang</p>
                                                     </div>
                                                 </div>
+
+                                                <div>
+                                                    <p className="mb-2 font-medium text-gray-900">Keperluan/ Kegiatan</p>
+                                                    <p className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">{selectedRequest.deskripsi}</p>
+                                                </div>
                                             </>
                                         )}
 
@@ -283,27 +315,11 @@ export default function RequestHistory({ requestHistory }: any) {
                                                         <p className="text-sm text-gray-600">{selectedRequest.info}</p>
                                                     </div>
                                                 </div>
-
-                                                {/* <div className="flex items-center gap-3">
-                                                    <AlertCircle className="h-5 w-5 text-orange-600" />
-                                                    <div>
-                                                        <p className="font-medium text-gray-900">Tingkat Urgensi</p>
-                                                        {getUrgencyBadge(selectedRequest.subtitle)}
-                                                    </div>
-                                                </div> */}
                                             </>
                                         )}
 
                                         {selectedRequest.id === 'supplies' && (
                                             <>
-                                                {/* <div className="flex items-center gap-3">
-                                                    <AlertCircle className="h-5 w-5 text-purple-600" />
-                                                    <div>
-                                                        <p className="font-medium text-gray-900">Tingkat Urgensi</p>
-                                                        {getUrgencyBadge(selectedRequest.subtitle)}
-                                                    </div>
-                                                </div> */}
-
                                                 <div className="flex items-center gap-3">
                                                     <Package className="h-5 w-5 text-green-600" />
                                                     <div>
@@ -326,72 +342,51 @@ export default function RequestHistory({ requestHistory }: any) {
                                                     </div>
                                                 </div>
 
-                                                <div>
-                                                    <p className="mb-2 font-medium text-gray-900">
-                                                        {selectedRequest && selectedRequest.id === 'booking' && 'Keperluan/ Kegiatan'}
-                                                        {selectedRequest && selectedRequest.id === 'supplies' && 'Keterangan'}
-                                                        {selectedRequest && selectedRequest.id === 'damage' && 'Keterangan'}
-                                                    </p>
-                                                    <p className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">{selectedRequest.deskripsi}</p>
-                                                </div>
+                                                {kebutuhanDanDukungan.map((need: any, index: any) => {
+                                                    const Icon = need.icon;
 
-                                                {selectedRequest?.is_hybrid == '1' && (
-                                                    <div className="flex w-full items-center gap-4 rounded-xl bg-linear-to-r from-violet-50 to-purple-50 px-4 py-2.5 text-left transition-all duration-200">
-                                                        {/* Custom Checkbox */}
-                                                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-violet-600 bg-violet-600 transition-all duration-200">
-                                                            <svg
-                                                                className="h-4 w-4 text-white"
-                                                                fill="none"
-                                                                viewBox="0 0 24 24"
-                                                                stroke="currentColor"
-                                                                strokeWidth={3}
-                                                            >
-                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                                            </svg>
-                                                        </div>
+                                                    return (
+                                                        <div
+                                                            className="flex w-full items-center gap-4 rounded-xl bg-linear-to-r from-violet-50 to-purple-50 px-4 py-2.5 text-left transition-all duration-200"
+                                                            key={index}
+                                                        >
+                                                            {/* Custom Checkbox */}
+                                                            {need.isCheck == 1 ? (
+                                                                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-violet-600 bg-violet-600 transition-all duration-200">
+                                                                    <svg
+                                                                        className="h-4 w-4 text-white"
+                                                                        fill="none"
+                                                                        viewBox="0 0 24 24"
+                                                                        stroke="currentColor"
+                                                                        strokeWidth={3}
+                                                                    >
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                                    </svg>
+                                                                </div>
+                                                            ) : (
+                                                                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white transition-all duration-200">
+                                                                    <XCircle className="h-6 w-6 text-red-500" />
+                                                                </div>
+                                                            )}
 
-                                                        {/* Icon & Label */}
-                                                        <div className="flex flex-1 items-center gap-3">
-                                                            <div className="rounded-lg bg-violet-100 p-2.5 transition-colors duration-200">
-                                                                <Video className="h-5 w-5 text-violet-600 transition-colors duration-200" />
-                                                            </div>
-                                                            <div>
-                                                                <p className="text-sm font-semibold text-violet-900 transition-colors duration-200">
-                                                                    Rapat Hybrid
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )}
-
-                                                {selectedRequest?.is_ti_support == '1' && (
-                                                    <div className="flex w-full items-center gap-4 rounded-xl bg-linear-to-r from-teal-50 to-purple-50 px-4 py-2.5 text-left transition-all duration-200">
-                                                        {/* Custom Checkbox */}
-                                                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-teal-600 bg-teal-600 transition-all duration-200">
-                                                            <svg
-                                                                className="h-4 w-4 text-white"
-                                                                fill="none"
-                                                                viewBox="0 0 24 24"
-                                                                stroke="currentColor"
-                                                                strokeWidth={3}
-                                                            >
-                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                                            </svg>
-                                                        </div>
-
-                                                        {/* Icon & Label */}
-                                                        <div className="flex flex-1 items-center gap-3">
-                                                            <div className="rounded-lg bg-teal-100 p-2.5 transition-colors duration-200">
-                                                                <Video className="h-5 w-5 text-teal-600 transition-colors duration-200" />
-                                                            </div>
-                                                            <div>
-                                                                <p className="text-sm font-semibold text-teal-900 transition-colors duration-200">
-                                                                    Dukungan TI
-                                                                </p>
+                                                            {/* Icon & Label */}
+                                                            <div className="flex flex-1 items-center gap-3">
+                                                                <div className="rounded-lg bg-violet-100 p-2.5 transition-colors duration-200">
+                                                                    <Icon
+                                                                        className={`h-5 w-5 ${need.isCheck == 1 ? `text-violet-900` : `text-gray-500`} transition-colors duration-200`}
+                                                                    />
+                                                                </div>
+                                                                <div>
+                                                                    <p
+                                                                        className={`text-sm font-semibold ${need.isCheck == 1 ? `text-violet-900` : `text-gray-500`} transition-colors duration-200`}
+                                                                    >
+                                                                        {need.label}
+                                                                    </p>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                )}
+                                                    );
+                                                })}
                                             </>
                                         )}
 
@@ -478,7 +473,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                                 ) : (
                                                                     <>
                                                                         <AlertTriangle className="h-3 w-3 text-red-600" />
-                                                                        <span className="text-xs text-red-600">Tidak disetujui</span>
+                                                                        <span className="text-xs text-red-600">Tidak disetujui/ Belum terpenuhi</span>
                                                                     </>
                                                                 )}
                                                             </div>
@@ -536,6 +531,13 @@ export default function RequestHistory({ requestHistory }: any) {
                                                 text: 'text-blue-800',
                                             },
                                             cancelled: {
+                                                border: 'border-red-200',
+                                                bg: 'bg-red-50',
+                                                icon: 'text-red-600',
+                                                title: 'text-red-900',
+                                                text: 'text-red-800',
+                                            },
+                                            rejected: {
                                                 border: 'border-red-200',
                                                 bg: 'bg-red-50',
                                                 icon: 'text-red-600',

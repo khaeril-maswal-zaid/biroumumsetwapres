@@ -19,12 +19,15 @@ return new class extends Migration
             $table->time('jam_mulai');
             $table->time('jam_selesai');
             $table->foreignId('daftar_ruangan_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('jumlah_peserta', 255); //from pengadu
             $table->string('deskripsi', 255); //from pengadu
             $table->enum('jenis_rapat', ['internal', 'external']);
             $table->string('no_hp', 25);
-            $table->enum('status', ['pending', 'approved', 'rejected']);
+            $table->enum('status', ['booked', 'rejected']);
             $table->string('kode_booking', 255)->unique();
             $table->string('keterangan', 255)->default(''); //from admin
+            $table->boolean('is_makanan_berat')->default(false);
+            $table->boolean('is_makanan_ringan')->default(false);
             $table->boolean('is_hybrid')->default(false);
             $table->boolean('is_ti_support')->default(false);
             $table->boolean('is_read')->default(false);

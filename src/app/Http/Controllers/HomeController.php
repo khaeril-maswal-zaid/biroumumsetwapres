@@ -45,6 +45,8 @@ class HomeController extends Controller
                 'no_hp'             => $r->no_hp,
                 'deskripsi'         => $r->deskripsi,
                 'jenis_rapat'       => $r->jenis_rapat,
+                'is_makanan_berat'  => $r->is_makanan_berat,
+                'is_makanan_ringan'  => $r->is_makanan_ringan,
                 'is_ti_support'     => $r->is_ti_support,
                 'is_hybrid'         => $r->is_hybrid,
                 'picture'           => null,
@@ -79,6 +81,8 @@ class HomeController extends Controller
                 'keterangan'         => $k->keterangan,
                 'time'               => null,
                 'kategori'           => $k->kategori,
+                'is_makanan_berat'     => null,
+                'is_makanan_ringan'     => null,
                 'is_ti_support'     => null,
                 'is_hybrid'         => null,
                 'jenis_rapat'         => null,
@@ -110,6 +114,8 @@ class HomeController extends Controller
                 'keterangan'         => $a->keterangan,
                 'time'               => null,
                 'kategori'           => null,
+                'is_makanan_ringan'     => null,
+                'is_ti_support'     => null,
                 'is_ti_support'     => null,
                 'is_hybrid'         => null,
                 'jenis_rapat'         => null,
@@ -139,7 +145,7 @@ class HomeController extends Controller
 
         $dashboardStats = [
             'roomBookings' => [
-                'title' => 'Booking Ruangan',
+                'title' => 'Pemesanan Ruangan',
                 'icon' => 'room',
                 'total' => PemesananRuangRapat::count(),
                 'pending' => PemesananRuangRapat::where('status', 'pending')->count(),

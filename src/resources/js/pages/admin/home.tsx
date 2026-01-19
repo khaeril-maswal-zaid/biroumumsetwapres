@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Home',
         href: '/dashboard',
     },
 ];
@@ -48,7 +48,7 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard" />
+            <Head title="Home" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4 xl:gap-6">
@@ -63,10 +63,6 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
                                     {item.total} <span className="text-sm">Total {item.title.split(' ')[0]}</span>
                                 </div>
                                 <p className="text-xs text-muted-foreground">{item.pending} menunggu persetujuan</p>
-                                {/* <div className="flex items-center pt-1">
-                                    <TrendingUp className="mr-1 h-3 w-3 text-green-500" />
-                                    <span className="text-xs text-green-600">{item.todayBookings} hari ini</span>
-                                </div> */}
                             </CardContent>
                         </Card>
                     ))}
@@ -81,10 +77,6 @@ export default function AdminDashboard({ dashboardStats, recentActivities, upcom
                                 123 <span className="text-sm">Total Permintaan</span>
                             </div>
                             <p className="text-xs text-muted-foreground">123 menunggu persetujuan</p>
-                            {/* <div className="flex items-center pt-1">
-                                <Car className="mr-1 h-3 w-3 text-green-500" />
-                                <span className="text-xs text-green-600">123 perjalanan aktif</span>
-                            </div> */}
                         </CardContent>
                     </Card>
                 </div>

@@ -10,6 +10,7 @@ use App\Http\Controllers\PemesananRuangRapatController;
 use App\Http\Controllers\PermintaanAtkController;
 use App\Http\Controllers\PermintaanKendaraanController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\StockOpnameController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -117,7 +118,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::delete('/dashboard/kerusakan-gedung/delete/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'destroy'])
         ->name('kerusakangedung.destroy')
-        ->middleware('permission:change_damage_status');
+        ->middleware('permission:delete_all_requests');
 
 
 
@@ -181,6 +182,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/dashboard/daftar-atk/destroy/{daftarAtk}', [DaftarAtkController::class, 'destroy'])
         ->name('daftaratk.destroy')
         ->middleware('permission:delete_atk');
+
+
+
+    Route::get('/dashboard/stock-opname-atk', [StockOpnameController::class, 'index'])
+        ->name('stockopname.index')
+        ->middleware('permission:create_atk');
+
+    Route::post('/dashboard/stock-opname-atk/store', [StockOpnameController::class, 'store'])
+        ->name('stockopname.store')
+        ->middleware('permission:create_atk');
+
+    Route::get('/dashboard/stock-opname-atk/buku-persediaan', [StockOpnameController::class, 'bukuPersediaan'])
+        ->name('stockopname.buku_persediaan')
+        ->middleware('permission:create_atk');
+
+    Route::get('/dashboard/stock-opname-atk/buku-persediaan/{id}', [StockOpnameController::class, 'bukuPersediaan'])
+        ->name('stockopname.detailpemakaian')
+        ->middleware('permission:create_atk');
+
+    Route::get('/dashboard/stock-opname-atk/detail-pemakaian', [StockOpnameController::class, 'detailPemakaian'])
+        ->name('stockopname.detail_pemakaian')
+        ->middleware('permission:create_atk');
 
 
 

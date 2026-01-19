@@ -8,21 +8,31 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { type SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
-import { Building2, Calendar, CheckCircle2, Monitor, Users, Video } from 'lucide-react';
+import { Building2, Calendar, CheckCircle2, Cookie, Monitor, Users, Utensils, Video } from 'lucide-react';
 import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
 
 const schema = z.object({
-    room_code: z.string().min(1, 'Ruangan wajib dipilih'),
-    room_name: z.string().min(1, 'Nama ruangan wajib diisi'),
-    date: z.string().min(1, 'Tanggal wajib diisi'),
-    startTime: z.string().min(1, 'Jam mulai wajib diisi'),
-    endTime: z.string().min(1, 'Jam selesai wajib diisi'),
-    purpose: z.string().min(1, 'Kegiatan wajib diisi'),
-    contact: z.string().min(1, 'Kontak wajib diisi'),
+    room_code: z.string().min(1, 'Silakan pilih ruangan yang akan digunakan'),
+    room_name: z.string().min(1, 'Nama ruangan tidak boleh kosong'),
+    date: z.string().min(1, 'Tanggal rapat wajib ditentukan'),
+    startTime: z.string().min(1, 'Jam mulai rapat wajib diisi'),
+    endTime: z.string().min(1, 'Jam selesai rapat wajib diisi'),
+
+    jumlahPeserta: z.string().min(1, 'Jumlah peserta wajib diisi'),
+    purpose: z.string().min(1, 'Mohon jelaskan tujuan atau agenda rapat'),
+    contact: z
+        .string({
+            required_error: 'Nomor HP wajib diisi',
+            invalid_type_error: 'Nomor HP harus berupa teks',
+        })
+        .min(10, 'Nomor HP minimal 10 digit')
+        .regex(/^08\d{8,12}$/, 'Nomor HP harus diawali 08 dan berisi 10–14 digit'),
 
     jenisRapat: z.string().nullable(),
+    makanSiang: z.boolean(),
+    makanRingan: z.boolean(),
     needItSupport: z.boolean(),
     isHybrid: z.boolean(),
 });
@@ -42,17 +52,19 @@ export function FormBooking() {
 
     // Read values from RHF (single source of truth)
     const formData = watch();
+    const makanRingan = watch('makanRingan') ?? false;
+    const makanSiang = watch('makanSiang') ?? false;
     const isHybrid = watch('isHybrid') ?? false;
     const needItSupport = watch('needItSupport') ?? false;
     const jenisRapat = (watch('jenisRapat') as JenisRapat) ?? 'internal';
 
     // Register fields only — DO NOT overwrite values coming from parent
     useEffect(() => {
-        register('needItSupport');
-        register('isHybrid');
-        register('jenisRapat');
+        // register('needItSupport');
+        // register('isHybrid');
+        // register('jenisRapat');
         register('room_code');
-        register('room_name');
+        // register('room_name');
     }, [register]);
 
     const today = new Date().toISOString().split('T')[0];
@@ -61,22 +73,39 @@ export function FormBooking() {
         {
             value: 'internal',
             label: 'Rapat Internal',
-            description: 'Rapat dengan peserta dari internal Setwapres',
             icon: Building2,
-            color: 'bg-sky-50 border-sky-200 hover:border-sky-400',
-            activeColor: 'bg-sky-100 border-sky-500 ring-2 ring-sky-200',
-            iconColor: 'text-sky-600',
-            badgeColor: 'bg-sky-100 text-sky-700',
         },
         {
             value: 'external',
             label: 'Rapat External',
-            description: 'Rapat dengan peserta dari luar Setwapres',
             icon: Users,
-            color: 'bg-amber-50 border-amber-200 hover:border-amber-400',
-            activeColor: 'bg-amber-100 border-amber-500 ring-2 ring-amber-200',
-            iconColor: 'text-amber-600',
-            badgeColor: 'bg-amber-100 text-amber-700',
+        },
+    ];
+
+    const kebutuhanDanDukungan = [
+        {
+            label: 'Membutuhkan Snack',
+            icon: Cookie,
+            value: makanRingan,
+            valueString: 'makanRingan',
+        },
+        {
+            label: 'Membutuhkan Makan Siang',
+            icon: Utensils,
+            value: makanSiang,
+            valueString: 'makanSiang',
+        },
+        {
+            label: 'Rapat Hybrid',
+            icon: Video,
+            value: isHybrid,
+            valueString: 'isHybrid',
+        },
+        {
+            label: 'Dukungan IT',
+            icon: Monitor,
+            value: needItSupport,
+            valueString: 'needItSupport',
         },
     ];
 
@@ -170,145 +199,122 @@ export function FormBooking() {
             <div className="space-y-4">
                 <h3 className="text-md border-b pb-2 font-medium text-gray-900">Informasi Tambahan</h3>
 
-                <div className="space-y-3">
-                    <Label>
-                        Jenis Rapat <span className="text-red-500">*</span>
-                    </Label>
-                    <div className="mt-1 grid grid-cols-1 gap-3">
-                        {jenisRapatOptions.map((option) => {
-                            const Icon = option.icon;
-                            const isSelected = jenisRapat === option.value;
-                            return (
-                                <button
-                                    key={option.value}
-                                    type="button"
-                                    onClick={() => {
-                                        // set directly into RHF (no local state)
-                                        setValue('jenisRapat', option.value);
-                                    }}
-                                    className={cn(
-                                        'relative rounded-xl border-2 p-3 text-left transition-all duration-200',
-                                        isSelected ? option.activeColor : option.color,
-                                    )}
-                                >
-                                    {isSelected && (
-                                        <div className="absolute top-2 right-2">
-                                            <CheckCircle2 className="h-5 w-5 text-teal-600" />
+                <>
+                    <div className="space-y-3">
+                        <Label>
+                            Jenis Rapat <span className="text-red-500">*</span>
+                        </Label>
+                        <div className="mt-1 grid grid-cols-2 gap-2">
+                            {jenisRapatOptions.map((option) => {
+                                const Icon = option.icon;
+                                const isSelected = jenisRapat === option.value;
+                                return (
+                                    <button
+                                        key={option.value}
+                                        type="button"
+                                        onClick={() => {
+                                            setValue('jenisRapat', option.value);
+                                        }}
+                                        className={cn(
+                                            'relative rounded-xl border-2 p-2.5 text-left transition-all duration-200',
+                                            isSelected
+                                                ? 'border-sky-200 border-sky-500 bg-sky-50 bg-sky-100 ring-2 ring-sky-200 hover:border-sky-400'
+                                                : '',
+                                        )}
+                                    >
+                                        {isSelected && (
+                                            <div className="absolute top-2 right-2">
+                                                <CheckCircle2 className="h-5 w-5 text-sky-600" />
+                                            </div>
+                                        )}
+                                        <div className="flex items-start gap-2">
+                                            <div className={cn('rounded-lg p-1', isSelected ? 'bg-white' : 'bg-white/80')}>
+                                                <Icon className="h-4 w-4 text-sky-600" />
+                                            </div>
+
+                                            <p className="pt-0.5 text-sm font-semibold text-gray-900">{option.label}</p>
                                         </div>
-                                    )}
-                                    <div className="flex items-start gap-3">
-                                        <div className={cn('rounded-lg p-2', isSelected ? 'bg-white' : 'bg-white/80')}>
-                                            <Icon className={cn('h-5 w-5', option.iconColor)} />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-semibold text-gray-900">{option.label}</p>
-                                            <p className="mt-0.5 text-xs text-gray-500">{option.description}</p>
-                                        </div>
-                                    </div>
-                                </button>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                <div>
-                    <Label htmlFor="purpose">
-                        Kegiatan <span className="text-red-500">*</span>
-                    </Label>
-                    <Textarea className="mt-1" id="purpose" {...register('purpose')} />
-                    {errors.purpose && <p className="mt-1 text-sm text-red-500">{errors.purpose.message}</p>}
-                </div>
-
-                <div>
-                    <Label htmlFor="contact">
-                        No Hp <span className="text-red-500">*</span>
-                    </Label>
-                    <Input className="mt-1" id="contact" {...register('contact')} />
-                    {errors.contact && <p className="mt-1 text-sm text-red-500">{errors.contact.message}</p>}
-                </div>
-
-                {/* Rapat Hybrid (fully RHF-controlled) */}
-                <button
-                    type="button"
-                    onClick={() => setValue('isHybrid', !isHybrid)}
-                    className={cn(
-                        'flex w-full items-center gap-4 rounded-xl border-2 px-4 py-2.5 text-left transition-all duration-200',
-                        isHybrid
-                            ? 'border-violet-400 bg-linear-to-r from-violet-50 to-purple-50 ring-2 ring-violet-200'
-                            : 'border-gray-200 bg-white hover:border-violet-300 hover:bg-violet-50/50',
-                    )}
-                >
-                    <div
-                        className={cn(
-                            'flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200',
-                            isHybrid ? 'border-violet-600 bg-violet-600' : 'border-gray-300 bg-white',
-                        )}
-                    >
-                        {isHybrid && (
-                            <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                            </svg>
-                        )}
-                    </div>
-
-                    <div className="flex flex-1 items-center gap-3">
-                        <div className={cn('rounded-lg p-2.5 transition-colors duration-200', isHybrid ? 'bg-violet-100' : 'bg-gray-100')}>
-                            <Video className={cn('h-5 w-5 transition-colors duration-200', isHybrid ? 'text-violet-600' : 'text-gray-400')} />
-                        </div>
-                        <div>
-                            <p className={cn('text-sm font-semibold transition-colors duration-200', isHybrid ? 'text-violet-900' : 'text-gray-700')}>
-                                Rapat Hybrid
-                            </p>
-                            <p className="mt-0.5 text-xs text-gray-500">Peserta dapat bergabung secara online</p>
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
-                    {isHybrid && <span className="rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700">Aktif</span>}
-                </button>
-
-                {/* Dukungan TI (fully RHF-controlled) */}
-                <button
-                    type="button"
-                    onClick={() => setValue('needItSupport', !needItSupport)}
-                    className={cn(
-                        'flex w-full items-center gap-4 rounded-xl border-2 px-4 py-2.5 text-left transition-all duration-200',
-                        needItSupport
-                            ? 'border-teal-400 bg-linear-to-r from-teal-50 to-purple-50 ring-2 ring-teal-200'
-                            : 'border-gray-200 bg-white hover:border-teal-300 hover:bg-teal-50/50',
-                    )}
-                >
-                    <div
-                        className={cn(
-                            'flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200',
-                            needItSupport ? 'border-teal-600 bg-teal-600' : 'border-gray-300 bg-white',
-                        )}
-                    >
-                        {needItSupport && (
-                            <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                            </svg>
-                        )}
+                    <div>
+                        <Label htmlFor="jumlahPeserta">
+                            Jumlah Peserta <span className="text-red-500">*</span>
+                        </Label>
+                        <Input className="mt-1" id="jumlahPeserta" {...register('jumlahPeserta')} />
+                        {errors.jumlahPeserta && <p className="mt-1 text-sm text-red-500">{errors.jumlahPeserta.message}</p>}
                     </div>
 
-                    <div className="flex flex-1 items-center gap-3">
-                        <div className={cn('rounded-lg p-2.5 transition-colors duration-200', needItSupport ? 'bg-teal-100' : 'bg-gray-100')}>
-                            <Monitor className={cn('h-5 w-5 transition-colors duration-200', needItSupport ? 'text-teal-600' : 'text-gray-400')} />
-                        </div>
-                        <div>
-                            <p
+                    <div>
+                        <Label htmlFor="purpose">
+                            Kegiatan <span className="text-red-500">*</span>
+                        </Label>
+                        <Textarea className="mt-1" id="purpose" {...register('purpose')} />
+                        {errors.purpose && <p className="mt-1 text-sm text-red-500">{errors.purpose.message}</p>}
+                    </div>
+
+                    <div>
+                        <Label htmlFor="contact">
+                            No Hp <span className="text-red-500">*</span>
+                        </Label>
+                        <Input className="mt-1" id="contact" {...register('contact')} />
+                        {errors.contact && <p className="mt-1 text-sm text-red-500">{errors.contact.message}</p>}
+                    </div>
+                </>
+
+                {kebutuhanDanDukungan.map((need: any, index: any) => {
+                    const Icon = need.icon;
+
+                    return (
+                        <button
+                            type="button"
+                            key={index}
+                            onClick={() => setValue(need.valueString, !need.value)}
+                            className={cn(
+                                'mb-2 flex w-full items-center gap-4 rounded-xl border-2 px-4 py-1.5 text-left transition-all duration-200',
+                                need.value
+                                    ? 'border-sky-400 bg-linear-to-r from-sky-50 to-purple-50 ring-2 ring-sky-200'
+                                    : 'border-gray-300 bg-gray-50 hover:border-sky-300 hover:bg-sky-50/50',
+                            )}
+                        >
+                            <div
                                 className={cn(
-                                    'text-sm font-semibold transition-colors duration-200',
-                                    needItSupport ? 'text-teal-900' : 'text-gray-700',
+                                    'flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200',
+                                    need.value ? 'border-sky-600 bg-sky-600' : 'border-gray-300 bg-white',
                                 )}
                             >
-                                Dukungan TI
-                            </p>
-                            <p className="mt-0.5 text-xs text-gray-500">Tim IT menyiapkan sesi sebelum rapat dimulai.</p>
-                        </div>
-                    </div>
+                                {need.value && (
+                                    <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                )}
+                            </div>
 
-                    {needItSupport && <span className="rounded-full bg-teal-100 px-2.5 py-1 text-xs font-semibold text-teal-700">Aktif</span>}
-                </button>
+                            <div className="flex flex-1 items-center gap-3">
+                                <div className={cn('rounded-lg p-2.5 transition-colors duration-200', need.value ? 'bg-sky-100' : 'bg-gray-100')}>
+                                    <Icon className={cn('h-5 w-5 transition-colors duration-200', need.value ? 'text-sky-600' : 'text-gray-400')} />
+                                </div>
+                                <div>
+                                    <p
+                                        className={cn(
+                                            'text-sm font-semibold transition-colors duration-200',
+                                            need.value ? 'text-sky-900' : 'text-gray-700',
+                                        )}
+                                    >
+                                        {need.label}
+                                    </p>
+
+                                    {/* <p className="mt-0.5 text-xs text-gray-500">{need.description}</p> */}
+                                </div>
+                            </div>
+
+                            {need.value && <span className="rounded-full bg-sky-100 px-2.5 py-1 text-xs font-semibold text-sky-700">Aktif</span>}
+                        </button>
+                    );
+                })}
             </div>
         </>
     );

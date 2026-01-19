@@ -51,7 +51,7 @@ export default function ButtonAtk() {
 
     return (
         <>
-            <Button onClick={handleAdd} className="flex items-center gap-2">
+            <Button onClick={handleAdd} className="flex items-center gap-2 bg-white text-indigo-600 shadow-lg hover:bg-indigo-50">
                 <Plus className="h-4 w-4" />
                 Tambah ATK
             </Button>
@@ -65,17 +65,17 @@ export default function ButtonAtk() {
                     </DialogHeader>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
+                        {/* <div>
                             <Label htmlFor="name">Kode ATK</Label>
                             <Input
                                 className="mt-1"
                                 id="kode_atk"
-                                value={formData.kode_atk}
+                                value='1234567'
                                 onChange={(e) => setFormData({ ...formData, kode_atk: e.target.value })}
                                 required
                                 autoFocus
                             />
-                        </div>
+                        </div> */}
 
                         <div>
                             <Label htmlFor="name">Nama ATK</Label>

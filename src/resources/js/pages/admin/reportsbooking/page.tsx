@@ -16,7 +16,7 @@ import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, Res
 
 const iconMap: any = {
     totalBookings: Calendar,
-    approved: User,
+    booked: User,
     rejected: Clock,
     pending: MapPin,
 };
@@ -72,8 +72,6 @@ export default function BookingReports({
         const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
         return months[tanggal_penggunaan.getMonth()];
     };
-
-    console.log(roomSchedules);
 
     // Fungsi untuk mendapatkan jadwal berdasarkan tanggal
     const getSchedulesByDate = (tanggal_penggunaan: any) => {
@@ -152,7 +150,7 @@ export default function BookingReports({
                     {/* Summary Tab */}
                     <TabsContent value="summary" className="space-y-6">
                         {/* Summary Cards */}
-                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                             {Object.entries(summaryData).map(([key, item]: any) => {
                                 const Icon = iconMap[key] || Calendar;
 
@@ -164,11 +162,6 @@ export default function BookingReports({
                                         </CardHeader>
                                         <CardContent>
                                             <div className="text-4xl font-bold">{item.value}</div>
-                                            {/* <div className="flex items-center text-xs text-muted-foreground">
-                                                <TrendIcon className={`mr-1 h-3 w-3 ${trendColor}`} />
-                                                {trendPrefix}
-                                                {Math.abs(item.change)} dari bulan lalu
-                                            </div> */}
                                         </CardContent>
                                     </Card>
                                 );
@@ -277,12 +270,21 @@ export default function BookingReports({
                                                 />
                                                 <Area
                                                     type="monotone"
-                                                    dataKey="approved"
+                                                    dataKey="booked"
                                                     stackId="2"
                                                     stroke="#10b981"
                                                     fill="#10b981"
                                                     fillOpacity={0.6}
-                                                    name="Disetujui"
+                                                    name="Telah dipesan"
+                                                />
+                                                <Area
+                                                    type="monotone"
+                                                    dataKey="rejected"
+                                                    stackId="2"
+                                                    stroke="#ef4444"
+                                                    fill="#ef4444"
+                                                    fillOpacity={0.6}
+                                                    name="Ditolak"
                                                 />
                                             </AreaChart>
                                         </ResponsiveContainer>
@@ -304,16 +306,13 @@ export default function BookingReports({
                                 <div className="space-y-6">
                                     {penggunaanRuangan.map((room: any) => (
                                         <div key={room.room} className="space-y-2">
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <h4 className="font-medium">{room.room}</h4>
-                                                    <p className="text-sm text-gray-500">
-                                                        {room.bookings} pemesanan • {formatHours(room.hours)} • Kapasitas {room.capacity} orang
-                                                    </p>
-                                                </div>
-                                                <Badge className="bg-green-100 text-green-800">{room.percent} % Penggunaan</Badge>
+                                            <div className="flex items-center gap-3">
+                                                <h4 className="font-medium whitespace-nowrap">{room.room}</h4>
+                                                {' | '}
+                                                <p className="truncate text-sm text-gray-500">
+                                                    {room.bookings} pemesanan • {formatHours(room.hours)} • Kapasitas {room.capacity} orang
+                                                </p>
                                             </div>
-                                            <Progress value={room.percent} className="h-2" />
                                         </div>
                                     ))}
                                 </div>
@@ -327,7 +326,7 @@ export default function BookingReports({
                         <Card>
                             <CardHeader>
                                 <CardTitle>Pemantauan Jadwal Pemesanan Mingguan</CardTitle>
-                                <CardDescription>Jadwal pemesanan ruangan yang telah disetujui untuk minggu ini</CardDescription>
+                                <CardDescription>Jadwal pemesanan ruangan untuk minggu ini</CardDescription>
                             </CardHeader>
 
                             <CardContent>
@@ -490,6 +489,8 @@ export default function BookingReports({
                                         const isCurrentMonth = day.getMonth() === currentDate.getMonth();
                                         const isToday = day.toDateString() === new Date().toDateString();
                                         const daySchedules = getSchedulesByDate(day);
+
+                                        console.log(daySchedules);
 
                                         return (
                                             <Card

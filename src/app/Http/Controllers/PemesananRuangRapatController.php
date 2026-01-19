@@ -40,7 +40,6 @@ class PemesananRuangRapatController extends Controller
      */
     public function store(StorePemesananRuangRapatRequest $request)
     {
-
         // Ambil ruangan dari DB
         $room = DaftarRuangan::where('kode_ruangan', $request['room_code'])->first();
 
@@ -56,8 +55,8 @@ class PemesananRuangRapatController extends Controller
                 $q->whereBetween('jam_mulai', [$request['startTime'], $request['endTime']])
                     ->orWhereBetween('jam_selesai', [$request['startTime'], $request['endTime']])
                     ->orWhere(function ($q2) use ($request) {
-                        $q2->where('jam_mulai', '<=', $request['startTime'])
-                            ->where('jam_selesai', '>=', $request['endTime']);
+                        $q2->where('jam_mulai', '<', $request['startTime'])
+                            ->where('jam_selesai', '>', $request['endTime']);
                     });
             })
             ->exists();
@@ -73,11 +72,14 @@ class PemesananRuangRapatController extends Controller
             'jam_mulai' => $request->startTime,
             'jam_selesai' => $request->endTime,
             'daftar_ruangan_id' => $room->id,
+            'jumlah_peserta' => $request->jumlahPeserta,
             'deskripsi' => $request->purpose,
             'jenis_rapat' => $request->jenisRapat,
             'no_hp' => $request->contact,
             'kode_booking' => 'RRT-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
-            'status' => 'pending',
+            'status' => 'booked',
+            'is_makanan_ringan' => $request->makanRingan,
+            'is_makanan_berat' => $request->makanSiang,
             'is_hybrid' => $request->isHybrid,
             'is_ti_support' => $request->needItSupport,
         ]);
@@ -177,7 +179,7 @@ class PemesananRuangRapatController extends Controller
     {
         $validated = $request->validate(
             [
-                'action'  => 'required|in:approved,rejected',
+                'action'  => 'required|in:booked,rejected',
                 'message' => 'required_if:action,rejected|nullable|string|max:255',
             ],
             [
@@ -205,11 +207,10 @@ class PemesananRuangRapatController extends Controller
         $endOfWeek = Carbon::now()->endOfWeek();     // Minggu 23:59:59
 
         $roomSchedules = $reportsData
-            ->where('status', 'confirmed')
+            ->where('status', 'booked')
             ->whereNotBetween('tanggal_penggunaan', [$startOfWeek, $endOfWeek])
             ->with(['pemesan.pegawai.biro', 'ruangans'])
             ->get();
-
 
 
         // Kirim ke Inertia
