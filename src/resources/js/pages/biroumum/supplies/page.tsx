@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 import type { SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
-import { AlertCircle, AlertCircleIcon, AlertOctagon, AlertTriangle, Check, CheckCircle2, ChevronsUpDown, Package, PenTool } from 'lucide-react';
+import { AlertCircleIcon, Check, CheckCircle2, ChevronsUpDown, Package, PenTool } from 'lucide-react';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker?url';
 
@@ -36,12 +36,11 @@ const FormSchema = z.object({
                 requested: z.coerce.number().min(1, 'Jumlah minimal 1'),
                 approved: z.coerce.number(),
                 satuan: z.string().min(1, 'Satuan wajib dipilih'),
+                is_custom: z.boolean(),
             }),
         )
         .min(1, 'Minimal satu barang harus dipilih'),
     justification: z.string().min(1, 'Keterangan tidak boleh kosong'),
-    // urgency: z.string().min(1, 'Pilih tingkat urgensi'),
-    // satuan_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
     contact: z.string().min(1, 'Narahubung wajib diisi'),
     // memo: z
     //     .any()
@@ -50,42 +49,6 @@ const FormSchema = z.object({
     //     .refine((file) => file === null || file instanceof File, 'File memo wajib diupload')
     //     .nullable(),
 });
-
-const urgencyOptions = [
-    {
-        value: 'normal' as const,
-        label: 'Normal',
-        description: 'Kebutuhan biasa',
-        detail: 'Dapat ditangani dalam 1-2 minggu',
-        icon: AlertCircle,
-        color: 'bg-green-50 border-green-200 text-green-800',
-        selectedColor: 'bg-green-100 border-green-400 shadow-green-100',
-        iconColor: 'text-green-600',
-        badgeColor: 'bg-green-500',
-    },
-    {
-        value: 'segera' as const,
-        label: 'Segera',
-        description: 'Kebutuhan cukup penting',
-        detail: 'Perlu ditangani dalam 3-5 hari',
-        icon: AlertTriangle,
-        color: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-        selectedColor: 'bg-yellow-100 border-yellow-400 shadow-yellow-100',
-        iconColor: 'text-yellow-600',
-        badgeColor: 'bg-yellow-500',
-    },
-    {
-        value: 'mendesak' as const,
-        label: 'Mendesak',
-        description: 'Prioritas sangat tinggi',
-        detail: 'Harus segera ditangani hari ini/ besok',
-        icon: AlertOctagon,
-        color: 'bg-red-50 border-red-200 text-red-800',
-        selectedColor: 'bg-red-100 border-red-400 shadow-red-100',
-        iconColor: 'text-red-600',
-        badgeColor: 'bg-red-500',
-    },
-];
 
 type FormData = z.infer<typeof FormSchema>;
 
@@ -106,7 +69,7 @@ export default function SuppliesRequest({ availableATK }: any) {
     } = useForm<FormData>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            items: [{ id: '', name: '', requested: 1, approved: 0, satuan: '' }],
+            items: [{ id: '', name: '', requested: 1, approved: 0, satuan: '', is_custom: false }],
             justification: '',
             // urgency: '',
             contact: '',
@@ -197,11 +160,13 @@ export default function SuppliesRequest({ availableATK }: any) {
         // }
 
         data.items.forEach((item, index) => {
+            const custom = Boolean(item.is_custom);
             formData.append(`items[${index}][id]`, item.id);
             formData.append(`items[${index}][name]`, item.name);
             formData.append(`items[${index}][requested]`, String(item.requested));
             formData.append(`items[${index}][approved]`, String(item.approved));
             formData.append(`items[${index}][satuan]`, item.satuan);
+            formData.append(`items[${index}][is_custom]`, String(custom));
         });
 
         router.post(route('permintaanatk.store'), formData, {
@@ -219,7 +184,7 @@ export default function SuppliesRequest({ availableATK }: any) {
         });
     };
 
-    const isLainLain = (id: string) => id?.startsWith('lain-lain-');
+    const isLainLain = (item?: any) => Boolean(item?.is_custom);
 
     return (
         <>
@@ -274,7 +239,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                     {fields.map((field, index) => {
                                         const sel = items[index];
                                         const opts = getAvailableOptions(index);
-                                        const isCustomItem = isLainLain(sel?.id);
+                                        const isCustomItem = isLainLain(sel);
 
                                         return (
                                             <div key={field.id} className="mt-2 space-y-2">
@@ -317,6 +282,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                                                         satuan: '',
                                                                                         requested: field.requested || 1,
                                                                                         approved: 0,
+                                                                                        is_custom: true,
                                                                                     });
                                                                                     setOpenComboboxes({ ...openComboboxes, [index]: false });
                                                                                 }}
@@ -362,6 +328,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                                                                 satuan: atk.satuan,
                                                                                                 requested: field.requested || 1,
                                                                                                 approved: 0,
+                                                                                                is_custom: false,
                                                                                             });
                                                                                             setOpenComboboxes({ ...openComboboxes, [index]: false });
                                                                                         }}
@@ -401,6 +368,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                         <input type="hidden" {...register(`items.${index}.id`)} />
                                                         <input type="hidden" {...register(`items.${index}.name`)} />
                                                         <input type="hidden" {...register(`items.${index}.satuan`)} />
+                                                        <input type="hidden" {...register(`items.${index}.is_custom` as const)} />
                                                     </div>
 
                                                     {/* Jumlah - only show if NOT "Lain-lain" */}
@@ -490,7 +458,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                         type="button"
                                         variant="outline"
                                         size="sm"
-                                        onClick={() => append({ id: '', name: '', requested: 0, approved: 0, satuan: '' })}
+                                        onClick={() => append({ id: '', name: '', requested: 0, approved: 0, satuan: '', is_custom: false })}
                                         disabled={fields.length >= availableATK.length + 1}
                                         className="mt-3"
                                     >
@@ -510,42 +478,6 @@ export default function SuppliesRequest({ availableATK }: any) {
                                         className={`mt-1 ${cn(errors.justification && 'border-red-500')}`}
                                     />
                                 </div>
-
-                                {/* Urgensi */}
-                                {/* <div>
-                                    <Label className="text-base font-medium">Tingkat Urgensi <span className="text-red-500">*</span></Label>
-                                    <div className="mt-3 space-y-3">
-                                        {urgencyOptions.map((opt) => {
-                                            const isSel = selectedUrgency === opt.value;
-                                            const Icon = opt.icon;
-                                            return (
-                                                <div
-                                                    key={opt.value}
-                                                    onClick={() => setValue('urgency', opt.value)}
-                                                    className={cn(
-                                                        'cursor-pointer rounded-lg border-2 p-3 transition-all',
-                                                        isSel ? opt.selectedColor : opt.color,
-                                                    )}
-                                                >
-                                                    <div className="flex items-center space-x-3">
-                                                        <div className={cn('rounded-full p-2', isSel ? 'bg-white/50' : 'bg-white/30')}>
-                                                            <Icon className={cn('h-5 w-5', opt.iconColor)} />
-                                                        </div>
-
-                                                        <div className="min-w-0 flex-1">
-                                                            <div className="flex items-center justify-between">
-                                                                <h3 className="text-sm font-semibold">{opt.label}</h3>
-                                                                {isSel && <div className={cn('h-3 w-3 rounded-full', opt.badgeColor)}></div>}
-                                                            </div>
-                                                            <p className="mb-1 text-xs opacity-80">{opt.description}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                        {errors.urgency && <p className="text-sm text-red-600">{errors.urgency.message}</p>}
-                                    </div>
-                                </div> */}
 
                                 {/* <div>
                                     <Label htmlFor="memo">Upload Memo (PDF) * <span className="text-red-500">*</span></Label>

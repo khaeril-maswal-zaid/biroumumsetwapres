@@ -25,7 +25,7 @@ interface ItemComboboxProps {
 export function ItemCombobox({ items, value, onSelect, kodeAtk }: ItemComboboxProps) {
     const [open, setOpen] = useState(false);
 
-    const selectedItem = items.find((item) => item.id === value);
+    const selectedItem = items.find((item) => item.id == value);
     const displayLabel = selectedItem ? `${selectedItem.name} (${selectedItem.kode_atk}) • ${selectedItem.satuan}` : 'Pilih Item...';
 
     return (
@@ -57,12 +57,12 @@ export function ItemCombobox({ items, value, onSelect, kodeAtk }: ItemComboboxPr
                                     key={item.id}
                                     value={item.id}
                                     onSelect={(currentValue) => {
-                                        onSelect(currentValue === value ? null : currentValue);
+                                        onSelect(currentValue == value ? null : currentValue);
                                         setOpen(false);
                                         kodeAtk(item.kode_atk);
                                     }}
                                 >
-                                    <Check className={cn('mr-2 h-4 w-4', value === item.id ? 'opacity-100' : 'opacity-0')} />
+                                    <Check className={cn('mr-2 h-4 w-4', value == item.id ? 'opacity-100' : 'opacity-0')} />
                                     <div className="flex-1">
                                         <div className="font-medium">{item.name}</div>
                                         <div className="text-xs text-muted-foreground">

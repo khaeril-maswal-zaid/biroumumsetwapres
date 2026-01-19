@@ -276,6 +276,10 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
         return 'partial';
     };
 
+    const isItemCustom = (it: any) => it?.is_custom === true || it?.is_custom === 'true';
+    const normalItems = selectedRequest?.daftar_kebutuhan?.filter((it: any) => !isItemCustom(it)) || [];
+    const customItems = selectedRequest?.daftar_kebutuhan?.filter((it: any) => isItemCustom(it)) || [];
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
@@ -350,7 +354,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                 <div>
                                     <h4 className="mb-4 font-medium text-gray-900">Daftar Item yang Diminta</h4>
                                     <div className="space-y-3">
-                                        {selectedRequest.daftar_kebutuhan.map((item: any, index: number) => {
+                                        {normalItems.map((item: any, index: number) => {
                                             const approvedQty = approvedQuantities[item.id] || item.approved;
                                             const statusForRe = getItemStatusForRe(item.requested, approvedQty);
                                             const status = getItemStatus(item.requested, approvedQty);
@@ -477,28 +481,6 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                                     </Button>
                                                                 </div>
                                                             )}
-
-                                                            {/* Item ATK Selector - if item doesn't exist in daftarAtk */}
-                                                            {shouldShowItemSelector && (
-                                                                <div className="border-t pt-3">
-                                                                    <Label className="text-sm font-medium text-amber-900">
-                                                                        ⚠️ ATK tidak ditemukan di daftar. Silahkan pilih ATK yang ada:
-                                                                    </Label>
-                                                                    <div className="mt-2">
-                                                                        <ItemCombobox
-                                                                            items={daftarAtk}
-                                                                            value={itemReplacements[item.id] || null}
-                                                                            onSelect={(value) => {
-                                                                                setItemReplacements((prev) => ({
-                                                                                    ...prev,
-                                                                                    [item.id]: value || '',
-                                                                                }));
-                                                                            }}
-                                                                            kodeAtk={() => {}}
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            )}
                                                         </div>
                                                     </div>
 
@@ -534,6 +516,200 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                         })}
                                     </div>
                                 </div>
+
+                                {customItems.length > 0 && (
+                                    <div>
+                                        <h4 className="mt-6 mb-4 font-medium text-amber-900">Usulan ATK baru</h4>
+                                        <div className="space-y-3">
+                                            {customItems.map((item: any, index: number) => {
+                                                const approvedQty = approvedQuantities[item.id] || item.approved;
+                                                const statusForRe = getItemStatusForRe(item.requested, approvedQty);
+                                                const status = getItemStatus(item.requested, approvedQty);
+                                                const percentage = item.requested > 0 ? (approvedQty / item.requested) * 100 : 0;
+                                                const remainingStock = (item.stock ?? 0) - approvedQty;
+
+                                                const isPartialStatus = statusForRe == 'partial' && selectedRequest.status == 'partial';
+                                                const isExpanded = partialApprovals[item.id]?.isExpanded;
+                                                const additionalApprovals = partialApprovals[item.id]?.additionalApprovals || [];
+                                                const additionalApproved = additionalApprovals.reduce((sum: number, a: any) => sum + a.approved, 0);
+
+                                                const itemExists = daftarAtk.some((atk: any) => atk.id == item.id);
+                                                const shouldShowItemSelector = !itemExists && selectedRequest.status == 'pending';
+
+                                                const keyId = item.id || `custom-${index}`;
+
+                                                return (
+                                                    <div key={keyId} className="space-y-3">
+                                                        <div
+                                                            className={`rounded-lg border p-4 ${
+                                                                status == 'approved'
+                                                                    ? 'border-green-200 bg-green-50'
+                                                                    : status == 'partial'
+                                                                      ? 'border-blue-200 bg-blue-50'
+                                                                      : status == 'rejected'
+                                                                        ? 'border-red-200 bg-red-50'
+                                                                        : 'border-gray-200 bg-white'
+                                                            }`}
+                                                        >
+                                                            <div className="flex flex-col gap-4">
+                                                                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                                                                    <div className="flex-1">
+                                                                        <div className="mb-2 flex items-center gap-2">
+                                                                            <h5 className="font-medium text-gray-900">{item.name}</h5>
+                                                                            {getItemStatusBadge(item.requested, approvedQty)}
+                                                                        </div>
+
+                                                                        {selectedRequest.status == 'pending' &&
+                                                                            actionType == 'confirmed' &&
+                                                                            shouldShowItemSelector && (
+                                                                                <div className="my-5">
+                                                                                    <Label className="text-sm font-medium text-amber-900">
+                                                                                        ⚠️ ATK tidak ditemukan di daftar. Silahkan pilih ATK yang ada:
+                                                                                    </Label>
+                                                                                    <div className="mt-2">
+                                                                                        <ItemCombobox
+                                                                                            items={daftarAtk.map((i: any) => ({
+                                                                                                id: String(i.id),
+                                                                                                name: i.name,
+                                                                                                category: i.category,
+                                                                                                kode_atk: i.kode_atk,
+                                                                                                satuan: i.satuan,
+                                                                                            }))}
+                                                                                            value={itemReplacements[item.id] || null}
+                                                                                            onSelect={(value) => {
+                                                                                                setItemReplacements((prev) => ({
+                                                                                                    ...prev,
+                                                                                                    [item.id]: value || '',
+                                                                                                }));
+                                                                                            }}
+                                                                                            kodeAtk={() => {}}
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
+                                                                            )}
+
+                                                                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                                                                            <span>
+                                                                                Diminta: {item.requested}{' '}
+                                                                                {item.satuan &&
+                                                                                    item.satuan.charAt(0).toUpperCase() + item.satuan.slice(1)}
+                                                                            </span>
+                                                                            <span>•</span>
+                                                                            <span>
+                                                                                Disetujui: {approvedQty}{' '}
+                                                                                {item.satuan &&
+                                                                                    item.satuan.charAt(0).toUpperCase() + item.satuan.slice(1)}
+                                                                            </span>
+                                                                            {additionalApproved > 0 && (
+                                                                                <>
+                                                                                    <span>•</span>
+                                                                                    <span className="font-medium text-blue-600">
+                                                                                        +{additionalApproved} {item.satuan}
+                                                                                    </span>
+                                                                                </>
+                                                                            )}
+                                                                        </div>
+
+                                                                        {selectedRequest.status == 'pending' && actionType == 'confirmed' && (
+                                                                            <div className="mt-2 flex items-center gap-4 text-sm">
+                                                                                <span className="font-medium text-blue-700">
+                                                                                    Stok Tersedia: {item.stock ?? 0}{' '}
+                                                                                    {item.satuan &&
+                                                                                        item.satuan.charAt(0).toUpperCase() + item.satuan.slice(1)}
+                                                                                </span>
+                                                                                <span>•</span>
+                                                                                <span
+                                                                                    className={`font-medium ${remainingStock < 0 ? 'text-red-600' : 'text-green-700'}`}
+                                                                                >
+                                                                                    Sisa Stok: {remainingStock}{' '}
+                                                                                    {item.satuan &&
+                                                                                        item.satuan.charAt(0).toUpperCase() + item.satuan.slice(1)}
+                                                                                </span>
+                                                                            </div>
+                                                                        )}
+
+                                                                        {percentage > 0 && (
+                                                                            <div className="mt-4">
+                                                                                <Progress value={percentage} className="h-2" />
+                                                                                <p className="mt-1 text-xs text-gray-500">
+                                                                                    {Math.round(percentage)}% dari yang diminta
+                                                                                </p>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+
+                                                                    {selectedRequest.status == 'pending' && actionType == 'confirmed' && (
+                                                                        <div className="flex items-center gap-2">
+                                                                            <Label htmlFor={`qty-${keyId}`} className="text-sm whitespace-nowrap">
+                                                                                Setujui:
+                                                                            </Label>
+                                                                            <Input
+                                                                                id={`qty-${keyId}`}
+                                                                                type=""
+                                                                                min="0"
+                                                                                max={item.requested}
+                                                                                value={approvedQty}
+                                                                                onChange={(e) =>
+                                                                                    handleQuantityChange(
+                                                                                        item.id,
+                                                                                        Number.parseInt(e.target.value) || 0,
+                                                                                        item.requested,
+                                                                                    )
+                                                                                }
+                                                                                className="w-20"
+                                                                            />
+                                                                            <span className="text-sm text-gray-500">{item.satuan}</span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+
+                                                                {isPartialStatus && !isExpanded && (
+                                                                    <div className="pt-2">
+                                                                        <Button
+                                                                            variant="outline"
+                                                                            size="sm"
+                                                                            onClick={() => togglePartialApprovalExpand(item.id)}
+                                                                            className="w-full border-blue-300 bg-blue-50 text-blue-600 hover:bg-blue-100"
+                                                                        >
+                                                                            <span className="text-sm font-medium">Tambah Pemberian Lagi</span>
+                                                                        </Button>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        {isPartialStatus && isExpanded && (
+                                                            <div className="ml-2 space-y-3 border-l-2 border-blue-300 pl-4">
+                                                                <PartialApprovalList
+                                                                    item={item}
+                                                                    firstApproved={partialApprovals[item.id]?.firstApproved || 0}
+                                                                    additionalApprovals={partialApprovals[item.id]?.additionalApprovals || []}
+                                                                    onFirstApprovedChange={(value) =>
+                                                                        handleFirstApprovedChange(item.id, value, item.requested)
+                                                                    }
+                                                                    onAdditionalApprovalChange={(idx, value) =>
+                                                                        handleAdditionalApprovalChange(item.id, idx, value, item)
+                                                                    }
+                                                                    onRemoveAdditionalApproval={(idx) => handleRemoveAdditionalApproval(item.id, idx)}
+                                                                    onAddApproval={() => handleAddApproval(item.id)}
+                                                                    availableItems={daftarAtk}
+                                                                />
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    onClick={() => togglePartialApprovalExpand(item.id)}
+                                                                    className="w-full text-blue-600 hover:bg-blue-50"
+                                                                >
+                                                                    Tutup
+                                                                </Button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* Admin Message Display for Approved/Rejected */}
                                 {selectedRequest.keterangan &&

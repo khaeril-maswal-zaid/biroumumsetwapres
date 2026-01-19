@@ -143,68 +143,11 @@ class PermintaanAtkController extends Controller
         //
     }
 
-    public function statusX(PermintaanAtk $permintaanAtk, Request $request)
-    {
-        $validated = $request->validate([
-            'status' => 'required|in:pending,partial,confirmed,reject',
-            'message' => 'required_if:action,rejected|string|max:255',
-            'items' => 'array',
-        ], [
-            'status.required' => 'Status wajib diisi.',
-            'status.in' => 'Status harus salah satu dari: Tolak, Proses dan Selesai.',
-            'item.required' => 'Item tidak boleh kosong.',
-        ]);
-
-        $status = $validated['status'] === 'partial' ? 'partial' : 'confirmed';
-
-        $inputItems = $validated['items'];
-
-        $originalItems = collect($permintaanAtk->daftar_kebutuhan);
-
-        $updatedItems = $originalItems->map(function ($item) use ($inputItems) {
-            $itemId =  $item['id'];
-            if (isset($inputItems[$itemId])) {
-                $item['approved'] = $inputItems[$itemId];
-            }
-            return $item;
-        });
-
-        $updateData = collect([
-            'status' => $status,
-            'daftar_kebutuhan' => $updatedItems,
-        ]);
-
-        if (isset($validated['message'])) {
-            $updateData->put('keterangan', $validated['message']);
-        }
-
-        $permintaanAtk->update($updateData->all());
-
-        // Proses approved items: buat log StockOpname dan kurangi stock DaftarAtk
-        foreach ($updatedItems as $item) {
-            if (isset($item['approved']) && $item['approved'] > 0) {
-                $daftarAtk = DaftarAtk::find($item['id']);
-                if ($daftarAtk) {
-
-                    StockOpname::create([
-                        'daftar_atk_id' => $item['id'],
-                        'kode_unit' => Auth::user()->pegawai?->unit?->kode_unit,
-                        'quantity' => $item['approved'],
-                        'type' => 'Pemakaian',
-                        'permintaan_atk_id' => $permintaanAtk->id,
-                        'unit_price' => 0,
-                        'total_price' => 0,
-                    ]);
-
-                    // Kurangi stock di DaftarAtk
-                    $daftarAtk->decrement('quantity', $item['approved']);
-                }
-            }
-        }
-    }
 
     public function status(PermintaanAtk $permintaanAtk, Request $request)
     {
+        dd($request->all());
+
         $validated = $request->validate([
             'status' => 'required|in:pending,partial,confirmed,reject',
             'message' => 'required_if:status,reject|string|max:255',
@@ -326,124 +269,7 @@ class PermintaanAtkController extends Controller
                 }
             }
         });
-
-        // Kembalikan response success (bisa disesuaikan)
-        return response()->json([
-            'message' => 'Status permintaan & pemakaian berhasil diproses.',
-            'status' => $statusToStore,
-        ], 200);
     }
-
-
-    public function statusY(PermintaanAtk $permintaanAtk, Request $request)
-    {
-        dd($request->all());
-
-        $validated = $request->validate([
-            'status' => 'required|in:pending,partial,confirmed,reject',
-            'message' => 'required_if:status,reject|string|max:255',
-            'items' => 'array',
-        ], [
-            'status.required' => 'Status wajib diisi.',
-            'status.in' => 'Status harus salah satu dari: pending, partial, confirmed, reject.',
-            'items.array' => 'Items harus bertipe array.',
-        ]);
-
-        $status = $validated['status'] === 'partial' ? 'partial' : 'confirmed';
-        $inputItems = $validated['items'] ?? [];
-        $originalItems = collect($permintaanAtk->daftar_kebutuhan ?? []);
-        $updatedItems = $originalItems->map(function ($item) use ($inputItems) {
-            $itemId = $item['id'];
-            if (isset($inputItems[$itemId])) {
-                $item['approved'] = $inputItems[$itemId];
-            }
-            return $item;
-        });
-
-        $updateData = collect([
-            'status' => $status,
-            'daftar_kebutuhan' => $updatedItems,
-        ]);
-
-        if (isset($validated['message'])) {
-            $updateData->put('keterangan', $validated['message']);
-        }
-
-        // update permintaan terlebih dulu
-        $permintaanAtk->update($updateData->all());
-
-        $validated = $request->validate([
-            'daftar_atk_id' => ['required', 'exists:daftar_atks,id'],
-            'quantity' => ['required', 'integer', 'min:1'],
-            'permintaan_atk_id' => ['nullable', 'exists:permintaan_atks,id'],
-            'kode_unit' => ['nullable', 'string'],
-        ]);
-
-        $daftarAtkId = (int) $validated['daftar_atk_id'];
-        $requestedQty = (int) $validated['quantity'];
-        $kodeUnit =  Auth::user()->pegawai?->unit?->kode_unit ?? null;
-        $permintaanId = $validated['permintaan_atk_id'] ?? null;
-
-        // Hitung total available dari Perolehan yang masih punya remaining
-        $totalAvailable = StockOpname::where('daftar_atk_id', $daftarAtkId)
-            ->where('type', 'Perolehan')
-            ->where('remaining_quantity', '>', 0)
-            ->sum('remaining_quantity');
-
-        if ($totalAvailable < $requestedQty) {
-            return response()->json([
-                'message' => 'Stock tidak cukup. Total available: ' . $totalAvailable,
-            ], 422);
-        }
-
-        DB::transaction(function () use ($daftarAtkId, $requestedQty, $kodeUnit, $permintaanId) {
-            $qtyToConsume = $requestedQty;
-
-            // Ambil Perolehan FIFO (oldest first) yang masih punya remaining
-            $perolehans = StockOpname::where('daftar_atk_id', $daftarAtkId)
-                ->where('type', 'Perolehan')
-                ->where('remaining_quantity', '>', 0)
-                ->orderBy('id') // FIFO by insertion order; bisa gunakan created_at jika lebih tepat
-                ->lockForUpdate()
-                ->get();
-
-            foreach ($perolehans as $per) {
-                if ($qtyToConsume <= 0) break;
-
-                $availableInThis = (int) $per->remaining_quantity;
-                if ($availableInThis <= 0) continue;
-
-                $take = min($availableInThis, $qtyToConsume);
-
-                // buat entry Pemakaian untuk bagian yang diambil dari $per
-                StockOpname::create([
-                    'kode_unit' => $kodeUnit,
-                    'daftar_atk_id' => $daftarAtkId,
-                    'quantity' => $take,
-                    'remaining_quantity' => null,
-                    'type' => 'Pemakaian',
-                    'permintaan_atk_id' => $permintaanId,
-                    'source_stockopname_id' => $per->id,
-                    'unit_price' => $per->unit_price,
-                    'total_price' => $per->unit_price * $take,
-                ]);
-
-                // kurangi remaining pada Perolehan sumber
-                $per->remaining_quantity = $per->remaining_quantity - $take;
-                if ($per->remaining_quantity < 0) $per->remaining_quantity = 0;
-                $per->save();
-
-                $qtyToConsume -= $take;
-            }
-
-            // update stok di DaftarAtk (turun)
-            $daftar = DaftarAtk::find($daftarAtkId);
-            if ($daftar) {
-                $daftar->decrement('quantity', $requestedQty);
-            }
-        });
-    }
-
 
     public function reports()
     {

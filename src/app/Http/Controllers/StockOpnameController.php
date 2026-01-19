@@ -23,35 +23,6 @@ class StockOpnameController extends Controller
         return Inertia::render('admin/daftaratk/prolehan-pemakaian', $data);
     }
 
-    public function storeX(Request $request)
-    {
-        $validated = $request->validate([
-            'daftar_atk_id' => 'required|exists:daftar_atks,id',
-            'quantity' => 'required|integer|min:1',
-            'type' => 'required|in:Perolehan',
-            'unit_price' => 'required|numeric|min:0',
-        ]);
-
-        $validated['kode_unit'] = Auth::user()->pegawai?->unit?->kode_unit;
-        $validated['total_price'] = $validated['quantity'] * $validated['unit_price'];
-
-        StockOpname::create([
-            'daftar_atk_id' => $validated['daftar_atk_id'],
-            'kode_unit' => $validated['kode_unit'],
-            'type' => 'Perolehan',
-            'quantity' => $validated['quantity'],
-            'remaining_quantity' => $validated['quantity'], // 🔑 PENTING
-            'unit_price' => $validated['unit_price'],
-            'total_price' => $validated['total_price'],
-        ]);
-
-        // Update stok total
-        DaftarAtk::where('id', $validated['daftar_atk_id'])
-            ->increment('quantity', $validated['quantity']);
-
-        return redirect()->back();
-    }
-
     public function store(Request $request)
     {
         $validated = $request->validate([
