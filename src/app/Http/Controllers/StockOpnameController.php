@@ -23,7 +23,7 @@ class StockOpnameController extends Controller
         return Inertia::render('admin/daftaratk/prolehan-pemakaian', $data);
     }
 
-    public function store(Request $request)
+    public function storeX(Request $request)
     {
         $validated = $request->validate([
             'daftar_atk_id' => 'required|exists:daftar_atks,id',
@@ -50,6 +50,45 @@ class StockOpnameController extends Controller
             ->increment('quantity', $validated['quantity']);
 
         return redirect()->back();
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'daftar_atk_id' => ['required', 'exists:daftar_atks,id'],
+            'quantity' => ['required', 'integer', 'min:1'],
+            'unit_price' => ['required', 'integer', 'min:0'],
+            'permintaan_atk_id' => ['nullable', 'exists:permintaan_atks,id'],
+            // optional: kode_unit dapat dikirim FE, kalau tidak kita ambil dari auth
+            'kode_unit' => ['nullable', 'string'],
+        ]);
+
+        // normalisasi nilai
+        $quantity = (int) $validated['quantity'];
+        $unitPrice = (int) $validated['unit_price'];
+        $totalPrice = $quantity * $unitPrice;
+
+        $kodeUnit = $validated['kode_unit'] ?? Auth::user()->pegawai?->unit?->kode_unit ?? null;
+
+        DB::transaction(function () use ($validated, $quantity, $unitPrice, $totalPrice, $kodeUnit) {
+            $stock = StockOpname::create([
+                'kode_unit' => $kodeUnit,
+                'daftar_atk_id' => $validated['daftar_atk_id'],
+                'quantity' => $quantity,
+                'remaining_quantity' => $quantity, // untuk Perolehan kita set remaining = quantity
+                'type' => 'Perolehan',
+                'permintaan_atk_id' => $validated['permintaan_atk_id'] ?? null,
+                'source_stockopname_id' => null,
+                'unit_price' => $unitPrice,
+                'total_price' => $totalPrice,
+            ]);
+
+            // update stok di DaftarAtk (naik)
+            $daftar = DaftarAtk::find($validated['daftar_atk_id']);
+            if ($daftar) {
+                $daftar->increment('quantity', $quantity);
+            }
+        });
     }
 
     public function bukuPersediaan(Request $request)
