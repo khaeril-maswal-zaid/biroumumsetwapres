@@ -207,7 +207,140 @@ class PermintaanAtkController extends Controller
     {
         $validated = $request->validate([
             'status' => 'required|in:pending,partial,confirmed,reject',
-            // perbaiki required_if: gunakan 'status'
+            'message' => 'required_if:status,reject|string|max:255',
+            'items' => 'sometimes|array',
+        ], [
+            'status.required' => 'Status wajib diisi.',
+            'status.in' => 'Status harus salah satu dari: pending, partial, confirmed, reject.',
+            'message.required_if' => 'Alasan / pesan wajib diisi saat menolak.',
+        ]);
+
+        // Ambil mapping input item: ekspektasi FE: items => [ '<daftar_atk_id>' => <approvedQty>, ... ]
+        $inputItems = $validated['items'] ?? [];
+
+        // Ambil daftar_kebutuhan original (format array of objects)
+        $originalItems = collect($permintaanAtk->daftar_kebutuhan ?? []);
+
+        // Update setiap item approved jika ada di payload
+        $updatedItems = $originalItems->map(function ($item) use ($inputItems) {
+            $itemId = (string) $item['id']; // pastikan key string/ints konsisten
+            if (isset($inputItems[$itemId])) {
+                // cast ke int supaya aman
+                $item['approved'] = (int) $inputItems[$itemId];
+            }
+            return $item;
+        });
+
+        // Tentukan status yang disimpan (pakai value langsung dari client)
+        $statusToStore = $validated['status'];
+
+        // Susun data update
+        $updateData = [
+            'status' => $statusToStore,
+            'daftar_kebutuhan' => $updatedItems->values()->all(),
+        ];
+        if (isset($validated['message'])) {
+            $updateData['keterangan'] = $validated['message'];
+        }
+
+        // Mulai transaksi: update permintaan + proses pemakaian per item
+        DB::transaction(function () use ($permintaanAtk, $updateData, $updatedItems) {
+
+            // 1) Update permintaan (status + daftar_kebutuhan + keterangan)
+            $permintaanAtk->update($updateData);
+
+            // 2) Proses setiap approved item: buat StockOpname (Pemakaian) & update DaftarAtk
+            foreach ($updatedItems as $item) {
+                $approved = isset($item['approved']) ? (int) $item['approved'] : 0;
+                if ($approved <= 0) {
+                    continue; // tidak ada yang disetujui untuk item ini
+                }
+
+                $daftarAtkId = (int) $item['id'];
+                $kodeUnit = Auth::user()->pegawai?->unit?->kode_unit ?? null;
+
+                // Ambil daftar Perolehan (FIFO) yang masih punya remaining
+                $perolehans = StockOpname::where('daftar_atk_id', $daftarAtkId)
+                    ->where('type', 'Perolehan')
+                    ->where('remaining_quantity', '>', 0)
+                    ->orderBy('id') // FIFO; jika ingin berdasarkan created_at ubah ke ->orderBy('created_at')
+                    ->lockForUpdate()
+                    ->get();
+
+                $qtyToConsume = $approved;
+
+                // 2A) Ambil dari perolehan sebanyak mungkin (ambil batch per batch)
+                foreach ($perolehans as $per) {
+                    if ($qtyToConsume <= 0) break;
+
+                    $available = (int) $per->remaining_quantity;
+                    if ($available <= 0) continue;
+
+                    $take = min($available, $qtyToConsume);
+
+                    // buat record Pemakaian yang mengacu ke perolehan ($per->id) dan copy unit_price
+                    StockOpname::create([
+                        'kode_unit' => $kodeUnit,
+                        'daftar_atk_id' => $daftarAtkId,
+                        'quantity' => $take,
+                        'remaining_quantity' => null,
+                        'type' => 'Pemakaian',
+                        'permintaan_atk_id' => $permintaanAtk->id,
+                        'source_stockopname_id' => $per->id,
+                        'unit_price' => $per->unit_price,
+                        'total_price' => $per->unit_price * $take,
+                    ]);
+
+                    // kurangi remaining pada perolehan sumber
+                    $per->remaining_quantity = max(0, $per->remaining_quantity - $take);
+                    $per->save();
+
+                    $qtyToConsume -= $take;
+                }
+
+                // 2B) Jika masih ada sisa yang belum ter-cover oleh Perolehan,
+                //      buat Pemakaian fallback dengan unit_price = 0 agar tercatat.
+                if ($qtyToConsume > 0) {
+                    StockOpname::create([
+                        'kode_unit' => $kodeUnit,
+                        'daftar_atk_id' => $daftarAtkId,
+                        'quantity' => $qtyToConsume,
+                        'remaining_quantity' => null,
+                        'type' => 'Pemakaian',
+                        'permintaan_atk_id' => $permintaanAtk->id,
+                        'source_stockopname_id' => null,
+                        'unit_price' => 0,
+                        'total_price' => 0,
+                    ]);
+                    // qtyToConsume jadi 0 setelah ini
+                    $qtyToConsume = 0;
+                }
+
+                // 3) Kurangi stok master DaftarAtk (kurangi total stock tersedia)
+                $daftarAtk = DaftarAtk::lockForUpdate()->find($daftarAtkId);
+                if ($daftarAtk) {
+                    // Pastikan tidak jadi negative (opsional)
+                    $decrementBy = $approved;
+                    // Jika ingin mencegah stok negatif, ubah $decrementBy = min($approved, $daftarAtk->quantity);
+                    $daftarAtk->decrement('quantity', $decrementBy);
+                }
+            }
+        });
+
+        // Kembalikan response success (bisa disesuaikan)
+        return response()->json([
+            'message' => 'Status permintaan & pemakaian berhasil diproses.',
+            'status' => $statusToStore,
+        ], 200);
+    }
+
+
+    public function statusY(PermintaanAtk $permintaanAtk, Request $request)
+    {
+        dd($request->all());
+
+        $validated = $request->validate([
+            'status' => 'required|in:pending,partial,confirmed,reject',
             'message' => 'required_if:status,reject|string|max:255',
             'items' => 'array',
         ], [
@@ -239,64 +372,74 @@ class PermintaanAtkController extends Controller
         // update permintaan terlebih dulu
         $permintaanAtk->update($updateData->all());
 
-        // --- PROSES PEMAKAIAN DENGAN FIFO ---
-        DB::transaction(function () use ($updatedItems, $permintaanAtk) {
-            foreach ($updatedItems as $item) {
-                if (!isset($item['approved']) || (int)$item['approved'] <= 0) {
-                    continue;
-                }
+        $validated = $request->validate([
+            'daftar_atk_id' => ['required', 'exists:daftar_atks,id'],
+            'quantity' => ['required', 'integer', 'min:1'],
+            'permintaan_atk_id' => ['nullable', 'exists:permintaan_atks,id'],
+            'kode_unit' => ['nullable', 'string'],
+        ]);
 
-                $toConsume = (int) $item['approved'];
-                $daftarAtkId = $item['id'];
+        $daftarAtkId = (int) $validated['daftar_atk_id'];
+        $requestedQty = (int) $validated['quantity'];
+        $kodeUnit =  Auth::user()->pegawai?->unit?->kode_unit ?? null;
+        $permintaanId = $validated['permintaan_atk_id'] ?? null;
 
-                // 🔑 FIFO BENAR: pakai remaining_quantity
-                $perolehanRows = StockOpname::where('daftar_atk_id', $daftarAtkId)
-                    ->where('type', 'Perolehan')
-                    ->where('remaining_quantity', '>', 0)
-                    ->orderBy('created_at')
-                    ->lockForUpdate()
-                    ->get();
+        // Hitung total available dari Perolehan yang masih punya remaining
+        $totalAvailable = StockOpname::where('daftar_atk_id', $daftarAtkId)
+            ->where('type', 'Perolehan')
+            ->where('remaining_quantity', '>', 0)
+            ->sum('remaining_quantity');
 
-                foreach ($perolehanRows as $perolehan) {
-                    if ($toConsume <= 0) break;
+        if ($totalAvailable < $requestedQty) {
+            return response()->json([
+                'message' => 'Stock tidak cukup. Total available: ' . $totalAvailable,
+            ], 422);
+        }
 
-                    $available = (int) $perolehan->remaining_quantity;
-                    if ($available <= 0) continue;
+        DB::transaction(function () use ($daftarAtkId, $requestedQty, $kodeUnit, $permintaanId) {
+            $qtyToConsume = $requestedQty;
 
-                    $take = min($available, $toConsume);
+            // Ambil Perolehan FIFO (oldest first) yang masih punya remaining
+            $perolehans = StockOpname::where('daftar_atk_id', $daftarAtkId)
+                ->where('type', 'Perolehan')
+                ->where('remaining_quantity', '>', 0)
+                ->orderBy('id') // FIFO by insertion order; bisa gunakan created_at jika lebih tepat
+                ->lockForUpdate()
+                ->get();
 
-                    StockOpname::create([
-                        'daftar_atk_id' => $daftarAtkId,
-                        'kode_unit' => Auth::user()->pegawai?->unit?->kode_unit,
-                        'quantity' => $take,
-                        'type' => 'Pemakaian',
-                        'permintaan_atk_id' => $permintaanAtk->id,
-                        'unit_price' => $perolehan->unit_price,
-                        'total_price' => $perolehan->unit_price * $take,
-                        'source_stockopname_id' => $perolehan->id,
-                    ]);
+            foreach ($perolehans as $per) {
+                if ($qtyToConsume <= 0) break;
 
-                    // 🔑 KURANGI SISA BATCH, BUKAN quantity
-                    $perolehan->decrement('remaining_quantity', $take);
+                $availableInThis = (int) $per->remaining_quantity;
+                if ($availableInThis <= 0) continue;
 
-                    $toConsume -= $take;
-                }
+                $take = min($availableInThis, $qtyToConsume);
 
-                // Jika stok batch tidak cukup
-                if ($toConsume > 0) {
-                    Log::warning('FIFO stok tidak cukup', [
-                        'permintaan_atk_id' => $permintaanAtk->id,
-                        'daftar_atk_id' => $daftarAtkId,
-                        'sisa' => $toConsume,
-                    ]);
+                // buat entry Pemakaian untuk bagian yang diambil dari $per
+                StockOpname::create([
+                    'kode_unit' => $kodeUnit,
+                    'daftar_atk_id' => $daftarAtkId,
+                    'quantity' => $take,
+                    'remaining_quantity' => null,
+                    'type' => 'Pemakaian',
+                    'permintaan_atk_id' => $permintaanId,
+                    'source_stockopname_id' => $per->id,
+                    'unit_price' => $per->unit_price,
+                    'total_price' => $per->unit_price * $take,
+                ]);
 
-                    // opsi: throw exception (lebih aman)
-                    throw new \Exception("Stok ATK tidak mencukupi (ID: {$daftarAtkId})");
-                }
+                // kurangi remaining pada Perolehan sumber
+                $per->remaining_quantity = $per->remaining_quantity - $take;
+                if ($per->remaining_quantity < 0) $per->remaining_quantity = 0;
+                $per->save();
 
-                // stok total (ringkas)
-                DaftarAtk::where('id', $daftarAtkId)
-                    ->decrement('quantity', (int)$item['approved']);
+                $qtyToConsume -= $take;
+            }
+
+            // update stok di DaftarAtk (turun)
+            $daftar = DaftarAtk::find($daftarAtkId);
+            if ($daftar) {
+                $daftar->decrement('quantity', $requestedQty);
             }
         });
     }

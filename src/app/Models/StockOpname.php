@@ -19,6 +19,8 @@ class StockOpname extends Model
         'daftar_atk_id',
         'quantity',
         'type',
+        'source_stockopname_id',
+        'remaining_quantity',
         'unit_price',
         'total_price',
         'kode_unit'
