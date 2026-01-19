@@ -37,64 +37,13 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
     const [actionType, setActionType] = useState<'confirmed' | 'reject' | null>(null);
     const [approvedQuantities, setApprovedQuantities] = useState<{ [key: string]: number }>({});
 
-    const handleSubmit = (supplyCode: string, status: string | null) => {
-        setIsProcessing(true);
-
-        const trimmedMessage = adminMessage.trim();
-
-        const finalStatus = status ?? actionType;
-
-        const payload: Record<string, any> = {
-            status: finalStatus,
-        };
-
-        // Hanya kirim jika tidak kosong
-        if (trimmedMessage !== '') {
-            payload.message = trimmedMessage;
-        }
-
-        // Prepare items
-        const itemsPayload: Record<string, any> = {};
-        selectedRequest.daftar_kebutuhan.forEach((item: any) => {
-            const approved = approvedQuantities[item.id] || 0;
-            itemsPayload[item.id] = approved;
-        });
-
-        payload.items = itemsPayload;
-
-        // Add new requests from unavailable items if any
-        if (newRequestsFromUnavailable.length > 0) {
-            payload.newRequests = newRequestsFromUnavailable;
-        }
-
-        router.patch(route('permintaanatk.status', supplyCode), payload, {
-            preserveScroll: true,
-            onSuccess: () => {
-                setIsProcessing(false);
-                setAdminMessage('');
-                setActionType(null);
-                setApprovedQuantities({});
-                setPartialApprovals({});
-                setNewRequestsFromUnavailable([]);
-            },
-            onError: (errors) => {
-                console.log('Validation Errors: ', errors);
-            },
-        });
-    };
-
-    // Partial approval state
+    // Partial approval state - for items that have been partially approved
     const [partialApprovals, setPartialApprovals] = useState<{
         [itemId: string]: {
-            firstApproved: number;
-            additionalApprovals: Array<{ approved: number; itemId?: string }>;
+            additionalApproved: number;
             isExpanded: boolean;
         };
     }>({});
-
-    // Track which items have unavailable ATK
-    const [unavailableItems, setUnavailableItems] = useState<Set<string>>(new Set());
-    const [itemReplacements, setItemReplacements] = useState<{ [itemId: string]: string }>({});
 
     // Track new requests created from unavailable ATK items
     const [newRequestsFromUnavailable, setNewRequestsFromUnavailable] = useState<
@@ -130,68 +79,39 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
         }));
     };
 
-    const handleAddApproval = (itemId: string) => {
-        setPartialApprovals((prev) => ({
-            ...prev,
-            [itemId]: {
-                firstApproved: prev[itemId]?.firstApproved || 0,
-                additionalApprovals: [...(prev[itemId]?.additionalApprovals || []), { approved: 0 }],
-                isExpanded: true,
-            },
-        }));
+    const handleAddAdditionalApproval = (itemId: string, requestedQty: number) => {
+        // Only allow if not already expanded
+        if (!partialApprovals[itemId]?.isExpanded) {
+            setPartialApprovals((prev) => ({
+                ...prev,
+                [itemId]: {
+                    additionalApproved: 0,
+                    isExpanded: true,
+                },
+            }));
+        }
     };
 
-    const handleAdditionalApprovalChange = (itemId: string, approvalIndex: number, value: number, item: any) => {
-        const firstApproved = partialApprovals[itemId]?.firstApproved || 0;
-        const otherApprovals = partialApprovals[itemId]?.additionalApprovals || [];
-        const totalAlreadyApproved = firstApproved + otherApprovals.reduce((sum, a, idx) => (idx !== approvalIndex ? sum + a.approved : sum), 0);
-        const maxForThis = item.requested - totalAlreadyApproved;
-
-        const validValue = Math.max(0, Math.min(value, maxForThis));
+    const handleAdditionalApprovalChange = (itemId: string, value: number, firstApproved: number, requestedQty: number) => {
+        const maxForAdditional = requestedQty - firstApproved;
+        const validValue = Math.max(0, Math.min(value, maxForAdditional));
 
         setPartialApprovals((prev) => ({
             ...prev,
             [itemId]: {
                 ...prev[itemId],
-                additionalApprovals: prev[itemId]?.additionalApprovals.map((approval, idx) =>
-                    idx == approvalIndex ? { ...approval, approved: validValue } : approval,
-                ),
+                additionalApproved: validValue,
             },
-        }));
-    };
-
-    const handleRemoveAdditionalApproval = (itemId: string, approvalIndex: number) => {
-        setPartialApprovals((prev) => ({
-            ...prev,
-            [itemId]: {
-                ...prev[itemId],
-                additionalApprovals: prev[itemId]?.additionalApprovals.filter((_, idx) => idx !== approvalIndex),
-            },
-        }));
-    };
-
-    const handleFirstApprovedChange = (itemId: string, value: number, maxQuantity: number) => {
-        const validValue = Math.max(0, Math.min(value, maxQuantity));
-        setPartialApprovals((prev) => ({
-            ...prev,
-            [itemId]: {
-                ...prev[itemId],
-                firstApproved: validValue,
-            },
-        }));
-        setApprovedQuantities((prev) => ({
-            ...prev,
-            [itemId]: validValue,
         }));
     };
 
     const handleSelectAtkForUnavailable = (originalItemId: string, newAtkId: string, originalItem: any) => {
-        const selectedAtk = daftarAtk.find((atk: any) => atk.id == newAtkId);
+        const selectedAtk = daftarAtk.find((atk: any) => atk.id === newAtkId);
         if (!selectedAtk) return;
 
         // Add to new requests
         setNewRequestsFromUnavailable((prev) => {
-            const existingIndex = prev.findIndex((req) => req.originalItemId == originalItemId);
+            const existingIndex = prev.findIndex((req) => req.originalItemId === originalItemId);
             if (existingIndex >= 0) {
                 // Replace existing
                 const updated = [...prev];
@@ -223,11 +143,6 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
             ...prev,
             [originalItemId]: 0,
         }));
-    };
-
-    const getItemStatusForRe = (requested: number, approved: number) => {
-        if (approved == requested) return 'approved';
-        return 'partial';
     };
 
     const getItemStatus = (requested: number, approved: number) => {
@@ -274,6 +189,58 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
         if (approvedCount == items.length) return 'approved';
 
         return 'partial';
+    };
+
+    const handleSubmit = (supplyCode: string) => {
+        setIsProcessing(true);
+
+        const trimmedMessage = adminMessage.trim();
+
+        // Determine the actual status
+        const hasPartial = selectedRequest.daftar_kebutuhan.some((item: any) => {
+            const approvedQty = approvedQuantities[item.id] || 0;
+            return approvedQty > 0 && approvedQty < item.requested;
+        });
+
+        const finalStatus = hasPartial ? 'partial' : actionType;
+
+        const payload: Record<string, any> = {
+            status: finalStatus,
+        };
+
+        // Hanya kirim jika tidak kosong
+        if (trimmedMessage !== '') {
+            payload.message = trimmedMessage;
+        }
+
+        // Prepare items
+        const itemsPayload: Record<string, any> = {};
+        selectedRequest.daftar_kebutuhan.forEach((item: any) => {
+            const approved = approvedQuantities[item.id] || 0;
+            itemsPayload[item.id] = approved;
+        });
+
+        payload.items = itemsPayload;
+
+        // Add new requests from unavailable items if any
+        if (newRequestsFromUnavailable.length > 0) {
+            payload.newRequests = newRequestsFromUnavailable;
+        }
+
+        router.patch(route('permintaanatk.status', supplyCode), payload, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setIsProcessing(false);
+                setAdminMessage('');
+                setActionType(null);
+                setApprovedQuantities({});
+                setPartialApprovals({});
+                setNewRequestsFromUnavailable([]);
+            },
+            onError: (errors) => {
+                console.log('Validation Errors: ', errors);
+            },
+        });
     };
 
     return (
@@ -352,23 +319,21 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                     <div className="space-y-3">
                                         {selectedRequest.daftar_kebutuhan.map((item: any, index: number) => {
                                             const approvedQty = approvedQuantities[item.id] || item.approved;
-                                            const statusForRe = getItemStatusForRe(item.requested, approvedQty);
                                             const status = getItemStatus(item.requested, approvedQty);
                                             const percentage = item.requested > 0 ? (approvedQty / item.requested) * 100 : 0;
                                             const remainingStock = item.stock - approvedQty;
-
+                                            
                                             // Show partial approval button only when status is 'partial' (after confirmed)
-                                            const isPartialStatus = statusForRe == 'partial' && selectedRequest.status == 'partial';
+                                            const isPartialStatus = status == 'partial' && selectedRequest.status == 'confirmed';
                                             const isExpanded = partialApprovals[item.id]?.isExpanded;
-                                            const additionalApprovals = partialApprovals[item.id]?.additionalApprovals || [];
-                                            const additionalApproved = additionalApprovals.reduce((sum: number, a: any) => sum + a.approved, 0);
+                                            const additionalApproved = partialApprovals[item.id]?.additionalApproved || 0;
 
                                             // Check if item ATK exists in daftarAtk
                                             const itemExists = daftarAtk.some((atk: any) => atk.id == item.id);
                                             const shouldShowItemSelector = !itemExists && selectedRequest.status == 'pending';
-
+                                            
                                             // Check if this item was moved to new request
-                                            const isMovedToNewRequest = newRequestsFromUnavailable.some((req) => req.originalItemId == item.id);
+                                            const isMovedToNewRequest = newRequestsFromUnavailable.some((req) => req.originalItemId === item.id);
 
                                             return (
                                                 <div key={item.id} className="space-y-3">
@@ -446,7 +411,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                                         </Label>
                                                                         <Input
                                                                             id={`qty-${item.id}`}
-                                                                            type=""
+                                                                            type="number"
                                                                             min="0"
                                                                             max={item.requested}
                                                                             value={approvedQty}
@@ -473,7 +438,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                                         onClick={() => togglePartialApprovalExpand(item.id)}
                                                                         className="w-full border-blue-300 bg-blue-50 text-blue-600 hover:bg-blue-100"
                                                                     >
-                                                                        <span className="text-sm font-medium">Tambah Pemberian Lagi</span>
+                                                                        <span className="text-sm font-medium">Tambah Persetujuan Lagi</span>
                                                                     </Button>
                                                                 </div>
                                                             )}
@@ -583,7 +548,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                     })()}
 
                                 {/* Action Section */}
-                                {selectedRequest.status !== 'confirmed' && (
+                                {selectedRequest.status == 'pending' && (
                                     <>
                                         <Separator />
                                         <div className="space-y-4">
@@ -681,31 +646,30 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                             Batal
                                                         </Button>
 
-                                                        {actionType == 'confirmed' &&
-                                                            (() => {
-                                                                const hasPartial = selectedRequest.daftar_kebutuhan.some((item: any) => {
-                                                                    const approvedQty = approvedQuantities[item.id] || 0;
-                                                                    return approvedQty < item.requested;
-                                                                });
+                                                        {actionType == 'confirmed' && (
+                                                            <Button
+                                                                onClick={() => {
+                                                                    // Check if any item is partial
+                                                                    const hasPartial = selectedRequest.daftar_kebutuhan.some((item: any) => {
+                                                                        const approvedQty = approvedQuantities[item.id] || 0;
+                                                                        return approvedQty > 0 && approvedQty < item.requested;
+                                                                    });
 
-                                                                return (
-                                                                    <Button
-                                                                        onClick={() => {
-                                                                            if (hasPartial) {
-                                                                                handleSubmit(selectedRequest.kode_pelaporan, 'partial');
-                                                                            }
-                                                                        }}
-                                                                        disabled={!hasPartial || isProcessing}
-                                                                        className={'bg-blue-600 hover:bg-blue-700'}
-                                                                    >
-                                                                        Disetujui Sebagian
-                                                                    </Button>
-                                                                );
-                                                            })()}
+                                                                    if (!hasPartial) {
+                                                                        // No partial approval, submit normally
+                                                                        handleSubmit(selectedRequest.kode_pelaporan);
+                                                                    }
+                                                                }}
+                                                                disabled={isProcessing}
+                                                                className={'bg-blue-600 hover:bg-blue-700'}
+                                                            >
+                                                                Disetujui Sebagian
+                                                            </Button>
+                                                        )}
 
                                                         <Button
                                                             onClick={() => {
-                                                                handleSubmit(selectedRequest.kode_pelaporan, null);
+                                                                handleSubmit(selectedRequest.kode_pelaporan);
                                                             }}
                                                             disabled={
                                                                 isProcessing ||

@@ -40,7 +40,6 @@ class PemesananRuangRapatController extends Controller
      */
     public function store(StorePemesananRuangRapatRequest $request)
     {
-
         // Ambil ruangan dari DB
         $room = DaftarRuangan::where('kode_ruangan', $request['room_code'])->first();
 
@@ -73,11 +72,14 @@ class PemesananRuangRapatController extends Controller
             'jam_mulai' => $request->startTime,
             'jam_selesai' => $request->endTime,
             'daftar_ruangan_id' => $room->id,
+            'jumlah_peserta' => $request->jumlahPeserta,
             'deskripsi' => $request->purpose,
             'jenis_rapat' => $request->jenisRapat,
             'no_hp' => $request->contact,
             'kode_booking' => 'RRT-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'status' => 'booked',
+            'is_makanan_ringan' => $request->makanRingan,
+            'is_makanan_berat' => $request->makanSiang,
             'is_hybrid' => $request->isHybrid,
             'is_ti_support' => $request->needItSupport,
         ]);

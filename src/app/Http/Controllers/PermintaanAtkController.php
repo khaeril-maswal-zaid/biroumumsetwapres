@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\PermintaanAtk;
 use App\Http\Requests\StorePermintaanAtkRequest;
-use App\Http\Requests\UpdatePermintaanAtkRequest;
 use App\Models\DaftarAtk;
+use App\Http\Requests\UpdatePermintaanAtkRequest;
+use Illuminate\Support\Facades\DB;
 use App\Models\Notification;
 use App\Models\StockOpname;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Inertia\Response;
@@ -112,6 +114,7 @@ class PermintaanAtkController extends Controller
 
         return Inertia::render('admin/supplies/review', [
             'selectedRequest' => $permintaanAtk->load('pemesan.pegawai.biro'),
+            'daftarAtk' => DaftarAtk::all()
         ]);
     }
 
@@ -140,21 +143,21 @@ class PermintaanAtkController extends Controller
         //
     }
 
-    public function status(PermintaanAtk $permintaanAtk, Request $request)
+    public function statusX(PermintaanAtk $permintaanAtk, Request $request)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending,process,confirmed,reject',
+            'status' => 'required|in:pending,partial,confirmed,reject',
             'message' => 'required_if:action,rejected|string|max:255',
-            'item' => 'array',
+            'items' => 'array',
         ], [
             'status.required' => 'Status wajib diisi.',
             'status.in' => 'Status harus salah satu dari: Tolak, Proses dan Selesai.',
             'item.required' => 'Item tidak boleh kosong.',
         ]);
 
-        $status = $validated['status'] === 'process' ? 'process' : 'confirmed';
+        $status = $validated['status'] === 'partial' ? 'partial' : 'confirmed';
 
-        $inputItems = $validated['item'];
+        $inputItems = $validated['items'];
 
         $originalItems = collect($permintaanAtk->daftar_kebutuhan);
 
@@ -198,6 +201,104 @@ class PermintaanAtkController extends Controller
                 }
             }
         }
+    }
+
+    public function status(PermintaanAtk $permintaanAtk, Request $request)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:pending,partial,confirmed,reject',
+            // perbaiki required_if: gunakan 'status'
+            'message' => 'required_if:status,reject|string|max:255',
+            'items' => 'array',
+        ], [
+            'status.required' => 'Status wajib diisi.',
+            'status.in' => 'Status harus salah satu dari: pending, partial, confirmed, reject.',
+            'items.array' => 'Items harus bertipe array.',
+        ]);
+
+        $status = $validated['status'] === 'partial' ? 'partial' : 'confirmed';
+        $inputItems = $validated['items'] ?? [];
+        $originalItems = collect($permintaanAtk->daftar_kebutuhan ?? []);
+        $updatedItems = $originalItems->map(function ($item) use ($inputItems) {
+            $itemId = $item['id'];
+            if (isset($inputItems[$itemId])) {
+                $item['approved'] = $inputItems[$itemId];
+            }
+            return $item;
+        });
+
+        $updateData = collect([
+            'status' => $status,
+            'daftar_kebutuhan' => $updatedItems,
+        ]);
+
+        if (isset($validated['message'])) {
+            $updateData->put('keterangan', $validated['message']);
+        }
+
+        // update permintaan terlebih dulu
+        $permintaanAtk->update($updateData->all());
+
+        // --- PROSES PEMAKAIAN DENGAN FIFO ---
+        DB::transaction(function () use ($updatedItems, $permintaanAtk) {
+            foreach ($updatedItems as $item) {
+                if (!isset($item['approved']) || (int)$item['approved'] <= 0) {
+                    continue;
+                }
+
+                $toConsume = (int) $item['approved'];
+                $daftarAtkId = $item['id'];
+
+                // 🔑 FIFO BENAR: pakai remaining_quantity
+                $perolehanRows = StockOpname::where('daftar_atk_id', $daftarAtkId)
+                    ->where('type', 'Perolehan')
+                    ->where('remaining_quantity', '>', 0)
+                    ->orderBy('created_at')
+                    ->lockForUpdate()
+                    ->get();
+
+                foreach ($perolehanRows as $perolehan) {
+                    if ($toConsume <= 0) break;
+
+                    $available = (int) $perolehan->remaining_quantity;
+                    if ($available <= 0) continue;
+
+                    $take = min($available, $toConsume);
+
+                    StockOpname::create([
+                        'daftar_atk_id' => $daftarAtkId,
+                        'kode_unit' => Auth::user()->pegawai?->unit?->kode_unit,
+                        'quantity' => $take,
+                        'type' => 'Pemakaian',
+                        'permintaan_atk_id' => $permintaanAtk->id,
+                        'unit_price' => $perolehan->unit_price,
+                        'total_price' => $perolehan->unit_price * $take,
+                        'source_stockopname_id' => $perolehan->id,
+                    ]);
+
+                    // 🔑 KURANGI SISA BATCH, BUKAN quantity
+                    $perolehan->decrement('remaining_quantity', $take);
+
+                    $toConsume -= $take;
+                }
+
+                // Jika stok batch tidak cukup
+                if ($toConsume > 0) {
+                    Log::warning('FIFO stok tidak cukup', [
+                        'permintaan_atk_id' => $permintaanAtk->id,
+                        'daftar_atk_id' => $daftarAtkId,
+                        'sisa' => $toConsume,
+                    ]);
+
+                    // opsi: throw exception (lebih aman)
+                    throw new \Exception("Stok ATK tidak mencukupi (ID: {$daftarAtkId})");
+                }
+
+                // stok total (ringkas)
+                DaftarAtk::where('id', $daftarAtkId)
+                    ->decrement('quantity', (int)$item['approved']);
+            }
+        });
     }
 
 

@@ -32,7 +32,7 @@ const STATUS_BADGE_CONFIG: Record<
         className: 'bg-green-100 text-green-800 hover:bg-green-200',
     },
     partial: {
-        label: 'Selesai',
+        label: 'Disetujui Sebagian',
         className: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
     },
     process: {

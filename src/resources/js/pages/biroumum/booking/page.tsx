@@ -17,17 +17,13 @@ import { z } from 'zod';
 const schema = z
     .object({
         room_code: z.string().min(1, 'Silakan pilih ruangan yang akan digunakan'),
-
         room_name: z.string().min(1, 'Nama ruangan tidak boleh kosong'),
-
         date: z.string().min(1, 'Tanggal rapat wajib ditentukan'),
-
         startTime: z.string().min(1, 'Jam mulai rapat wajib diisi'),
-
         endTime: z.string().min(1, 'Jam selesai rapat wajib diisi'),
 
+        jumlahPeserta: z.string().min(1, 'Jumlah peserta wajib diisi'),
         purpose: z.string().min(1, 'Mohon jelaskan tujuan atau agenda rapat'),
-
         contact: z
             .string({
                 required_error: 'Nomor HP wajib diisi',
@@ -37,9 +33,9 @@ const schema = z
             .regex(/^08\d{8,12}$/, 'Nomor HP harus diawali 08 dan berisi 10–14 digit'),
 
         jenisRapat: z.string().nullable(),
-
+        makanSiang: z.boolean(),
+        makanRingan: z.boolean(),
         needItSupport: z.boolean(),
-
         isHybrid: z.boolean(),
     })
     .refine((data) => data.endTime > data.startTime, {
@@ -57,10 +53,13 @@ export default function RoomBooking() {
             date: '',
             startTime: '',
             endTime: '',
+            jumlahPeserta: '',
             purpose: '',
             contact: '',
 
             jenisRapat: 'internal',
+            makanRingan: false,
+            makanSiang: false,
             needItSupport: false,
             isHybrid: false,
         },

@@ -27,8 +27,11 @@ class StorePemesananRuangRapatRequest extends FormRequest
             'startTime'   => 'required|date_format:H:i',
             'endTime'     => 'required|date_format:H:i|after_or_equal:startTime',
             'purpose'     => 'required|string|max:255',
+            'jumlahPeserta'     => 'required|string|max:255',
             'contact'     => 'required|string|max:15',
             'jenisRapat'  => 'string|in:internal,external',
+            'makanRingan' => 'boolean',
+            'makanSiang' => 'boolean',
             'needItSupport' => 'boolean',
             'isHybrid'  => 'boolean',
         ];
@@ -46,11 +49,14 @@ class StorePemesananRuangRapatRequest extends FormRequest
             'endTime.required'      => 'Jam selesai wajib diisi.',
             'endTime.date_format'   => 'Format jam selesai harus HH:MM.',
             'endTime.after_or_equal' => 'Jam selesai harus sama atau setelah jam mulai.',
-            'purpose.required'      => 'Tujuan pemesanan wajib diisi.',
+            'purpose.required'      => 'Kegiatan rapat wajib diisi.',
+            'jumlahPeserta.required'      => 'Jumlah peserta rapat wajib diisi.',
             'contact.required'      => 'Nomor kontak wajib diisi.',
             'contact.max'           => 'Nomor kontak maksimal 15 karakter.',
             'jenisRapat.in'         => 'Jenis rapat harus berupa internal atau external.',
-            'needItSupport.boolean' => 'Need IT Support harus berupa nilai boolean.',
+            'makanRingan.boolean'   => 'Kebutuhan Snack harus berupa nilai boolean.',
+            'makanSiang.boolean'   => 'Kebutuhan Makan Siang harus berupa nilai boolean.',
+            'needItSupport.boolean' => 'Dukungan TI harus berupa nilai boolean.',
             'isHybrid.boolean'      => 'Is Hybrid harus berupa nilai boolean.',
         ];
     }
