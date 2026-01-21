@@ -60,11 +60,22 @@ class PermintaanAtkController extends Controller
      */
     public function store(StorePermintaanAtkRequest $request)
     {
+        $items = collect($request->items)->map(function ($item) {
+            return [
+                'id'        => $item['id'],
+                'name'      => $item['name'],
+                'satuan'    => $item['satuan'],
+                'status'    => $item['status'],
+                'requested' => (int) $item['requested'],
+                'approved'  => (int) $item['approved'],
+            ];
+        })->values()->toArray();
+
         // Simpan permintaan ATK
         $permintaan = PermintaanAtk::create([
             'user_id'         => Auth::id(),
             'kode_unit'       => Auth::user()->pegawai?->unit?->kode_unit,
-            'daftar_kebutuhan' => $request->items ?? [],
+            'daftar_kebutuhan' => $items ?? [],
             'deskripsi'       => $request->justification,
             'no_hp'           => $request->contact,
             'kode_pelaporan'  => 'ATK-' . now()->format('md') . '-' . strtoupper(Str::random(3)),

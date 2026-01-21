@@ -36,7 +36,7 @@ const FormSchema = z.object({
                 requested: z.coerce.number().min(1, 'Jumlah minimal 1'),
                 approved: z.coerce.number(),
                 satuan: z.string().min(1, 'Satuan wajib dipilih'),
-                is_custom: z.boolean(),
+                status: z.enum(['custom', 'normal']),
             }),
         )
         .min(1, 'Minimal satu barang harus dipilih'),
@@ -69,7 +69,7 @@ export default function SuppliesRequest({ availableATK }: any) {
     } = useForm<FormData>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            items: [{ id: '', name: '', requested: 1, approved: 0, satuan: '', is_custom: false }],
+            items: [{ id: '', name: '', requested: 1, approved: 0, satuan: '', status: 'normal' }],
             justification: '',
             // urgency: '',
             contact: '',
@@ -160,13 +160,12 @@ export default function SuppliesRequest({ availableATK }: any) {
         // }
 
         data.items.forEach((item, index) => {
-            const custom = Boolean(item.is_custom);
             formData.append(`items[${index}][id]`, item.id);
             formData.append(`items[${index}][name]`, item.name);
             formData.append(`items[${index}][requested]`, String(item.requested));
             formData.append(`items[${index}][approved]`, String(item.approved));
             formData.append(`items[${index}][satuan]`, item.satuan);
-            formData.append(`items[${index}][is_custom]`, String(custom));
+            formData.append(`items[${index}][status]`, item.status);
         });
 
         router.post(route('permintaanatk.store'), formData, {
@@ -184,7 +183,7 @@ export default function SuppliesRequest({ availableATK }: any) {
         });
     };
 
-    const isLainLain = (item?: any) => Boolean(item?.is_custom);
+    const isLainLain = (item?: any) => item?.status === 'custom';
 
     return (
         <>
@@ -282,7 +281,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                                                         satuan: '',
                                                                                         requested: field.requested || 1,
                                                                                         approved: 0,
-                                                                                        is_custom: true,
+                                                                                        status: 'custom',
                                                                                     });
                                                                                     setOpenComboboxes({ ...openComboboxes, [index]: false });
                                                                                 }}
@@ -328,7 +327,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                                                                 satuan: atk.satuan,
                                                                                                 requested: field.requested || 1,
                                                                                                 approved: 0,
-                                                                                                is_custom: false,
+                                                                                                status: 'normal',
                                                                                             });
                                                                                             setOpenComboboxes({ ...openComboboxes, [index]: false });
                                                                                         }}
@@ -368,7 +367,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                         <input type="hidden" {...register(`items.${index}.id`)} />
                                                         <input type="hidden" {...register(`items.${index}.name`)} />
                                                         <input type="hidden" {...register(`items.${index}.satuan`)} />
-                                                        <input type="hidden" {...register(`items.${index}.is_custom` as const)} />
+                                                        <input type="hidden" {...register(`items.${index}.status` as const)} />
                                                     </div>
 
                                                     {/* Jumlah - only show if NOT "Lain-lain" */}
@@ -458,7 +457,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                         type="button"
                                         variant="outline"
                                         size="sm"
-                                        onClick={() => append({ id: '', name: '', requested: 0, approved: 0, satuan: '', is_custom: false })}
+                                        onClick={() => append({ id: '', name: '', requested: 0, approved: 0, satuan: '', status: 'normal' })}
                                         disabled={fields.length >= availableATK.length + 1}
                                         className="mt-3"
                                     >
