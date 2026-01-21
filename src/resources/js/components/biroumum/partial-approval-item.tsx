@@ -1,10 +1,13 @@
 'use client';
 
+import { ItemCombobox } from '@/components/biroumum/item-combobox';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
+
 import { X } from 'lucide-react';
+import { useState } from 'react';
 
 interface PartialApprovalItemProps {
     item: any;
@@ -14,7 +17,6 @@ interface PartialApprovalItemProps {
     onRemove: () => void;
     maxAllowed: number;
     availableItems: any[];
-    onItemSelect?: (itemId: string) => void;
 }
 
 export function PartialApprovalItem({
@@ -25,8 +27,72 @@ export function PartialApprovalItem({
     onRemove,
     maxAllowed,
     availableItems,
-    onItemSelect,
 }: PartialApprovalItemProps) {
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [adminMessage, setAdminMessage] = useState('');
+    const [actionType, setActionType] = useState<'confirmed' | 'reject' | null>(null);
+    const [approvedQuantities, setApprovedQuantities] = useState<{ [key: string]: number }>({});
+    const [itemReplacements, setItemReplacements] = useState<{ [itemId: string]: string }>({});
+
+    const [partialApprovals, setPartialApprovals] = useState<{
+        [itemId: string]: {
+            firstApproved: number;
+            additionalApprovals: Array<{ approved: number; itemId?: string }>;
+            isExpanded: boolean;
+        };
+    }>({});
+
+    const [newRequestsFromUnavailable, setNewRequestsFromUnavailable] = useState<
+        Array<{
+            originalItemId: string;
+            id: string;
+            name: string;
+            satuan: string;
+            requested: number;
+        }>
+    >([]);
+
+    const handleSelectAtkForUnavailable = (originalItemId: string, newAtkId: string, originalItem: any) => {
+        const selectedAtk = availableItems.find((atk: any) => atk.id == newAtkId);
+        if (!selectedAtk) return;
+
+        // Add to new requests
+        setNewRequestsFromUnavailable((prev) => {
+            const existingIndex = prev.findIndex((req) => req.originalItemId == originalItemId);
+
+            if (existingIndex >= 0) {
+                // Replace existing
+                const updated = [...prev];
+                updated[existingIndex] = {
+                    originalItemId,
+                    id: selectedAtk.id,
+                    name: selectedAtk.name,
+                    satuan: originalItem.satuan,
+                    requested: originalItem.requested,
+                };
+                return updated;
+            } else {
+                // Add new
+                return [
+                    ...prev,
+                    {
+                        originalItemId,
+                        id: selectedAtk.id,
+                        name: selectedAtk.name,
+                        satuan: originalItem.satuan,
+                        requested: originalItem.requested,
+                    },
+                ];
+            }
+        });
+
+        // Set original item approved to 0
+        setApprovedQuantities((prev) => ({
+            ...prev,
+            [originalItemId]: 0,
+        }));
+    };
+
     const percentage = item.requested > 0 ? (approvedValue / item.requested) * 100 : 0;
     const isFirstApproval = approvalIndex == 0;
 
@@ -38,13 +104,6 @@ export function PartialApprovalItem({
                     <div className="flex-1">
                         <div className="mb-2 flex items-center gap-2">
                             <h5 className="font-medium text-gray-900">{item.name}</h5>
-                            {/* <Badge
-                                className={
-                                    isFirstApproval ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                                }
-                            >
-                                {approvalIndex == 0 ? 'Persetujuan 1' : `Persetujuan ${approvalIndex + 1}`}
-                            </Badge> */}
                         </div>
                         <div className="text-sm text-gray-600">
                             Diminta: {item.requested} {item.satuan}
@@ -55,6 +114,41 @@ export function PartialApprovalItem({
                             <X className="h-4 w-4" />
                         </Button>
                     )}
+                </div>
+
+                <div className="my-0">
+                    <Label className="text-sm font-medium text-amber-900">⚠️ ATK tidak ditemukan di daftar. Silahkan pilih ATK yang ada:</Label>
+                    <div className="mt-2 bg-gray-50">
+                        <ItemCombobox
+                            items={availableItems.map((i: any) => ({
+                                id: String(i.id),
+                                name: i.name,
+                                category: i.category,
+                                kode_atk: i.kode_atk,
+                                satuan: i.satuan,
+                            }))}
+                            value={itemReplacements[item.id] || null}
+                            onSelect={(value) => {
+                                setItemReplacements((prev) => ({
+                                    ...prev,
+                                    [item.id]: value || '',
+                                }));
+
+                                if (value) {
+                                    // panggil helper untuk menambahkan ke newRequestsFromUnavailable & set approved original = 0
+                                    handleSelectAtkForUnavailable(item.id, value, item);
+                                } else {
+                                    // jika clear selection: hapus dari newRequestsFromUnavailable
+                                    setNewRequestsFromUnavailable((prev) => prev.filter((r) => r.originalItemId !== item.id));
+                                    setApprovedQuantities((prev) => ({
+                                        ...prev,
+                                        [item.id]: 0,
+                                    }));
+                                }
+                            }}
+                            kodeAtk={() => {}}
+                        />
+                    </div>
                 </div>
 
                 {/* Input Area */}
@@ -74,7 +168,7 @@ export function PartialApprovalItem({
                                     const value = Math.max(0, Math.min(Number.parseInt(e.target.value) || 0, maxAllowed));
                                     onApprovedChange(value);
                                 }}
-                                className="w-24"
+                                className="mt-1 w-24"
                             />
                             <span className="text-sm whitespace-nowrap text-gray-500">{item.satuan}</span>
                         </div>
@@ -99,27 +193,12 @@ export function PartialApprovalItem({
 interface PartialApprovalListProps {
     item: any;
     firstApproved: number;
-    additionalApprovals: Array<{ approved: number; itemId?: string }>;
     onFirstApprovedChange: (value: number) => void;
-    onAdditionalApprovalChange: (index: number, value: number) => void;
-    onRemoveAdditionalApproval: (index: number) => void;
-    onAddApproval: () => void;
     availableItems: any[];
 }
 
-export function PartialApprovalList({
-    item,
-    firstApproved,
-    additionalApprovals,
-    onFirstApprovedChange,
-    onAdditionalApprovalChange,
-    onRemoveAdditionalApproval,
-    onAddApproval,
-    availableItems,
-}: PartialApprovalListProps) {
-    const totalApproved = firstApproved + additionalApprovals.reduce((sum, approval) => sum + approval.approved, 0);
-    const remainingToApprove = item.requested - totalApproved;
-    const canAddMoreApproval = remainingToApprove > 0;
+export function PartialApprovalList({ item, firstApproved, onFirstApprovedChange, availableItems }: PartialApprovalListProps) {
+    console.log(item, firstApproved, onFirstApprovedChange, availableItems);
 
     return (
         <div className="space-y-3">
@@ -133,40 +212,6 @@ export function PartialApprovalList({
                 maxAllowed={item.requested}
                 availableItems={availableItems}
             />
-
-            {/* Additional Approvals */}
-            {additionalApprovals.map((approval, index) => (
-                <PartialApprovalItem
-                    key={`additional-${index}`}
-                    item={item}
-                    approvalIndex={index + 1}
-                    approvedValue={approval.approved}
-                    onApprovedChange={(value) => onAdditionalApprovalChange(index, value)}
-                    onRemove={() => onRemoveAdditionalApproval(index)}
-                    maxAllowed={remainingToApprove + approval.approved}
-                    availableItems={availableItems}
-                />
-            ))}
-
-            {/* Add More Approval Button */}
-            {/* {canAddMoreApproval && (
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onAddApproval}
-                    className="w-full border-dashed border-blue-300 text-blue-600 hover:bg-blue-50"
-                >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Tambah Persetujuan Lagi ({remainingToApprove} {item.satuan} tersisa)
-                </Button>
-            )} */}
-
-            {/* Summary */}
-            {additionalApprovals.length > 0 && (
-                <div className="rounded-md bg-blue-100 p-3 text-sm text-blue-800">
-                    <strong>Total Disetujui:</strong> {totalApproved} dari {item.requested} {item.satuan}
-                </div>
-            )}
         </div>
     );
 }
