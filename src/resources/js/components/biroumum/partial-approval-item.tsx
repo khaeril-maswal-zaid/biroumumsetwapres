@@ -6,13 +6,17 @@ import { Progress } from '@/components/ui/progress';
 
 interface PartialApprovalListProps {
     item: any;
-    approvedChange: (value: number) => void;
+    /** called when the "additional" value changes (number) */
+    onAdditionalChange?: (value: number) => void;
+    currentApproved?: number;
+    currentAdditional?: number;
 }
 
-export function PartialApprovalList({ item, approvedChange }: PartialApprovalListProps) {
-    const percentage = item.requested > 0 ? (item.approved / item.requested) * 100 : 0;
-
-    console.log(item);
+export function PartialApprovalList({ item, onAdditionalChange, currentApproved, currentAdditional }: PartialApprovalListProps) {
+    const approvedValue = typeof currentApproved === 'number' ? currentApproved : (item.approved ?? 0);
+    const additionalValue = typeof currentAdditional === 'number' ? currentAdditional : 0;
+    const remaining = Math.max(0, (item.requested ?? 0) - approvedValue);
+    const percentage = item.requested > 0 ? ((approvedValue + additionalValue) / item.requested) * 100 : 0;
 
     return (
         <div className="space-y-3">
@@ -35,31 +39,34 @@ export function PartialApprovalList({ item, approvedChange }: PartialApprovalLis
                     <div className="flex items-end gap-3">
                         <div className="flex-1">
                             <Label htmlFor={`approval-qty-${0}`} className="mb-1 text-sm font-medium">
-                                Disetujui:
+                                Tambahan yang akan diberikan:
                             </Label>
                             <div className="flex items-center gap-2">
                                 <Input
                                     id={`approval-qty-${0}`}
-                                    type="number"
-                                    min="0"
-                                    max={item.requested - item.approved}
-                                    // value={}
+                                    type=""
+                                    min={0}
+                                    max={remaining}
+                                    value={additionalValue}
                                     onChange={(e) => {
-                                        const value = Math.max(0, Math.min(Number.parseInt(e.target.value) || 0, item.requested));
-                                        approvedChange(value);
+                                        const parsed = Number.parseInt(e.target.value) || 0;
+                                        const value = Math.max(0, Math.min(parsed, remaining));
+                                        onAdditionalChange && onAdditionalChange(value);
                                     }}
                                     className="mt-1 w-24"
                                 />
                                 <span className="text-sm whitespace-nowrap text-gray-500">{item.satuan}</span>
                             </div>
                             <p className="mt-1 text-xs text-gray-600">
-                                Maks: {item.requested - item.approved} {item.satuan}
+                                <strong className="text-sm">Telah disetujui:</strong> {approvedValue} {item.satuan}
+                                {' • '}
+                                <strong className="text-sm">Maks tambahan:</strong> {remaining} {item.satuan}
                             </p>
                         </div>
                     </div>
 
                     {/* Progress Bar */}
-                    {item.approved > 0 && (
+                    {approvedValue + additionalValue > 0 && (
                         <div>
                             <Progress value={Math.min(percentage, 100)} className="h-2" />
                             <p className="mt-1 text-xs text-gray-500">{Math.round(percentage)}% dari yang diminta</p>

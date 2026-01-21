@@ -80,14 +80,20 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
             // ambil approved yang diinput di UI (default 0)
             let approved = approvedQuantities[item.id] || 0;
 
+            // ambil tambahan dari partial approvals (jika ada)
+            const partialEntry = partialApprovals[item.id];
+            const extraFromPartial = partialEntry
+                ? (partialEntry.firstApproved || 0) + (partialEntry.additionalApprovals?.reduce((s: number, a: any) => s + (a.approved || 0), 0) || 0)
+                : 0;
+
             // RULE: jika item custom, approved harus 0 kecuali ada kebijakan lain
             if (isCustom) {
                 // kalau admin memilih ATK yang tersedia, kita tetap set original approved = 0
                 approved = 0;
             } else {
-                // non-custom: enforce <= requested dan <= stock
+                // non-custom: tambahkan extra partial lalu enforce <= requested dan <= stock
                 const stock = typeof item.quantity == 'number' ? item.quantity : Infinity;
-                approved = Math.max(0, Math.min(approved, item.requested, stock));
+                approved = Math.max(0, Math.min(approved + extraFromPartial, item.requested, stock));
             }
 
             itemsPayload[item.id] = approved;
@@ -103,6 +109,11 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                 approved: approvedQuantities[r.id] || 0,
                 requested: r.requested,
             }));
+        }
+
+        // Sertakan partial approvals agar backend dapat memproses pemberian tambahan
+        if (Object.keys(partialApprovals).length > 0) {
+            payload.partialApprovals = partialApprovals;
         }
 
         payload.items = itemsPayload;
@@ -141,30 +152,16 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
     };
 
     const togglePartialApprovalExpand = (itemId: string) => {
-        setPartialApprovals((prev) => ({
-            ...prev,
-            [itemId]: {
-                ...prev[itemId],
-                isExpanded: !prev[itemId]?.isExpanded,
-            },
-        }));
-    };
-
-    const handleFirstChange = (itemId: string, value: number, maxQuantity: number) => {
-        console.log(maxQuantity, value, itemId);
-
-        const validValue = Math.max(0, Math.min(value, maxQuantity));
-        setPartialApprovals((prev) => ({
-            ...prev,
-            [itemId]: {
-                ...prev[itemId],
-                firstApproved: validValue,
-            },
-        }));
-        setApprovedQuantities((prev) => ({
-            ...prev,
-            [itemId]: validValue,
-        }));
+        setPartialApprovals((prev) => {
+            const existing = prev[itemId] || { firstApproved: 0, additionalApprovals: [], isExpanded: false };
+            return {
+                ...prev,
+                [itemId]: {
+                    ...existing,
+                    isExpanded: !existing.isExpanded,
+                },
+            };
+        });
     };
 
     const handleSelectAtkForUnavailable = (originalItemId: string, newAtkId: string, originalItem: any) => {
@@ -466,7 +463,18 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                         <div className="ml-2 space-y-3 border-l-2 border-blue-300 pl-4">
                                                             <PartialApprovalList
                                                                 item={item}
-                                                                approvedChange={(value) => handleFirstChange(item.id, value, item.requested)}
+                                                                currentApproved={approvedQuantities[item.id] || item.approved}
+                                                                currentAdditional={partialApprovals[item.id]?.firstApproved || 0}
+                                                                onAdditionalChange={(value: number) => {
+                                                                    setPartialApprovals((prev) => ({
+                                                                        ...prev,
+                                                                        [item.id]: {
+                                                                            firstApproved: value,
+                                                                            additionalApprovals: prev[item.id]?.additionalApprovals || [],
+                                                                            isExpanded: true,
+                                                                        },
+                                                                    }));
+                                                                }}
                                                             />
                                                             <Button
                                                                 variant="ghost"
@@ -621,7 +629,18 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                             <div className="ml-2 space-y-3 border-l-2 border-blue-300 pl-4">
                                                                 <PartialApprovalList
                                                                     item={item}
-                                                                    approvedChange={(value) => handleFirstChange(item.id, value, item.requested)}
+                                                                    currentApproved={approvedQty}
+                                                                    currentAdditional={partialApprovals[item.id]?.firstApproved || 0}
+                                                                    onAdditionalChange={(value: number) => {
+                                                                        setPartialApprovals((prev) => ({
+                                                                            ...prev,
+                                                                            [item.id]: {
+                                                                                firstApproved: value,
+                                                                                additionalApprovals: prev[item.id]?.additionalApprovals || [],
+                                                                                isExpanded: true,
+                                                                            },
+                                                                        }));
+                                                                    }}
                                                                 />
                                                                 <Button
                                                                     variant="ghost"
@@ -770,9 +789,10 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                                             )}
                                                                         </div>
 
-                                                                        {selectedRequest.status == 'pending' &&
+                                                                        {(selectedRequest.status == 'pending' ||
+                                                                            selectedRequest.status == 'partial') &&
                                                                             actionType == 'confirmed' &&
-                                                                            shouldShowItemSelector && (
+                                                                            item.status == 'custom' && (
                                                                                 <div className="mt-2 flex items-center gap-4 text-sm">
                                                                                     <span className="font-medium text-blue-700">
                                                                                         Stok Tersedia: {replacementItemQuanty} {replacementItemSatuan}
@@ -801,47 +821,50 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                                         )}
                                                                     </div>
 
-                                                                    {selectedRequest.status == 'pending' && actionType == 'confirmed' && (
-                                                                        <div className="mt-9 flex items-center gap-2">
-                                                                            <Label htmlFor={`qty-${keyId}`} className="text-sm whitespace-nowrap">
-                                                                                Setujui x:
-                                                                            </Label>
+                                                                    {(selectedRequest.status == 'pending' || selectedRequest.status == 'partial') &&
+                                                                        actionType == 'confirmed' &&
+                                                                        item.status == 'custom' && (
+                                                                            <div className="mt-2 flex items-center gap-2">
+                                                                                <Label htmlFor={`qty-${keyId}`} className="text-sm whitespace-nowrap">
+                                                                                    Setujui x:
+                                                                                </Label>
 
-                                                                            {canApproveThisItem ? (
-                                                                                <Input
-                                                                                    id={`qty-${keyId}`}
-                                                                                    type=""
-                                                                                    min={0}
-                                                                                    max={Math.min(
-                                                                                        item.requested,
-                                                                                        itemExists
-                                                                                            ? item.quantity
-                                                                                            : (daftarAtk.find(
-                                                                                                  (a: any) => String(a.id) == replacementSelectedId,
-                                                                                              )?.quantity ?? item.requested),
-                                                                                    )}
-                                                                                    value={approvedQty}
-                                                                                    onChange={(e) =>
-                                                                                        handleQuantityChange(
-                                                                                            replacementSelectedId,
-                                                                                            Number(e.target.value) || 0,
-                                                                                            atkWithRequested,
-                                                                                        )
-                                                                                    }
-                                                                                    className="w-20"
-                                                                                />
-                                                                            ) : (
-                                                                                <Input
-                                                                                    id={`qty-${keyId}`}
-                                                                                    value={0}
-                                                                                    disabled
-                                                                                    className="w-20 bg-gray-100"
-                                                                                />
-                                                                            )}
+                                                                                {canApproveThisItem ? (
+                                                                                    <Input
+                                                                                        id={`qty-${keyId}`}
+                                                                                        type=""
+                                                                                        min={0}
+                                                                                        max={Math.min(
+                                                                                            item.requested,
+                                                                                            itemExists
+                                                                                                ? item.quantity
+                                                                                                : (daftarAtk.find(
+                                                                                                      (a: any) =>
+                                                                                                          String(a.id) == replacementSelectedId,
+                                                                                                  )?.quantity ?? item.requested),
+                                                                                        )}
+                                                                                        value={approvedQty}
+                                                                                        onChange={(e) =>
+                                                                                            handleQuantityChange(
+                                                                                                replacementSelectedId,
+                                                                                                Number(e.target.value) || 0,
+                                                                                                atkWithRequested,
+                                                                                            )
+                                                                                        }
+                                                                                        className="w-20"
+                                                                                    />
+                                                                                ) : (
+                                                                                    <Input
+                                                                                        id={`qty-${keyId}`}
+                                                                                        value={0}
+                                                                                        disabled
+                                                                                        className="w-20 bg-gray-100"
+                                                                                    />
+                                                                                )}
 
-                                                                            <span className="text-sm text-gray-500">{item.satuan}</span>
-                                                                        </div>
-                                                                    )}
+                                                                                <span className="text-sm text-gray-500">{item.satuan}</span>
+                                                                            </div>
+                                                                        )}
                                                                 </div>
                                                             </div>
                                                         </div>

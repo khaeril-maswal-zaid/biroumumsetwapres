@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PermintaanAtk;
 use App\Http\Requests\StorePermintaanAtkRequest;
 use App\Models\DaftarAtk;
 use App\Http\Requests\UpdatePermintaanAtkRequest;
+use App\Http\Requests\UpdatePermintaanAtkStatusRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Notification;
+use App\Models\PermintaanAtk;
 use App\Models\StockOpname;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Inertia\Response;
@@ -154,9 +154,46 @@ class PermintaanAtkController extends Controller
         //
     }
 
-    public function status(PermintaanAtk $permintaanAtk, Request $request)
+    public function status(
+        PermintaanAtk $permintaanAtk,
+        UpdatePermintaanAtkStatusRequest $request,
+        \App\Services\PermintaanAtk\PermintaanAtkStatusService $statusService,
+        \App\Services\StockOpnameService $stockService
+    ) {
+        $finalItems = $statusService->handle(
+            permintaan: $permintaanAtk,
+            items: $request->input('items', []),
+            newRequests: $request->input('newRequests', []),
+            partialApprovals: $request->input('partialApprovals', []),
+            nextStatus: $request->status
+        );
+
+        DB::transaction(function () use ($permintaanAtk, $request, $finalItems, $stockService) {
+
+            $permintaanAtk->update([
+                'status'           => $request->status,
+                'daftar_kebutuhan' => $finalItems,
+                'keterangan'       => $request->message ?? '',
+            ]);
+
+            $kodeUnit = Auth::user()?->pegawai?->unit?->kode_unit;
+
+            foreach ($finalItems as $item) {
+                if (is_numeric($item['id']) && (int) $item['approved'] > 0) {
+                    $stockService->consume(
+                        (int) $item['id'],
+                        (int) $item['approved'],
+                        $permintaanAtk->id,
+                        $kodeUnit
+                    );
+                }
+            }
+        });
+    }
+
+
+    public function statusX(PermintaanAtk $permintaanAtk, Request $request)
     {
-        dd($request->all());
         $validated = $request->validate([
             'status'       => 'required|in:pending,partial,confirmed,reject',
             'message'      => 'required_if:status,reject|string|max:255',
@@ -164,8 +201,8 @@ class PermintaanAtkController extends Controller
             'newRequests'  => 'sometimes|array',
         ]);
 
-        $inputItems  = $validated['items'] ?? [];        // mapping: [ '<id-or-tempId>' => approvedDelta ]
-        $newRequests = $validated['newRequests'] ?? [];  // array of converted requests
+        $inputItems  = $validated['items'] ?? [];
+        $newRequests = $validated['newRequests'] ?? [];
 
         $originalItems = collect($permintaanAtk->daftar_kebutuhan ?? []);
 
