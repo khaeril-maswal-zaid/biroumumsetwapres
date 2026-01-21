@@ -154,135 +154,9 @@ class PermintaanAtkController extends Controller
         //
     }
 
-
-    public function statusX(PermintaanAtk $permintaanAtk, Request $request)
-    {
-        dd($request->all());
-        $validated = $request->validate([
-            'status' => 'required|in:pending,partial,confirmed,reject',
-            'message' => 'required_if:status,reject|string|max:255',
-            'items' => 'sometimes|array',
-        ], [
-            'status.required' => 'Status wajib diisi.',
-            'status.in' => 'Status harus salah satu dari: pending, partial, confirmed, reject.',
-            'message.required_if' => 'Alasan / pesan wajib diisi saat menolak.',
-        ]);
-
-        // Ambil mapping input item: ekspektasi FE: items => [ '<daftar_atk_id>' => <approvedQty>, ... ]
-        $inputItems = $validated['items'] ?? [];
-
-        // Ambil daftar_kebutuhan original (format array of objects)
-        $originalItems = collect($permintaanAtk->daftar_kebutuhan ?? []);
-
-        // Update setiap item approved jika ada di payload
-        $updatedItems = $originalItems->map(function ($item) use ($inputItems) {
-            $itemId = (string) $item['id']; // pastikan key string/ints konsisten
-            if (isset($inputItems[$itemId])) {
-                // cast ke int supaya aman
-                $item['approved'] = (int) $inputItems[$itemId];
-            }
-            return $item;
-        });
-
-        // Tentukan status yang disimpan (pakai value langsung dari client)
-        $statusToStore = $validated['status'];
-
-        // Susun data update
-        $updateData = [
-            'status' => $statusToStore,
-            'daftar_kebutuhan' => $updatedItems->values()->all(),
-        ];
-        if (isset($validated['message'])) {
-            $updateData['keterangan'] = $validated['message'];
-        }
-
-        // Mulai transaksi: update permintaan + proses pemakaian per item
-        DB::transaction(function () use ($permintaanAtk, $updateData, $updatedItems) {
-
-            // 1) Update permintaan (status + daftar_kebutuhan + keterangan)
-            $permintaanAtk->update($updateData);
-
-            // 2) Proses setiap approved item: buat StockOpname (Pemakaian) & update DaftarAtk
-            foreach ($updatedItems as $item) {
-                $approved = isset($item['approved']) ? (int) $item['approved'] : 0;
-                if ($approved <= 0) {
-                    continue; // tidak ada yang disetujui untuk item ini
-                }
-
-                $daftarAtkId = (int) $item['id'];
-                $kodeUnit = Auth::user()->pegawai?->unit?->kode_unit ?? null;
-
-                // Ambil daftar Perolehan (FIFO) yang masih punya remaining
-                $perolehans = StockOpname::where('daftar_atk_id', $daftarAtkId)
-                    ->where('type', 'Perolehan')
-                    ->where('remaining_quantity', '>', 0)
-                    ->orderBy('id') // FIFO; jika ingin berdasarkan created_at ubah ke ->orderBy('created_at')
-                    ->lockForUpdate()
-                    ->get();
-
-                $qtyToConsume = $approved;
-
-                // 2A) Ambil dari perolehan sebanyak mungkin (ambil batch per batch)
-                foreach ($perolehans as $per) {
-                    if ($qtyToConsume <= 0) break;
-
-                    $available = (int) $per->remaining_quantity;
-                    if ($available <= 0) continue;
-
-                    $take = min($available, $qtyToConsume);
-
-                    // buat record Pemakaian yang mengacu ke perolehan ($per->id) dan copy unit_price
-                    StockOpname::create([
-                        'kode_unit' => $kodeUnit,
-                        'daftar_atk_id' => $daftarAtkId,
-                        'quantity' => $take,
-                        'remaining_quantity' => null,
-                        'type' => 'Pemakaian',
-                        'permintaan_atk_id' => $permintaanAtk->id,
-                        'source_stockopname_id' => $per->id,
-                        'unit_price' => $per->unit_price,
-                        'total_price' => $per->unit_price * $take,
-                    ]);
-
-                    // kurangi remaining pada perolehan sumber
-                    $per->remaining_quantity = max(0, $per->remaining_quantity - $take);
-                    $per->save();
-
-                    $qtyToConsume -= $take;
-                }
-
-                // 2B) Jika masih ada sisa yang belum ter-cover oleh Perolehan,
-                //      buat Pemakaian fallback dengan unit_price = 0 agar tercatat.
-                if ($qtyToConsume > 0) {
-                    StockOpname::create([
-                        'kode_unit' => $kodeUnit,
-                        'daftar_atk_id' => $daftarAtkId,
-                        'quantity' => $qtyToConsume,
-                        'remaining_quantity' => null,
-                        'type' => 'Pemakaian',
-                        'permintaan_atk_id' => $permintaanAtk->id,
-                        'source_stockopname_id' => null,
-                        'unit_price' => 0,
-                        'total_price' => 0,
-                    ]);
-                    // qtyToConsume jadi 0 setelah ini
-                    $qtyToConsume = 0;
-                }
-
-                // 3) Kurangi stok master DaftarAtk (kurangi total stock tersedia)
-                $daftarAtk = DaftarAtk::lockForUpdate()->find($daftarAtkId);
-                if ($daftarAtk) {
-                    // Pastikan tidak jadi negative (opsional)
-                    $decrementBy = $approved;
-                    // Jika ingin mencegah stok negatif, ubah $decrementBy = min($approved, $daftarAtk->quantity);
-                    $daftarAtk->decrement('quantity', $decrementBy);
-                }
-            }
-        });
-    }
-
     public function status(PermintaanAtk $permintaanAtk, Request $request)
     {
+        dd($request->all());
         $validated = $request->validate([
             'status'       => 'required|in:pending,partial,confirmed,reject',
             'message'      => 'required_if:status,reject|string|max:255',
@@ -290,76 +164,105 @@ class PermintaanAtkController extends Controller
             'newRequests'  => 'sometimes|array',
         ]);
 
-        $inputItems  = $validated['items'] ?? [];
-        $newRequests = $validated['newRequests'] ?? [];
+        $inputItems  = $validated['items'] ?? [];        // mapping: [ '<id-or-tempId>' => approvedDelta ]
+        $newRequests = $validated['newRequests'] ?? [];  // array of converted requests
 
         $originalItems = collect($permintaanAtk->daftar_kebutuhan ?? []);
 
-        /** --------------------------------------------
-         * 1) Update approved item EXISTING
-         * -------------------------------------------- */
-        $updatedItems = $originalItems->map(function ($item) use ($inputItems) {
-            $itemId = (string) ($item['id'] ?? '');
-            if (isset($inputItems[$itemId])) {
-                $item['approved'] = (int) $inputItems[$itemId];
+        // 1) Build lookup for newRequests by originalItemId (to mark replaced items)
+        $newByOrigin = collect($newRequests)->keyBy(function ($nr) {
+            return (string) ($nr['originalItemId'] ?? '');
+        });
+
+        // 2) Update existing items' approved (add, not overwrite) and mark replaced if needed.
+        $updatedItems = $originalItems->map(function ($item) use ($inputItems, $newByOrigin) {
+            $itemIdKey = (string) ($item['id'] ?? '');
+
+            // ensure fields exist
+            $item['requested'] = isset($item['requested']) ? (int) $item['requested'] : 0;
+            $item['approved']  = isset($item['approved']) ? (int) $item['approved'] : 0;
+
+            // if FE provided an approved delta for this item, add it (but cap to requested)
+            if (isset($inputItems[$itemIdKey])) {
+                $incoming = (int) $inputItems[$itemIdKey];
+                $item['approved'] = min($item['requested'], $item['approved'] + $incoming);
             }
+
+            // default status: numeric id => normal, else custom (lain-lain string)
+            if (is_numeric($item['id']) && (int)$item['id'] > 0) {
+                $item['status'] = 'normal';
+            } else {
+                $item['status'] = 'custom';
+            }
+
+            // if this original item was replaced (exists in newRequests), mark replaced + replacedBy
+            if ($newByOrigin->has($itemIdKey)) {
+                $nr = $newByOrigin->get($itemIdKey);
+                $item['status'] = 'replaced';
+                $item['replacedBy'] = (int) ($nr['id'] ?? null);
+            }
+
             return $item;
         });
 
-        /** --------------------------------------------
-         * 2) Append NEW REQUESTS (hasil konversi lain-lain)
-         * -------------------------------------------- */
-        $appendedItems = collect($newRequests)->map(function ($nr) {
+        // 3) Prepare appended items from newRequests (these are master ATK entries)
+        $appendedItems = collect($newRequests)->map(function ($nr) use ($inputItems) {
+            $requested = isset($nr['requested']) ? (int) $nr['requested'] : 0;
+            $approvedFromNr = isset($nr['approved']) ? (int) $nr['approved'] : 0;
+
+            // If FE also sent a mapping for this newRequest id (rare), add it to approved but cap to requested
+            $extra = 0;
+            $nrIdKey = (string) ($nr['id'] ?? '');
+            // FE might include mapping keyed by numeric id as well
+            if (isset($inputItems[$nrIdKey])) {
+                $extra = (int) $inputItems[$nrIdKey];
+            }
+
+            $approved = min($requested, $approvedFromNr + $extra);
+
             return [
-                'id'        => (int) $nr['id'],              // ID ATK MASTER
-                'name'      => $nr['name'],
-                'satuan'    => $nr['satuan'],
-                'requested' => (int) $nr['requested'],
-                'approved'  => (int) $nr['approved'],
-                'is_custom' => "replacement",                         // asal dari lain-lain
-                'origin_id' => $nr['originalItemId'] ?? null // jejak audit
+                'id'        => (int) $nr['id'],
+                'name'      => $nr['name'] ?? null,
+                'satuan'    => $nr['satuan'] ?? null,
+                'requested' => $requested,
+                'approved'  => $approved,
+                // now newRequests are master items => status replacement
+                'status'    => 'replacement',
+                'origin_id' => $nr['originalItemId'] ?? null,
             ];
         });
 
-        $finalItems = $updatedItems
-            ->concat($appendedItems)
-            ->values();
+        // 4) Final items = existing (with replaced flags) + appended newRequests
+        $finalItems = $updatedItems->concat($appendedItems)->values();
 
-        /** --------------------------------------------
-         * 3) Data update Permintaan
-         * -------------------------------------------- */
+        // 5) Prepare update payload for permintaan
         $updateData = [
             'status'           => $validated['status'],
             'daftar_kebutuhan' => $finalItems->all(),
         ];
-
         if (!empty($validated['message'])) {
             $updateData['keterangan'] = $validated['message'];
         }
 
-        /** --------------------------------------------
-         * 4) TRANSAKSI DB
-         * -------------------------------------------- */
+        // 6) DB transaction: update permintaan + process stock (only for numeric master ids)
         DB::transaction(function () use ($permintaanAtk, $updateData, $finalItems) {
-
             $permintaanAtk->update($updateData);
 
             $kodeUnit = Auth::user()->pegawai?->unit?->kode_unit ?? null;
 
             foreach ($finalItems as $item) {
-
                 $approved = (int) ($item['approved'] ?? 0);
                 if ($approved <= 0) continue;
 
-                /** 🔒 RULE FINAL:
-                 *  Stock opname HANYA jika punya ATK ID valid
-                 */
-                if (empty($item['id'])) continue;
+                // Only act on items that have a valid master ATK id (numeric > 0)
+                if (!isset($item['id']) || !is_numeric($item['id']) || (int) $item['id'] <= 0) {
+                    continue;
+                }
 
                 $daftarAtkId = (int) $item['id'];
                 $qtyToConsume = $approved;
 
-                // Ambil Perolehan FIFO
+                // FIFO perolehan
                 $perolehans = StockOpname::where('daftar_atk_id', $daftarAtkId)
                     ->where('type', 'Perolehan')
                     ->where('remaining_quantity', '>', 0)
@@ -376,39 +279,39 @@ class PermintaanAtkController extends Controller
                     $take = min($available, $qtyToConsume);
 
                     StockOpname::create([
-                        'kode_unit'               => $kodeUnit,
-                        'daftar_atk_id'           => $daftarAtkId,
-                        'quantity'                => $take,
-                        'remaining_quantity'      => null,
-                        'type'                    => 'Pemakaian',
-                        'permintaan_atk_id'       => $permintaanAtk->id,
-                        'source_stockopname_id'   => $per->id,
-                        'unit_price'              => $per->unit_price,
-                        'total_price'             => $per->unit_price * $take,
+                        'kode_unit'             => $kodeUnit,
+                        'daftar_atk_id'         => $daftarAtkId,
+                        'quantity'              => $take,
+                        'remaining_quantity'    => null,
+                        'type'                  => 'Pemakaian',
+                        'permintaan_atk_id'     => $permintaanAtk->id,
+                        'source_stockopname_id' => $per->id,
+                        'unit_price'            => $per->unit_price,
+                        'total_price'           => $per->unit_price * $take,
                     ]);
 
-                    $per->remaining_quantity -= $take;
+                    $per->remaining_quantity = max(0, $per->remaining_quantity - $take);
                     $per->save();
 
                     $qtyToConsume -= $take;
                 }
 
-                // Fallback pemakaian (stok kurang)
+                // fallback jika stok perolehan tidak cukup
                 if ($qtyToConsume > 0) {
                     StockOpname::create([
-                        'kode_unit'               => $kodeUnit,
-                        'daftar_atk_id'           => $daftarAtkId,
-                        'quantity'                => $qtyToConsume,
-                        'remaining_quantity'      => null,
-                        'type'                    => 'Pemakaian',
-                        'permintaan_atk_id'       => $permintaanAtk->id,
-                        'source_stockopname_id'   => null,
-                        'unit_price'              => 0,
-                        'total_price'             => 0,
+                        'kode_unit'             => $kodeUnit,
+                        'daftar_atk_id'         => $daftarAtkId,
+                        'quantity'              => $qtyToConsume,
+                        'remaining_quantity'    => null,
+                        'type'                  => 'Pemakaian',
+                        'permintaan_atk_id'     => $permintaanAtk->id,
+                        'source_stockopname_id' => null,
+                        'unit_price'            => 0,
+                        'total_price'           => 0,
                     ]);
                 }
 
-                // Update master stok
+                // update master stock
                 $daftarAtk = DaftarAtk::lockForUpdate()->find($daftarAtkId);
                 if ($daftarAtk) {
                     $daftarAtk->decrement('quantity', $approved);
