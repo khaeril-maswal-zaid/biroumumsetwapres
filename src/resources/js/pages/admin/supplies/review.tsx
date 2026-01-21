@@ -257,9 +257,10 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
         return 'partial';
     };
 
-    const isItemCustom = (it: any) => it?.is_custom == true || it?.is_custom == 'true';
-    const normalItems = selectedRequest?.daftar_kebutuhan?.filter((it: any) => !isItemCustom(it)) || [];
+    const isItemCustom = (it: any) => it?.status == 'custom';
     const customItems = selectedRequest?.daftar_kebutuhan?.filter((it: any) => isItemCustom(it)) || [];
+    const normalItems = selectedRequest?.daftar_kebutuhan?.filter((it: any) => it?.status == 'normal' ||  it?.status == 'replaced') || [];
+    const replacementItems = selectedRequest?.daftar_kebutuhan?.filter((it: any) => it?.status == 'replacement') || [];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
