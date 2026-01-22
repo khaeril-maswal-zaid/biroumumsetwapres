@@ -30,22 +30,40 @@ class UpdatePermintaanAtkStatusRequest extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($v) {
-            $status = $this->input('status');
+            $permintaan = $this->route('permintaanAtk'); // ambil dari route model binding
+            $currentStatus = $permintaan?->status;
 
-            if ($status === 'pending' && $this->filled('partialApprovals')) {
-                $v->errors()->add('partialApprovals', 'Tidak boleh mengirim partialApprovals saat status pending.');
+            if ($currentStatus === 'pending') {
+                if ($this->filled('partialApprovals')) {
+                    $v->errors()->add(
+                        'partialApprovals',
+                        'Tidak boleh mengirim partialApprovals saat status permintaan masih pending.'
+                    );
+                }
             }
 
-            if ($status === 'partial' && $this->filled('items')) {
-                $v->errors()->add('items', 'Tidak boleh mengirim items saat status partial.');
+            if ($currentStatus === 'partial') {
+                if ($this->filled('items')) {
+                    $v->errors()->add(
+                        'items',
+                        'Tidak boleh mengirim items saat status permintaan sudah partial.'
+                    );
+                }
             }
 
-            if (
-                $status === 'confirmed' &&
-                ($this->filled('items') || $this->filled('partialApprovals') || $this->filled('newRequests'))
-            ) {
-                $v->errors()->add('status', 'Confirmed tidak boleh membawa approval atau new request.');
+            if ($currentStatus === 'confirmed') {
+                if (
+                    $this->filled('items') ||
+                    $this->filled('partialApprovals') ||
+                    $this->filled('newRequests')
+                ) {
+                    $v->errors()->add(
+                        'status',
+                        'Permintaan yang sudah confirmed tidak boleh menerima perubahan.'
+                    );
+                }
             }
         });
     }
+
 }

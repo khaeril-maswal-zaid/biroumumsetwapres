@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\PermintaanAtk;
+namespace App\Services;
 
 use App\Models\PermintaanAtk;
 use App\DataTransferObjects\AtkRequestItem;
@@ -14,18 +14,10 @@ class PermintaanAtkStatusService
         array $items = [],
         array $newRequests = [],
         array $partialApprovals = [],
-        string $nextStatus
     ): array {
         if ($permintaan->status === 'confirmed') {
             throw ValidationException::withMessages([
                 'status' => 'Permintaan sudah confirmed dan tidak bisa diubah.'
-            ]);
-        }
-
-        // ❌ confirmed tidak boleh bawa approval payload
-        if ($nextStatus === 'confirmed' && (!empty($items) || !empty($partialApprovals) || !empty($newRequests))) {
-            throw ValidationException::withMessages([
-                'status' => 'Confirmed tidak boleh membawa approval atau new request.'
             ]);
         }
 

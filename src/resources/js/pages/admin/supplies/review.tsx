@@ -59,80 +59,93 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
     const handleSubmit = (supplyCode: string, status: string | null) => {
         setIsProcessing(true);
 
-        const trimmedMessage = adminMessage.trim();
-
         const finalStatus = status ?? actionType;
+        const currentStatus = selectedRequest.status;
 
         const payload: Record<string, any> = {
             status: finalStatus,
         };
 
-        // Hanya kirim jika tidak kosong
-        if (trimmedMessage !== '') {
-            payload.message = trimmedMessage;
+        if (adminMessage.trim() !== '') {
+            payload.message = adminMessage.trim();
         }
 
-        const itemsPayload: Record<string, any> = {};
+        /* ===============================
+        * CASE 1 — status saat ini: pending
+        * =============================== */
+        if (currentStatus === 'pending') {
+            const itemsPayload: Record<string, number> = {};
 
-        selectedRequest.daftar_kebutuhan.forEach((item: any) => {
-            const isCustom = isItemCustom(item);
+            selectedRequest.daftar_kebutuhan.forEach((item: any) => {
+                if (isItemCustom(item)) {
+                    itemsPayload[item.id] = 0;
+                    return;
+                }
 
-            // ambil approved yang diinput di UI (default 0)
-            let approved = approvedQuantities[item.id] || 0;
+                const approved = Math.max(
+                    0,
+                    Math.min(
+                        approvedQuantities[item.id] || 0,
+                        item.requested,
+                        typeof item.quantity === 'number' ? item.quantity : Infinity
+                    )
+                );
 
-            // ambil tambahan dari partial approvals (jika ada)
-            const partialEntry = partialApprovals[item.id];
-            const extraFromPartial = partialEntry
-                ? (partialEntry.firstApproved || 0) + (partialEntry.additionalApprovals?.reduce((s: number, a: any) => s + (a.approved || 0), 0) || 0)
-                : 0;
+                itemsPayload[item.id] = approved;
+            });
 
-            // RULE: jika item custom, approved harus 0 kecuali ada kebijakan lain
-            if (isCustom) {
-                // kalau admin memilih ATK yang tersedia, kita tetap set original approved = 0
-                approved = 0;
-            } else {
-                // non-custom: tambahkan extra partial lalu enforce <= requested dan <= stock
-                const stock = typeof item.quantity == 'number' ? item.quantity : Infinity;
-                approved = Math.max(0, Math.min(approved + extraFromPartial, item.requested, stock));
+            payload.items = itemsPayload;
+        }
+
+        /* ===============================
+        * CASE 2 — status saat ini: partial
+        * =============================== */
+        if (currentStatus === 'partial') {
+            const partialPayload: Record<string, { approve: number }> = {};
+
+            Object.entries(partialApprovals).forEach(([itemId, entry]: any) => {
+                const approve = entry.firstApproved ?? 0;
+                if (approve > 0) {
+                    partialPayload[itemId] = { approve };
+                }
+            });
+
+            if (Object.keys(partialPayload).length > 0) {
+                payload.partialApprovals = partialPayload;
             }
+        }
 
-            itemsPayload[item.id] = approved;
-        });
-
-        // Sertakan newRequests yang sebelumnya dikumpulkan saat admin memilih pengganti
+        /* ===============================
+        * newRequests — BOLEH DI KEDUANYA
+        * =============================== */
         if (newRequestsFromUnavailable.length > 0) {
             payload.newRequests = newRequestsFromUnavailable.map((r) => ({
                 originalItemId: r.originalItemId,
                 id: r.id,
                 name: r.name,
                 satuan: r.satuan,
-                approved: approvedQuantities[r.id] || 0,
                 requested: r.requested,
+                approved: approvedQuantities[r.id] || 0,
             }));
-        }
+    }
 
-        // Sertakan partial approvals agar backend dapat memproses pemberian tambahan
-        if (Object.keys(partialApprovals).length > 0) {
-            payload.partialApprovals = partialApprovals;
-        }
+    router.patch(route('permintaanatk.status', supplyCode), payload, {
+        preserveScroll: true,
+        onSuccess: () => {
+            setIsProcessing(false);
+            setAdminMessage('');
+            setActionType(null);
+            setApprovedQuantities({});
+            setPartialApprovals({});
+            setNewRequestsFromUnavailable([]);
+        },
+        onError: (errors) => {
+            console.log('Validation Errors:', errors);
+            setIsProcessing(false);
+        },
+    });
+};
 
-        payload.items = itemsPayload;
-
-        router.patch(route('permintaanatk.status', supplyCode), payload, {
-            preserveScroll: true,
-            onSuccess: () => {
-                setIsProcessing(false);
-                setAdminMessage('');
-                setActionType(null);
-                setApprovedQuantities({});
-                setPartialApprovals({});
-                setNewRequestsFromUnavailable([]);
-            },
-            onError: (errors) => {
-                console.log('Validation Errors: ', errors);
-            },
-        });
-    };
 
     const handleActionClick = (action: 'confirmed' | 'reject') => {
         setActionType(action);
