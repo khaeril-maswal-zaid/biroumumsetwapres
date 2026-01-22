@@ -21,6 +21,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
@@ -60,6 +61,8 @@ interface Permission {
 }
 
 export default function PermissionsPage({ mockRoles, availablePermissions, mockUsers }: any) {
+    const { toast } = useToast();
+
     const [roles, setRoles] = useState<Role[]>(mockRoles);
     const [users, setUsers] = useState<User[]>(mockUsers);
     const [searchTerm, setSearchTerm] = useState('');
@@ -134,9 +137,18 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                 setIsEditRoleDialogOpen(false);
                 setSelectedRole(null);
                 resetRoleForm();
+
+                toast({
+                    title: 'Berhasil',
+                    description: 'Berhasil melakukan update role',
+                });
             },
-            onError: (errors) => {
-                console.log('Validation Errors: ', errors);
+            onError: (er) => {
+                toast({
+                    title: 'Validasi gagal',
+                    description: Object.values(er)[0],
+                    variant: 'destructive',
+                });
             },
         });
     };
@@ -147,9 +159,18 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                 setIsEditRoleDialogOpen(false);
                 setSelectedRole(null);
                 resetRoleForm();
+
+                toast({
+                    title: 'Berhasil',
+                    description: 'User berhasil dihapus',
+                });
             },
-            onError: (errors) => {
-                console.log('Validation Errors: ', errors);
+            onError: (er) => {
+                toast({
+                    title: 'Validasi gagal',
+                    description: Object.values(er)[0],
+                    variant: 'destructive',
+                });
             },
         });
     };
@@ -171,17 +192,6 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
     const getPermissionLabel = (permissionId: string) => {
         const permission = availablePermissions.find((p: any) => p.name === permissionId);
         return permission ? permission.label : permissionId;
-    };
-
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case 'aktif':
-                return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Aktif</Badge>;
-            case 'nonaktif':
-                return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">Non-aktif</Badge>;
-            default:
-                return <Badge variant="secondary">{status}</Badge>;
-        }
     };
 
     const groupedPermissions = availablePermissions.reduce(
@@ -211,9 +221,18 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                     setIsEditUserRoleDialogOpen(false);
                     setSelectedUser(null);
                     setSelectedUserRole('');
+
+                    toast({
+                        title: 'Berhasil',
+                        description: 'Berhasil melakukan edit role user',
+                    });
                 },
-                onError: (e) => {
-                    console.log(e);
+                onError: (er) => {
+                    toast({
+                        title: 'Validasi gagal',
+                        description: Object.values(er)[0],
+                        variant: 'destructive',
+                    });
                 },
             },
         );

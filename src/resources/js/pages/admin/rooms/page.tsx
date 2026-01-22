@@ -20,6 +20,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
@@ -87,6 +88,8 @@ const facilityOptions = [
 ];
 
 export default function RoomsPage({ ruangans }: any) {
+    const { toast } = useToast();
+
     const [rooms, setRooms] = useState<Room[]>(ruangans.data);
     const [searchTerm, setSearchTerm] = useState('');
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -190,9 +193,18 @@ export default function RoomsPage({ ruangans }: any) {
                 setIsEditDialogOpen(false);
                 setSelectedRoom(null);
                 resetForm();
+
+                toast({
+                    title: 'Berhasil',
+                    description: 'Mengubah informasi ruangan berhasil',
+                });
             },
             onError: (errors) => {
-                console.log('Validation Errors: ', errors);
+                toast({
+                    title: 'Validasi gagal',
+                    description: Object.values(errors)[0],
+                    variant: 'destructive',
+                });
             },
         });
     };

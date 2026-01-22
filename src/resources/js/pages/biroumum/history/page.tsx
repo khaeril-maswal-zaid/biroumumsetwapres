@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/hooks/use-toast';
 import { Head, router } from '@inertiajs/react';
 import {
     AlertCircle,
@@ -34,6 +35,8 @@ import {
 import { useEffect, useState } from 'react';
 
 export default function RequestHistory({ requestHistory }: any) {
+    const { toast } = useToast();
+
     useEffect(() => {
         const interval = setInterval(() => {
             router.reload({ only: ['requestHistory'] });
@@ -69,7 +72,11 @@ export default function RequestHistory({ requestHistory }: any) {
                         setIsDetailsOpen(false);
                     },
                     onError: (errors) => {
-                        console.log('Validation Errors: ', errors);
+                        toast({
+                            title: 'Validasi gagal',
+                            description: Object.values(errors)[0],
+                            variant: 'destructive',
+                        });
                     },
                 },
             );

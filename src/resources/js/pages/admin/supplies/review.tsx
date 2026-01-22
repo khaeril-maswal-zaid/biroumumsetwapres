@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
@@ -32,6 +33,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) {
+    const { toast } = useToast();
+
     const [isProcessing, setIsProcessing] = useState(false);
     const [adminMessage, setAdminMessage] = useState('');
     const [actionType, setActionType] = useState<'confirmed' | 'reject' | null>(null);
@@ -71,8 +74,8 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
         }
 
         /* ===============================
-        * CASE 1 — status saat ini: pending
-        * =============================== */
+         * CASE 1 — status saat ini: pending
+         * =============================== */
         if (currentStatus === 'pending') {
             const itemsPayload: Record<string, number> = {};
 
@@ -84,11 +87,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
 
                 const approved = Math.max(
                     0,
-                    Math.min(
-                        approvedQuantities[item.id] || 0,
-                        item.requested,
-                        typeof item.quantity === 'number' ? item.quantity : Infinity
-                    )
+                    Math.min(approvedQuantities[item.id] || 0, item.requested, typeof item.quantity === 'number' ? item.quantity : Infinity),
                 );
 
                 itemsPayload[item.id] = approved;
@@ -98,8 +97,8 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
         }
 
         /* ===============================
-        * CASE 2 — status saat ini: partial
-        * =============================== */
+         * CASE 2 — status saat ini: partial
+         * =============================== */
         if (currentStatus === 'partial') {
             const partialPayload: Record<string, { approve: number }> = {};
 
@@ -116,8 +115,8 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
         }
 
         /* ===============================
-        * newRequests — BOLEH DI KEDUANYA
-        * =============================== */
+         * newRequests — BOLEH DI KEDUANYA
+         * =============================== */
         if (newRequestsFromUnavailable.length > 0) {
             payload.newRequests = newRequestsFromUnavailable.map((r) => ({
                 originalItemId: r.originalItemId,
@@ -127,25 +126,28 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                 requested: r.requested,
                 approved: approvedQuantities[r.id] || 0,
             }));
-    }
+        }
 
-    router.patch(route('permintaanatk.status', supplyCode), payload, {
-        preserveScroll: true,
-        onSuccess: () => {
-            setIsProcessing(false);
-            setAdminMessage('');
-            setActionType(null);
-            setApprovedQuantities({});
-            setPartialApprovals({});
-            setNewRequestsFromUnavailable([]);
-        },
-        onError: (errors) => {
-            console.log('Validation Errors:', errors);
-            setIsProcessing(false);
-        },
-    });
-};
-
+        router.patch(route('permintaanatk.status', supplyCode), payload, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setIsProcessing(false);
+                setAdminMessage('');
+                setActionType(null);
+                setApprovedQuantities({});
+                setPartialApprovals({});
+                setNewRequestsFromUnavailable([]);
+            },
+            onError: (errors) => {
+                toast({
+                    title: 'Validasi gagal',
+                    description: Object.values(errors)[0],
+                    variant: 'destructive',
+                });
+                setIsProcessing(false);
+            },
+        });
+    };
 
     const handleActionClick = (action: 'confirmed' | 'reject') => {
         setActionType(action);

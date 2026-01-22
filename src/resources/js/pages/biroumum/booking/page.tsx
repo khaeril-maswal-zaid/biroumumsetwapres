@@ -7,6 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Toaster } from '@/components/ui/toaster';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router } from '@inertiajs/react';
 import { AlertCircleIcon, CheckCircle2, Users } from 'lucide-react';
@@ -153,6 +154,8 @@ export default function RoomBooking() {
                     </DialogContent>
                 </Dialog>
             </div>
+
+            <Toaster />
         </>
     );
 }

@@ -21,6 +21,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
 function AtkTabs({ active }: { active: 'daftar-atk' | 'prolehan-pemakaian' | 'book-stay' }) {
@@ -66,6 +67,8 @@ function AtkTabs({ active }: { active: 'daftar-atk' | 'prolehan-pemakaian' | 'bo
 }
 
 export default function ATKItemsManagement({ daftarAtk }: any) {
+    const { toast } = useToast();
+
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
     const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -104,7 +107,11 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                 setEditData({ name: '', category: '', satuan: '' });
             },
             onError: (error) => {
-                console.log(error);
+                toast({
+                    title: 'Validasi gagal',
+                    description: Object.values(error)[0],
+                    variant: 'destructive',
+                });
             },
         });
     };

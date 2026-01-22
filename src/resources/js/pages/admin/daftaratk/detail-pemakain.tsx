@@ -26,7 +26,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const MONTHS_ID = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
-function formatBulanTahun({ bulan, tahun }) {
+function formatBulanTahun({ bulan, tahun }: any) {
     if (!tahun) return '';
 
     if (!bulan) {
@@ -85,13 +85,13 @@ export default function ATKItemsManagement({ Persediaan, filters }: any) {
 
     // Filter by selected bulan, tahun, and user only (removed date range filter)
     const filteredData = useMemo(() => {
-        return Persediaan.filter((item) => {
+        return Persediaan.filter((item: any) => {
             if (filterUser !== 'Semua Pengguna' && item.digunakan_oleh !== filterUser) return false;
             return true;
         });
     }, [filterUser]);
 
-    const uniqueUsers = [...new Set(Persediaan.map((u) => u.digunakan_oleh))];
+    const uniqueUsers = [...new Set(Persediaan.map((u: any) => u.digunakan_oleh))];
 
     const handleReset = () => {
         setFilterUser('Semua Pengguna');

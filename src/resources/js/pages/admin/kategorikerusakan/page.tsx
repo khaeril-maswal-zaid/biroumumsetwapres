@@ -18,12 +18,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { Edit, Plus, Search, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 interface DamageCategory {
     id: string;
@@ -41,6 +41,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
+    const { toast } = useToast();
+
     const [searchTerm, setSearchTerm] = useState('');
 
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -86,13 +88,21 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
 
     const handleUpdate = () => {
         if (!formData.name || !formData.kode_kerusakan) {
-            toast.error('Semua field harus diisi!');
+            toast({
+                title: 'Validasi gagal',
+                description: 'Semua field harus diisi!',
+                variant: 'destructive',
+            });
             return;
         }
 
         // Check if code already exists (excluding current item)
         if (filteredCategories.some((cat: any) => cat.kode_kerusakan === formData.kode_kerusakan && cat.id !== editingCategory?.id)) {
-            toast.error('Kode kerusakan sudah ada!');
+            toast({
+                title: 'Gagal',
+                description: 'Kode kerusakan sudah ada!',
+                variant: 'destructive',
+            });
             return;
         }
 
@@ -100,12 +110,19 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
             onSuccess: () => {
                 setEditingCategory(null);
                 resetForm();
-                toast.success('Kategori kerusakan berhasil diperbarui!');
+                toast({
+                    title: 'Berhasil Diperbarui',
+                    description: 'Kategori kerusakan berhasil diperbarui!',
+                    variant: 'destructive',
+                });
                 setIsEditDialogOpen(false);
             },
             onError: (er) => {
-                console.log(er);
-                toast.error('Gagal memperbarui kategori kerusakan');
+                toast({
+                    title: 'Validasi gagal',
+                    description: Object.values(er)[0],
+                    variant: 'destructive',
+                });
             },
         });
     };
@@ -113,10 +130,18 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
     const handleDelete = (id: string) => {
         router.delete(route('daftarkerusakan.destroy', id), {
             onSuccess: () => {
-                toast.success('Kategori kerusakan berhasil dihapus!');
+                toast({
+                    title: 'Berhasil Dihapus',
+                    description: 'Kategori kerusakan berhasil dihapus!',
+                    variant: 'destructive',
+                });
             },
             onError: (er) => {
-                console.log(er);
+                toast({
+                    title: 'Validasi gagal',
+                    description: Object.values(er)[0],
+                    variant: 'destructive',
+                });
             },
         });
     };

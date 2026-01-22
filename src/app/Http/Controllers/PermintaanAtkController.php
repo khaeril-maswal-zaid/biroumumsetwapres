@@ -9,13 +9,11 @@ use App\Http\Requests\UpdatePermintaanAtkStatusRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Notification;
 use App\Models\PermintaanAtk;
-use App\Models\StockOpname;
 use App\Services\PermintaanAtkStatusService;
 use App\Services\StockOpnameService;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use Inertia\Response;
 
 class PermintaanAtkController extends Controller
@@ -162,7 +160,8 @@ class PermintaanAtkController extends Controller
         PermintaanAtkStatusService $statusService,
         StockOpnameService $stockService
     ) {
-        dd($request->all());
+        $beforeItems = collect($permintaanAtk->daftar_kebutuhan ?? [])
+            ->keyBy(fn($i) => (string) $i['id']);
 
         $finalItems = $statusService->handle(
             permintaan: $permintaanAtk,
@@ -171,7 +170,13 @@ class PermintaanAtkController extends Controller
             partialApprovals: $request->input('partialApprovals', []),
         );
 
-        DB::transaction(function () use ($permintaanAtk, $request, $finalItems, $stockService) {
+        DB::transaction(function () use (
+            $permintaanAtk,
+            $request,
+            $finalItems,
+            $beforeItems,
+            $stockService
+        ) {
 
             $permintaanAtk->update([
                 'status'           => $request->status,
@@ -182,17 +187,27 @@ class PermintaanAtkController extends Controller
             $kodeUnit = Auth::user()?->pegawai?->unit?->kode_unit;
 
             foreach ($finalItems as $item) {
-                if (is_numeric($item['id']) && (int) $item['approved'] > 0) {
-                    $stockService->consume(
-                        (int) $item['id'],
-                        (int) $item['approved'],
-                        $permintaanAtk->id,
-                        $kodeUnit
-                    );
-                }
+                if (!is_numeric($item['id'])) continue;
+
+                $itemId = (string) $item['id'];
+
+                $approvedBefore = (int) ($beforeItems[$itemId]['approved'] ?? 0);
+                $approvedAfter  = (int) $item['approved'];
+
+                $delta = $approvedAfter - $approvedBefore;
+
+                if ($delta <= 0) continue;
+
+                $stockService->consume(
+                    (int) $item['id'],
+                    $delta, // ✅ DELTA ONLY
+                    $permintaanAtk->id,
+                    $kodeUnit
+                );
             }
         });
     }
+
 
 
     public function reports()

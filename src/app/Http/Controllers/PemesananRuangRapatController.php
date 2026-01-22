@@ -208,7 +208,7 @@ class PemesananRuangRapatController extends Controller
 
         $roomSchedules = $reportsData
             ->where('status', 'booked')
-            ->whereNotBetween('tanggal_penggunaan', [$startOfWeek, $endOfWeek])
+            // ->whereNotBetween('tanggal_penggunaan', [$startOfWeek, $endOfWeek]) //kalau mau tidak pakai data pekan ini
             ->with(['pemesan.pegawai.biro', 'ruangans'])
             ->get();
 

@@ -10,10 +10,12 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Toaster } from '@/components/ui/toaster';
+import { useToast } from '@/hooks/use-toast';
 import type { SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, router, usePage } from '@inertiajs/react';
-import { AlertCircle, AlertCircleIcon, AlertOctagon, AlertTriangle, CheckCircle2, ImagePlus, Trash2, Wrench } from 'lucide-react';
+import { AlertCircleIcon, CheckCircle2, ImagePlus, Trash2, Wrench } from 'lucide-react';
 import type React from 'react';
 import { useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -65,7 +67,9 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
+export default function DamageReport({ kategoriKerusakan }: any) {
+    const { toast } = useToast();
+
     const { auth } = usePage<SharedData>().props;
     const [photos, setPhotos] = useState<File[]>([]);
     const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
@@ -76,8 +80,6 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
         register,
         handleSubmit,
         control,
-        watch,
-        setValue,
         formState: { errors },
         reset,
     } = useForm<FormData>({
@@ -91,8 +93,6 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
     };
 
     const onSubmit = (data: FormData) => {
-        console.log(data);
-
         router.post(
             route('kerusakangedung.store'),
             { ...data, photos },
@@ -114,7 +114,11 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
     const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
             if (photos.length >= 2) {
-                alert('Maksimal 2 file yang dapat diunggah');
+                toast({
+                    title: 'Validasi gagal',
+                    description: 'Maksimal 2 file yang dapat diunggah',
+                    variant: 'destructive',
+                });
                 return;
             }
             const file = e.target.files[0];
@@ -125,12 +129,20 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
             const maxSize = 20 * 1024 * 1024; // 20MB
 
             if (!validTypes.includes(file.type)) {
-                alert('Format file tidak didukung. Gunakan JPG, PNG, HEIC untuk foto atau MP4, MOV untuk video');
+                toast({
+                    title: 'Validasi gagal',
+                    description: 'Format file tidak didukung. Gunakan JPG, PNG, HEIC untuk foto atau MP4, MOV untuk video',
+                    variant: 'destructive',
+                });
                 return;
             }
 
             if (file.size > maxSize) {
-                alert('Ukuran file terlalu besar. Maksimal 20MB');
+                toast({
+                    title: 'Validasi gagal',
+                    description: 'Ukuran file terlalu besar. Maksimal 20MB',
+                    variant: 'destructive',
+                });
                 return;
             }
 
@@ -157,42 +169,6 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
             fileInputRef.current.click();
         }
     };
-
-    const urgencyOptions = [
-        {
-            value: 'rendah' as const,
-            label: 'Prioritas Rendah',
-            description: 'Tidak mengganggu aktivitas',
-            detail: 'Dapat ditangani dalam 1-2 minggu',
-            icon: AlertCircle,
-            color: 'bg-green-50 border-green-200 text-green-800',
-            selectedColor: 'bg-green-100 border-green-400 shadow-green-100',
-            iconColor: 'text-green-600',
-            badgeColor: 'bg-green-500',
-        },
-        {
-            value: 'sedang' as const,
-            label: 'Prioritas Sedang',
-            description: 'Sedikit mengganggu aktivitas',
-            detail: 'Perlu ditangani dalam 3-5 hari',
-            icon: AlertTriangle,
-            color: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-            selectedColor: 'bg-yellow-100 border-yellow-400 shadow-yellow-100',
-            iconColor: 'text-yellow-600',
-            badgeColor: 'bg-yellow-500',
-        },
-        {
-            value: 'tinggi' as const,
-            label: 'Prioritas Tinggi',
-            description: 'Sangat mengganggu aktivitas',
-            detail: 'Harus segera ditangani hari ini/ besok',
-            icon: AlertOctagon,
-            color: 'bg-red-50 border-red-200 text-red-800',
-            selectedColor: 'bg-red-100 border-red-400 shadow-red-100',
-            iconColor: 'text-red-600',
-            badgeColor: 'bg-red-500',
-        },
-    ];
 
     return (
         <>
@@ -446,6 +422,8 @@ export default function DamageReport({ kategoriKerusakan, unitKerja }: any) {
                     </DialogContent>
                 </Dialog>
             </div>
+
+            <Toaster />
         </>
     );
 }

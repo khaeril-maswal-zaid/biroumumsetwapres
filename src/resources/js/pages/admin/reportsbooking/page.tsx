@@ -490,8 +490,6 @@ export default function BookingReports({
                                         const isToday = day.toDateString() === new Date().toDateString();
                                         const daySchedules = getSchedulesByDate(day);
 
-                                        console.log(daySchedules);
-
                                         return (
                                             <Card
                                                 key={index}

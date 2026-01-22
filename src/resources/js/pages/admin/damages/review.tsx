@@ -165,7 +165,12 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                     toast({ title: 'Berhasil', description: 'Urgensi kerusakan berhasil diperbarui' });
                 },
                 onError: (errors) => {
-                    console.log('Validation Errors: ', errors);
+                    toast({
+                        title: 'Validasi gagal',
+                        description: Object.values(errors)[0],
+                        variant: 'destructive',
+                    });
+
                     setIsProcessing(false);
                     toast({ title: 'Gagal', description: 'Urgensi kerusakan gagal diperbarui', variant: 'destructive' });
                 },

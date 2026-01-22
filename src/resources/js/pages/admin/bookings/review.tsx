@@ -145,7 +145,7 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                 toast({
                     title: 'Validasi gagal',
                     description: Object.values(errors)[0],
-                    // variant: 'destructive',
+                    variant: 'destructive',
                 });
                 setShowRescheduleDialog(false);
             },

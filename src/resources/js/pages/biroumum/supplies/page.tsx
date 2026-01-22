@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
+import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import type { SharedData } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -62,7 +63,6 @@ export default function SuppliesRequest({ availableATK }: any) {
         register,
         handleSubmit,
         control,
-        setValue,
         watch,
         reset,
         formState: { errors },
@@ -583,6 +583,8 @@ export default function SuppliesRequest({ availableATK }: any) {
                     </DialogContent>
                 </Dialog>
             </div>
+
+            <Toaster />
         </>
     );
 }
