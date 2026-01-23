@@ -28,6 +28,8 @@ class PemesananRuangRapat extends Model
         'kode_booking',
         'status',
         'keterangan',
+        'aproved_makanan_berat',
+        'aproved_makanan_ringan',
         'is_makanan_ringan',
         'is_makanan_berat',
         'is_hybrid',

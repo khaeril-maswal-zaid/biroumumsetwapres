@@ -23,6 +23,7 @@ import {
     MessageSquare,
     Monitor,
     Presentation,
+    User,
     Users,
     Utensils,
     Video,
@@ -71,6 +72,8 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
     const [actionType, setActionType] = useState<'approved' | 'rejected' | null>(null);
     const [adminMessage, setAdminMessage] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
+    const [snackAccCount, setSnackAccCount] = useState<number>(0);
+    const [lunchAccCount, setLunchAccCount] = useState<number>(0);
 
     const handleActionClick = (action: 'approved' | 'rejected') => {
         setActionType(action);
@@ -85,6 +88,9 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
             {
                 action: actionType,
                 message: adminMessage,
+                // include approved counts when applicable
+                snack_approved_count: selectedBooking?.is_makanan_ringan == 1 ? snackAccCount : undefined,
+                lunch_approved_count: selectedBooking?.is_makanan_berat == 1 ? lunchAccCount : undefined,
             },
             {
                 preserveScroll: true,
@@ -107,6 +113,15 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
             },
         );
     };
+
+    // Sync default approved counts to jumlah peserta when opening approve flow
+    useEffect(() => {
+        if (actionType === 'approved' && selectedBooking) {
+            const base = Number(selectedBooking.jumlah_peserta) || 0;
+            setSnackAccCount(base);
+            setLunchAccCount(base);
+        }
+    }, [actionType, selectedBooking]);
 
     //--------------------------------------
     const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
@@ -290,7 +305,7 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                                     <div className="space-y-4">
                                         <div className="flex items-start gap-3">
-                                            <Users className="my-auto h-5 w-5 text-blue-600" />
+                                            <User className="my-auto h-5 w-5 text-blue-600" />
                                             <div>
                                                 <p className="font-medium text-gray-900">{selectedBooking?.pemesan?.pegawai?.name}</p>
                                                 <p className="text-xs text-gray-600">{selectedBooking?.pemesan?.pegawai?.biro?.nama_biro}</p>
@@ -338,6 +353,14 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                             <div>
                                                 <p className="font-medium text-gray-900">Jenis Rapat</p>
                                                 <p className="text-sm text-gray-600">{selectedBooking.jenis_rapat}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-3">
+                                            <Users className="h-5 w-5 text-green-600" />
+                                            <div>
+                                                <p className="font-medium text-gray-900">Jumlah Peserta</p>
+                                                <p className="text-sm text-gray-600">{selectedBooking.jumlah_peserta}</p>
                                             </div>
                                         </div>
 
@@ -484,6 +507,89 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                                     {actionType === 'rejected' && !adminMessage.trim() && (
                                                         <p className="text-sm text-red-600">Pesan wajib diisi untuk penolakan</p>
                                                     )}
+                                                </div>
+
+                                                <div className="space-y-3">
+                                                    <p className="font-medium text-gray-900">Setujui Jumlah Snack & Makan Siang</p>
+                                                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                                        {selectedBooking.is_makanan_ringan == 1 && (
+                                                            <div className="flex items-center justify-between gap-3 rounded-md border p-3">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="rounded-md bg-violet-50 p-2">
+                                                                        <Cookie className="h-5 w-5 text-violet-700" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="font-medium">Snack / Makanan Ringan</p>
+                                                                        <p className="text-xs text-gray-500">
+                                                                            Default: jumlah peserta ({selectedBooking.jumlah_peserta})
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        className="h-8 w-8 p-0"
+                                                                        onClick={() => setSnackAccCount(Math.max(0, snackAccCount - 1))}
+                                                                    >
+                                                                        -
+                                                                    </Button>
+                                                                    <input
+                                                                        type="number"
+                                                                        min={0}
+                                                                        value={snackAccCount}
+                                                                        onChange={(e) => setSnackAccCount(Math.max(0, Number(e.target.value) || 0))}
+                                                                        className="w-20 rounded-md border px-2 py-1 text-center text-sm"
+                                                                    />
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        className="h-8 w-8 p-0"
+                                                                        onClick={() => setSnackAccCount(snackAccCount + 1)}
+                                                                    >
+                                                                        +
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {selectedBooking.is_makanan_berat == 1 && (
+                                                            <div className="flex items-center justify-between gap-3 rounded-md border p-3">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="rounded-md bg-amber-50 p-2">
+                                                                        <Utensils className="h-5 w-5 text-amber-700" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="font-medium">Makan Siang</p>
+                                                                        <p className="text-xs text-gray-500">
+                                                                            Default: jumlah peserta ({selectedBooking.jumlah_peserta})
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        className="h-8 w-8 p-0"
+                                                                        onClick={() => setLunchAccCount(Math.max(0, lunchAccCount - 1))}
+                                                                    >
+                                                                        -
+                                                                    </Button>
+                                                                    <input
+                                                                        type="number"
+                                                                        min={0}
+                                                                        value={lunchAccCount}
+                                                                        onChange={(e) => setLunchAccCount(Math.max(0, Number(e.target.value) || 0))}
+                                                                        className="w-20 rounded-md border px-2 py-1 text-center text-sm"
+                                                                    />
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        className="h-8 w-8 p-0"
+                                                                        onClick={() => setLunchAccCount(lunchAccCount + 1)}
+                                                                    >
+                                                                        +
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
 
                                                 <div className="flex gap-2 pt-2">

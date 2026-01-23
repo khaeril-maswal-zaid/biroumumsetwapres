@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('no_hp', 25);
             $table->enum('status', ['booked', 'rejected']);
             $table->string('kode_booking', 255)->unique();
+            $table->string('aproved_makanan_berat')->default('0');
+            $table->string('aproved_makanan_ringan')->default('0');
             $table->string('keterangan', 255)->default(''); //from admin
             $table->boolean('is_makanan_berat')->default(false);
             $table->boolean('is_makanan_ringan')->default(false);
