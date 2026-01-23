@@ -76,7 +76,8 @@ class RoleController extends Controller
 
         // Buat role beserta description
         $role = Role::create([
-            'name' => $request->name,
+            'name' => Str::slug($request->name, '_'),
+            'label' => $request->name,
             'description' => $request->description,
         ]);
 

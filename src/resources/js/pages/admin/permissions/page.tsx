@@ -140,7 +140,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
 
                 toast({
                     title: 'Berhasil',
-                    description: 'Berhasil melakukan update role',
+                    description: `Hak akses role ${roleFormData.label} berhasil diperbarui`,
                 });
             },
             onError: (er) => {
@@ -161,8 +161,8 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                 resetRoleForm();
 
                 toast({
-                    title: 'Berhasil',
-                    description: 'User berhasil dihapus',
+                    title: 'Terhapus',
+                    description: 'Role berhasil dihapus',
                 });
             },
             onError: (er) => {
@@ -363,8 +363,8 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                                                     <AlertDialogHeader>
                                                         <AlertDialogTitle>Hapus Role</AlertDialogTitle>
                                                         <AlertDialogDescription>
-                                                            Apakah Anda yakin ingin menghapus role "{role.name}"? Tindakan ini tidak dapat dibatalkan
-                                                            dan akan mempengaruhi {role.total_users} pengguna.
+                                                            Yakin hapus role "{role.name}"? Tindakan ini mempengaruhi {role.total_users} pengguna dan
+                                                            tidak dapat dibatalkan.
                                                         </AlertDialogDescription>
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>

@@ -5,6 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 import { router } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
@@ -16,6 +17,8 @@ interface Permission {
 }
 
 export default function ButtonPermission({ availablePermissions }: any) {
+    const { toast } = useToast();
+
     const [isAddRoleDialogOpen, setIsAddRoleDialogOpen] = useState(false);
     const [roleFormData, setRoleFormData] = useState({
         id: '',
@@ -58,11 +61,19 @@ export default function ButtonPermission({ availablePermissions }: any) {
 
         router.post(route('roles.store'), newRole, {
             onSuccess() {
+                toast({
+                    title: 'Berhasil',
+                    description: 'Role baru berhasil dibuat',
+                });
                 setIsAddRoleDialogOpen(false);
                 resetRoleForm();
             },
-            onError(e) {
-                console.log(e);
+            onError(er) {
+                toast({
+                    title: 'Validasi gagal',
+                    description: Object.values(er)[0],
+                    variant: 'destructive',
+                });
             },
         });
     };

@@ -5,14 +5,16 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
 import { router, usePage } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
 
 export default function ButtonAtk() {
-    const { kategoriAtk } = usePage().props;
+    const { toast } = useToast();
 
+    const { kategoriAtk } = usePage().props;
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [formData, setFormData] = useState({
         kode_atk: '',
@@ -35,6 +37,10 @@ export default function ButtonAtk() {
         e.preventDefault();
         router.post(route('daftaratk.store'), formData, {
             onSuccess: () => {
+                toast({
+                    title: 'Berhasil',
+                    description: 'ATK baru berhasil ditambahkan',
+                });
                 setIsAddOpen(false);
                 setFormData({
                     kode_atk: '',
@@ -44,7 +50,11 @@ export default function ButtonAtk() {
                 });
             },
             onError: (er) => {
-                console.log(er);
+                toast({
+                    title: 'Validasi gagal',
+                    description: Object.values(er)[0],
+                    variant: 'destructive',
+                });
             },
         });
     };

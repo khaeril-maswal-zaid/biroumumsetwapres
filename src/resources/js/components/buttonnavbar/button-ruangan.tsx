@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
 import { BreadcrumbItem } from '@/types';
 import { router } from '@inertiajs/react';
 import { Camera, Computer, Edit, Mic, Plus, Snowflake, Speaker, Tv, Wifi } from 'lucide-react';
@@ -42,6 +43,8 @@ const facilityOptions = [
 ];
 
 export default function ButtonRooms() {
+    const { toast } = useToast();
+
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [formData, setFormData] = useState({
@@ -109,11 +112,18 @@ export default function ButtonRooms() {
             {
                 onSuccess() {
                     setIsAddDialogOpen(false);
-
+                    toast({
+                        title: 'Berhasil',
+                        description: 'Ruangan baru berhasil ditambahkan!',
+                    });
                     resetForm();
                 },
-                onError: (errors) => {
-                    console.log('Validation Errors: ', errors);
+                onError: (er) => {
+                    toast({
+                        title: 'Validasi gagal',
+                        description: Object.values(er)[0],
+                        variant: 'destructive',
+                    });
                 },
             },
         );

@@ -102,8 +102,11 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
     const handleSaveEdit = () => {
         router.put(route('daftaratk.update', editingId), editData, {
             onSuccess: () => {
-                // Simulate API call
-                setEditingId('');
+                toast({
+                    title: 'Diupdate',
+                    description: 'ATK berhasil diedit',
+                });
+                setEditingId('ATK ');
                 setEditData({ name: '', category: '', satuan: '' });
             },
             onError: (error) => {
@@ -129,11 +132,19 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
     const handleDeleteConfirm = () => {
         router.delete(route('daftaratk.destroy', selectedItem?.id), {
             onSuccess: () => {
+                toast({
+                    title: 'Terhapus',
+                    description: 'ATK ' + selectedItem.name + ' telah dihapus!',
+                });
                 setIsDeleteOpen(false);
                 setSelectedItem(null);
             },
             onError: (er) => {
-                console.log(er);
+                toast({
+                    title: 'Validasi gagal',
+                    description: Object.values(er)[0],
+                    variant: 'destructive',
+                });
             },
         });
     };
@@ -280,10 +291,11 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                                                 <SelectValue />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                <SelectItem value="Alat Tulis">Alat Tulis</SelectItem>
-                                                                <SelectItem value="Kertas">Kertas</SelectItem>
-                                                                <SelectItem value="Alat Kantor">Alat Kantor</SelectItem>
-                                                                <SelectItem value="Elektronik">Elektronik</SelectItem>
+                                                                {categories.map((category, index) => (
+                                                                    <SelectItem key={index} value={String(category)}>
+                                                                        {String(category)}
+                                                                    </SelectItem>
+                                                                ))}
                                                             </SelectContent>
                                                         </Select>
                                                     ) : (

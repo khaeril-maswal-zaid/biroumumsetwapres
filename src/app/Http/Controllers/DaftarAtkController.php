@@ -33,7 +33,6 @@ class DaftarAtkController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'kode_atk' => 'required|string|max:250|unique:daftar_atks,kode_atk',
             'name' => 'required|string|max:250',
             'category' => 'required|string|max:250',
             'satuan' => 'required|string|max:250',
@@ -42,7 +41,6 @@ class DaftarAtkController extends Controller
         $validated['kode_unit'] = Auth::user()->pegawai?->unit?->kode_unit;
 
         DaftarAtk::create([
-            'kode_atk' => $validated['kode_atk'],
             'name' => $validated['name'],
             'category' => $validated['category'],
             'satuan' => $validated['satuan'],

@@ -11,6 +11,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useToast } from '@/hooks/use-toast';
 import { SharedData } from '@/types';
 import { router, usePage } from '@inertiajs/react';
 import { AlertTriangle, Bell, Car, Home, Package } from 'lucide-react';
@@ -30,6 +31,8 @@ export interface Notification {
 }
 
 export default function Notification() {
+    const { toast } = useToast();
+
     const { notifFromServer } = usePage<SharedData>().props;
     const { auth } = usePage<SharedData>().props;
 
@@ -82,7 +85,11 @@ export default function Notification() {
                     router.get(url);
                 },
                 onError: (er) => {
-                    console.log(er);
+                    toast({
+                        title: 'Validasi gagal',
+                        description: Object.values(er)[0],
+                        variant: 'destructive',
+                    });
                 },
             },
         );
@@ -99,7 +106,11 @@ export default function Notification() {
                     //
                 },
                 onError: (er) => {
-                    console.log(er);
+                    toast({
+                        title: 'Validasi gagal',
+                        description: Object.values(er)[0],
+                        variant: 'destructive',
+                    });
                 },
             },
         );

@@ -152,13 +152,16 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
     const handleAddLog = () => {
         router.post(route('stockopname.store'), newLog, {
             onSuccess: () => {
+                toast({
+                    title: 'Tercatat',
+                    description: 'Perolehan ATK baru berhasil dicatat',
+                });
                 setIsAddLogOpen(false);
                 setNewLog({ daftar_atk_id: '', quantity: '', type: 'Perolehan', unit_price: '', total_price: '' });
                 setSelectedATK(null);
                 setAtkSearchTerm('');
             },
             onError: (errors) => {
-                console.error('Error adding log:', errors);
                 toast({ title: 'Gagal', description: Object.values(errors)[0], variant: 'destructive' });
             },
         });

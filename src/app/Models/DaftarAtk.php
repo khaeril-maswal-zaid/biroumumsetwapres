@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Scopes\InstansiScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
+use Illuminate\Support\Str;
 
 #[ScopedBy([InstansiScope::class])]
 
@@ -19,6 +20,18 @@ class DaftarAtk extends Model
         'kode_unit',
         'quantity',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function ($layanan) {
+            do {
+                $random = strtoupper(Str::random(5));
+                $code = 'ATK-' . $random;
+            } while (self::where('kode_atk', $code)->exists());
+
+            $layanan->kode_atk = $code;
+        });
+    }
 
     public function stockOpnames()
     {

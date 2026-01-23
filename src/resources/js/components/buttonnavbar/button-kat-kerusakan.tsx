@@ -4,13 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 import { router } from '@inertiajs/react';
 import { DialogTrigger } from '@radix-ui/react-dialog';
 import { Plus, X } from 'lucide-react';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 export default function ButtonKatKerusakan() {
+    const { toast } = useToast();
+
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [formData, setFormData] = useState({ name: '', kode_kerusakan: '', sub_kategori: [] as string[] });
 
@@ -35,19 +37,28 @@ export default function ButtonKatKerusakan() {
 
     const handleCreate = () => {
         if (!formData.name || !formData.kode_kerusakan) {
-            toast.error('Nama dan Kode Kerusakan harus diisi!');
+            toast({
+                title: 'Berhasil',
+                description: 'Nama dan Kode Kerusakan harus diisi!',
+            });
             return;
         }
 
         router.post(route('daftarkerusakan.store'), formData, {
             onSuccess: () => {
                 resetForm();
-                toast.success('Kategori kerusakan berhasil ditambahkan!');
+                toast({
+                    title: 'Berhasil',
+                    description: 'Kategori kerusakan berhasil ditambahkan!',
+                });
                 setIsAddDialogOpen(false);
             },
             onError: (er) => {
-                console.log(er);
-                toast.error('Gagal menambahkan kategori kerusakan');
+                toast({
+                    title: 'Validasi gagal',
+                    description: Object.values(er)[0],
+                    variant: 'destructive',
+                });
             },
         });
     };
