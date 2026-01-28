@@ -1,4 +1,4 @@
-FROM alpine:3.22
+FROM alpine
 LABEL Maintainer="Pusat Pengembangan dan Layanan Sistem Informasi <setnegapps@setneg.go.id>"
 
 WORKDIR /var/www
