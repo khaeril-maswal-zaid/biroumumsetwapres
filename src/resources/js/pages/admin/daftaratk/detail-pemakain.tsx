@@ -7,6 +7,7 @@ import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
+import { ArrowLeft } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 const formatTanggalIna = (tanggal: string) => {
@@ -103,6 +104,16 @@ export default function ATKItemsManagement({ Persediaan, filters }: any) {
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
                 <AtkTabs active="book-stay" />
 
+                <Link href={route('stockopname.buku_persediaan')}>
+                    <Button
+                        variant="ghost"
+                        className="mb-1 flex items-center space-x-2 border bg-accent text-accent-foreground hover:border-gray-300 hover:bg-gray-200"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        <span>Kembali</span>
+                    </Button>
+                </Link>
+
                 <div className="space-y-6">
                     <Card>
                         <CardHeader>
@@ -151,7 +162,9 @@ export default function ATKItemsManagement({ Persediaan, filters }: any) {
                                             <TableHead className="w-12">No</TableHead>
                                             <TableHead>Tanggal Pemakaian</TableHead>
                                             <TableHead className="w-24 text-right">Jumlah Dipakai</TableHead>
-                                            <TableHead className="w-20">Satuan</TableHead>
+                                            <TableHead className="w-24">Satuan</TableHead>
+                                            <TableHead className="w-32">Harga Satuan</TableHead>
+                                            <TableHead className="w-32">Total Harga</TableHead>
                                             <TableHead>Digunakan Oleh</TableHead>
                                             <TableHead>Keterangan</TableHead>
                                         </TableRow>
@@ -164,6 +177,8 @@ export default function ATKItemsManagement({ Persediaan, filters }: any) {
                                                     <TableCell>{formatTanggalIna(usage.tanggal)}</TableCell>
                                                     <TableCell className="text-right font-medium">{usage.jumlah}</TableCell>
                                                     <TableCell className="text-muted-foreground">{usage.satuan}</TableCell>
+                                                    <TableCell className="text-muted-foreground">{usage.harga}</TableCell>
+                                                    <TableCell className="text-muted-foreground">{usage.total}</TableCell>
                                                     <TableCell className="font-medium">{usage.digunakan_oleh}</TableCell>
                                                     <TableCell className="text-sm text-muted-foreground">{usage.keterangan}</TableCell>
                                                 </TableRow>

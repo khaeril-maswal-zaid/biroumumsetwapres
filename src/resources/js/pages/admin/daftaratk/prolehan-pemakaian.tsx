@@ -486,7 +486,7 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
                                     </Label>
                                     <Input
                                         id="quantity"
-                                        type="number"
+                                        type=""
                                         placeholder="0"
                                         value={newLog.quantity}
                                         onChange={(e) => handleQuantityChange(e.target.value)}
@@ -501,7 +501,7 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
                                     </Label>
                                     <Input
                                         id="unit-price"
-                                        type="number"
+                                        type=""
                                         placeholder="0"
                                         value={newLog.unit_price}
                                         onChange={(e) => handleUnitPriceChange(e.target.value)}

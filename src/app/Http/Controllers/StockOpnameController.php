@@ -17,7 +17,11 @@ class StockOpnameController extends Controller
     {
         $data = [
             'daftarAtk' => DaftarAtk::orderBy('name', 'asc')->get(),
-            'stockOpnames' => StockOpname::with('daftarAtk')->latest()->take(100)->get(),
+            'stockOpnames' => StockOpname::with('daftarAtk')
+                ->orderBy('created_at', 'desc')      // urut kronologis
+                ->orderBy('id', 'desc')              // safety
+                // ->latest()
+                ->get()
         ];
 
         return Inertia::render('admin/daftaratk/prolehan-pemakaian', $data);
@@ -135,13 +139,15 @@ class StockOpnameController extends Controller
                 $q->where('kode_atk', $kodeAtk)
             )
             ->with([
-                'daftarAtk:id,name,satuan',
+                'daftarAtk:id,name,satuan,kode_atk',
                 'permintaanAtk.pemesan.pegawai',
             ])
             ->get()
             ->map(fn($row) => [
                 'tanggal'        => $row->created_at,
                 'jumlah'         => $row->quantity,
+                'harga'         => $row->unit_price,
+                'total'         => $row->total_price,
                 'itemAtk'       => $row->daftarAtk,
                 'satuan'         => $row->daftarAtk->satuan,
                 'digunakan_oleh' => $row->permintaanAtk?->pemesan->pegawai?->name,

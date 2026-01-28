@@ -175,27 +175,19 @@ class PemesananRuangRapatController extends Controller
         //
     }
 
-    public function status(PemesananRuangRapat $pemesananRuangRapat, Request $request)
+    public function snacklunchApproved(PemesananRuangRapat $pemesananRuangRapat, Request $request)
     {
         $validated = $request->validate(
             [
-                'action'  => 'required|in:booked,rejected',
-                'message' => 'required_if:action,rejected|nullable|string|max:255',
-            ],
-            [
-                'action.required'  => 'Aksi wajib dipilih.',
-                'action.in'        => 'Aksi yang dipilih tidak valid.',
-
-                'message.required_if' => 'Pesan wajib diisi jika permintaan ditolak.',
-                'message.string'      => 'Pesan harus berupa teks.',
-                'message.max'         => 'Pesan maksimal 255 karakter.',
+                'snack_approved_count'  => 'required',
+                'lunch_approved_count' => 'required',
             ]
         );
 
 
         $pemesananRuangRapat->update([
-            'status' => $validated['action'],
-            'keterangan' => $validated['message'] ?? '',
+            'aproved_makanan_berat' => $validated['lunch_approved_count'],
+            'aproved_makanan_ringan' => $validated['snack_approved_count'],
         ]);
     }
 

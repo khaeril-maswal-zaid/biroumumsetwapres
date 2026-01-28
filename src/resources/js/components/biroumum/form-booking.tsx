@@ -148,7 +148,7 @@ export function FormBooking() {
                         Tanggal Penggunaan Ruangan
                         <span className="text-red-500"> *</span>
                     </Label>
-                    <Input className="mt-1" type="date" />
+                    <Input className="mt-1" type="date" {...register('date')} />
                     {errors.date && <p className="mt-1 text-sm text-red-500">{errors.date.message}</p>}
                 </div>
 

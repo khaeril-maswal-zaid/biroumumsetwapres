@@ -89,6 +89,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('ruangrapat.status')
         ->middleware('permission:change_booking_status');
 
+    Route::patch('/dashboard/ruang-rapat/{pemesananRuangRapat:kode_booking}', [PemesananRuangRapatController::class, 'snacklunchApproved'])
+        ->name('ruangrapat.konsumsi')
+        ->middleware('permission:change_booking_status');
+
 
 
     //Log Proces Perbaikan kerusakan
@@ -197,9 +201,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('stockopname.buku_persediaan')
         ->middleware('permission:create_atk');
 
-    Route::get('/dashboard/stock-opname-atk/buku-persediaan/{id}', [StockOpnameController::class, 'bukuPersediaan'])
-        ->name('stockopname.detailpemakaian')
-        ->middleware('permission:create_atk');
+    // Route::get('/dashboard/stock-opname-atk/buku-persediaan/{id}', [StockOpnameController::class, 'bukuPersediaan'])
+    //     ->name('stockopname.detailpemakaian')
+    //     ->middleware('permission:create_atk');
 
     Route::get('/dashboard/stock-opname-atk/detail-pemakaian', [StockOpnameController::class, 'detailPemakaian'])
         ->name('stockopname.detail_pemakaian')
@@ -230,7 +234,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 
-    //Ruang Rapat
+    //Data Report
     Route::get('/dashboard/ruang-rapat/reports', [PemesananRuangRapatController::class, 'reports'])
         ->name('ruangrapat.reports')
         ->middleware('permission:report_bookings');

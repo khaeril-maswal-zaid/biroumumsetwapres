@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
@@ -86,11 +85,8 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
         router.patch(
             route('ruangrapat.status', bookingCode),
             {
-                action: actionType,
+                action: 'rejected',
                 message: adminMessage,
-                // include approved counts when applicable
-                snack_approved_count: selectedBooking?.is_makanan_ringan == 1 ? snackAccCount : undefined,
-                lunch_approved_count: selectedBooking?.is_makanan_berat == 1 ? lunchAccCount : undefined,
             },
             {
                 preserveScroll: true,
@@ -114,14 +110,52 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
         );
     };
 
-    // Sync default approved counts to jumlah peserta when opening approve flow
+    const handleSnacklunchApproved = async (bookingCode: string) => {
+        setIsProcessing(true);
+
+        router.patch(
+            route('ruangrapat.konsumsi', bookingCode),
+            {
+                snack_approved_count: selectedBooking?.is_makanan_ringan == 1 ? snackAccCount : undefined,
+                lunch_approved_count: selectedBooking?.is_makanan_berat == 1 ? lunchAccCount : undefined,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast({
+                        title: 'Berhasil',
+                        description: 'Jumlah disetujui Snack & Makan Siang berhasil diubah.',
+                    });
+                    setIsProcessing(false);
+                },
+                onError: (errors) => {
+                    toast({
+                        title: 'Validasi gagal',
+                        description: Object.values(errors)[0],
+                    });
+                    setIsProcessing(false);
+                },
+            },
+        );
+    };
+
+    // Sync default approved counts to jumlah peserta when booking loads
     useEffect(() => {
-        if (actionType === 'approved' && selectedBooking) {
-            const base = Number(selectedBooking.jumlah_peserta) || 0;
-            setSnackAccCount(base);
-            setLunchAccCount(base);
+        if (selectedBooking) {
+            const baseSnack =
+                Number(selectedBooking.aproved_makanan_ringan) == 0
+                    ? Number(selectedBooking.jumlah_peserta)
+                    : Number(selectedBooking.aproved_makanan_ringan);
+
+            const baseLunch =
+                Number(selectedBooking.aproved_makanan_berat) == 0
+                    ? Number(selectedBooking.jumlah_peserta)
+                    : Number(selectedBooking.aproved_makanan_berat);
+
+            setSnackAccCount(baseSnack);
+            setLunchAccCount(baseLunch);
         }
-    }, [actionType, selectedBooking]);
+    }, [selectedBooking]);
 
     //--------------------------------------
     const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
@@ -447,8 +481,6 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                         );
                                     })()}
 
-                                <Separator />
-
                                 {/* Action Section */}
                                 {selectedBooking.status != 'rejected' && (
                                     <div className="space-y-4">
@@ -456,21 +488,16 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                             <MessageSquare className="h-5 w-5 text-blue-600" />
                                             <h4 className="font-medium text-gray-900">Persetujuan:</h4>
                                         </div>
-
                                         {!actionType && (
                                             <div className="flex gap-3">
                                                 <Button
                                                     variant="outline"
-                                                    className="flex-1 border-red-200 bg-transparent text-red-700 hover:bg-red-50"
+                                                    className="flex-1 border-red-200 bg-red-50 text-red-700 hover:bg-red-100"
                                                     onClick={() => handleActionClick('rejected')}
                                                 >
                                                     <X className="mr-2 h-4 w-4" />
                                                     Tolak Pemesanan
                                                 </Button>
-                                                {/* <Button className="flex-1 bg-green-600 hover:bg-green-700" onClick={() => handleActionClick('approved')}>
-                                                <CheckCircle className="mr-2 h-4 w-4" />
-                                                Setujui Pemesanan
-                                            </Button> */}
                                             </div>
                                         )}
 
@@ -509,89 +536,6 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                                     )}
                                                 </div>
 
-                                                <div className="space-y-3">
-                                                    <p className="font-medium text-gray-900">Setujui Jumlah Snack & Makan Siang</p>
-                                                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                                        {selectedBooking.is_makanan_ringan == 1 && (
-                                                            <div className="flex items-center justify-between gap-3 rounded-md border p-3">
-                                                                <div className="flex items-center gap-3">
-                                                                    <div className="rounded-md bg-violet-50 p-2">
-                                                                        <Cookie className="h-5 w-5 text-violet-700" />
-                                                                    </div>
-                                                                    <div>
-                                                                        <p className="font-medium">Snack / Makanan Ringan</p>
-                                                                        <p className="text-xs text-gray-500">
-                                                                            Default: jumlah peserta ({selectedBooking.jumlah_peserta})
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="flex items-center gap-2">
-                                                                    <Button
-                                                                        variant="outline"
-                                                                        className="h-8 w-8 p-0"
-                                                                        onClick={() => setSnackAccCount(Math.max(0, snackAccCount - 1))}
-                                                                    >
-                                                                        -
-                                                                    </Button>
-                                                                    <input
-                                                                        type="number"
-                                                                        min={0}
-                                                                        value={snackAccCount}
-                                                                        onChange={(e) => setSnackAccCount(Math.max(0, Number(e.target.value) || 0))}
-                                                                        className="w-20 rounded-md border px-2 py-1 text-center text-sm"
-                                                                    />
-                                                                    <Button
-                                                                        variant="outline"
-                                                                        className="h-8 w-8 p-0"
-                                                                        onClick={() => setSnackAccCount(snackAccCount + 1)}
-                                                                    >
-                                                                        +
-                                                                    </Button>
-                                                                </div>
-                                                            </div>
-                                                        )}
-
-                                                        {selectedBooking.is_makanan_berat == 1 && (
-                                                            <div className="flex items-center justify-between gap-3 rounded-md border p-3">
-                                                                <div className="flex items-center gap-3">
-                                                                    <div className="rounded-md bg-amber-50 p-2">
-                                                                        <Utensils className="h-5 w-5 text-amber-700" />
-                                                                    </div>
-                                                                    <div>
-                                                                        <p className="font-medium">Makan Siang</p>
-                                                                        <p className="text-xs text-gray-500">
-                                                                            Default: jumlah peserta ({selectedBooking.jumlah_peserta})
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="flex items-center gap-2">
-                                                                    <Button
-                                                                        variant="outline"
-                                                                        className="h-8 w-8 p-0"
-                                                                        onClick={() => setLunchAccCount(Math.max(0, lunchAccCount - 1))}
-                                                                    >
-                                                                        -
-                                                                    </Button>
-                                                                    <input
-                                                                        type="number"
-                                                                        min={0}
-                                                                        value={lunchAccCount}
-                                                                        onChange={(e) => setLunchAccCount(Math.max(0, Number(e.target.value) || 0))}
-                                                                        className="w-20 rounded-md border px-2 py-1 text-center text-sm"
-                                                                    />
-                                                                    <Button
-                                                                        variant="outline"
-                                                                        className="h-8 w-8 p-0"
-                                                                        onClick={() => setLunchAccCount(lunchAccCount + 1)}
-                                                                    >
-                                                                        +
-                                                                    </Button>
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-
                                                 <div className="flex gap-2 pt-2">
                                                     <Button
                                                         variant="outline"
@@ -605,11 +549,7 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                                     </Button>
                                                     <Button
                                                         onClick={() => {
-                                                            if (actionType === 'approved') {
-                                                                handleSubmitStatus(selectedBooking.kode_booking);
-                                                            } else {
-                                                                handleSubmitStatus(selectedBooking.kode_booking);
-                                                            }
+                                                            handleSubmitStatus(selectedBooking.kode_booking);
                                                         }}
                                                         disabled={isProcessing || (actionType === 'rejected' && !adminMessage.trim())}
                                                         className={
@@ -623,6 +563,85 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                                             : actionType === 'approved'
                                                               ? 'Konfirmasi Setuju'
                                                               : 'Konfirmasi Tolak'}
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Approve counts UI - always visible when makanan flags present */}
+                                        {(selectedBooking.is_makanan_ringan == 1 || selectedBooking.is_makanan_berat == 1) && (
+                                            <div className="space-y-3 rounded-lg border bg-gray-50 p-4">
+                                                <p className="font-medium text-gray-900">Setujui Jumlah Snack & Makan Siang</p>
+                                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                                    {selectedBooking.is_makanan_ringan == 1 && (
+                                                        <div className="flex items-center justify-between gap-3 rounded-md border p-3">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="rounded-md bg-violet-50 p-2">
+                                                                    <Cookie className="h-5 w-5 text-violet-700" />
+                                                                </div>
+                                                                <div>
+                                                                    <p className="font-medium">Snack / Makanan Ringan</p>
+                                                                    <p className="text-xs text-gray-500">
+                                                                        Default: jumlah peserta ({selectedBooking.jumlah_peserta})
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <input
+                                                                    type="number"
+                                                                    min={0}
+                                                                    max={Number(selectedBooking.jumlah_peserta) || undefined}
+                                                                    value={snackAccCount}
+                                                                    onChange={(e) => {
+                                                                        const max = Number(selectedBooking.jumlah_peserta) || undefined;
+                                                                        let v = Math.max(0, Number(e.target.value) || 0);
+                                                                        if (typeof max === 'number') v = Math.min(v, max);
+                                                                        setSnackAccCount(v);
+                                                                    }}
+                                                                    className="w-16 rounded-md border px-2 py-1 text-center text-sm"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {selectedBooking.is_makanan_berat == 1 && (
+                                                        <div className="flex items-center justify-between gap-3 rounded-md border p-3">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="rounded-md bg-amber-50 p-2">
+                                                                    <Utensils className="h-5 w-5 text-amber-700" />
+                                                                </div>
+                                                                <div>
+                                                                    <p className="font-medium">Makan Siang</p>
+                                                                    <p className="text-xs text-gray-500">
+                                                                        Default: jumlah peserta ({selectedBooking.jumlah_peserta})
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <input
+                                                                    type="number"
+                                                                    min={0}
+                                                                    max={Number(selectedBooking.jumlah_peserta) || undefined}
+                                                                    value={lunchAccCount}
+                                                                    onChange={(e) => {
+                                                                        const max = Number(selectedBooking.jumlah_peserta) || undefined;
+                                                                        let v = Math.max(0, Number(e.target.value) || 0);
+                                                                        if (typeof max === 'number') v = Math.min(v, max);
+                                                                        setLunchAccCount(v);
+                                                                    }}
+                                                                    className="w-16 rounded-md border px-2 py-1 text-center text-sm"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex justify-end pt-3">
+                                                    <Button
+                                                        className="bg-green-600 hover:bg-green-700"
+                                                        onClick={() => handleSnacklunchApproved(selectedBooking.kode_booking)}
+                                                        disabled={isProcessing}
+                                                    >
+                                                        {isProcessing ? 'Memproses...' : 'Submit Jumlah'}
                                                     </Button>
                                                 </div>
                                             </div>
