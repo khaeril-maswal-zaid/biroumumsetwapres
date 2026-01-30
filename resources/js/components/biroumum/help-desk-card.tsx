@@ -10,7 +10,7 @@ export function HelpDeskCard() {
                         <Headphones className="h-6 w-6 text-yellow-700" />
                     </div>
                     <div className="flex-1">
-                        <h3 className="font-semibold text-gray-800">Help Desk Biro Umum</h3>
+                        <h3 className="font-semibold text-gray-800">Layanan Biro Umum</h3>
                         <p className="text-sm text-gray-600">+62 852-5078-3626</p>
                     </div>
                 </div>
