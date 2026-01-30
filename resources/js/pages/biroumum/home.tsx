@@ -5,7 +5,6 @@ import { BottomNavigation } from '@/components/biroumum/bottom-navigation';
 import { DashboardHeader } from '@/components/biroumum/dashboard-header';
 import { FooterIllustration } from '@/components/biroumum/footer-illustration';
 import { HelpDeskCard } from '@/components/biroumum/help-desk-card';
-import { SearchBar } from '@/components/biroumum/search-bar';
 import { ServiceMenu } from '@/components/biroumum/service-menu';
 import { SharedData } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
@@ -35,7 +34,7 @@ export default function Dashboard({ requestHistory }: any) {
 
                     <div className="space-y-6 p-4">
                         {/* Search Bar */}
-                        <SearchBar />
+                        {/* <SearchBar /> */}
 
                         {/* Help Desk Card */}
                         <HelpDeskCard />
