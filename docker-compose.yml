@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: laravel-layananumum:latest
+    container_name: laravel-layananumum
+    restart: unless-stopped
+    networks:
+      - app-network
+    environment:
+      APP_ENV: local
+      APP_DEBUG: true
+      APP_URL: http://layananumum.local
+      APP_KEY: base64:aQFhgf8lMqXKMZXwGUzrEe0lAs2qYNkW/Ww1Q165379=
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: layananUmum_db
+      DB_USERNAME: UmumSwp
+      DB_PASSWORD: passwordUmum
+
+networks:
+  app-network:
+    external: true
