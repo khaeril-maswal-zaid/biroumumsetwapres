@@ -5,11 +5,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+
     image: laravel-layananumum:latest
+
     container_name: laravel-layananumum
+
     restart: unless-stopped
+    
+    volumes:
+      - /data/projects/laravel-layananumum:/var/www
+    
     networks:
       - app-network
+
     environment:
       APP_ENV: local
       APP_DEBUG: true

@@ -22,7 +22,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-script
 
 # Node (cache-friendly)
 COPY package.json package-lock.json ./
-RUN npm ci --legacy-peer-deps
+RUN npm ci 
 
 # App source (artisan baru ada di sini)
 COPY . .
