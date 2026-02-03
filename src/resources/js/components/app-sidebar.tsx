@@ -18,6 +18,7 @@ import {
     PackageCheck,
 } from 'lucide-react';
 import AppLogo from './app-logo';
+
 const mainNavItems: NavItem[] = [
     {
         title: 'Home',
