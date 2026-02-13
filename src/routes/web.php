@@ -28,7 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Profile user (bisa semua user terverifikasi)
     Route::get('/profile', [UserController::class, 'show'])
-        ->name('user.create')->middleware('permission:view_homepage');
+        ->name('user.show')->middleware('permission:view_homepage');
 
 
     // Pengajuan Ruang Rapat (create_booking)

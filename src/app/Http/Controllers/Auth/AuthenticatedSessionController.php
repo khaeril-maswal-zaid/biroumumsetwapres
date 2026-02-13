@@ -74,20 +74,6 @@ class AuthenticatedSessionController extends Controller
             return $this->ldap_authenticate($request->email, $request->password, $use_login);
         }
 
-        // $passwordDefault = '1234567';
-        // if ($request->password === $passwordDefault) {
-        //     Auth::login($use_login);
-        // }
-
-        // $user = Auth::user();
-
-        // if ($user?->hasAnyPermission('view_admin_dashboard')) {
-        //     return to_route('dashboard');
-        // }
-
-        // if ($user) {
-        //     return to_route('home');
-        // }
 
         $request->authenticate();
         $request->session()->regenerate();
