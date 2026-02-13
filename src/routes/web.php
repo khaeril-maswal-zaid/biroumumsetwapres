@@ -201,9 +201,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('stockopname.buku_persediaan')
         ->middleware('permission:create_atk');
 
-    // Route::get('/dashboard/stock-opname-atk/buku-persediaan/{id}', [StockOpnameController::class, 'bukuPersediaan'])
-    //     ->name('stockopname.detailpemakaian')
-    //     ->middleware('permission:create_atk');
+    Route::get('/dashboard/stock-opname-atk/buku-persediaan/export', [StockOpnameController::class, 'ExportBukuPersediaan'])
+        ->name('stockopname.export_buku_persediaan')
+        ->middleware('permission:create_atk');
 
     Route::get('/dashboard/stock-opname-atk/detail-pemakaian', [StockOpnameController::class, 'detailPemakaian'])
         ->name('stockopname.detail_pemakaian')

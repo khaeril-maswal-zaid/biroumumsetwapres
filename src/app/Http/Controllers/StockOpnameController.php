@@ -6,6 +6,7 @@ use App\Models\StockOpname;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\DaftarAtk;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -30,41 +31,50 @@ class StockOpnameController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'daftar_atk_id' => ['required', 'exists:daftar_atks,id'],
-            'quantity' => ['required', 'integer', 'min:1'],
-            'unit_price' => ['required', 'integer', 'min:0'],
-            'permintaan_atk_id' => ['nullable', 'exists:permintaan_atks,id'],
-            // optional: kode_unit dapat dikirim FE, kalau tidak kita ambil dari auth
-            'kode_unit' => ['nullable', 'string'],
+            '*.daftar_atk_id' => ['required', 'exists:daftar_atks,id'],
+            '*.quantity' => ['required', 'integer', 'min:1'],
+            '*.unit_price' => ['required', 'integer', 'min:0'],
+            '*.permintaan_atk_id' => ['nullable', 'exists:permintaan_atks,id'],
+            '*.kode_unit' => ['nullable', 'string'],
         ]);
 
-        // normalisasi nilai
-        $quantity = (int) $validated['quantity'];
-        $unitPrice = (int) $validated['unit_price'];
-        $totalPrice = $quantity * $unitPrice;
+        DB::transaction(function () use ($validated) {
 
-        $kodeUnit = $validated['kode_unit'] ?? Auth::user()->pegawai?->unit?->kode_unit ?? null;
+            foreach ($validated as $item) {
 
-        DB::transaction(function () use ($validated, $quantity, $unitPrice, $totalPrice, $kodeUnit) {
-            $stock = StockOpname::create([
-                'kode_unit' => $kodeUnit,
-                'daftar_atk_id' => $validated['daftar_atk_id'],
-                'quantity' => $quantity,
-                'remaining_quantity' => $quantity, // untuk Perolehan kita set remaining = quantity
-                'type' => 'Perolehan',
-                'permintaan_atk_id' => $validated['permintaan_atk_id'] ?? null,
-                'source_stockopname_id' => null,
-                'unit_price' => $unitPrice,
-                'total_price' => $totalPrice,
-            ]);
+                $quantity = (int) $item['quantity'];
+                $unitPrice = (int) $item['unit_price'];
+                $totalPrice = $quantity * $unitPrice;
 
-            // update stok di DaftarAtk (naik)
-            $daftar = DaftarAtk::find($validated['daftar_atk_id']);
-            if ($daftar) {
-                $daftar->increment('quantity', $quantity);
+                $kodeUnit = $item['kode_unit']
+                    ?? Auth::user()->pegawai?->unit?->kode_unit
+                    ?? null;
+
+                $stock = StockOpname::create([
+                    'kode_unit' => $kodeUnit,
+                    'daftar_atk_id' => $item['daftar_atk_id'],
+                    'quantity' => $quantity,
+                    'remaining_quantity' => $quantity,
+                    'type' => 'Perolehan',
+                    'permintaan_atk_id' => $item['permintaan_atk_id'] ?? null,
+                    'source_stockopname_id' => null,
+                    'unit_price' => $unitPrice,
+                    'total_price' => $totalPrice,
+                ]);
+
+                // Lock row biar aman dari race condition
+                $daftar = DaftarAtk::lockForUpdate()
+                    ->find($item['daftar_atk_id']);
+
+                if ($daftar) {
+                    $daftar->increment('quantity', $quantity);
+                }
             }
         });
+
+        return back()->with('success', 'Data berhasil disimpan.');
     }
+
 
     public function bukuPersediaan(Request $request)
     {
@@ -159,5 +169,64 @@ class StockOpnameController extends Controller
             'Persediaan' => $data,
             'filters' => $request->only(['kode_atk', 'bulan', 'tahun']),
         ]);
+    }
+
+    public function ExportBukuPersediaan(Request $request)
+    {
+        $bulan  = $request->bulan;
+        $tahun  = $request->tahun;
+        $itemKode = $request->daftar_atk_kode;
+
+        // Tentukan range tanggal jika bulan & tahun ada
+        $start = null;
+        $end   = null;
+
+        if ($bulan && $tahun) {
+            $start = Carbon::create($tahun, $bulan)->startOfMonth();
+            $end   = Carbon::create($tahun, $bulan)->endOfMonth();
+        }
+
+        // Ambil data persediaan
+        $items = DaftarAtk::query()
+            ->withSum(['stockOpnames as total_perolehan' => function ($q) use ($start, $end) {
+                $q->where('type', 'Perolehan');
+
+                if ($start && $end) {
+                    $q->whereBetween('created_at', [$start, $end]);
+                }
+            }], 'quantity')
+
+            ->withSum(['stockOpnames as total_pemakaian' => function ($q) use ($start, $end) {
+                $q->where('type', 'Pemakaian');
+
+                if ($start && $end) {
+                    $q->whereBetween('created_at', [$start, $end]);
+                }
+            }], 'quantity')
+
+            ->when($itemKode, fn($q) => $q->where('kode_atk', $itemKode))
+            ->orderBy('name', 'asc')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => (int)$item->id,
+                    'name' => (string)$item->name,
+                    'kode_atk' => (string)$item->kode_atk,
+                    'kategori' => (string)$item->category,
+                    'satuan' => (string)$item->satuan,
+                    'jumlah' => (int)($item->total_perolehan ?? 0),
+                    'pemakaian' => (int)($item->total_pemakaian ?? 0),
+                    'saldo' => (int)(($item->total_perolehan ?? 0) - ($item->total_pemakaian ?? 0)),
+                ];
+            });
+
+        $pdf = Pdf::loadView('pdf.buku-persediaan', [
+            'data' => $items,
+            'bulan' => $bulan,
+            'tahun' => $tahun,
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->stream();
+        return $pdf->download("buku-persediaan-{$bulan}-{$tahun}.pdf");
     }
 }

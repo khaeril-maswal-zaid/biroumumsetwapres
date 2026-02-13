@@ -15,11 +15,9 @@ import {
     ChevronsLeft,
     ChevronsRight,
     ClipboardList,
-    Coins,
-    DollarSign,
-    Package,
     Plus,
     Search,
+    Trash2,
 } from 'lucide-react';
 
 import { useToast } from '@/hooks/use-toast';
@@ -78,47 +76,57 @@ function AtkTabs({ active }: { active: 'daftar-atk' | 'perolehan-pemakaian' | 'b
     );
 }
 
+type MassEntry = {
+    daftar_atk_id: string;
+    quantity: string;
+    unit_price: string;
+    total_price: string;
+};
+
 export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any) {
     const { toast } = useToast();
 
-    const [daftarAtkState] = useState(daftarAtk);
     const [logCategoryFilter, setLogCategoryFilter] = useState('all');
-    const [isAddLogOpen, setIsAddLogOpen] = useState(false);
+    const [isAddMassOpen, setIsAddMassOpen] = useState(false);
     const [logSearchTerm, setLogSearchTerm] = useState('');
     const [logCurrentPage, setLogCurrentPage] = useState(1);
     const [logItemsPerPage, setLogItemsPerPage] = useState(10);
-    const [newLog, setNewLog] = useState({
-        daftar_atk_id: '',
-        quantity: '',
-        type: 'Perolehan',
-        unit_price: '',
-        total_price: '',
-    });
-    const [selectedATK, setSelectedATK] = useState<any>(null);
-    const [atkSearchTerm, setAtkSearchTerm] = useState('');
 
-    const handleQuantityChange = (value: string) => {
-        const quantity = value;
-        const unitPrice = newLog.unit_price;
-        const totalPrice = unitPrice ? (Number(quantity) * Number(unitPrice)).toString() : '';
-        setNewLog({ ...newLog, quantity, total_price: totalPrice });
+    const [massEntries, setMassEntries] = useState<MassEntry[]>([{ daftar_atk_id: '', quantity: '', unit_price: '', total_price: '' }]);
+
+    const handleMassEntryChange = (index: number, field: string, value: string) => {
+        const entries = [...massEntries];
+        entries[index] = { ...entries[index], [field]: value };
+        const qty = entries[index].quantity ? Number(entries[index].quantity) : 0;
+        const unit = entries[index].unit_price ? Number(entries[index].unit_price) : 0;
+        entries[index].total_price = qty && unit ? String(qty * unit) : '';
+        setMassEntries(entries);
     };
 
-    const handleUnitPriceChange = (value: string) => {
-        const unitPrice = value;
-        const quantity = newLog.quantity;
-        const totalPrice = quantity ? (Number(quantity) * Number(unitPrice)).toString() : '';
-        setNewLog({ ...newLog, unit_price: unitPrice, total_price: totalPrice });
+    const addMassRow = () => {
+        setMassEntries([...massEntries, { daftar_atk_id: '', quantity: '', unit_price: '', total_price: '' }]);
+    };
+
+    const removeMassRow = (index: number) => {
+        const entries = massEntries.filter((_, i) => i !== index);
+        setMassEntries(entries.length ? entries : [{ daftar_atk_id: '', quantity: '', unit_price: '', total_price: '' }]);
+    };
+
+    const handleSubmitMass = () => {
+        router.post(route('stockopname.store'), massEntries as any, {
+            onSuccess: () => {
+                toast({ title: 'Tercatat', description: 'Perolehan massal berhasil dicatat' });
+                setIsAddMassOpen(false);
+                setMassEntries([{ daftar_atk_id: '', quantity: '', unit_price: '', total_price: '' }]);
+            },
+            onError: (errors) => {
+                toast({ title: 'Gagal', description: Object.values(errors)[0], variant: 'destructive' });
+            },
+        });
     };
 
     // Get unique categories
     const categories = Array.from(new Set(daftarAtk.map((item: any) => item.category)));
-
-    const handleATKSelect = (atkId: string) => {
-        const atk = daftarAtkState.find((item: any) => item.id === Number(atkId));
-        setSelectedATK(atk);
-        setNewLog({ ...newLog, daftar_atk_id: atkId });
-    };
 
     // Filtered logs
     const filteredLogs = stockOpnames.filter((log: any) => {
@@ -140,33 +148,6 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
         return filteredLogs.slice(logStartIndex, logEndIndex);
     }, [filteredLogs, logStartIndex, logEndIndex]);
 
-    const filteredAtkForSelect = useMemo(() => {
-        return daftarAtkState.filter(
-            (atk: any) =>
-                atk.name.toLowerCase().includes(atkSearchTerm.toLowerCase()) ||
-                atk.category.toLowerCase().includes(atkSearchTerm.toLowerCase()) ||
-                atk.kode_atk.toLowerCase().includes(atkSearchTerm.toLowerCase()),
-        );
-    }, [daftarAtkState, atkSearchTerm]);
-
-    const handleAddLog = () => {
-        router.post(route('stockopname.store'), newLog, {
-            onSuccess: () => {
-                toast({
-                    title: 'Tercatat',
-                    description: 'Perolehan ATK baru berhasil dicatat',
-                });
-                setIsAddLogOpen(false);
-                setNewLog({ daftar_atk_id: '', quantity: '', type: 'Perolehan', unit_price: '', total_price: '' });
-                setSelectedATK(null);
-                setAtkSearchTerm('');
-            },
-            onError: (errors) => {
-                toast({ title: 'Gagal', description: Object.values(errors)[0], variant: 'destructive' });
-            },
-        });
-    };
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
@@ -183,10 +164,15 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
                                 </CardTitle>
                                 <CardDescription className="text-indigo-50">Riwayat pergerakan stok alat tulis kantor.</CardDescription>
                             </div>
-                            <Button onClick={() => setIsAddLogOpen(true)} className="gap-2 bg-white text-indigo-600 shadow-lg hover:bg-indigo-50">
-                                <Plus className="h-4 w-4" />
-                                Tambah Perolehan
-                            </Button>
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    onClick={() => setIsAddMassOpen(true)}
+                                    className="gap-2 bg-white text-indigo-600 shadow-lg hover:bg-indigo-50"
+                                >
+                                    <Plus className="h-4 w-4" />
+                                    Tambah Perolehan Massal
+                                </Button>
+                            </div>
                         </div>
                     </CardHeader>
                     <CardContent>
@@ -202,7 +188,7 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
                             </div>
                             <div className="flex items-center space-x-2">
                                 <Select value={logCategoryFilter} onValueChange={setLogCategoryFilter}>
-                                    <SelectTrigger className="w-[150px]">
+                                    <SelectTrigger className="w-37.5">
                                         <SelectValue placeholder="Kategori" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -294,7 +280,7 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
                                     <div className="flex items-center gap-2">
                                         <span className="text-sm text-muted-foreground">Tampilkan</span>
                                         <Select value={String(logItemsPerPage)} onValueChange={(value) => setLogItemsPerPage(Number(value))}>
-                                            <SelectTrigger className="h-8 w-[70px]">
+                                            <SelectTrigger className="h-8 w-17.5">
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -362,178 +348,110 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
                 </Card>
 
                 <Dialog
-                    open={isAddLogOpen}
+                    open={isAddMassOpen}
                     onOpenChange={(open) => {
-                        setIsAddLogOpen(open);
+                        setIsAddMassOpen(open);
                         if (!open) {
-                            setAtkSearchTerm('');
-                            setNewLog({
-                                daftar_atk_id: '',
-                                quantity: '',
-                                type: 'Perolehan',
-                                unit_price: '',
-                                total_price: '',
-                            });
-                            setSelectedATK(null);
+                            setMassEntries([{ daftar_atk_id: '', quantity: '', unit_price: '', total_price: '' }]);
                         }
                     }}
                 >
-                    <DialogContent className="sm:max-w-[700px]">
+                    <DialogContent className="gap-1.5 bg-linear-to-r from-white to-blue-50 lg:min-w-4xl">
                         <DialogHeader>
                             <DialogTitle className="flex items-center gap-2 text-xl">
                                 <Plus className="h-5 w-5 text-indigo-600" />
-                                Tambah Perolehan
+                                Tambah Perolehan Massal
                             </DialogTitle>
-                            <DialogDescription>Masukkan detail stok ATK yang masuk ke gudang.</DialogDescription>
+                            <DialogDescription>Masukkan beberapa perolehan sekaligus.</DialogDescription>
                         </DialogHeader>
-                        <div className="grid gap-6 py-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="atk-select" className="flex items-center gap-2 text-base font-semibold">
-                                    <Package className="h-4 w-4 text-indigo-600" />
-                                    Pilih ATK
-                                </Label>
-                                <Select value={newLog.daftar_atk_id} onValueChange={handleATKSelect}>
-                                    <SelectTrigger id="atk-select" className="h-11 w-full justify-start">
-                                        <SelectValue placeholder="Cari dan pilih ATK..." className="w-full text-left">
-                                            {selectedATK && (
-                                                <div className="py-1 text-left">
-                                                    <span className="font-medium">{selectedATK.name}</span>
-                                                    <span className="text-xs text-muted-foreground"> • </span>
-                                                    <span className="text-xs text-muted-foreground">
-                                                        {selectedATK.category} • {selectedATK.satuan}
-                                                    </span>
-                                                </div>
-                                            )}
-                                        </SelectValue>
-                                    </SelectTrigger>
 
-                                    <SelectContent>
-                                        <div className="sticky top-0 z-10 border-b bg-white p-2">
-                                            <div className="flex items-center space-x-2 rounded-lg border bg-white px-3">
-                                                <Search className="h-4 w-4 text-gray-400" />
-                                                <Input
-                                                    placeholder="Cari ATK..."
-                                                    value={atkSearchTerm}
-                                                    onChange={(e) => setAtkSearchTerm(e.target.value)}
-                                                    className="h-9 border-0 focus-visible:ring-0"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    onKeyDown={(e) => e.stopPropagation()}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="max-h-[300px] overflow-y-auto">
-                                            {filteredAtkForSelect.length === 0 ? (
-                                                <div className="p-4 text-center text-sm text-muted-foreground">Tidak ada ATK yang ditemukan</div>
-                                            ) : (
-                                                filteredAtkForSelect.map((atk: any) => (
-                                                    <SelectItem key={atk.id} value={String(atk.id)} className="cursor-pointer">
-                                                        <div className="flex flex-col py-1">
-                                                            <span className="font-medium">{atk.name}</span>
-                                                            <span className="text-xs text-muted-foreground">
-                                                                {atk.kode_atk} • {atk.category} • {atk.satuan}
-                                                            </span>
-                                                        </div>
-                                                    </SelectItem>
-                                                ))
-                                            )}
-                                        </div>
-                                    </SelectContent>
-                                </Select>
-
-                                {selectedATK && (
-                                    <div className="mt-2 rounded-lg border-2 border-indigo-200 bg-linear-to-r from-indigo-50 to-purple-50 p-4">
-                                        <div className="flex items-center justify-between gap-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="rounded-lg bg-white p-2 shadow-sm">
-                                                    <Package className="h-5 w-5 text-indigo-600" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-semibold text-indigo-900">{selectedATK.name}</p>
-                                                    <p className="text-sm text-indigo-600">{selectedATK.kode_atk}</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-3">
-                                                <Badge variant="outline" className="border-indigo-300 bg-white text-indigo-700">
-                                                    Karegori: {selectedATK.category}
-                                                </Badge>
-                                                <Badge variant="outline" className="border-purple-300 bg-white text-purple-700">
-                                                    Satuan: {selectedATK.satuan}
-                                                </Badge>
-                                                <Badge variant="default" className="bg-indigo-600">
-                                                    Stok: {selectedATK.quantity}
-                                                </Badge>
-                                                {newLog.quantity && Number(newLog.quantity) > 0 && (
-                                                    <Badge
-                                                        variant="default"
-                                                        className={`${
-                                                            selectedATK.quantity + Number(newLog.quantity) >= 0 ? 'bg-green-600' : 'bg-red-600'
-                                                        }`}
-                                                    >
-                                                        Stok Akhir: {selectedATK.quantity + Number(newLog.quantity)}
-                                                    </Badge>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="quantity" className="flex items-center gap-2 font-semibold">
-                                        <ArrowDownCircle className="h-4 w-4 text-green-600" />
-                                        Jumlah Masuk
-                                    </Label>
-                                    <Input
-                                        id="quantity"
-                                        type=""
-                                        placeholder="0"
-                                        value={newLog.quantity}
-                                        onChange={(e) => handleQuantityChange(e.target.value)}
-                                        className="h-11 text-lg font-semibold"
-                                    />
-                                </div>
-
-                                <div className="grid gap-2">
-                                    <Label htmlFor="unit-price" className="flex items-center gap-2 font-semibold">
-                                        <Coins className="h-4 w-4 text-indigo-600" />
-                                        Harga Satuan (Rp)
-                                    </Label>
-                                    <Input
-                                        id="unit-price"
-                                        type=""
-                                        placeholder="0"
-                                        value={newLog.unit_price}
-                                        onChange={(e) => handleUnitPriceChange(e.target.value)}
-                                        className="h-11 text-lg"
-                                    />
+                        <div className="grid gap-4 py-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Button variant="outline" size="sm" onClick={addMassRow}>
+                                        <Plus className="h-4 w-4" />
+                                        Tambah Baris
+                                    </Button>
                                 </div>
                             </div>
 
-                            <div className="grid gap-2">
-                                <Label className="flex items-center gap-2 font-semibold">
-                                    <DollarSign className="h-4 w-4 text-indigo-600" />
-                                    Total Harga (Rp)
-                                </Label>
-                                <div className="rounded-lg border-2 border-indigo-200 bg-linear-to-r from-indigo-50 to-purple-50 p-4">
-                                    <div className="text-2xl font-bold text-indigo-600">
-                                        Rp {newLog.total_price ? Number(newLog.total_price).toLocaleString('id-ID') : '0'}
+                            <div className="max-h-96 space-y-3 overflow-y-auto">
+                                {massEntries.map((entry, idx) => (
+                                    <div key={idx} className="grid grid-cols-12 items-center gap-3 rounded-md border bg-white p-3 shadow-sm">
+                                        <div className="col-span-6">
+                                            <Label className="text-xs font-semibold">Pilih ATK</Label>
+                                            <Select value={entry.daftar_atk_id} onValueChange={(v) => handleMassEntryChange(idx, 'daftar_atk_id', v)}>
+                                                <SelectTrigger className="h-10 w-full justify-start">
+                                                    <SelectValue placeholder="Pilih ATK...">
+                                                        {entry.daftar_atk_id && (
+                                                            <div>
+                                                                {daftarAtk.find((a: any) => String(a.id) === String(entry.daftar_atk_id))?.name}
+                                                            </div>
+                                                        )}
+                                                    </SelectValue>
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <div className="max-h-64 overflow-y-auto">
+                                                        {daftarAtk.map((atk: any) => (
+                                                            <SelectItem key={atk.id} value={String(atk.id)}>
+                                                                <div className="flex flex-col py-1">
+                                                                    <span className="font-medium">{atk.name}</span>
+                                                                    <span className="text-xs text-muted-foreground">
+                                                                        {atk.kode_atk} • {atk.category} • {atk.satuan}
+                                                                    </span>
+                                                                </div>
+                                                            </SelectItem>
+                                                        ))}
+                                                    </div>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+
+                                        <div className="col-span-1">
+                                            <Label className="text-xs font-semibold">Jumlah</Label>
+                                            <Input
+                                                value={entry.quantity}
+                                                onChange={(e) => handleMassEntryChange(idx, 'quantity', e.target.value)}
+                                                className="h-10"
+                                            />
+                                        </div>
+
+                                        <div className="col-span-2">
+                                            <Label className="text-xs font-semibold">Harga Satuan (Rp)</Label>
+                                            <Input
+                                                value={entry.unit_price}
+                                                onChange={(e) => handleMassEntryChange(idx, 'unit_price', e.target.value)}
+                                                className="h-10"
+                                            />
+                                        </div>
+
+                                        <div className="col-span-2 text-right">
+                                            <Label className="text-xs font-semibold">Total</Label>
+                                            <div className="mt-1 text-sm font-semibold">
+                                                Rp {entry.total_price ? Number(entry.total_price).toLocaleString('id-ID') : '0'}
+                                            </div>
+                                        </div>
+
+                                        <div className="col-span-1 text-right">
+                                            <Button size="icon" variant="ghost" onClick={() => removeMassRow(idx)}>
+                                                <Trash2 className="h-4 w-4 text-red-600" />
+                                            </Button>
+                                        </div>
                                     </div>
-                                    <p className="mt-1 text-xs text-indigo-500">Otomatis dihitung dari jumlah × harga satuan</p>
-                                </div>
+                                ))}
                             </div>
                         </div>
+
                         <DialogFooter>
-                            <Button variant="outline" onClick={() => setIsAddLogOpen(false)}>
+                            <Button variant="outline" onClick={() => setIsAddMassOpen(false)}>
                                 Batal
                             </Button>
                             <Button
-                                onClick={handleAddLog}
-                                disabled={!newLog.daftar_atk_id || !newLog.quantity || !newLog.unit_price}
+                                onClick={handleSubmitMass}
                                 className="bg-linear-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
                             >
                                 <Plus className="mr-2 h-4 w-4" />
-                                Simpan Log
+                                Simpan Perolehan Massal
                             </Button>
                         </DialogFooter>
                     </DialogContent>

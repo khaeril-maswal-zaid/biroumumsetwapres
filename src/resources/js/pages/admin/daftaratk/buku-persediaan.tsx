@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Calendar, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, PackageSearch, RotateCcw } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Download, PackageSearch, RotateCcw } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { ItemCombobox } from '@/components/biroumum/item-combobox';
@@ -103,12 +103,29 @@ export default function ATKItemsManagement({ Persediaan }: any) {
 
                 <Card className="pt-0">
                     <CardHeader className="rounded-t-md bg-linear-to-r from-blue-500 to-indigo-600 py-2.5 text-white">
-                        <div className="space-y-0">
-                            <CardTitle className="flex items-center gap-2">
-                                <PackageSearch className="h-5 w-5" />
-                                Buku Persediaan ATK
-                            </CardTitle>
-                            <CardDescription className="text-blue-50">Riwayat pergerakan dan saldo persediaan ATK.</CardDescription>
+                        <div className="flex items-center justify-between">
+                            <div className="space-y-0">
+                                <CardTitle className="flex items-center gap-2">
+                                    <PackageSearch className="h-5 w-5" />
+                                    Buku Persediaan ATK
+                                </CardTitle>
+                                <CardDescription className="text-blue-50">Riwayat pergerakan dan saldo persediaan ATK.</CardDescription>
+                            </div>
+                            <Button
+                                onClick={() => {
+                                    const url = route('stockopname.export_buku_persediaan', {
+                                        daftar_atk_kode: selectedKodeAtk,
+                                        bulan: selectedMonth,
+                                        tahun: selectedYear,
+                                    });
+
+                                    window.open(url, '_blank');
+                                }}
+                                className="gap-2 bg-white text-indigo-600 shadow-lg hover:bg-indigo-50"
+                            >
+                                <Download className="h-4 w-4" />
+                                Export data
+                            </Button>
                         </div>
                     </CardHeader>
 
@@ -277,7 +294,7 @@ export default function ATKItemsManagement({ Persediaan }: any) {
                                     <div className="flex items-center gap-2">
                                         <span className="text-sm text-muted-foreground">Tampilkan</span>
                                         <Select value={String(logItemsPerPage)} onValueChange={(value) => setLogItemsPerPage(Number(value))}>
-                                            <SelectTrigger className="h-8 w-[70px]">
+                                            <SelectTrigger className="h-8 w-17.5">
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
