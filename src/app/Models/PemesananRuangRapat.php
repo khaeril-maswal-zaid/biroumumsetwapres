@@ -34,7 +34,13 @@ class PemesananRuangRapat extends Model
         'is_makanan_berat',
         'is_hybrid',
         'is_ti_support',
+        'is_bpmi_support',
         'jenis_rapat',
+        'makanan_ringan_detail',
+        'makanan_berat_detail',
+        'hybrid_detail',
+        'ti_support_detail',
+        'bpmi_support_detail',
         'is_read',
     ];
 

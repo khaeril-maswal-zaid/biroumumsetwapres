@@ -32,6 +32,12 @@ return new class extends Migration
             $table->boolean('is_makanan_ringan')->default(false);
             $table->boolean('is_hybrid')->default(false);
             $table->boolean('is_ti_support')->default(false);
+            $table->boolean('is_bpmi_support')->default(false);
+            $table->string('makanan_berat_detail')->nullable();
+            $table->string('makanan_ringan_detail')->nullable();
+            $table->string('hybrid_detail')->nullable();
+            $table->string('ti_support_detail')->nullable();
+            $table->string('bpmi_support_detail')->nullable();
             $table->boolean('is_read')->default(false);
             $table->timestamps();
         });

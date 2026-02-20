@@ -33,6 +33,12 @@ class StorePemesananRuangRapatRequest extends FormRequest
             'makanRingan' => 'boolean',
             'makanSiang' => 'boolean',
             'needItSupport' => 'boolean',
+            'needBpmiSupport' => 'boolean',
+            'makanSiangDetail' => 'string|max:255',
+            'makanRinganDetail' => 'string|max:255',
+            'itSupportDetail' => 'string|max:255',
+            'bpmiSupportDetail' => 'string|max:255',
+            'hybridDetail' => 'string|max:255',
             'isHybrid'  => 'boolean',
         ];
     }
@@ -57,7 +63,13 @@ class StorePemesananRuangRapatRequest extends FormRequest
             'makanRingan.boolean'   => 'Kebutuhan Snack harus berupa nilai boolean.',
             'makanSiang.boolean'   => 'Kebutuhan Makan Siang harus berupa nilai boolean.',
             'needItSupport.boolean' => 'Dukungan TI harus berupa nilai boolean.',
+            'needBpmiSupport.boolean' => 'Dukungan BPMI harus berupa nilai boolean.',
             'isHybrid.boolean'      => 'Is Hybrid harus berupa nilai boolean.',
+            'makanSiangDetail.max' => 'Detail Makan Siang maksimal 255 karakter.',
+            'makanRinganDetail.max' => 'Detail Snack maksimal 255 karakter.',
+            'itSupportDetail.max' => 'Detail Dukungan TI maksimal 255 karakter.',
+            'bpmiSupportDetail.max' => 'Detail Dukungan BPMI maksimal 255 karakter.',
+            'hybridDetail.max' => 'Detail Hybrid maksimal 255 karakter.',
         ];
     }
 }

@@ -82,6 +82,12 @@ class PemesananRuangRapatController extends Controller
             'is_makanan_berat' => $request->makanSiang,
             'is_hybrid' => $request->isHybrid,
             'is_ti_support' => $request->needItSupport,
+            'is_bpmi_support' => $request->needBpmiSupport,
+            'makanan_berat_detail' => $request->makanSiangDetail,
+            'makanan_ringan_detail' => $request->makanRinganDetail,
+            'ti_support_detail' => $request->needItSupport ? $request->itSupportDetail : null,
+            'bpmi_support_detail' => $request->needBpmiSupport ? $request->bpmiSupportDetail : null,
+            'hybrid_detail' => $request->isHybrid ? $request->hybridDetail : null,
         ]);
 
         $pegawai = $permintaan->pemesan->pegawai;

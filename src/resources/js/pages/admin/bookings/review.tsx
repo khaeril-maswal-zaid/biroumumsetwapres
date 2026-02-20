@@ -68,6 +68,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function BookingDetailsPage({ selectedBooking }: any) {
     const { toast } = useToast();
 
+    console.log(selectedBooking);
+
     const [actionType, setActionType] = useState<'approved' | 'rejected' | null>(null);
     const [adminMessage, setAdminMessage] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
@@ -261,21 +263,31 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
             label: 'Snack/ Makanan Ringan',
             icon: Cookie,
             isCheck: selectedBooking?.is_makanan_ringan,
+            detail: selectedBooking?.makanan_ringan_detail,
         },
         {
             label: 'Makan Siang',
             icon: Utensils,
             isCheck: selectedBooking?.is_makanan_berat,
+            detail: selectedBooking?.makanan_berat_detail,
         },
         {
             label: 'Rapat Hybrid',
             icon: Video,
             isCheck: selectedBooking?.is_hybrid,
+            detail: selectedBooking?.hybrid_detail,
         },
         {
             label: 'Dukungan IT',
             icon: Monitor,
             isCheck: selectedBooking?.is_ti_support,
+            detail: selectedBooking?.ti_support_detail,
+        },
+        {
+            label: 'Dukungan BPMI',
+            icon: Users,
+            isCheck: selectedBooking?.is_bpmi_support,
+            detail: selectedBooking?.bpmi_support_detail,
         },
     ];
 
@@ -403,43 +415,46 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
 
                                             return (
                                                 <div
-                                                    className="flex w-full items-center gap-4 rounded-xl bg-linear-to-r from-violet-50 to-purple-50 px-4 py-2.5 text-left transition-all duration-200"
                                                     key={index}
+                                                    className="w-full gap-4 rounded-xl bg-linear-to-r from-violet-50 to-purple-50 px-4 py-3 text-left transition-all duration-200"
                                                 >
-                                                    {/* Custom Checkbox */}
-                                                    {need.isCheck == 1 ? (
-                                                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-violet-600 bg-violet-600 transition-all duration-200">
-                                                            <svg
-                                                                className="h-4 w-4 text-white"
-                                                                fill="none"
-                                                                viewBox="0 0 24 24"
-                                                                stroke="currentColor"
-                                                                strokeWidth={3}
-                                                            >
-                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                                            </svg>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white transition-all duration-200">
-                                                            <XCircle className="h-6 w-6 text-red-500" />
-                                                        </div>
-                                                    )}
+                                                    <div className="flex w-full items-center gap-4">
+                                                        {/* Custom Checkbox */}
+                                                        {need.isCheck == 1 ? (
+                                                            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-violet-600 bg-violet-600 transition-all duration-200">
+                                                                <svg
+                                                                    className="h-4 w-4 text-white"
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24"
+                                                                    stroke="currentColor"
+                                                                    strokeWidth={3}
+                                                                >
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                                </svg>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white transition-all duration-200">
+                                                                <XCircle className="h-6 w-6 text-red-500" />
+                                                            </div>
+                                                        )}
 
-                                                    {/* Icon & Label */}
-                                                    <div className="flex flex-1 items-center gap-3">
-                                                        <div className="rounded-lg bg-violet-100 p-2.5 transition-colors duration-200">
-                                                            <Icon
-                                                                className={`h-5 w-5 ${need.isCheck == 1 ? `text-violet-900` : `text-gray-500`} transition-colors duration-200`}
-                                                            />
-                                                        </div>
-                                                        <div>
-                                                            <p
-                                                                className={`text-sm font-semibold ${need.isCheck == 1 ? `text-violet-900` : `text-gray-500`} transition-colors duration-200`}
-                                                            >
-                                                                {need.label}
-                                                            </p>
+                                                        {/* Icon & Label */}
+                                                        <div className="flex flex-1 items-center gap-3">
+                                                            <div className="rounded-lg bg-violet-100 p-2.5 transition-colors duration-200">
+                                                                <Icon
+                                                                    className={`h-5 w-5 ${need.isCheck == 1 ? `text-violet-900` : `text-gray-500`} transition-colors duration-200`}
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <p
+                                                                    className={`text-sm font-semibold ${need.isCheck == 1 ? `text-violet-900` : `text-gray-500`} transition-colors duration-200`}
+                                                                >
+                                                                    {need.label}
+                                                                </p>
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                    {need.detail && <p className="mt-1 text-sm text-violet-600 italic">{need.detail}</p>}
                                                 </div>
                                             );
                                         })}

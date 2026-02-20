@@ -37,7 +37,13 @@ const schema = z
         makanSiang: z.boolean(),
         makanRingan: z.boolean(),
         needItSupport: z.boolean(),
+        needBpmiSupport: z.boolean(),
         isHybrid: z.boolean(),
+        makanSiangDetail: z.string().optional(),
+        makanRinganDetail: z.string().optional(),
+        itSupportDetail: z.string().optional(),
+        bpmiSupportDetail: z.string().optional(),
+        hybridDetail: z.string().optional(),
     })
     .refine((data) => data.endTime > data.startTime, {
         message: 'Jam selesai harus lebih besar dari jam mulai',
@@ -63,6 +69,12 @@ export default function RoomBooking() {
             makanSiang: false,
             needItSupport: false,
             isHybrid: false,
+            needBpmiSupport: false,
+            hybridDetail: '',
+            makanSiangDetail: '',
+            makanRinganDetail: '',
+            itSupportDetail: '',
+            bpmiSupportDetail: '',
         },
     });
 
