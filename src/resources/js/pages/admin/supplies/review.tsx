@@ -435,7 +435,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                                 {selectedRequest.status == 'pending' && actionType == 'confirmed' && (
                                                                     <div className="flex items-center gap-2">
                                                                         <Label htmlFor={`qty-${item.id}`} className="text-sm whitespace-nowrap">
-                                                                            Setujui a:
+                                                                            Setujui:
                                                                         </Label>
                                                                         <Input
                                                                             id={`qty-${item.id}`}
@@ -601,7 +601,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                                     {selectedRequest.status == 'pending' && actionType == 'confirmed' && (
                                                                         <div className="flex items-center gap-2">
                                                                             <Label htmlFor={`qty-${item.id}`} className="text-sm whitespace-nowrap">
-                                                                                Setujui a:
+                                                                                Setujui:
                                                                             </Label>
                                                                             <Input
                                                                                 id={`qty-${item.id}`}
@@ -841,7 +841,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                                         item.status == 'custom' && (
                                                                             <div className="mt-2 flex items-center gap-2">
                                                                                 <Label htmlFor={`qty-${keyId}`} className="text-sm whitespace-nowrap">
-                                                                                    Setujui x:
+                                                                                    Setujui :
                                                                                 </Label>
 
                                                                                 {canApproveThisItem ? (
