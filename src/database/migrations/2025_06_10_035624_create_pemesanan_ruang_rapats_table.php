@@ -37,7 +37,7 @@ return new class extends Migration
             $table->string('makanan_ringan_detail')->nullable();
             $table->string('hybrid_detail')->nullable();
             $table->string('ti_support_detail')->nullable();
-            $table->string('bpmi_support_detail')->nullable();
+            $table->string('bpmi_support_detail')->nullable(); //
             $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
