@@ -88,7 +88,7 @@ export default function ButtonAtk() {
                         </div> */}
 
                         <div>
-                            <Label htmlFor="name">Nama ATK</Label>
+                            <Label htmlFor="name">Jenis Barang ATK</Label>
                             <Input
                                 className="mt-1"
                                 id="name"

@@ -42,13 +42,10 @@ const FormSchema = z.object({
         )
         .min(1, 'Minimal satu barang harus dipilih'),
     justification: z.string().min(1, 'Keterangan tidak boleh kosong'),
-    contact: z.string().min(1, 'Narahubung wajib diisi'),
-    // memo: z
-    //     .any()
-    //     .refine((file) => file instanceof File, 'File memo wajib diupload')
-    //     .refine((file) => file?.type === 'application/pdf', 'File harus berformat PDF')
-    //     .refine((file) => file === null || file instanceof File, 'File memo wajib diupload')
-    //     .nullable(),
+    contact: z
+        .string()
+        .min(1, 'Narahubung wajib diisi')
+        .regex(/^08\d{8,11}$/, 'Nomor HP tidak valid (format: 08xxxxxxxxxx)'),
 });
 
 type FormData = z.infer<typeof FormSchema>;
@@ -71,71 +68,11 @@ export default function SuppliesRequest({ availableATK }: any) {
         defaultValues: {
             items: [{ id: '', name: '', requested: 1, approved: 0, satuan: '', status: 'normal' }],
             justification: '',
-            // urgency: '',
             contact: '',
-            // memo: null,
         },
     });
 
     const [errorServer, setErrorServer] = useState<null | Record<string, string[]>>(null);
-
-    // const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    // const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
-    // const [isGeneratingThumbnail, setIsGeneratingThumbnail] = useState(false);
-    // const fileInputRef = useRef<HTMLInputElement>(null);
-
-    // const generatePDFThumbnail = async (file: File) => {
-    //     setIsGeneratingThumbnail(true);
-    //     try {
-    //         const arrayBuffer = await file.arrayBuffer();
-    //         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    //         const page = await pdf.getPage(1);
-
-    //         const viewport = page.getViewport({ scale: 0.5 });
-    //         const canvas = document.createElement('canvas');
-    //         const context = canvas.getContext('2d');
-
-    //         canvas.height = viewport.height;
-    //         canvas.width = viewport.width;
-
-    //         await page.render({
-    //             canvasContext: context!,
-    //             viewport: viewport,
-    //             canvas,
-    //         }).promise;
-
-    //         const imageUrl = canvas.toDataURL('image/png');
-    //         setThumbnailUrl(imageUrl);
-    //     } catch (error) {
-    //         console.error('Error generating PDF thumbnail:', error);
-    //         setThumbnailUrl(null);
-    //     } finally {
-    //         setIsGeneratingThumbnail(false);
-    //     }
-    // };
-
-    // const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     const file = event.target.files?.[0];
-    //     if (file) {
-    //         if (file.type !== 'application/pdf') {
-    //             alert('Hanya file PDF yang diperbolehkan');
-    //             return;
-    //         }
-
-    //         setSelectedFile(file);
-    //         setValue('memo', file, { shouldValidate: true });
-    //         await generatePDFThumbnail(file);
-    //     }
-    // };
-
-    // const removeFile = () => {
-    //     setSelectedFile(null);
-    //     setThumbnailUrl(null);
-    //     setValue('memo', null);
-    //     if (fileInputRef.current) {
-    //         fileInputRef.current.value = '';
-    //     }
-    // };
 
     const { fields, append, remove, update } = useFieldArray({ control, name: 'items' });
     const items = watch('items');
@@ -143,6 +80,7 @@ export default function SuppliesRequest({ availableATK }: any) {
 
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
     const [openComboboxes, setOpenComboboxes] = useState<Record<number, boolean>>({});
+    const [searchQueries, setSearchQueries] = useState<Record<number, string>>({});
 
     const getAvailableOptions = (index: number) => {
         const selectedIds = items.map((it, i) => (i !== index ? it.id : null)).filter(Boolean);
@@ -154,10 +92,6 @@ export default function SuppliesRequest({ availableATK }: any) {
 
         formData.append('justification', data.justification);
         formData.append('contact', data.contact);
-
-        // if (data.memo) {
-        //     formData.append('memo', data.memo);
-        // }
 
         data.items.forEach((item, index) => {
             formData.append(`items[${index}][id]`, item.id);
@@ -176,8 +110,6 @@ export default function SuppliesRequest({ availableATK }: any) {
             onSuccess: () => {
                 setShowSuccessDialog(true);
                 reset();
-                // setSelectedFile(null);
-                // setThumbnailUrl(null);
                 setErrorServer(null);
             },
         });
@@ -265,12 +197,19 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                             </PopoverTrigger>
                                                             <PopoverContent
                                                                 align="start"
-                                                                className="w-[calc(100vw-3rem)] max-w-[380px] p-0"
+                                                                className="w-[calc(100vw-3rem)] max-w-95 p-0"
                                                                 sideOffset={4}
                                                             >
                                                                 <Command>
-                                                                    <CommandInput placeholder="Cari ATK..." className="text-sm" />
-                                                                    <CommandList className="max-h-[200px]">
+                                                                    <CommandInput
+                                                                        placeholder="Cari ATK..."
+                                                                        className="text-sm"
+                                                                        value={searchQueries[index] || ''}
+                                                                        onValueChange={(value) =>
+                                                                            setSearchQueries({ ...searchQueries, [index]: value })
+                                                                        }
+                                                                    />
+                                                                    <CommandList className="max-h-50">
                                                                         <CommandEmpty>Tidak ada ATK ditemukan.</CommandEmpty>
                                                                         <CommandGroup heading="Opsi Lainnya">
                                                                             <CommandItem
@@ -283,7 +222,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                                                         approved: 0,
                                                                                         status: 'custom',
                                                                                     });
-                                                                                    setOpenComboboxes({ ...openComboboxes, [index]: false });
+                                                                                    setOpenComboboxes((prev) => ({ ...prev, [index]: false }));
                                                                                 }}
                                                                                 className={cn(
                                                                                     'flex items-center gap-2 py-2',
@@ -314,50 +253,60 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                                             </CommandItem>
                                                                         </CommandGroup>
                                                                         <CommandGroup heading="Daftar ATK">
-                                                                            {opts.map((atk: any) => {
-                                                                                const isCurrentlySelected = sel?.id === String(atk.id);
+                                                                            {(() => {
+                                                                                const q = (searchQueries[index] || '').toLowerCase().trim();
+                                                                                const filtered = q
+                                                                                    ? opts.filter((atk: any) => atk.name.toLowerCase().includes(q))
+                                                                                    : opts;
 
-                                                                                return (
-                                                                                    <CommandItem
-                                                                                        key={atk.id}
-                                                                                        onSelect={() => {
-                                                                                            update(index, {
-                                                                                                id: String(atk.id),
-                                                                                                name: atk.name,
-                                                                                                satuan: atk.satuan,
-                                                                                                requested: field.requested || 1,
-                                                                                                approved: 0,
-                                                                                                status: 'normal',
-                                                                                            });
-                                                                                            setOpenComboboxes({ ...openComboboxes, [index]: false });
-                                                                                        }}
-                                                                                        className={cn(
-                                                                                            'flex items-center gap-2 py-2',
-                                                                                            isCurrentlySelected && 'bg-primary/10',
-                                                                                        )}
-                                                                                    >
-                                                                                        <Check
+                                                                                return filtered.map((atk: any) => {
+                                                                                    const isCurrentlySelected = sel?.id === String(atk.id);
+
+                                                                                    return (
+                                                                                        <CommandItem
+                                                                                            key={atk.id}
+                                                                                            onSelect={() => {
+                                                                                                update(index, {
+                                                                                                    id: String(atk.id),
+                                                                                                    name: atk.name,
+                                                                                                    satuan: atk.satuan,
+                                                                                                    requested: field.requested || 1,
+                                                                                                    approved: 0,
+                                                                                                    status: 'normal',
+                                                                                                });
+                                                                                                setOpenComboboxes((prev) => ({
+                                                                                                    ...prev,
+                                                                                                    [index]: false,
+                                                                                                }));
+                                                                                            }}
                                                                                             className={cn(
-                                                                                                'h-4 w-4 shrink-0',
-                                                                                                isCurrentlySelected
-                                                                                                    ? 'text-primary opacity-100'
-                                                                                                    : 'opacity-0',
+                                                                                                'flex items-center gap-2 py-2',
+                                                                                                isCurrentlySelected && 'bg-primary/10',
                                                                                             )}
-                                                                                        />
-                                                                                        <div className="flex min-w-0 flex-1 flex-col">
-                                                                                            <span className="truncate text-sm">{atk.name}</span>
-                                                                                            <span className="text-xs text-muted-foreground">
-                                                                                                Satuan: {atk.satuan}
-                                                                                            </span>
-                                                                                        </div>
-                                                                                        {isCurrentlySelected && (
-                                                                                            <span className="shrink-0 rounded bg-primary px-1.5 py-0.5 text-[10px] font-medium text-primary-foreground">
-                                                                                                Dipilih
-                                                                                            </span>
-                                                                                        )}
-                                                                                    </CommandItem>
-                                                                                );
-                                                                            })}
+                                                                                        >
+                                                                                            <Check
+                                                                                                className={cn(
+                                                                                                    'h-4 w-4 shrink-0',
+                                                                                                    isCurrentlySelected
+                                                                                                        ? 'text-primary opacity-100'
+                                                                                                        : 'opacity-0',
+                                                                                                )}
+                                                                                            />
+                                                                                            <div className="flex min-w-0 flex-1 flex-col">
+                                                                                                <span className="truncate text-sm">{atk.name}</span>
+                                                                                                <span className="text-xs text-muted-foreground">
+                                                                                                    Satuan: {atk.satuan}
+                                                                                                </span>
+                                                                                            </div>
+                                                                                            {isCurrentlySelected && (
+                                                                                                <span className="shrink-0 rounded bg-primary px-1.5 py-0.5 text-[10px] font-medium text-primary-foreground">
+                                                                                                    Dipilih
+                                                                                                </span>
+                                                                                            )}
+                                                                                        </CommandItem>
+                                                                                    );
+                                                                                });
+                                                                            })()}
                                                                         </CommandGroup>
                                                                     </CommandList>
                                                                 </Command>
@@ -379,7 +328,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                                     placeholder="Jml"
                                                                     {...register(`items.${index}.requested` as const)}
                                                                     min={1}
-                                                                    disabled={!sel?.id}
+                                                                    disabled={!sel?.id || sel.status === 'custom'}
                                                                     className="text-center text-sm"
                                                                 />
                                                             </div>
@@ -457,7 +406,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                         type="button"
                                         variant="outline"
                                         size="sm"
-                                        onClick={() => append({ id: '', name: '', requested: 0, approved: 0, satuan: '', status: 'normal' })}
+                                        onClick={() => append({ id: '', name: '', requested: 1, approved: 0, satuan: '', status: 'normal' })}
                                         disabled={fields.length >= availableATK.length + 1}
                                         className="mt-3"
                                     >
@@ -476,73 +425,8 @@ export default function SuppliesRequest({ availableATK }: any) {
                                         placeholder="Jelaskan alasan kebutuhan..."
                                         className={`mt-1 ${cn(errors.justification && 'border-red-500')}`}
                                     />
+                                    {errors.justification && <p className="mt-1 text-sm text-red-600">{errors.justification.message}</p>}
                                 </div>
-
-                                {/* <div>
-                                    <Label htmlFor="memo">Upload Memo (PDF) * <span className="text-red-500">*</span></Label>
-                                    <div className="mt-1 space-y-3">
-                                        <div className="flex items-center space-x-2">
-                                            <Input
-                                                ref={fileInputRef}
-                                                id="memo"
-                                                type="file"
-                                                accept=".pdf"
-                                                onChange={handleFileChange}
-                                                className="hidden"
-                                            />
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                onClick={() => fileInputRef.current?.click()}
-                                                className="flex items-center space-x-2"
-                                            >
-                                                <Upload className="h-4 w-4" />
-                                                <span>Pilih File PDF</span>
-                                            </Button>
-                                            {selectedFile && (
-                                                <Button type="button" variant="destructive" size="sm" onClick={removeFile}>
-                                                    Hapus
-                                                </Button>
-                                            )}
-                                        </div>
-
-                                        <div className="rounded-lg border-2 border-dashed border-gray-300 p-4">
-                                            {selectedFile ? (
-                                                <div className="space-y-3">
-                                                    <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                                        <FileText className="h-4 w-4" />
-                                                        <span>{selectedFile.name}</span>
-                                                        <span className="text-xs">({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)</span>
-                                                    </div>
-
-                                                    {isGeneratingThumbnail ? (
-                                                        <div className="flex items-center justify-center py-8">
-                                                            <div className="text-sm text-gray-500">Membuat preview...</div>
-                                                        </div>
-                                                    ) : thumbnailUrl ? (
-                                                        <div className="flex justify-center">
-                                                            <img
-                                                                src={thumbnailUrl || '/placeholder.svg'}
-                                                                alt="PDF Preview"
-                                                                className="max-h-32 rounded border shadow-sm"
-                                                            />
-                                                        </div>
-                                                    ) : (
-                                                        <div className="flex items-center justify-center py-8 text-sm text-gray-500">
-                                                            Preview tidak tersedia
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ) : (
-                                                <div className="flex items-center justify-center py-8 text-sm text-gray-500">
-                                                    Belum ada file dipilih
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {errors.memo && <p className="text-sm text-red-500">{errors.memo.message}</p>}
-                                    </div>
-                                </div> */}
 
                                 {/* Narahubung */}
                                 <div>
@@ -555,6 +439,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                         placeholder="Nama dan nomor telepon"
                                         className={`mt-1 ${cn(errors.contact && 'border-red-500')}`}
                                     />
+                                    {errors.contact && <p className="mt-1 text-sm text-red-600">{errors.contact.message}</p>}
                                 </div>
 
                                 <Button type="submit" className="w-full">

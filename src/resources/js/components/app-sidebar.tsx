@@ -33,7 +33,7 @@ const mainNavItems: NavItem[] = [
         permission: 'view_bookings',
     },
     {
-        title: 'Kerusakan Gedung',
+        title: 'Kerusakan Sarpras',
         href: route('kerusakangedung.index'),
         icon: Hammer,
         permission: 'view_damages',

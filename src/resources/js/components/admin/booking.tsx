@@ -442,7 +442,7 @@ export default function BookingReports({
                                 <div className="flex items-center gap-2">
                                     <Filter className="h-4 w-4 text-muted-foreground" />
                                     <Select value={filterRoom} onValueChange={setFilterRoom}>
-                                        <SelectTrigger className="w-[180px]">
+                                        <SelectTrigger className="w-45">
                                             <SelectValue placeholder="Pilih ruangan" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -480,7 +480,7 @@ export default function BookingReports({
                                     return (
                                         <Card
                                             key={index}
-                                            className={`relative min-h-[120px] py-3 transition-all duration-200 ${isCurrentMonth ? 'bg-card' : 'bg-muted/30'} ${isToday ? 'shadow-md ring-2 ring-primary' : ''} `}
+                                            className={`relative min-h-30 py-3 transition-all duration-200 ${isCurrentMonth ? 'bg-card' : 'bg-muted/30'} ${isToday ? 'shadow-md ring-2 ring-primary' : ''} `}
                                         >
                                             <CardContent className="p-2">
                                                 {/* Tanggal */}
@@ -497,7 +497,6 @@ export default function BookingReports({
                                                             key={schedule.id}
                                                             variant="secondary"
                                                             className="block w-full cursor-pointer justify-start truncate bg-green-100 px-2 py-1 text-xs text-green-800 transition-opacity hover:opacity-80"
-                                                            title={`${schedule.room} (${schedule.jam_mulai}-${schedule.jam_selesai})`}
                                                             onClick={() => handleScheduleClick(schedule)}
                                                         >
                                                             <div className="flex w-full flex-col items-start">

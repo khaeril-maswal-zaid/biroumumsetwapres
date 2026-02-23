@@ -6,9 +6,7 @@ use App\Models\KerusakanGedung;
 use App\Models\Notification;
 use App\Models\PemesananRuangRapat;
 use App\Models\PermintaanAtk;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,10 +43,10 @@ class HomeController extends Controller
                 'no_hp'             => $r->no_hp,
                 'deskripsi'         => $r->deskripsi,
                 'jenis_rapat'       => $r->jenis_rapat,
-                'is_makanan_berat'  => $r->is_makanan_berat,
-                'is_makanan_ringan'  => $r->is_makanan_ringan,
                 'is_ti_support'     => $r->is_ti_support,
                 'is_hybrid'         => $r->is_hybrid,
+                'ti_support_detail' => $r->ti_support_detail,
+                'hybrid_detail'     => $r->hybrid_detail,
                 'picture'           => null,
                 'keterangan'        => $r->keterangan,
                 'time' => substr($r->jam_mulai, 0, 5) . ' - ' . substr($r->jam_selesai, 0, 5),
@@ -81,11 +79,11 @@ class HomeController extends Controller
                 'keterangan'         => $k->keterangan,
                 'time'               => null,
                 'kategori'           => $k->kategori,
-                'is_makanan_berat'     => null,
-                'is_makanan_ringan'     => null,
                 'is_ti_support'     => null,
                 'is_hybrid'         => null,
                 'jenis_rapat'         => null,
+                'ti_support_detail' => null,
+                'hybrid_detail'     => null,
             ]);
 
         // Ambil data permintaan ATK + relasi pemesan
@@ -114,11 +112,11 @@ class HomeController extends Controller
                 'keterangan'         => $a->keterangan,
                 'time'               => null,
                 'kategori'           => null,
-                'is_makanan_ringan'     => null,
-                'is_ti_support'     => null,
                 'is_ti_support'     => null,
                 'is_hybrid'         => null,
                 'jenis_rapat'         => null,
+                'ti_support_detail' => null,
+                'hybrid_detail'     => null,
             ]);
 
         // Gabungkan semuanya, urutkan, batasi 10

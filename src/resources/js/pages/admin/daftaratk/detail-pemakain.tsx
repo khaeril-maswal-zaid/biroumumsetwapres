@@ -161,7 +161,7 @@ export default function ATKItemsManagement({ Persediaan, filters }: any) {
                                         <TableRow>
                                             <TableHead className="w-12">No</TableHead>
                                             <TableHead>Tanggal Pemakaian</TableHead>
-                                            <TableHead className="w-24 text-right">Jumlah Dipakai</TableHead>
+                                            <TableHead className="w-24 text-right">Jumlah Pemakaian</TableHead>
                                             <TableHead className="w-24">Satuan</TableHead>
                                             <TableHead className="w-32">Harga Satuan</TableHead>
                                             <TableHead className="w-32">Total Harga</TableHead>

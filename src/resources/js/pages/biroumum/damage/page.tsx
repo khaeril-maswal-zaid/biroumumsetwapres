@@ -172,11 +172,11 @@ export default function DamageReport({ kategoriKerusakan }: any) {
 
     return (
         <>
-            <Head title="Laporan Kerusakan Gedung" />
+            <Head title="Laporan Kerusakan Sarpras" />
             <div className="mx-auto min-h-screen w-full max-w-md bg-gray-50">
                 <div className="pb-20">
                     <div className="space-y-6 p-4">
-                        <PageHeader title="Laporan Kerusakan Gedung" backUrl="/" />
+                        <PageHeader title="Laporan Kerusakan Sarpras" backUrl="/" />
 
                         {errorServer && (
                             <Alert variant="destructive" className="mb-4 bg-white text-red-700">

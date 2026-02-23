@@ -24,7 +24,7 @@ import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Kerusakan Gedung',
+        title: 'Kerusakan Sarpras',
         href: '/dashboard',
     },
 ];

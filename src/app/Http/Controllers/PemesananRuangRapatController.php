@@ -78,15 +78,9 @@ class PemesananRuangRapatController extends Controller
             'no_hp' => $request->contact,
             'kode_booking' => 'RRT-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'status' => 'booked',
-            'is_makanan_ringan' => $request->makanRingan,
-            'is_makanan_berat' => $request->makanSiang,
             'is_hybrid' => $request->isHybrid,
             'is_ti_support' => $request->needItSupport,
-            'is_bpmi_support' => $request->needBpmiSupport,
-            'makanan_berat_detail' => $request->makanSiangDetail,
-            'makanan_ringan_detail' => $request->makanRinganDetail,
             'ti_support_detail' => $request->needItSupport ? $request->itSupportDetail : null,
-            'bpmi_support_detail' => $request->needBpmiSupport ? $request->bpmiSupportDetail : null,
             'hybrid_detail' => $request->isHybrid ? $request->hybridDetail : null,
         ]);
 
@@ -179,22 +173,6 @@ class PemesananRuangRapatController extends Controller
     public function destroy(PemesananRuangRapat $pemesananRuangRapat)
     {
         //
-    }
-
-    public function snacklunchApproved(PemesananRuangRapat $pemesananRuangRapat, Request $request)
-    {
-        $validated = $request->validate(
-            [
-                'snack_approved_count'  => 'required',
-                'lunch_approved_count' => 'required',
-            ]
-        );
-
-
-        $pemesananRuangRapat->update([
-            'aproved_makanan_berat' => $validated['lunch_approved_count'],
-            'aproved_makanan_ringan' => $validated['snack_approved_count'],
-        ]);
     }
 
     public function reports()

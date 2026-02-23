@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { type SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
-import { Building2, Calendar, Camera, CheckCircle2, Cookie, Monitor, Users, Utensils, Video } from 'lucide-react';
+import { Building2, Calendar, CheckCircle2, Monitor, Users, Video } from 'lucide-react';
 import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
@@ -31,15 +31,9 @@ const schema = z.object({
         .regex(/^08\d{8,12}$/, 'Nomor HP harus diawali 08 dan berisi 10–14 digit'),
 
     jenisRapat: z.string().nullable(),
-    makanSiang: z.boolean(),
-    makanRingan: z.boolean(),
     needItSupport: z.boolean(),
-    needBpmiSupport: z.boolean(),
     isHybrid: z.boolean(),
-    makanSiangDetail: z.string().optional(),
-    makanRinganDetail: z.string().optional(),
     itSupportDetail: z.string().optional(),
-    bpmiSupportDetail: z.string().optional(),
     hybridDetail: z.string().optional(),
 });
 
@@ -58,11 +52,8 @@ export function FormBooking() {
 
     // Read values from RHF (single source of truth)
     const formData = watch();
-    const makanRingan = watch('makanRingan') ?? false;
-    const makanSiang = watch('makanSiang') ?? false;
     const isHybrid = watch('isHybrid') ?? false;
     const needItSupport = watch('needItSupport') ?? false;
-    const needBpmiSupport = watch('needBpmiSupport') ?? false;
     const jenisRapat = (watch('jenisRapat') as JenisRapat) ?? 'internal';
 
     // Register fields only — DO NOT overwrite values coming from parent
@@ -91,22 +82,6 @@ export function FormBooking() {
 
     const kebutuhanDanDukungan = [
         {
-            label: 'Membutuhkan Snack',
-            icon: Cookie,
-            value: makanRingan,
-            valueString: 'makanRingan',
-            detailField: 'makanRinganDetail',
-            detailPlaceholder: 'Contoh: 20 pax, tanpa kacang, halal only',
-        },
-        {
-            label: 'Membutuhkan Makan Siang',
-            icon: Utensils,
-            value: makanSiang,
-            valueString: 'makanSiang',
-            detailField: 'makanSiangDetail',
-            detailPlaceholder: 'Contoh: Prasmanan / Box, jumlah pax',
-        },
-        {
             label: 'Rapat Hybrid',
             icon: Video,
             value: isHybrid,
@@ -120,14 +95,6 @@ export function FormBooking() {
             value: needItSupport,
             valueString: 'needItSupport',
             detailField: 'itSupportDetail',
-            detailPlaceholder: 'Contoh: Setup projector, mic wireless',
-        },
-        {
-            label: 'Dukungan BPMI',
-            icon: Camera,
-            value: needBpmiSupport,
-            valueString: 'needBpmiSupport',
-            detailField: 'bpmiSupportDetail',
             detailPlaceholder: 'Contoh: Setup projector, mic wireless',
         },
     ];
@@ -240,9 +207,7 @@ export function FormBooking() {
                                         }}
                                         className={cn(
                                             'relative rounded-xl border-2 p-2.5 text-left transition-all duration-200',
-                                            isSelected
-                                                ? 'border-sky-200 border-sky-500 bg-sky-50 bg-sky-100 ring-2 ring-sky-200 hover:border-sky-400'
-                                                : '',
+                                            isSelected ? 'border-sky-500 bg-sky-100 ring-2 ring-sky-200 hover:border-sky-400' : '',
                                         )}
                                     >
                                         {isSelected && (

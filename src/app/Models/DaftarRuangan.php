@@ -31,4 +31,9 @@ class DaftarRuangan extends Model
     {
         return $this->belongsTo(Unit::class, 'kode_unit', 'kode_unit');
     }
+
+    public function pemesanRupat()
+    {
+        return $this->hasMany(PemesananRuangRapat::class, 'daftar_ruangan_id');
+    }
 }

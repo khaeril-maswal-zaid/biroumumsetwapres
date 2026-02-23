@@ -24,6 +24,7 @@ interface ItemComboboxProps {
 
 export function ItemCombobox({ items, value, onSelect, kodeAtk }: ItemComboboxProps) {
     const [open, setOpen] = useState(false);
+    const [query, setQuery] = useState('');
 
     const selectedItem = items.find((item) => item.id == value);
     const displayLabel = selectedItem ? `${selectedItem.name} (${selectedItem.kode_atk}) • ${selectedItem.satuan}` : 'Pilih Item...';
@@ -38,39 +39,52 @@ export function ItemCombobox({ items, value, onSelect, kodeAtk }: ItemComboboxPr
             </PopoverTrigger>
             <PopoverContent className="w-full p-0" align="start">
                 <Command>
-                    <CommandInput placeholder="Cari berdasarkan nama, kode, satuan..." />
+                    <CommandInput placeholder="Cari berdasarkan nama, kode, satuan..." value={query} onValueChange={(v) => setQuery(v)} />
                     <CommandEmpty>Tidak ada item ditemukan.</CommandEmpty>
                     <CommandList>
                         <CommandGroup>
                             <CommandItem
-                                value="clear"
                                 onSelect={() => {
                                     onSelect(null);
                                     setOpen(false);
+                                    setQuery('');
                                 }}
                             >
                                 <Check className={cn('mr-2 h-4 w-4', !value ? 'opacity-100' : 'opacity-0')} />
                                 Semua Item
                             </CommandItem>
-                            {items.map((item) => (
-                                <CommandItem
-                                    key={item.id}
-                                    value={item.id}
-                                    onSelect={(currentValue) => {
-                                        onSelect(currentValue == value ? null : currentValue);
-                                        setOpen(false);
-                                        kodeAtk(item.kode_atk);
-                                    }}
-                                >
-                                    <Check className={cn('mr-2 h-4 w-4', value == item.id ? 'opacity-100' : 'opacity-0')} />
-                                    <div className="flex-1">
-                                        <div className="font-medium">{item.name}</div>
-                                        <div className="text-xs text-muted-foreground">
-                                            {item.kode_atk} • {item.category} • {item.satuan}
+                            {(() => {
+                                const q = query.toLowerCase().trim();
+                                const filtered = q
+                                    ? items.filter(
+                                          (item) =>
+                                              item.name.toLowerCase().includes(q) ||
+                                              item.kode_atk.toLowerCase().includes(q) ||
+                                              item.satuan.toLowerCase().includes(q) ||
+                                              item.category.toLowerCase().includes(q),
+                                      )
+                                    : items;
+
+                                return filtered.map((item) => (
+                                    <CommandItem
+                                        key={item.id}
+                                        onSelect={() => {
+                                            onSelect(String(item.id) == value ? null : String(item.id));
+                                            setOpen(false);
+                                            kodeAtk(item.kode_atk);
+                                            setQuery('');
+                                        }}
+                                    >
+                                        <Check className={cn('mr-2 h-4 w-4', value == item.id ? 'opacity-100' : 'opacity-0')} />
+                                        <div className="flex-1">
+                                            <div className="font-medium">{item.name}</div>
+                                            <div className="text-xs text-muted-foreground">
+                                                {item.kode_atk} • {item.category} • {item.satuan}
+                                            </div>
                                         </div>
-                                    </div>
-                                </CommandItem>
-                            ))}
+                                    </CommandItem>
+                                ));
+                            })()}
                         </CommandGroup>
                     </CommandList>
                 </Command>

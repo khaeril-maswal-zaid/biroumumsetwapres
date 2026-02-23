@@ -232,7 +232,7 @@ export default function ATKItemsManagement({ Persediaan }: any) {
                                 <TableHeader className="bg-muted">
                                     <TableRow>
                                         <TableHead className="w-12">No</TableHead>
-                                        <TableHead>Jenis Barang</TableHead>
+                                        <TableHead>Jenis Barang ATK</TableHead>
                                         <TableHead>Kategori</TableHead>
                                         <TableHead className="w-24">Satuan</TableHead>
                                         <TableHead className="w-20 text-right">Jumlah</TableHead>

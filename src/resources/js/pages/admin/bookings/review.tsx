@@ -260,18 +260,6 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
 
     const kebutuhanDanDukungan = [
         {
-            label: 'Snack/ Makanan Ringan',
-            icon: Cookie,
-            isCheck: selectedBooking?.is_makanan_ringan,
-            detail: selectedBooking?.makanan_ringan_detail,
-        },
-        {
-            label: 'Makan Siang',
-            icon: Utensils,
-            isCheck: selectedBooking?.is_makanan_berat,
-            detail: selectedBooking?.makanan_berat_detail,
-        },
-        {
             label: 'Rapat Hybrid',
             icon: Video,
             isCheck: selectedBooking?.is_hybrid,
@@ -282,12 +270,6 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
             icon: Monitor,
             isCheck: selectedBooking?.is_ti_support,
             detail: selectedBooking?.ti_support_detail,
-        },
-        {
-            label: 'Dukungan BPMI',
-            icon: Users,
-            isCheck: selectedBooking?.is_bpmi_support,
-            detail: selectedBooking?.bpmi_support_detail,
         },
     ];
 
@@ -454,7 +436,8 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    {need.detail && <p className="mt-1 text-sm text-violet-600 italic">{need.detail}</p>}
+
+                                                    {need.detail && <p className="mt-1.5 text-sm text-violet-600 italic">"{need.detail}"</p>}
                                                 </div>
                                             );
                                         })}

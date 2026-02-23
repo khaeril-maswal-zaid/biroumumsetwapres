@@ -34,15 +34,9 @@ const schema = z
             .regex(/^08\d{8,12}$/, 'Nomor HP harus diawali 08 dan berisi 10–14 digit'),
 
         jenisRapat: z.string().nullable(),
-        makanSiang: z.boolean(),
-        makanRingan: z.boolean(),
         needItSupport: z.boolean(),
-        needBpmiSupport: z.boolean(),
         isHybrid: z.boolean(),
-        makanSiangDetail: z.string().optional(),
-        makanRinganDetail: z.string().optional(),
         itSupportDetail: z.string().optional(),
-        bpmiSupportDetail: z.string().optional(),
         hybridDetail: z.string().optional(),
     })
     .refine((data) => data.endTime > data.startTime, {
@@ -63,18 +57,11 @@ export default function RoomBooking() {
             jumlahPeserta: '',
             purpose: '',
             contact: '',
-
             jenisRapat: 'internal',
-            makanRingan: false,
-            makanSiang: false,
             needItSupport: false,
             isHybrid: false,
-            needBpmiSupport: false,
             hybridDetail: '',
-            makanSiangDetail: '',
-            makanRinganDetail: '',
             itSupportDetail: '',
-            bpmiSupportDetail: '',
         },
     });
 

@@ -229,7 +229,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                             </div>
                             <div className="flex items-center space-x-2">
                                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                                    <SelectTrigger className="w-[150px]">
+                                    <SelectTrigger className="w-37.5">
                                         <SelectValue placeholder="Kategori" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -249,7 +249,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>No</TableHead>
-                                        <TableHead>Nama ATK</TableHead>
+                                        <TableHead>Jenis Barang ATK</TableHead>
                                         <TableHead>Kategori</TableHead>
                                         <TableHead>Satuan</TableHead>
                                         <TableHead>Stok</TableHead>

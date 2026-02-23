@@ -30,17 +30,11 @@ class PemesananRuangRapat extends Model
         'keterangan',
         'aproved_makanan_berat',
         'aproved_makanan_ringan',
-        'is_makanan_ringan',
-        'is_makanan_berat',
         'is_hybrid',
         'is_ti_support',
-        'is_bpmi_support',
         'jenis_rapat',
-        'makanan_ringan_detail',
-        'makanan_berat_detail',
         'hybrid_detail',
         'ti_support_detail',
-        'bpmi_support_detail',
         'is_read',
     ];
 
@@ -417,7 +411,10 @@ class PemesananRuangRapat extends Model
                 'kapasitas_max',
                 'image',
                 'fasilitas',
-            ])->where('status', 'aktif')->get();
+            ])->where('status', 'aktif')
+                ->with('pemesanRupat')
+                ->orderBy('nama_ruangan')
+                ->get();
 
             // Ambil booking yang bentrok
             $bookings = $this->where('tanggal_penggunaan', $tanggal)
@@ -444,6 +441,7 @@ class PemesananRuangRapat extends Model
                     'bookedSlots'  => $slots,
                     'image'        => $r->image,
                     'facilities'   => $r->fasilitas,
+                    'bookedByBiro'       => $r->pemesanRupat->map(fn($p) => $p->pemesan?->pegawai?->biro?->nama_biro ?? '-')->unique()->values()->all(),
                 ];
             });
         }
