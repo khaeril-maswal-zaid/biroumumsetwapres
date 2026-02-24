@@ -8,6 +8,7 @@ use App\Http\Requests\UpdatePermintaanAtkRequest;
 use App\Http\Requests\UpdatePermintaanAtkStatusRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Notification;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\PermintaanAtk;
 use App\Services\PermintaanAtkStatusService;
 use App\Services\StockOpnameService;
@@ -239,5 +240,35 @@ class PermintaanAtkController extends Controller
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $filename . '"'
         ]);
+    }
+
+    public function tandaTerima()
+    {
+
+        $data = [
+            'penerima' => 'Yayang Mustaqim',
+            'tanggal' => now()->format('d-m-Y'),
+            'items' => [
+                [
+                    'name' => 'Pulpen',
+                    'qty' => 10,
+                    'satuan' => 'Pcs',
+                    'keterangan' => ''
+                ],
+                [
+                    'name' => 'Kertas A4',
+                    'qty' => 2,
+                    'satuan' => 'Rim',
+                    'keterangan' => ''
+                ],
+            ]
+        ];
+
+        $pdf = Pdf::loadView('pdf.tanda-terima-atk', $data)
+            ->setPaper('A4', 'portrait');
+
+
+        return $pdf->stream();
+        return $pdf->download("buku-persediaan-{$bulan}-{$tahun}.pdf");
     }
 }

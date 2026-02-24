@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { AlertCircle, ArrowLeft, Calendar, CheckCircle, MessageSquare, Package, User, X } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Calendar, CheckCircle, MessageSquare, Package, Printer, User, X } from 'lucide-react';
 import { useState } from 'react';
 ('use client');
 
@@ -318,6 +318,21 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                         <StatusBadge status={selectedRequest.status} />
                                     </div>
                                 </div>
+
+                                {selectedRequest.status == 'confirmed' && (
+                                    <div className="flex justify-end">
+                                        <Button
+                                            variant="outline"
+                                            className="flex items-center gap-2 border-blue-200 bg-transparent text-blue-700 hover:bg-blue-50"
+                                            onClick={() => {
+                                                router.get(route('permintaanatk.tandaterima', selectedRequest.kode_pelaporan));
+                                            }}
+                                        >
+                                            <Printer className="h-4 w-4" />
+                                            Tanda terima
+                                        </Button>
+                                    </div>
+                                )}
 
                                 {/* Request Details */}
                                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

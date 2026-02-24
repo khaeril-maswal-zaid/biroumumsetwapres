@@ -135,9 +135,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('permintaanatk.show')
         ->middleware('permission:view_supplies');
 
+    Route::get('/dashboard/download-tanda-terima/{permintaanAtk:kode_pelaporan}', [PermintaanAtkController::class, 'tandaTerima'])
+        ->name('permintaanatk.tandaterima')
+        ->middleware('permission:view_supplies');
+
     Route::patch('/dashboard/permintaan-atk/{permintaanAtk:kode_pelaporan}', [PermintaanAtkController::class, 'status'])
         ->name('permintaanatk.status')
         ->middleware('permission:change_supplies_status');
+
+
 
     // Manajemen Permintaan Kendaraan (view_vehicle_requests)
     Route::get('/dashboard/permintaan-kendaraan', [PermintaanKendaraanController::class, 'index'])
