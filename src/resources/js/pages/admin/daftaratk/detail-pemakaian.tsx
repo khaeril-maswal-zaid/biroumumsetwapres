@@ -1,0 +1,166 @@
+'use client';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import AppLayout from '@/layouts/app-layout';
+import { BreadcrumbItem } from '@/types';
+import { Head, Link } from '@inertiajs/react';
+import { ArrowLeft, FileDown } from 'lucide-react';
+import { useMemo, useState } from 'react';
+
+const formatTanggalIna = (tanggal: string) => {
+    return new Intl.DateTimeFormat('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+    }).format(new Date(tanggal));
+};
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Manajemen ATK',
+        href: '/dashboard',
+    },
+];
+
+const MONTHS_ID = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+function formatBulanTahun({ bulan, tahun }: any) {
+    if (!tahun) return '';
+
+    if (!bulan) {
+        return tahun;
+    }
+
+    const monthIndex = Number(bulan) - 1;
+
+    return `${MONTHS_ID[monthIndex]} ${tahun}`;
+}
+
+export default function ATKItemsManagement({ Persediaan, filters, atk }: any) {
+    const [filterUser, setFilterUser] = useState('Semua Pengguna');
+
+    // Filter by selected bulan, tahun, and user only (removed date range filter)
+    const filteredData = useMemo(() => {
+        return Persediaan.filter((item: any) => {
+            if (filterUser !== 'Semua Pengguna' && item.digunakan_oleh !== filterUser) return false;
+            return true;
+        });
+    }, [filterUser]);
+
+    const uniqueUsers = [...new Set(Persediaan.map((u: any) => u.digunakan_oleh))];
+
+    const handleReset = () => {
+        setFilterUser('Semua Pengguna');
+    };
+
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Dashboard" />
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
+                <Link href={route('stockopname.buku_persediaan')}>
+                    <Button
+                        variant="ghost"
+                        className="mb-1 flex items-center space-x-2 border bg-accent text-accent-foreground hover:border-gray-300 hover:bg-gray-200"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        <span>Kembali</span>
+                    </Button>
+                </Link>
+
+                <Card className="max-w-6xl space-y-1 py-8">
+                    <CardHeader>
+                        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+                            <div>
+                                <h2 className="text-xl font-bold">{atk?.name}</h2>
+                                <p className="text-sm text-muted-foreground">{atk?.kode_atk}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-sm text-muted-foreground">Periode</p>
+                                <p className="text-lg font-semibold">{formatBulanTahun(filters)}</p>
+                            </div>
+                        </div>
+                    </CardHeader>
+
+                    <CardContent className="space-y-6">
+                        <div className="space-y-3 md:flex md:items-end md:gap-2 md:space-y-0">
+                            <div className="flex-1">
+                                <label className="mb-2 block text-sm font-medium text-foreground">Filter Pengguna</label>
+                                <Select value={filterUser} onValueChange={setFilterUser}>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Semua Pengguna" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Semua Pengguna">Semua Pengguna</SelectItem>
+                                        {uniqueUsers.map((user, index) => (
+                                            <SelectItem key={index} value={String(user)}>
+                                                {String(user)}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="flex w-full md:w-auto">
+                                <Button onClick={handleReset} className="flex-1 md:flex-none">
+                                    Reset Filter
+                                </Button>
+                            </div>
+                            <div className="flex w-full md:w-auto">
+                                <Button
+                                    onClick={() => {
+                                        window.open(route('stockopname.detail_pemakaian_pdf', atk?.kode_atk));
+                                    }}
+                                    className="flex-1 gap-2 bg-red-600 text-white hover:bg-red-700 md:flex-none"
+                                >
+                                    <FileDown className="h-4 w-4" />
+                                    Unduh PDF
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div className="overflow-hidden rounded-lg border">
+                            <Table>
+                                <TableHeader className="bg-muted">
+                                    <TableRow>
+                                        <TableHead className="w-12">No</TableHead>
+                                        <TableHead>Tanggal Pemakaian</TableHead>
+                                        <TableHead className="w-24 text-right">Jumlah Pemakaian</TableHead>
+                                        <TableHead className="w-24">Satuan</TableHead>
+                                        <TableHead className="w-32">Harga Satuan</TableHead>
+                                        <TableHead className="w-32">Total Harga</TableHead>
+                                        <TableHead>Digunakan Oleh</TableHead>
+                                        <TableHead>Keterangan</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {filteredData.length > 0 ? (
+                                        filteredData.map((usage: any, idx: number) => (
+                                            <TableRow key={idx} className="transition-colors hover:bg-muted/50">
+                                                <TableCell className="font-medium text-muted-foreground">{idx + 1}</TableCell>
+                                                <TableCell>{formatTanggalIna(usage.tanggal)}</TableCell>
+                                                <TableCell className="text-right font-medium">{usage.jumlah}</TableCell>
+                                                <TableCell className="text-muted-foreground">{usage.satuan}</TableCell>
+                                                <TableCell className="text-muted-foreground">{usage.harga}</TableCell>
+                                                <TableCell className="text-muted-foreground">{usage.total}</TableCell>
+                                                <TableCell className="font-medium">{usage.digunakan_oleh}</TableCell>
+                                                <TableCell className="text-sm text-muted-foreground">{usage.keterangan}</TableCell>
+                                            </TableRow>
+                                        ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+                                                Tidak ada data pemakaian
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        </AppLayout>
+    );
+}

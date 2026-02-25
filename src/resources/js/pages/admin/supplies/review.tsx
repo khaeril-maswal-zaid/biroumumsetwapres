@@ -323,9 +323,9 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                     <div className="flex justify-end">
                                         <Button
                                             variant="outline"
-                                            className="flex items-center gap-2 border-blue-200 bg-transparent text-blue-700 hover:bg-blue-50"
+                                            className="flex items-center gap-2 bg-red-600 text-white hover:bg-red-700 hover:text-white"
                                             onClick={() => {
-                                                router.get(route('permintaanatk.tandaterima', selectedRequest.kode_pelaporan));
+                                                window.open(route('permintaanatk.tandaterima', selectedRequest.kode_pelaporan));
                                             }}
                                         >
                                             <Printer className="h-4 w-4" />

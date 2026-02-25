@@ -211,8 +211,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('stockopname.export_buku_persediaan')
         ->middleware('permission:create_atk');
 
-    Route::get('/dashboard/stock-opname-atk/detail-pemakaian', [StockOpnameController::class, 'detailPemakaian'])
+    Route::get('/dashboard/stock-opname-atk/detail-pemakaian/{daftarAtk:kode_atk}', [StockOpnameController::class, 'detailPemakaian'])
         ->name('stockopname.detail_pemakaian')
+        ->middleware('permission:create_atk');
+
+    Route::get('/dashboard/stock-opname-atk/detail-pemakaian-pdf/{daftarAtk:kode_atk}', [StockOpnameController::class, 'detailPemakaian'])
+        ->name('stockopname.detail_pemakaian_pdf')
+        ->defaults('type', 'pdf')
+        ->middleware('permission:create_atk');
+
+    Route::get('/dashboard/stock-opname-atk/rincian-buku-persediaan/{daftarAtk:kode_atk}', [StockOpnameController::class, 'rincianBukuPersediaan'])
+        ->name('stockopname.rincian_buku_persediaan')
+
+        ->middleware('permission:create_atk');
+    Route::get('/dashboard/stock-opname-atk/rincian-buku-persediaan-pdf/{daftarAtk:kode_atk}', [StockOpnameController::class, 'rincianBukuPersediaan'])
+        ->name('stockopname.rincian_buku_persediaan_pdf')
+        ->defaults('type', 'pdf')
         ->middleware('permission:create_atk');
 
 

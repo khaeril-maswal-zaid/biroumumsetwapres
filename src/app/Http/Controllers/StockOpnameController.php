@@ -131,22 +131,23 @@ class StockOpnameController extends Controller
         ]);
     }
 
-    public function detailPemakaian(Request $request)
+    public function detailPemakaian(Request $request, DaftarAtk $daftarAtk)
     {
-        $kodeAtk = $request->kodeAtk;
+        $type = $request->route('type');
+
         $bulan   = $request->bulan;
         $tahun   = $request->tahun;
 
         $start = Carbon::create($tahun, $bulan)->startOfMonth();
         $end   = Carbon::create($tahun, $bulan)->endOfMonth();
 
-        $data = StockOpname::query()
+        $stockOpname = StockOpname::query()
             ->where('type', 'Pemakaian')
             ->whereBetween('created_at', [$start, $end])
             ->whereHas(
                 'daftarAtk',
                 fn($q) =>
-                $q->where('kode_atk', $kodeAtk)
+                $q->where('kode_atk', $daftarAtk->kode_atk)
             )
             ->with([
                 'daftarAtk:id,name,satuan,kode_atk',
@@ -165,10 +166,21 @@ class StockOpnameController extends Controller
                 'keterangan'     => $row->permintaanAtk?->deskripsi,
             ]);
 
-        return Inertia::render('admin/daftaratk/detail-pemakain', [
-            'Persediaan' => $data,
+        $data =    [
+            'Persediaan' => $stockOpname,
             'filters' => $request->only(['kode_atk', 'bulan', 'tahun']),
-        ]);
+            'atk' => $daftarAtk
+        ];
+
+        if ($type === 'pdf') {
+            $pdf = PDF::loadView('pdf.detail-pemakaian', $data)
+                ->setPaper('A4', 'landscape');
+
+            return $pdf->stream("buku-persediaan.pdf");
+            return $pdf->download('detail-pemakaian.pdf');
+        }
+
+        return Inertia::render('admin/daftaratk/detail-pemakaian', $data);
     }
 
     public function ExportBukuPersediaan(Request $request)
@@ -228,5 +240,123 @@ class StockOpnameController extends Controller
 
         return $pdf->stream();
         return $pdf->download("buku-persediaan-{$bulan}-{$tahun}.pdf");
+    }
+
+    public function rincianBukuPersediaan(Request $request, DaftarAtk $daftarAtk)
+    {
+        $type = $request->route('type');
+
+        $bulan = now()->format('m');
+        $tahun = now()->format('Y');
+
+        // Dummy rows (meniru format laporan)
+        $rows = [
+            [
+                'tanggal' => '01-01-2025',
+                'keterangan' => 'Saldo Awal',
+                'no_dok' => '',
+
+                'masuk_unit' => 0,
+                'masuk_harga' => 0,
+                'masuk_jumlah' => 0,
+
+                'keluar_unit' => 0,
+                'keluar_harga' => 0,
+                'keluar_jumlah' => 0,
+
+                'saldo_unit' => 82,
+                'saldo_harga' => 20000,
+                'saldo_jumlah' => 1640000,
+
+                'is_saldo' => true
+            ],
+            [
+                'tanggal' => '31-01-2025',
+                'keterangan' => 'Habis Pakai',
+                'no_dok' => '01/GD/I/2025',
+
+                'masuk_unit' => 0,
+                'masuk_harga' => 0,
+                'masuk_jumlah' => 0,
+
+                'keluar_unit' => 81,
+                'keluar_harga' => 20000,
+                'keluar_jumlah' => 1620000,
+
+                'saldo_unit' => 1,
+                'saldo_harga' => 20000,
+                'saldo_jumlah' => 20000,
+
+                'is_saldo' => true
+            ],
+            [
+                'tanggal' => '10-03-2025',
+                'keterangan' => 'Pembelian',
+                'no_dok' => '0033/UP/2025',
+
+                'masuk_unit' => 60,
+                'masuk_harga' => 16500,
+                'masuk_jumlah' => 990000,
+
+                'keluar_unit' => 0,
+                'keluar_harga' => 0,
+                'keluar_jumlah' => 0,
+
+                'saldo_unit' => 61,
+                'saldo_harga' => 16500,
+                'saldo_jumlah' => 1010000,
+
+                'is_saldo' => true
+            ],
+            [
+                'tanggal' => '31-03-2025',
+                'keterangan' => 'Habis Pakai',
+                'no_dok' => '03/GD/III/2025',
+
+                'masuk_unit' => 0,
+                'masuk_harga' => 0,
+                'masuk_jumlah' => 0,
+
+                'keluar_unit' => 45,
+                'keluar_harga' => 16500,
+                'keluar_jumlah' => 742500,
+
+                'saldo_unit' => 16,
+                'saldo_harga' => 16500,
+                'saldo_jumlah' => 264000,
+
+                'is_saldo' => true
+            ],
+        ];
+
+        $data = [
+            'periode_awal' => '01-01-2025',
+            'periode_akhir' => '31-12-2025',
+
+            'nama_uapkpb' => 'Persediaan Perlengkapan',
+            'kode_uapkpb' => '007.01.0199.403998.005.KP',
+
+            'metode_pencatatan' => 'PERPETUAL',
+            'metode_penilaian' => 'FIFO',
+
+            'kode_barang' => '1.01.03.01.001',
+            'nama_barang' => 'Ballpoint Bolliner Pilot',
+            'satuan' => 'Buah',
+
+            'rows' => $rows,
+            'halaman' => '1 dari 1',
+
+            'atk' => $daftarAtk
+        ];
+
+        if ($type === 'pdf') {
+            $pdf = Pdf::loadView('pdf.rincian-buku-persediaan', $data)
+                ->setPaper('A4', 'landscape');
+
+            return $pdf->stream("rincian-buku-persediaan.pdf");
+            return $pdf->download("rincian-buku-persediaan-{$bulan}-{$tahun}.pdf");
+        }
+
+        return Inertia::render('admin/daftaratk/rincian-buku-persediaan', $data);
     }
 }
