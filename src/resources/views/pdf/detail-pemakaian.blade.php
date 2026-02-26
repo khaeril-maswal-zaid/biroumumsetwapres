@@ -1,12 +1,11 @@
 @php
+    use Carbon\Carbon;
+
     function getBulan($bulan)
     {
-        $bulan = $bulan ?? date('m');
-
-        if (is_string($bulan)) {
-            $bulan = (int) $bulan;
+        if (!$bulan) {
+            return '';
         }
-
         $bulanList = [
             1 => 'Januari',
             2 => 'Februari',
@@ -21,8 +20,12 @@
             11 => 'November',
             12 => 'Desember',
         ];
+        return $bulanList[(int) $bulan];
+    }
 
-        return $bulanList[$bulan];
+    function formatTanggalIna($tanggal)
+    {
+        return Carbon::parse($tanggal)->translatedFormat('d F Y');
     }
 @endphp
 
@@ -31,13 +34,14 @@
 
 <head>
     <meta charset="utf-8">
-    <title>OPNAME FISIK BARANG PERSEDIAAN</title>
+    <title>Detail Pemakaian</title>
     <style>
         body {
             font-family: sans-serif;
-            font-size: 12px;
+            font-size: 11px;
         }
 
+        /* Table umum */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -45,50 +49,124 @@
 
         th,
         td {
-            border: 1px solid #000;
-            padding: 6px;
+            border: 0.5px solid #000;
+            padding: 5px;
         }
 
         th {
             background: #f2f2f2;
         }
 
-        h3 {
+        /* Alignment */
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
             text-align: center;
-            margin: 0px;
+        }
+
+        /* Header instansi */
+        .header {
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .title {
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* Header info barang (tanpa border) */
+        .header-table,
+        .header-table td {
+            border: none !important;
+            padding: 0;
+        }
+
+        .header-table {
+            margin-bottom: 10px;
+        }
+
+        .title-right {
+            text-align: right;
+        }
+
+        .title-main {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .text-muted {
+            color: #555;
+            font-size: 11px;
         }
     </style>
 </head>
 
 <body>
 
-    <h3>OPNAME FISIK BARANG PERSEDIAAN</h3>
-    <h3 style="margin-bottom: 20px">{{ getBulan($bulan) }} {{ $tahun }}</h3>
+    {{-- Header --}}
 
+    <div class="header text-center">
+        <div>KEMENTERIAN SEKRETARIAT NEGARA RI</div>
+        <div>SEKRETARIAT WAKIL PRESIDEN</div>
+    </div>
+
+
+    <br>
+    <table class="header-table">
+        <tr>
+            <td>
+                <strong>{{ $atk->name }}</strong><br>
+                <span class="text-muted">{{ $atk->kode_atk }}</span>
+            </td>
+            <td class="title-right">
+                <div class="title-main">DETAIL PEMAKAIAN ATK</div>
+                <div class="text-muted">
+                    Periode:
+                    {{ getBulan($filters['bulan'] ?? null) }}
+                    {{ $filters['tahun'] ?? '' }}
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    {{-- Table --}}
     <table>
         <thead>
             <tr>
-                <th>No</th>
-                <th>Jenis Barang</th>
-                <th>Kategori</th>
-                <th>Satuan</th>
-                <th>Jumlah</th>
-                <th>Pemakaian</th>
-                <th>Saldo</th>
+                <th width="30">No</th>
+                <th width="110">Tanggal Pemakaian</th>
+                <th width="70" class="text-right">Jumlah</th>
+                <th width="60">Satuan</th>
+                <th width="90">Harga Satuan</th>
+                <th width="90">Total Harga</th>
+                <th width="120">Digunakan Oleh</th>
+                <th>Keterangan</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($data as $i => $row)
+            @forelse ($Persediaan as $i => $row)
                 <tr>
-                    <td>{{ $i + 1 }}</td>
-                    <td>{{ $row['name'] }}</td>
-                    <td>{{ $row['kategori'] }}</td>
+                    <td class="text-center">{{ $i + 1 }}</td>
+                    <td>{{ formatTanggalIna($row['tanggal']) }}</td>
+                    <td class="text-right">{{ $row['jumlah'] }}</td>
                     <td>{{ $row['satuan'] }}</td>
-                    <td>{{ $row['jumlah'] }}</td>
-                    <td>{{ $row['pemakaian'] }}</td>
-                    <td>{{ $row['saldo'] }}</td>
+                    <td class="text-right">{{ number_format($row['harga'], 0, ',', '.') }}</td>
+                    <td class="text-right">{{ number_format($row['total'], 0, ',', '.') }}</td>
+                    <td>{{ $row['digunakan_oleh'] }}</td>
+                    <td>{{ $row['keterangan'] }}</td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="8" class="text-center">
+                        Tidak ada data pemakaian
+                    </td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
 

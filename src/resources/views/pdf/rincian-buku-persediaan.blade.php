@@ -90,11 +90,11 @@
     <table class="no-border section-space">
         <tr>
             <td width="60%">
-                <div>NAMA UAPKPB : {{ $nama_uapkpb }}</div>
-                <div>KODE UAPKPB : {{ $kode_uapkpb }}</div>
+                <div>NAMA UAPKPB : {{ $nama_uapkpb ?? '-' }} </div>
+                <div>KODE UAPKPB : {{ $kode_uapkpb ?? '-' }} </div>
                 <br>
-                <div>METODE PENCATATAN : {{ $metode_pencatatan }}</div>
-                <div>METODE PENILAIAN : {{ $metode_penilaian }}</div>
+                <div>METODE PENCATATAN : {{ $metode_pencatatan ?? '-' }} </div>
+                <div>METODE PENILAIAN : {{ $metode_penilaian ?? '-' }} </div>
             </td>
             <td width="40%">
                 <div>KODE BARANG : {{ $kode_barang }}</div>
@@ -111,7 +111,7 @@
                 <th rowspan="2" width="3%">No</th>
                 <th rowspan="2" width="7%">Tanggal</th>
                 <th rowspan="2" width="15%">Keterangan</th>
-                <th rowspan="2" width="10%">No Dok</th>
+
 
                 <th colspan="3">Masuk</th>
                 <th colspan="3">Keluar</th>
@@ -138,28 +138,27 @@
                     <td class="text-center">{{ $i + 1 }}</td>
                     <td class="text-center">{{ $row['tanggal'] }}</td>
                     <td>{{ $row['keterangan'] }}</td>
-                    <td>{{ $row['no_dok'] }}</td>
 
-                    <td class="text-right">{{ $row['masuk_unit'] }}</td>
-                    <td class="text-right">{{ number_format($row['masuk_harga']) }}</td>
-                    <td class="text-right">{{ number_format($row['masuk_jumlah']) }}</td>
+                    <td class="text-right">{{ $row['masuk']['unit'] ?? 0 }}</td>
+                    <td class="text-right">{{ number_format($row['masuk']['harga'] ?? 0) }}</td>
+                    <td class="text-right">{{ number_format($row['masuk']['jumlah'] ?? 0) }}</td>
 
-                    <td class="text-right">{{ $row['keluar_unit'] }}</td>
-                    <td class="text-right">{{ number_format($row['keluar_harga']) }}</td>
-                    <td class="text-right">{{ number_format($row['keluar_jumlah']) }}</td>
+                    <td class="text-right">{{ $row['keluar']['unit'] ?? 0 }}</td>
+                    <td class="text-right">{{ number_format($row['keluar']['harga'] ?? 0) }}</td>
+                    <td class="text-right">{{ number_format($row['keluar']['jumlah'] ?? 0) }}</td>
 
-                    <td class="text-right">{{ $row['saldo_unit'] }}</td>
-                    <td class="text-right">{{ number_format($row['saldo_harga']) }}</td>
-                    <td class="text-right">{{ number_format($row['saldo_jumlah']) }}</td>
+                    <td class="text-right">{{ $row['saldo']['unit'] ?? 0 }}</td>
+                    <td class="text-right">{{ number_format($row['saldo']['harga'] ?? 0) }}</td>
+                    <td class="text-right">{{ number_format($row['saldo']['jumlah'] ?? 0) }}</td>
                 </tr>
 
                 {{-- Baris saldo highlight --}}
                 @if (!empty($row['is_saldo']))
                     <tr class="saldo-row">
-                        <td colspan="10" class="text-right">Saldo</td>
-                        <td class="text-right">{{ $row['saldo_unit'] }}</td>
-                        <td></td>
-                        <td class="text-right">{{ number_format($row['saldo_jumlah']) }}</td>
+                        <td colspan="9" class="text-right">Saldo</td>
+                        <td class="text-right">{{ $row['saldo']['unit'] ?? 0 }}</td>
+                        <td class="text-right">{{ number_format($row['saldo']['harga'] ?? 0) }}</td>
+                        <td class="text-right">{{ number_format($row['saldo']['jumlah'] ?? 0) }}</td>
                     </tr>
                 @endif
             @endforeach

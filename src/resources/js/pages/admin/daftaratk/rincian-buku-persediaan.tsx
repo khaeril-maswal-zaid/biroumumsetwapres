@@ -6,7 +6,6 @@ import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, FileDown } from 'lucide-react';
-import { useMemo } from 'react';
 
 const formatTanggalIna = (tanggal: string) => {
     return new Intl.DateTimeFormat('id-ID', {
@@ -48,35 +47,7 @@ function formatCurrency(value: number | string) {
     return num.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
 }
 
-export default function rincianBukuPersediaan({ filters, atk }: any) {
-    // Dummy ledger data (masuk, keluar, saldo)
-    const dummyData = useMemo(
-        () => [
-            {
-                tanggal: '2026-01-02',
-                keterangan: 'Pembelian awal stok',
-                masuk: { unit: 100, harga: 1500, jumlah: 150000 },
-                keluar: { unit: 0, harga: 0, jumlah: 0 },
-                saldo: { unit: 100, harga: 1500, jumlah: 150000 },
-            },
-            {
-                tanggal: '2026-01-10',
-                keterangan: 'Pemakaian kantor A',
-                masuk: { unit: 0, harga: 0, jumlah: 0 },
-                keluar: { unit: 10, harga: 1500, jumlah: 15000 },
-                saldo: { unit: 90, harga: 1500, jumlah: 135000 },
-            },
-            {
-                tanggal: '2026-01-20',
-                keterangan: 'Pembelian tambahan',
-                masuk: { unit: 50, harga: 1600, jumlah: 80000 },
-                keluar: { unit: 0, harga: 0, jumlah: 0 },
-                saldo: { unit: 140, harga: 1550, jumlah: 215000 },
-            },
-        ],
-        [],
-    );
-
+export default function rincianBukuPersediaan({ filters, atk, rows = [] }: any) {
     const periodeBulan = formatBulan(filters || {});
 
     return (
@@ -162,8 +133,8 @@ export default function rincianBukuPersediaan({ filters, atk }: any) {
                                 </TableHeader>
 
                                 <TableBody>
-                                    {dummyData.length > 0 ? (
-                                        dummyData.map((row: any, idx: number) => (
+                                    {rows.length > 0 ? (
+                                        rows.map((row: any, idx: number) => (
                                             <TableRow key={idx} className="transition-colors hover:bg-muted/50">
                                                 <TableCell className="border-r border-muted/50 font-medium text-muted-foreground last:border-r-0">
                                                     {idx + 1}

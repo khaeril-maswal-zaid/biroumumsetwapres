@@ -280,6 +280,7 @@ export default function ATKItemsManagement({ Persediaan }: any) {
                                                         >
                                                             Detail Pemakaian
                                                         </Badge>
+
                                                         <Link href={route('stockopname.rincian_buku_persediaan', item.kode_atk)}>
                                                             <Badge className="cursor-pointer bg-blue-500 text-white transition select-none hover:bg-blue-600 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 focus-visible:outline-none active:bg-blue-700">
                                                                 Rincian Buku Persediaan

@@ -245,108 +245,113 @@ class StockOpnameController extends Controller
     public function rincianBukuPersediaan(Request $request, DaftarAtk $daftarAtk)
     {
         $type = $request->route('type');
+        $bulan = $request->bulan ?? now()->format('m');
+        $tahun = $request->tahun ?? now()->format('Y');
 
-        $bulan = now()->format('m');
-        $tahun = now()->format('Y');
+        // Tentukan range tanggal
+        $start = Carbon::create($tahun, $bulan)->startOfMonth();
+        $end = Carbon::create($tahun, $bulan)->endOfMonth();
 
-        // Dummy rows (meniru format laporan)
-        $rows = [
-            [
-                'tanggal' => '01-01-2025',
-                'keterangan' => 'Saldo Awal',
-                'no_dok' => '',
+        // Hitung saldo awal (sebelum periode)
+        $perolehanBeforeQty = StockOpname::query()
+            ->where('daftar_atk_id', $daftarAtk->id)
+            ->where('type', 'Perolehan')
+            ->where('created_at', '<', $start)
+            ->sum('quantity');
 
-                'masuk_unit' => 0,
-                'masuk_harga' => 0,
-                'masuk_jumlah' => 0,
+        $pemakaianBeforeQty = StockOpname::query()
+            ->where('daftar_atk_id', $daftarAtk->id)
+            ->where('type', 'Pemakaian')
+            ->where('created_at', '<', $start)
+            ->sum('quantity');
 
-                'keluar_unit' => 0,
-                'keluar_harga' => 0,
-                'keluar_jumlah' => 0,
+        $perolehanBeforeValue = StockOpname::query()
+            ->where('daftar_atk_id', $daftarAtk->id)
+            ->where('type', 'Perolehan')
+            ->where('created_at', '<', $start)
+            ->sum('total_price');
 
-                'saldo_unit' => 82,
-                'saldo_harga' => 20000,
-                'saldo_jumlah' => 1640000,
+        $pemakaianBeforeValue = StockOpname::query()
+            ->where('daftar_atk_id', $daftarAtk->id)
+            ->where('type', 'Pemakaian')
+            ->where('created_at', '<', $start)
+            ->sum('total_price');
 
-                'is_saldo' => true
+        $openingUnits = (int) ($perolehanBeforeQty - $pemakaianBeforeQty);
+        $openingValue = (int) ($perolehanBeforeValue - $pemakaianBeforeValue);
+
+        $runningUnits = $openingUnits;
+        $runningValue = $openingValue;
+
+        $rows = [];
+
+        // Saldo awal
+        $rows[] = [
+            'tanggal' => $start->toDateString(),
+            'keterangan' => 'Saldo Awal',
+            'masuk' => ['unit' => 0, 'harga' => 0, 'jumlah' => 0],
+            'keluar' => ['unit' => 0, 'harga' => 0, 'jumlah' => 0],
+            'saldo' => [
+                'unit' => $runningUnits,
+                'harga' => $runningUnits ? (int) round($runningValue / $runningUnits) : 0,
+                'jumlah' => $runningValue,
             ],
-            [
-                'tanggal' => '31-01-2025',
-                'keterangan' => 'Habis Pakai',
-                'no_dok' => '01/GD/I/2025',
-
-                'masuk_unit' => 0,
-                'masuk_harga' => 0,
-                'masuk_jumlah' => 0,
-
-                'keluar_unit' => 81,
-                'keluar_harga' => 20000,
-                'keluar_jumlah' => 1620000,
-
-                'saldo_unit' => 1,
-                'saldo_harga' => 20000,
-                'saldo_jumlah' => 20000,
-
-                'is_saldo' => true
-            ],
-            [
-                'tanggal' => '10-03-2025',
-                'keterangan' => 'Pembelian',
-                'no_dok' => '0033/UP/2025',
-
-                'masuk_unit' => 60,
-                'masuk_harga' => 16500,
-                'masuk_jumlah' => 990000,
-
-                'keluar_unit' => 0,
-                'keluar_harga' => 0,
-                'keluar_jumlah' => 0,
-
-                'saldo_unit' => 61,
-                'saldo_harga' => 16500,
-                'saldo_jumlah' => 1010000,
-
-                'is_saldo' => true
-            ],
-            [
-                'tanggal' => '31-03-2025',
-                'keterangan' => 'Habis Pakai',
-                'no_dok' => '03/GD/III/2025',
-
-                'masuk_unit' => 0,
-                'masuk_harga' => 0,
-                'masuk_jumlah' => 0,
-
-                'keluar_unit' => 45,
-                'keluar_harga' => 16500,
-                'keluar_jumlah' => 742500,
-
-                'saldo_unit' => 16,
-                'saldo_harga' => 16500,
-                'saldo_jumlah' => 264000,
-
-                'is_saldo' => true
-            ],
+            'is_saldo' => true,
         ];
 
+        // Ambil transaksi dalam periode
+        $transactions = StockOpname::query()
+            ->where('daftar_atk_id', $daftarAtk->id)
+            ->whereBetween('created_at', [$start, $end])
+            ->orderBy('created_at', 'asc')
+            ->with('permintaanAtk')
+            ->get();
+
+        foreach ($transactions as $t) {
+            $in = ['unit' => 0, 'harga' => 0, 'jumlah' => 0];
+            $out = ['unit' => 0, 'harga' => 0, 'jumlah' => 0];
+
+            if ($t->type === 'Perolehan') {
+                $in['unit'] = (int) $t->quantity;
+                $in['harga'] = (int) $t->unit_price;
+                $in['jumlah'] = (int) $t->total_price;
+
+                $runningUnits += $in['unit'];
+                $runningValue += $in['jumlah'];
+            } else {
+                $out['unit'] = (int) $t->quantity;
+                $out['harga'] = (int) $t->unit_price;
+                $out['jumlah'] = (int) $t->total_price;
+
+                $runningUnits -= $out['unit'];
+                $runningValue -= $out['jumlah'];
+            }
+
+            $saldoHarga = $runningUnits ? (int) round($runningValue / $runningUnits) : 0;
+            $saldoJumlah = (int) $runningValue;
+
+            $rows[] = [
+                'tanggal' => $t->created_at->toDateString(),
+                'keterangan' => $t->type,
+                'masuk' => $in,
+                'keluar' => $out,
+                'saldo' => ['unit' => $runningUnits, 'harga' => $saldoHarga, 'jumlah' => $saldoJumlah],
+                'is_saldo' => true,
+            ];
+        }
+
         $data = [
-            'periode_awal' => '01-01-2025',
-            'periode_akhir' => '31-12-2025',
-
-            'nama_uapkpb' => 'Persediaan Perlengkapan',
-            'kode_uapkpb' => '007.01.0199.403998.005.KP',
-
+            'periode_awal' => $start->toDateString(),
+            'periode_akhir' => $end->toDateString(),
             'metode_pencatatan' => 'PERPETUAL',
-            'metode_penilaian' => 'FIFO',
-
-            'kode_barang' => '1.01.03.01.001',
-            'nama_barang' => 'Ballpoint Bolliner Pilot',
-            'satuan' => 'Buah',
-
+            'metode_penilaian' => 'BERATAN',
+            'kode_barang' => $daftarAtk->kode_atk,
+            'nama_barang' => $daftarAtk->name,
+            'satuan' => $daftarAtk->satuan,
             'rows' => $rows,
+            'filters' => $request->only(['bulan', 'tahun', 'kode_atk', 'daftar_atk_kode']),
             'halaman' => '1 dari 1',
-
-            'atk' => $daftarAtk
+            'atk' => $daftarAtk,
         ];
 
         if ($type === 'pdf') {

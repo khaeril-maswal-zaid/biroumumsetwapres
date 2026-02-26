@@ -38,7 +38,7 @@ function formatBulanTahun({ bulan, tahun }: any) {
     return `${MONTHS_ID[monthIndex]} ${tahun}`;
 }
 
-export default function ATKItemsManagement({ Persediaan, filters, atk }: any) {
+export default function detailPemakaian({ Persediaan, filters, atk }: any) {
     const [filterUser, setFilterUser] = useState('Semua Pengguna');
 
     // Filter by selected bulan, tahun, and user only (removed date range filter)
@@ -77,8 +77,10 @@ export default function ATKItemsManagement({ Persediaan, filters, atk }: any) {
                                 <p className="text-sm text-muted-foreground">{atk?.kode_atk}</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-sm text-muted-foreground">Periode</p>
-                                <p className="text-lg font-semibold">{formatBulanTahun(filters)}</p>
+                                <h1 className="text-2xl font-extrabold tracking-tight">DETAIL PEMAKAIAN</h1>
+                                <p className="text-sm text-muted-foreground">
+                                    Periode: <span className="font-medium">{formatBulanTahun(filters)}</span>
+                                </p>
                             </div>
                         </div>
                     </CardHeader>
@@ -110,7 +112,11 @@ export default function ATKItemsManagement({ Persediaan, filters, atk }: any) {
                             <div className="flex w-full md:w-auto">
                                 <Button
                                     onClick={() => {
-                                        window.open(route('stockopname.detail_pemakaian_pdf', atk?.kode_atk));
+                                        const url =
+                                            route('stockopname.detail_pemakaian_pdf', atk.kode_atk) +
+                                            `?bulan=${filters?.bulan ?? ''}&tahun=${filters?.tahun ?? ''}`;
+
+                                        window.open(url, '_blank');
                                     }}
                                     className="flex-1 gap-2 bg-red-600 text-white hover:bg-red-700 md:flex-none"
                                 >

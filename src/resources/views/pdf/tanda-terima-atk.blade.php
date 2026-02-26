@@ -97,7 +97,7 @@
                 <tr>
                     <td class="text-center">{{ $i + 1 }}</td>
                     <td>{{ $item['name'] }}</td>
-                    <td class="text-center">{{ $item['qty'] }}</td>
+                    <td class="text-center">{{ $item['approved'] }}</td>
                     <td class="text-center">{{ $item['satuan'] }}</td>
                     <td>{{ $item['keterangan'] ?? '' }}</td>
                 </tr>

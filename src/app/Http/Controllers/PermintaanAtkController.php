@@ -242,31 +242,21 @@ class PermintaanAtkController extends Controller
         ]);
     }
 
-    public function tandaTerima()
+    public function tandaTerima(PermintaanAtk $permintaanAtk)
     {
+        $items = collect($permintaanAtk->daftar_kebutuhan)
+            ->where('approved', '>', 0)
+            ->values()
+            ->all();
 
         $data = [
             'penerima' => 'Yayang Mustaqim',
             'tanggal' => now()->format('d-m-Y'),
-            'items' => [
-                [
-                    'name' => 'Pulpen',
-                    'qty' => 10,
-                    'satuan' => 'Pcs',
-                    'keterangan' => ''
-                ],
-                [
-                    'name' => 'Kertas A4',
-                    'qty' => 2,
-                    'satuan' => 'Rim',
-                    'keterangan' => ''
-                ],
-            ]
+            'items' => $items
         ];
 
         $pdf = Pdf::loadView('pdf.tanda-terima-atk', $data)
             ->setPaper('A4', 'portrait');
-
 
         return $pdf->stream();
         return $pdf->download("buku-persediaan-{$bulan}-{$tahun}.pdf");
