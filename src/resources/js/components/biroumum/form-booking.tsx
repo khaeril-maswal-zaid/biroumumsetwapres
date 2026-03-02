@@ -9,7 +9,6 @@ import { cn } from '@/lib/utils';
 import { type SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { Building2, Calendar, CheckCircle2, Monitor, Users, Video } from 'lucide-react';
-import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -55,15 +54,6 @@ export function FormBooking() {
     const isHybrid = watch('isHybrid') ?? false;
     const needItSupport = watch('needItSupport') ?? false;
     const jenisRapat = (watch('jenisRapat') as JenisRapat) ?? 'internal';
-
-    // Register fields only — DO NOT overwrite values coming from parent
-    useEffect(() => {
-        // register('needItSupport');
-        // register('isHybrid');
-        // register('jenisRapat');
-        register('room_code');
-        // register('room_name');
-    }, [register]);
 
     const today = new Date().toISOString().split('T')[0];
 

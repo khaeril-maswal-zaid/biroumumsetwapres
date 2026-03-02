@@ -251,12 +251,11 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
         setShowRescheduleDialog(true);
     };
 
-    // jalankan useEffect untuk jaga-jaga:
     useEffect(() => {
         if (showRescheduleDialog && selectedBooking) {
             methods.reset(mapBookingToForm(selectedBooking));
         }
-    }, [showRescheduleDialog, selectedBooking]);
+    }, [showRescheduleDialog]);
 
     const kebutuhanDanDukungan = [
         {

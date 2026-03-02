@@ -420,71 +420,209 @@ export default function RequestHistory({ requestHistory }: any) {
                                     </div>
                                 </div>
 
-                                {selectedRequest.id === 'supplies' && (
-                                    <>
-                                        <p className="mb-3 font-medium text-gray-900">Daftar Barang yang Diminta</p>
-                                        <div className="space-y-3">
-                                            {selectedRequest.daftarkebutuhan.map((item: any, index: number) => (
-                                                <div key={index} className="rounded-lg border bg-gray-50 p-4">
-                                                    <div className="mb-3 flex items-center gap-3">
-                                                        <Package className="h-4 w-4 text-gray-500" />
-                                                        <span className="flex-1 text-sm font-medium">{item.name}</span>
-                                                    </div>
+                                {selectedRequest.id === 'supplies' &&
+                                    (() => {
+                                        const isItemCustom = (it: any) => it?.status == 'custom';
+                                        const customItems =
+                                            selectedRequest?.daftarkebutuhan?.filter((it: any) => isItemCustom(it) || it?.status == 'replaced') || [];
+                                        const normalItems = selectedRequest?.daftarkebutuhan?.filter((it: any) => it?.status == 'normal') || [];
+                                        const replacementItems =
+                                            selectedRequest?.daftarkebutuhan?.filter((it: any) => it?.status == 'replacement') || [];
 
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                        <div className="text-center">
-                                                            <p className="mb-1 text-xs text-gray-500">Diminta</p>
-                                                            <Badge variant="outline" className="border-blue-200 bg-blue-50 font-medium text-blue-700">
-                                                                {item.requested} {item.satuan}
-                                                            </Badge>
-                                                        </div>
-
-                                                        <div className="text-center">
-                                                            <p className="mb-1 text-xs text-gray-500">Disetujui</p>
-                                                            <Badge
-                                                                variant="outline"
-                                                                className={`font-medium ${
-                                                                    item.approved
-                                                                        ? item.approved == item.requested
-                                                                            ? 'border-green-200 bg-green-50 text-green-700'
-                                                                            : 'border-yellow-200 bg-yellow-50 text-yellow-700'
-                                                                        : 'border-red-200 bg-red-50 text-red-500'
-                                                                }`}
-                                                            >
-                                                                {item.approved} {item.satuan}
-                                                                {/* {item.approved ? `${item.approved} ${item.satuan}` : 'Belum diproses'} */}
-                                                            </Badge>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Status indicator */}
-                                                    {selectedRequest.status !== 'pending' && (
-                                                        <div className="mt-2 border-t border-gray-200 pt-2">
-                                                            <div className="flex items-center justify-center gap-1">
-                                                                {item.approved == item.requested ? (
-                                                                    <>
-                                                                        <CheckCircle className="h-3 w-3 text-green-600" />
-                                                                        <span className="text-xs text-green-600">Disetujui penuh</span>
-                                                                    </>
-                                                                ) : item.approved > 0 ? (
-                                                                    <>
-                                                                        <AlertCircle className="h-3 w-3 text-yellow-600" />
-                                                                        <span className="text-xs text-yellow-600">Disetujui sebagian</span>
-                                                                    </>
-                                                                ) : (
-                                                                    <>
-                                                                        <AlertTriangle className="h-3 w-3 text-red-600" />
-                                                                        <span className="text-xs text-red-600">Tidak disetujui/ Belum terpenuhi</span>
-                                                                    </>
-                                                                )}
+                                        return (
+                                            <>
+                                                <p className="mb-3 font-medium text-gray-900">Daftar Item yang Diminta</p>
+                                                <div className="space-y-3">
+                                                    {normalItems.map((item: any, index: number) => (
+                                                        <div key={index} className="rounded-lg border bg-gray-50 p-4">
+                                                            <div className="mb-3 flex items-center gap-3">
+                                                                <Package className="h-4 w-4 text-gray-500" />
+                                                                <span className="flex-1 text-sm font-medium">{item.name}</span>
                                                             </div>
+
+                                                            <div className="grid grid-cols-2 gap-4">
+                                                                <div className="text-center">
+                                                                    <p className="mb-1 text-xs text-gray-500">Diminta</p>
+                                                                    <Badge
+                                                                        variant="outline"
+                                                                        className="border-blue-200 bg-blue-50 font-medium text-blue-700"
+                                                                    >
+                                                                        {item.requested} {item.satuan}
+                                                                    </Badge>
+                                                                </div>
+
+                                                                <div className="text-center">
+                                                                    <p className="mb-1 text-xs text-gray-500">Disetujui</p>
+                                                                    <Badge
+                                                                        variant="outline"
+                                                                        className={`font-medium ${
+                                                                            item.approved
+                                                                                ? item.approved == item.requested
+                                                                                    ? 'border-green-200 bg-green-50 text-green-700'
+                                                                                    : 'border-yellow-200 bg-yellow-50 text-yellow-700'
+                                                                                : 'border-red-200 bg-red-50 text-red-500'
+                                                                        }`}
+                                                                    >
+                                                                        {item.approved} {item.satuan}
+                                                                        {/* {item.approved ? `${item.approved} ${item.satuan}` : 'Belum diproses'} */}
+                                                                    </Badge>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Status indicator */}
+                                                            {selectedRequest.status !== 'pending' && (
+                                                                <div className="mt-2 border-t border-gray-200 pt-2">
+                                                                    <div className="flex items-center justify-center gap-1">
+                                                                        {item.approved == item.requested ? (
+                                                                            <>
+                                                                                <CheckCircle className="h-3 w-3 text-green-600" />
+                                                                                <span className="text-xs text-green-600">Disetujui penuh</span>
+                                                                            </>
+                                                                        ) : item.approved > 0 ? (
+                                                                            <>
+                                                                                <AlertCircle className="h-3 w-3 text-yellow-600" />
+                                                                                <span className="text-xs text-yellow-600">Disetujui sebagian</span>
+                                                                            </>
+                                                                        ) : (
+                                                                            <>
+                                                                                <AlertTriangle className="h-3 w-3 text-red-600" />
+                                                                                <span className="text-xs text-red-600">
+                                                                                    Tidak disetujui/ Belum terpenuhi
+                                                                                </span>
+                                                                            </>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                    )}
+                                                    ))}
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </>
-                                )}
+
+                                                {customItems.length > 0 && (
+                                                    <>
+                                                        <Separator />
+
+                                                        <p className="mb-3 font-medium text-gray-900">Daftar Usulan ATK baru</p>
+                                                        <div className="space-y-3">
+                                                            {customItems.map((item: any, index: number) => (
+                                                                <div key={index} className="rounded-lg border bg-gray-50 p-4">
+                                                                    <div className="mb-3 flex items-center gap-3">
+                                                                        <Package className="h-4 w-4 text-gray-500" />
+                                                                        <span className="flex-1 text-sm font-medium">{item.name}</span>
+                                                                    </div>
+
+                                                                    <div className="grid grid-cols-2 gap-4">
+                                                                        <div className="text-center">
+                                                                            <p className="mb-1 text-xs text-gray-500">Diminta</p>
+                                                                            <Badge
+                                                                                variant="outline"
+                                                                                className="border-blue-200 bg-blue-50 font-medium text-blue-700"
+                                                                            >
+                                                                                {item.requested} {item.satuan}
+                                                                            </Badge>
+                                                                        </div>
+
+                                                                        <div className="text-center">
+                                                                            <p className="mb-1 text-xs text-gray-500">Disetujui</p>
+                                                                            <Badge
+                                                                                variant="outline"
+                                                                                className={`font-medium ${
+                                                                                    item.approved
+                                                                                        ? item.approved == item.requested
+                                                                                            ? 'border-green-200 bg-green-50 text-green-700'
+                                                                                            : 'border-yellow-200 bg-yellow-50 text-yellow-700'
+                                                                                        : 'border-red-200 bg-red-50 text-red-500'
+                                                                                }`}
+                                                                            >
+                                                                                {item.approved} {item.satuan}
+                                                                            </Badge>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </>
+                                                )}
+
+                                                {replacementItems.length > 0 && (
+                                                    <>
+                                                        <Separator />
+
+                                                        <p className="mb-3 font-medium text-gray-900">Daftar ATK pengganti dari usulan ATK baru</p>
+                                                        <div className="space-y-3">
+                                                            {replacementItems.map((item: any, index: number) => (
+                                                                <div key={index} className="rounded-lg border bg-gray-50 p-4">
+                                                                    <div className="mb-3 flex items-center gap-3">
+                                                                        <Package className="h-4 w-4 text-gray-500" />
+                                                                        <span className="flex-1 text-sm font-medium">{item.name}</span>
+                                                                    </div>
+
+                                                                    <div className="grid grid-cols-2 gap-4">
+                                                                        <div className="text-center">
+                                                                            <p className="mb-1 text-xs text-gray-500">Diminta</p>
+                                                                            <Badge
+                                                                                variant="outline"
+                                                                                className="border-blue-200 bg-blue-50 font-medium text-blue-700"
+                                                                            >
+                                                                                {item.requested} {item.satuan}
+                                                                            </Badge>
+                                                                        </div>
+
+                                                                        <div className="text-center">
+                                                                            <p className="mb-1 text-xs text-gray-500">Disetujui</p>
+                                                                            <Badge
+                                                                                variant="outline"
+                                                                                className={`font-medium ${
+                                                                                    item.approved
+                                                                                        ? item.approved == item.requested
+                                                                                            ? 'border-green-200 bg-green-50 text-green-700'
+                                                                                            : 'border-yellow-200 bg-yellow-50 text-yellow-700'
+                                                                                        : 'border-red-200 bg-red-50 text-red-500'
+                                                                                }`}
+                                                                            >
+                                                                                {item.approved} {item.satuan}
+                                                                                {/* {item.approved ? `${item.approved} ${item.satuan}` : 'Belum diproses'} */}
+                                                                            </Badge>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* Status indicator */}
+                                                                    {selectedRequest.status !== 'pending' && (
+                                                                        <div className="mt-2 border-t border-gray-200 pt-2">
+                                                                            <div className="flex items-center justify-center gap-1">
+                                                                                {item.approved == item.requested ? (
+                                                                                    <>
+                                                                                        <CheckCircle className="h-3 w-3 text-green-600" />
+                                                                                        <span className="text-xs text-green-600">
+                                                                                            Disetujui penuh
+                                                                                        </span>
+                                                                                    </>
+                                                                                ) : item.approved > 0 ? (
+                                                                                    <>
+                                                                                        <AlertCircle className="h-3 w-3 text-yellow-600" />
+                                                                                        <span className="text-xs text-yellow-600">
+                                                                                            Disetujui sebagian
+                                                                                        </span>
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <>
+                                                                                        <AlertTriangle className="h-3 w-3 text-red-600" />
+                                                                                        <span className="text-xs text-red-600">
+                                                                                            Tidak disetujui/ Belum terpenuhi
+                                                                                        </span>
+                                                                                    </>
+                                                                                )}
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </>
+                                        );
+                                    })()}
 
                                 {/* Photos Section */}
                                 {selectedRequest.id === 'damage' && selectedRequest.picture.length > 0 && (

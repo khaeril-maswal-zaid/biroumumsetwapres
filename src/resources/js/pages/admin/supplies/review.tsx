@@ -698,17 +698,14 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                 const replacementSelectedId = itemReplacements[item.id];
 
                                                 const approvedQty = approvedQuantities[replacementSelectedId] || item.approved;
-                                                const statusForRe = getItemStatusForRe(item.requested, approvedQty);
+
                                                 const status = getItemStatus(item.requested, approvedQty);
                                                 const percentage = item.requested > 0 ? (approvedQty / item.requested) * 100 : 0;
 
-                                                const isPartialStatus = statusForRe == 'partial' && selectedRequest.status == 'partial';
-                                                const isExpanded = partialApprovals[item.id]?.isExpanded;
                                                 const additionalApprovals = partialApprovals[item.id]?.additionalApprovals || [];
                                                 const additionalApproved = additionalApprovals.reduce((sum: number, a: any) => sum + a.approved, 0);
 
                                                 const itemExists = daftarAtk.some((atk: any) => atk.id == item.id);
-                                                const shouldShowItemSelector = !itemExists && selectedRequest.status == 'pending';
 
                                                 const keyId = item.id || `custom-${index}`;
 
