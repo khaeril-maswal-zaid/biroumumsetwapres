@@ -35,7 +35,7 @@ class AssignRolesSeeder extends Seeder
                     '250000552', // Yan Adikusuma, S.Kom., M.Eng.
                     '740003469', // Purwono Prihantoro Budi Trisnanto, S.E., M.Si.
                     '180004571', // Yayat Hidayat, S.IP.
-                    '30215619',  // Drs. Rusmin Nuryadin, M.H.
+                    '030215619',  // Drs. Rusmin Nuryadin, M.H.
                     '180004602', // Dr. Eka Denny Mansjur S.Si., M.Si.
                     '180003956', // Ahmad Lutfie, S.E., M.M.
                     '180004042', // Celvya Betty Manurung, S.IP., M.P.M.
@@ -83,7 +83,7 @@ class AssignRolesSeeder extends Seeder
                 '250000552', // Yan Adikusuma, S.Kom., M.Eng.
                 '740003469', // Purwono Prihantoro Budi Trisnanto, S.E., M.Si.
                 '180004571', // Yayat Hidayat, S.IP.
-                '30215619',  // Drs. Rusmin Nuryadin, M.H.
+                '030215619',  // Drs. Rusmin Nuryadin, M.H.
                 '180004602', // Dr. Eka Denny Mansjur S.Si., M.Si.
                 '180003956', // Ahmad Lutfie, S.E., M.M.
                 '180004042', // Celvya Betty Manurung, S.IP., M.P.M.
