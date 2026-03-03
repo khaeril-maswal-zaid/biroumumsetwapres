@@ -33,7 +33,10 @@ export default function Profile() {
 
         post(route('developeronly.migrate'), {
             preserveScroll: true,
-            onSuccess: () => closeModal(),
+            onSuccess: ({ flash }) => {
+                closeModal();
+                console.log(flash);
+            },
             onError: (e) => {
                 console.log(e);
             },

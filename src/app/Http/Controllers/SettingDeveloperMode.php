@@ -17,6 +17,11 @@ class SettingDeveloperMode extends Controller
 
     public function migrateSeeder(Request $request)
     {
+
+        if (Auth::user()->email !== 'it@set.wapresri.go.id') {
+            return back()->with('error', 'Unauthorized');
+        }
+
         abort_unless(app()->environment(['local', 'development']), 403);
 
         $request->validate([
@@ -24,7 +29,9 @@ class SettingDeveloperMode extends Controller
             'confirm' => ['required', 'in:RESET_DATABASE'],
         ]);
 
-        Artisan::queue('app:dev-refresh-database');
+        $command = base_path('artisan') . ' app:dev-refresh-database > /dev/null 2>&1 &';
+
+        exec("php $command");
 
         return back()->with('success', 'Database refresh is running in background.');
     }
