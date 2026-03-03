@@ -7020,21 +7020,21 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($users as $value) {
-            $data = [
+            $datab = [
                 'nip'      => $value['nip'],
                 'nip_sso'  => $value['nip_sso'] ?? $value['nip'],
                 'is_ldap'  => $value['is_ldap'] ?? 0,
             ];
 
             if (!empty($value['email'])) {
-                $data['email'] = $value['email'];
+                $datab['email'] = $value['email'];
             }
 
             if (!empty($value['password'])) {
-                $data['password'] = Hash::make($value['password']);
+                $datab['password'] = $value['password'];
             }
 
-            $user = User::create($data);
+            $user = User::create($datab);
         }
     }
 }

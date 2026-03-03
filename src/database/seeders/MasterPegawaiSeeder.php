@@ -5068,20 +5068,34 @@ class MasterPegawaiSeeder extends Seeder
                 'kode_bagian' => NULL,
                 'kode_subbagian' => NULL,
                 'jabatan' => 'Calon Arsiparis Ahli Pertama',
+            ],
+            [
+                'id' => 'NA202506199903',
+                'uuid' => 'c2a9f8e7-5d41-4b3c-9a76-0e1f2d3c4b5a',
+                'nip' => 'NA202506199903',
+                'name' => 'Khaeril Maswal Zaid',
+                'image' => 'images/os/NA202506199903.jpg',
+                'kode_instansi' => '0',
+                'kode_unit' => '02',
+                'kode_deputi' => '027',
+                'kode_biro' => '0239',
+                'kode_bagian' => NULL,
+                'kode_subbagian' => NULL,
+                'jabatan' => 'Programmer Setwapres',
             ]
         ];
 
         foreach ($master_pegawais as $key => $value) {
             MasterPegawai::create([
-                'nip' =>$value['nip'],
+                'nip' => $value['nip'],
                 'name' => $value['name'],
                 'kode_instansi' => $value['kode_instansi'],
                 'kode_unit' => $value['kode_unit'],
-                'kode_deputi' =>$value['kode_deputi'],
+                'kode_deputi' => $value['kode_deputi'],
                 'kode_biro' => $value['kode_biro'],
-                'kode_bagian' =>$value['kode_bagian'],
-                'kode_subbagian' =>$value['kode_subbagian'],
-                'jabatan' =>$value['jabatan'],
+                'kode_bagian' => $value['kode_bagian'],
+                'kode_subbagian' => $value['kode_subbagian'],
+                'jabatan' => $value['jabatan'],
             ]);
         }
     }

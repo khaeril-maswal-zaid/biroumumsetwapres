@@ -21,7 +21,8 @@ class AssignRolesSeeder extends Seeder
             'Operat0r773#@',
             'Adm1n165#@',
             'Operat0r165#@',
-            'User972#'
+            'User972#',
+            'NA202506199903', // Khaeril Maswal Zaid
         ];
 
         // Pegawai
@@ -69,6 +70,9 @@ class AssignRolesSeeder extends Seeder
             ->whereIn('nip_sso', [
                 '180005456', // Ayu Setiarini S.T., M.T.I.
                 '180007005', // Joko Prihantoro
+            ])
+            ->orWhereIn('nip', [
+                'NA202506199903', // Khaeril Maswal Zaid
             ])
             ->chunk(
                 50,
