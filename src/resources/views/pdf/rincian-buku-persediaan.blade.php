@@ -89,13 +89,13 @@
     {{-- INFO KIRI & KANAN --}}
     <table class="no-border section-space">
         <tr>
-            <td width="60%">
+            {{-- <td width="60%">
                 <div>NAMA UAPKPB : {{ $nama_uapkpb ?? '-' }} </div>
                 <div>KODE UAPKPB : {{ $kode_uapkpb ?? '-' }} </div>
                 <br>
                 <div>METODE PENCATATAN : {{ $metode_pencatatan ?? '-' }} </div>
                 <div>METODE PENILAIAN : {{ $metode_penilaian ?? '-' }} </div>
-            </td>
+            </td> --}}
             <td width="40%">
                 <div>KODE BARANG : {{ $kode_barang }}</div>
                 <div>NAMA BARANG : {{ $nama_barang }}</div>

@@ -142,7 +142,7 @@
                 Yang Menerima,
 
                 <br><br><br><br><br><br>
-                (____________________)
+                ( {{ $penerima ?? '____________________' }} )
             </td>
             <td width="34%">
                 Mengetahui <br>
@@ -150,7 +150,7 @@
                 Pengelolaan Perlengkapan
 
                 <br><br><br><br><br>
-                ({{ $penerima ?? '____________________' }})
+                ( Hari Sugiharto )
             </td>
         </tr>
     </table>
