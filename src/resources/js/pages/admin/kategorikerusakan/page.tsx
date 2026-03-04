@@ -1,17 +1,6 @@
 'use client';
 
 import ButtonKatKerusakan from '@/components/buttonnavbar/button-kat-kerusakan';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -22,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { Edit, Plus, Search, Trash2, X } from 'lucide-react';
+import { Edit, Plus, Search, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface DamageCategory {
@@ -127,24 +116,24 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
         });
     };
 
-    const handleDelete = (id: string) => {
-        router.delete(route('daftarkerusakan.destroy', id), {
-            onSuccess: () => {
-                toast({
-                    title: 'Berhasil Dihapus',
-                    description: 'Kategori kerusakan berhasil dihapus!',
-                    variant: 'destructive',
-                });
-            },
-            onError: (er) => {
-                toast({
-                    title: 'Validasi gagal',
-                    description: Object.values(er)[0],
-                    variant: 'destructive',
-                });
-            },
-        });
-    };
+    // const handleDelete = (id: string) => {
+    //     router.delete(route('daftarkerusakan.destroy', id), {
+    //         onSuccess: () => {
+    //             toast({
+    //                 title: 'Berhasil Dihapus',
+    //                 description: 'Kategori kerusakan berhasil dihapus!',
+    //                 variant: 'destructive',
+    //             });
+    //         },
+    //         onError: (er) => {
+    //             toast({
+    //                 title: 'Validasi gagal',
+    //                 description: Object.values(er)[0],
+    //                 variant: 'destructive',
+    //             });
+    //         },
+    //     });
+    // };
 
     const resetForm = () => {
         setFormData({ name: '', kode_kerusakan: '', sub_kategori: [] });
@@ -206,10 +195,10 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
                                                 setIsEditDialogOpen(true);
                                             }}
                                         >
-                                            <Edit className="h-4 w-4 text-blue-600" />
+                                            <Edit className="h-4 w-4 text-blue-800" />
                                         </Button>
 
-                                        <AlertDialog>
+                                        {/* <AlertDialog>
                                             <AlertDialogTrigger asChild>
                                                 <Button size="sm" variant="ghost" className="h-8 w-8 p-0 hover:bg-red-100">
                                                     <Trash2 className="h-4 w-4 text-red-600" />
@@ -233,7 +222,7 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
                                                     </AlertDialogAction>
                                                 </AlertDialogFooter>
                                             </AlertDialogContent>
-                                        </AlertDialog>
+                                        </AlertDialog> */}
                                     </div>
                                 </div>
 

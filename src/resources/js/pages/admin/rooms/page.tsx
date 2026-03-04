@@ -1,16 +1,5 @@
 'use client';
 import ButtonRooms from '@/components/buttonnavbar/button-ruangan';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -24,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { Building, Camera, Edit, MapPin, Mic, Monitor, PenSquare, Search, Speaker, Trash2, Tv, Users } from 'lucide-react';
+import { Building, Camera, Edit, MapPin, Mic, Monitor, PenSquare, Search, Speaker, Tv, Users } from 'lucide-react';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -209,11 +198,11 @@ export default function RoomsPage({ ruangans }: any) {
         });
     };
 
-    const handleDelete = (roomCode: string) => {
-        router.delete(route('rooms.delete', roomCode), {
-            preserveScroll: true,
-        });
-    };
+    // const handleDelete = (roomCode: string) => {
+    //     router.delete(route('rooms.delete', roomCode), {
+    //         preserveScroll: true,
+    //     });
+    // };
 
     const handleFacilityChange = (facilityId: string, checked: boolean) => {
         if (checked) {
@@ -265,12 +254,12 @@ export default function RoomsPage({ ruangans }: any) {
 
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                     {filteredRooms.map((room) => (
-                        <Card key={room.id} className="min-h-[540px] gap-0 overflow-hidden pt-0">
+                        <Card key={room.id} className="min-h-135 gap-0 overflow-hidden pt-0">
                             <div className="relative aspect-video">
                                 <img
                                     src={room.image ? `/storage/${room.image}` : '/placeholder.svg'}
                                     alt={room.nama_ruangan}
-                                    className="h-[275px] w-full object-cover"
+                                    className="h-68.75 w-full object-cover"
                                 />
                                 <div className="absolute top-2 right-2">{getStatusBadge(room.status)}</div>
                             </div>
@@ -314,7 +303,7 @@ export default function RoomsPage({ ruangans }: any) {
                                         <Edit className="mr-1 h-4 w-4" />
                                         Edit
                                     </Button>
-                                    <AlertDialog>
+                                    {/* <AlertDialog>
                                         <AlertDialogTrigger asChild>
                                             <Button variant="outline" size="sm" className="bg-transparent text-red-600 hover:text-red-700">
                                                 <Trash2 className="h-4 w-4" />
@@ -338,7 +327,7 @@ export default function RoomsPage({ ruangans }: any) {
                                                 </AlertDialogAction>
                                             </AlertDialogFooter>
                                         </AlertDialogContent>
-                                    </AlertDialog>
+                                    </AlertDialog> */}
                                 </div>
                             </CardContent>
                         </Card>

@@ -21,6 +21,7 @@ export default function ButtonAtk() {
         name: '',
         category: '',
         satuan: '',
+        available_stock: 0,
     });
 
     const handleAdd = () => {
@@ -29,6 +30,7 @@ export default function ButtonAtk() {
             name: '',
             category: '',
             satuan: '',
+            available_stock: 0,
         });
         setIsAddOpen(true);
     };
@@ -47,6 +49,7 @@ export default function ButtonAtk() {
                     name: '',
                     category: '',
                     satuan: '',
+                    available_stock: 0,
                 });
             },
             onError: (er) => {
@@ -129,6 +132,19 @@ export default function ButtonAtk() {
                                     <SelectItem value="Botol">Botol</SelectItem>
                                 </SelectContent>
                             </Select>
+                        </div>
+
+                        <div>
+                            <Label htmlFor="available_stock">Batas Atas</Label>
+                            <Input
+                                className="mt-1"
+                                id="available_stock"
+                                type=""
+                                min={0}
+                                value={formData.available_stock}
+                                onChange={(e) => setFormData({ ...formData, available_stock: parseInt(e.target.value) })}
+                                required
+                            />
                         </div>
 
                         <DialogFooter>

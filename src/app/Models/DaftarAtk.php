@@ -19,6 +19,7 @@ class DaftarAtk extends Model
         'satuan',
         'kode_unit',
         'quantity',
+        'available_stock',
     ];
 
     protected static function booted()
