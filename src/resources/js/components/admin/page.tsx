@@ -28,7 +28,7 @@ export default function DamageReports({
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <div className="ps-2">
-                        <h1 className="text-lg font-bold tracking-tight">Dashboard laporan Kerusakan Gedung</h1>
+                        <h1 className="text-lg font-bold tracking-tight">Dashboard laporan Kerusakan Sarpras</h1>
                         <p className="text-sm text-gray-500">Analisis mendalam tentang laporan kerusakan fasilitas.</p>
                     </div>
                 </div>

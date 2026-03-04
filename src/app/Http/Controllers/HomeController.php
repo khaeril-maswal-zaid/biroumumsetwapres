@@ -124,7 +124,6 @@ class HomeController extends Controller
 
     public function index()
     {
-
         $requestHistory = $this->queryRapat
             ->concat($this->queryKerusakan)
             ->concat($this->queryAtk)

@@ -25,30 +25,62 @@ class UserSeeder extends Seeder
                 'biro' => '0239',
                 'jabatan' => 'Programmer',
             ],
+
+
             [
-                'name' => 'Operator ATK',
-                'email' => 'operatoratk.umum@set.wapresri.go.id',
-                'nip' => 'Adm1n165#@',
-                'role' => 'operator_atk',
+                'name' => 'Admin Kerusakan Gedung',
+                'email' => 'admingedung.umum@set.wapresri.go.id',
+                'nip' => 'Adm1n945#',
+                'role' => 'admin_kerusakan_gedung',
                 'biro' => '0238',
-                'jabatan' => 'Operator',
+                'jabatan' => 'Admin',
             ],
             [
-                'name' => 'Operator Gedung',
+                'name' => 'Operator Kerusakan Gedung',
                 'email' => 'operatorgedung.umum@set.wapresri.go.id',
-                'nip' => 'Adm1n773#@',
+                'nip' => 'Adm1n773#',
                 'role' => 'operator_kerusakan_gedung',
                 'biro' => '0238',
                 'jabatan' => 'Operator',
             ],
+
+
             [
-                'name' => 'Operator Ruangan',
+                'name' => 'Admin Ruang Rapat',
+                'email' => 'adminruangan.umum@set.wapresri.go.id',
+                'nip' => 'Adm1n882#',
+                'role' => 'admin_ruangan',
+                'biro' => '0238',
+                'jabatan' => 'Admin',
+            ],
+            [
+                'name' => 'Operator Ruang Rapat',
                 'email' => 'operatorruangan.umum@set.wapresri.go.id',
-                'nip' => 'Adm1n945#@',
+                'nip' => 'Adm1n334#',
                 'role' => 'operator_ruangan',
                 'biro' => '0238',
                 'jabatan' => 'Operator',
             ],
+
+
+            [
+                'name' => 'Admin ATK',
+                'email' => 'adminatk.umum@set.wapresri.go.id',
+                'nip' => 'Adm1n955#',
+                'role' => 'admin_atk',
+                'biro' => '0238',
+                'jabatan' => 'Admin',
+            ],
+            [
+                'name' => 'Operator ATK',
+                'email' => 'operatoratk.umum@set.wapresri.go.id',
+                'nip' => 'Adm1n110#',
+                'role' => 'operator_atk',
+                'biro' => '0238',
+                'jabatan' => 'Operator',
+            ],
+
+
             [
                 'name' => 'User Layanan Biro Umum',
                 'email' => 'layananbiroumum@set.wapresri.go.id',

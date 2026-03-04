@@ -141,7 +141,7 @@ export default function RequestHistory({ requestHistory }: any) {
 
     return (
         <>
-            <Head title="Laporan Kerusakan Gedung" />
+            <Head title="Laporan Kerusakan Sarpras" />
             <div className="mx-auto min-h-screen w-full max-w-md bg-gray-50">
                 <div className="pb-20">
                     <div className="space-y-6 p-4">
@@ -185,10 +185,14 @@ export default function RequestHistory({ requestHistory }: any) {
                                                     <div className="min-w-0 flex-1">
                                                         <div className="mb-1 flex items-center gap-2">
                                                             <span className="font-mono text-xs text-gray-500">{request.code}</span>
-                                                            <Badge variant="outline" className="text-xs">
-                                                                {request.type}
-                                                            </Badge>
+                                                            <span className="text-xs text-gray-600">|</span>
+                                                            <span className="text-xs text-gray-600">{formatDate(selectedRequest.created_at)}</span>
                                                         </div>
+
+                                                        <Badge variant="outline" className="mb-2 text-xs">
+                                                            {request.type}
+                                                        </Badge>
+
                                                         <h3 className="truncate font-semibold text-gray-900">{request.title}</h3>
                                                         <p className="line-clamp-1 text-sm text-gray-600">{request?.info}</p>
                                                     </div>
@@ -229,7 +233,7 @@ export default function RequestHistory({ requestHistory }: any) {
 
                                 {selectedRequest &&
                                     selectedRequest.id === 'damage' &&
-                                    'Detail laporan kerusakan gedung yang Anda sampaikan, termasuk status tindak lanjut oleh petugas.'}
+                                    'Detail laporan kerusakan sarpras yang Anda sampaikan, termasuk status tindak lanjut oleh petugas.'}
 
                                 {selectedRequest &&
                                     selectedRequest.id === 'vehicle' &&
@@ -629,22 +633,36 @@ export default function RequestHistory({ requestHistory }: any) {
                                     <div>
                                         <p className="mb-3 font-medium text-gray-900">Foto Kerusakan ({selectedRequest.picture.length})</p>
                                         <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-                                            {selectedRequest.picture.map((photo: string, index: number) => (
-                                                <div
-                                                    key={index}
-                                                    className="relative aspect-video cursor-pointer overflow-hidden rounded-lg border transition-colors hover:border-blue-300"
-                                                    onClick={() => handleViewImage(photo)}
-                                                >
-                                                    <img
-                                                        src={`/storage/${photo}` || '/placeholder.svg'}
-                                                        alt={`Foto kerusakan ${index + 1}`}
-                                                        className="object-cover"
-                                                    />
-                                                    <div className="bg-opacity-0 hover:bg-opacity-10 absolute inset-0 flex items-center justify-center transition-all">
-                                                        <ImageIcon className="h-6 w-6 text-white opacity-0 transition-opacity hover:opacity-100" />
+                                            {selectedRequest.picture.map((media: string, index: number) => {
+                                                const isVideo = media.includes('video/');
+
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        className="relative aspect-video cursor-pointer overflow-hidden rounded-lg border transition-colors hover:border-blue-300"
+                                                        onClick={() => handleViewImage(media)}
+                                                    >
+                                                        {isVideo ? (
+                                                            <video
+                                                                src={`/storage/${media}`}
+                                                                className="h-full w-full object-cover"
+                                                                muted
+                                                                preload="metadata"
+                                                            />
+                                                        ) : (
+                                                            <img
+                                                                src={`/storage/${media}?height=300&width=400&query=damage report media ${index + 1}`}
+                                                                alt={`Media kerusakan ${index + 1}`}
+                                                                className="h-full w-full object-cover"
+                                                            />
+                                                        )}
+
+                                                        <div className="bg-opacity-0 hover:bg-opacity-10 absolute inset-0 flex items-center justify-center transition-all">
+                                                            <ImageIcon className="h-6 w-6 text-white opacity-0 transition-opacity hover:opacity-100" />
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 )}
