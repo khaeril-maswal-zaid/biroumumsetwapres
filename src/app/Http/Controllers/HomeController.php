@@ -238,7 +238,7 @@ class HomeController extends Controller
             ->concat($this->queryKerusakan)
             ->concat($this->queryAtk)
             ->sortByDesc('created_at')
-            ->take(7)
+            ->take(50)
             ->values();
 
         return Inertia::render('biroumum/history/page', compact('requestHistory'));
