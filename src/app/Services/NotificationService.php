@@ -193,31 +193,31 @@ class NotificationService
     }
 
     //kategori: 4
-    // public function sendLowStockNotifications(): int
-    // {
-    //     $atkItems = DaftarAtk::where('quantity', '<', 'available_stock')->get();
-    //     $count = 0;
-    //     foreach ($atkItems as $item) {
-    //         $title = "Stok ATK Menipis";
-    //         $message = sprintf(
-    //             "Stok ATK (%s) saat ini %d, sudah mencapai atau di bawah threshold (%d). Silakan lakukan pengadaan.",
-    //             $item->nama_barang,
-    //             $item->stok,
-    //             $item->threshold
-    //         );
-    //         Notification::create([
-    //             'kode_unit' => $item->kode_unit,
-    //             'permissions' => $this->permissionMap['supplies'],
-    //             'type' => 'low_stock',
-    //             'category' => 'supplies',
-    //             'title' => $title,
-    //             'message' => $message,
-    //             'priority' => 'medium',
-    //             'action_url' => route('permintaanatk.show', $item, false),
-    //             'is_read' => false,
-    //         ]);
-    //         $count++;
-    //     }
-    //     return $count;
-    // }
+    public function sendLowStockNotifications(): int
+    {
+        $atkItems = DaftarAtk::where('quantity', '<', 'available_stock')->get();
+        $count = 0;
+        foreach ($atkItems as $item) {
+            $title = "Stok ATK Menipis";
+            $message = sprintf(
+                "Stok ATK (%s) saat ini %d, sudah mencapai atau di bawah threshold (%d). Silakan lakukan pengadaan.",
+                $item->nama_barang,
+                $item->stok,
+                $item->threshold
+            );
+            Notification::create([
+                'kode_unit' => $item->kode_unit,
+                'permissions' => $this->permissionMap['supplies'],
+                'type' => 'low_stock',
+                'category' => 'supplies',
+                'title' => $title,
+                'message' => $message,
+                'priority' => 'medium',
+                'action_url' => route('daftaratk.show', $item, false),
+                'is_read' => false,
+            ]);
+            $count++;
+        }
+        return $count;
+    }
 }
