@@ -186,7 +186,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                         <div className="mb-1 flex items-center gap-2">
                                                             <span className="font-mono text-xs text-gray-500">{request.code}</span>
                                                             <span className="text-xs text-gray-600">|</span>
-                                                            <span className="text-xs text-gray-600">{formatDate(selectedRequest.created_at)}</span>
+                                                            <span className="text-xs text-gray-600">{formatDate(request.created_at)}</span>
                                                         </div>
 
                                                         <Badge variant="outline" className="mb-2 text-xs">

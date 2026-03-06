@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * Jenis Notifikasi:
+     * Kategori Notifikasi:
      * 1. New Request
      *    Menampilkan seluruh permintaan baru yang masih berstatus *pending*.
      *    (Ditangani langsung oleh controller)
@@ -21,6 +21,9 @@ return new class extends Migration
      * 3. Overdue
      *    Notifikasi untuk permintaan yang belum ditindaklanjuti selama 2 hari atau lebih sejak diajukan
      *    dan masih berstatus *pending*.
+     *    (Dijalankan oleh scheduler setiap hari pukul 06:00)
+     *
+     * 4. Notifikasi stok ATK yang menipis berdasarkan threshold yang ditentukan.
      *    (Dijalankan oleh scheduler setiap hari pukul 06:00)
      */
 
