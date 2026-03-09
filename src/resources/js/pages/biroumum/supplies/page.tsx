@@ -372,6 +372,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                             <Input
                                                                 placeholder="Tulis nama barang..."
                                                                 {...register(`items.${index}.name`)}
+                                                                autoComplete="off"
                                                                 className="mt-1 border-amber-200 bg-white focus:border-amber-400 focus:ring-amber-400"
                                                             />
                                                         </div>
@@ -393,6 +394,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                                 <Input
                                                                     placeholder="Pcs, Box, Rim..."
                                                                     {...register(`items.${index}.satuan`)}
+                                                                    autoComplete="off"
                                                                     className="mt-1 border-amber-200 bg-white focus:border-amber-400 focus:ring-amber-400"
                                                                 />
                                                             </div>
@@ -445,6 +447,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                         {...register('contact')}
                                         placeholder="Nama dan nomor telepon"
                                         className={`mt-1 ${cn(errors.contact && 'border-red-500')}`}
+                                        autoComplete="off"
                                     />
                                     {errors.contact && <p className="mt-1 text-sm text-red-600">{errors.contact.message}</p>}
                                 </div>

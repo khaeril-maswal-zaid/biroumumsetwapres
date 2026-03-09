@@ -433,6 +433,8 @@ export default function RequestHistory({ requestHistory }: any) {
                                         const replacementItems =
                                             selectedRequest?.daftarkebutuhan?.filter((it: any) => it?.status == 'replacement') || [];
 
+                                        console.log(replacementItems);
+
                                         return (
                                             <>
                                                 <p className="mb-3 font-medium text-gray-900">Daftar Item yang Diminta</p>
@@ -502,7 +504,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                     ))}
                                                 </div>
 
-                                                {customItems.length > 0 && (
+                                                {/* {customItems.length > 0 && (
                                                     <>
                                                         <Separator />
 
@@ -546,7 +548,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                             ))}
                                                         </div>
                                                     </>
-                                                )}
+                                                )} */}
 
                                                 {replacementItems.length > 0 && (
                                                     <>
@@ -561,7 +563,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                                         <span className="flex-1 text-sm font-medium">{item.name}</span>
                                                                     </div>
 
-                                                                    <div className="grid grid-cols-2 gap-4">
+                                                                    <div className="grid grid-cols-3 gap-4">
                                                                         <div className="text-center">
                                                                             <p className="mb-1 text-xs text-gray-500">Diminta</p>
                                                                             <Badge
@@ -586,6 +588,18 @@ export default function RequestHistory({ requestHistory }: any) {
                                                                             >
                                                                                 {item.approved} {item.satuan}
                                                                                 {/* {item.approved ? `${item.approved} ${item.satuan}` : 'Belum diproses'} */}
+                                                                            </Badge>
+                                                                        </div>
+
+                                                                        <div className="text-center">
+                                                                            <p className="mb-1 text-xs text-gray-500">
+                                                                                Pengganti dari permintaan ATK
+                                                                            </p>
+                                                                            <Badge
+                                                                                variant="outline"
+                                                                                className="border-blue-200 bg-blue-50 font-medium text-blue-700"
+                                                                            >
+                                                                                {item.origin_id ?? 'Tidak diketahui'}
                                                                             </Badge>
                                                                         </div>
                                                                     </div>

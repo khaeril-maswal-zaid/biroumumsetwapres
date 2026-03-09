@@ -1,5 +1,4 @@
 import { StatusBadge } from '@/components/badges/StatusBadge';
-import { ItemCombobox } from '@/components/biroumum/item-combobox';
 import { PartialApprovalList } from '@/components/biroumum/partial-approval-item';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -585,6 +584,9 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                                                     </span>
                                                                                 </>
                                                                             )}
+
+                                                                            <span>•</span>
+                                                                            <span>Pengganti dari permintaan ATK: {item?.origin_id}</span>
                                                                         </div>
                                                                         {selectedRequest.status == 'pending' && actionType == 'confirmed' && (
                                                                             <div className="mt-2 flex items-center gap-4 text-sm">
@@ -689,7 +691,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                     </>
                                 )}
 
-                                {customItems.length > 0 && (
+                                {/* {customItems.length > 0 && (
                                     <>
                                         <Separator />
                                         <h4 className="mt-6 mb-4 font-medium text-amber-900">Daftar Usulan ATK baru</h4>
@@ -814,6 +816,8 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                                                     </span>
                                                                                 </>
                                                                             )}
+                                                                            <span>•</span>
+                                                                            <span>Digantikan oleh ATK: {item.replacedBy}</span>
                                                                         </div>
 
                                                                         {(selectedRequest.status == 'pending' ||
@@ -900,7 +904,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                             })}
                                         </div>
                                     </>
-                                )}
+                                )} */}
 
                                 {/* Admin Message Display for Approved/Rejected */}
                                 {selectedRequest.keterangan &&
@@ -910,15 +914,15 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                         const colorMap: any = {
                                             confirmed: {
                                                 border: 'border-green-600',
-                                                bg: 'bg-green-400',
+                                                bg: 'bg-green-200',
                                                 icon: '',
                                                 title: '',
                                                 text: '',
                                             },
 
                                             rejected: {
-                                                border: 'border-red-300',
-                                                bg: 'bg-red-300',
+                                                border: 'border-red-600',
+                                                bg: 'bg-red-200',
                                                 icon: 'text-red-600',
                                                 title: 'text-red-900',
                                                 text: 'text-red-800',
@@ -950,7 +954,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                     })()}
 
                                 {/* Action Section */}
-                                {selectedRequest.status !== 'confirmed' && (
+                                {selectedRequest.status !== 'confirmed' && selectedRequest.status !== 'rejected' && (
                                     <>
                                         <Separator />
                                         <div className="space-y-4">

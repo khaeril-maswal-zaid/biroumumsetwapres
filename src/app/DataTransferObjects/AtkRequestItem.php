@@ -11,7 +11,7 @@ class AtkRequestItem
         public int $requested,
         public int $approved,
         public string $status,
-        public ?int $replacedBy = null,
+        public ?string $replacedBy = null,
         public ?string $originId = null,
     ) {}
 
@@ -34,10 +34,10 @@ class AtkRequestItem
         $this->approved = min($this->requested, $this->approved + $qty);
     }
 
-    public function markReplaced(int $replacementId): void
+    public function markReplaced(string $replacementName): void
     {
         $this->status = 'replaced';
-        $this->replacedBy = $replacementId;
+        $this->replacedBy = $replacementName;
     }
 
     public function toArray(): array

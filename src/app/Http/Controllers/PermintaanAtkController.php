@@ -24,23 +24,23 @@ class PermintaanAtkController extends Controller
      */
     public function index(): Response
     {
-        $permintaanAtk = PermintaanAtk::with('pemesan.pegawai')->latest()->paginate(50);
+        // $permintaanAtk = PermintaanAtk::with('pemesan.pegawai')->latest()->paginate(50);
 
-        // Tambahkan stock ke daftar_kebutuhan
-        $permintaanAtk->getCollection()->transform(function ($permintaan) {
-            if ($permintaan->daftar_kebutuhan) {
-                $permintaan->daftar_kebutuhan = collect($permintaan->daftar_kebutuhan)->map(function ($item) {
-                    $daftarAtk = DaftarAtk::find($item['id']);
-                    $item['stock'] = $daftarAtk ? $daftarAtk->quantity : 0;
-                    return $item;
-                })->toArray();
-            }
-            return $permintaan;
-        });
+        // // Tambahkan stock ke daftar_kebutuhan
+        // $permintaanAtk->getCollection()->transform(function ($permintaan) {
+        //     if ($permintaan->daftar_kebutuhan) {
+        //         $permintaan->daftar_kebutuhan = collect($permintaan->daftar_kebutuhan)->map(function ($item) {
+        //             $daftarAtk = DaftarAtk::find($item['id']);
+        //             $item['stock'] = $daftarAtk ? $daftarAtk->quantity : 0;
+        //             return $item;
+        //         })->toArray();
+        //     }
+        //     return $permintaan;
+        // });
 
 
         $data = [
-            'permintaanAtk' =>  PermintaanAtk::with('pemesan.pegawai')->latest()->paginate(50),
+            'permintaanAtk' =>  PermintaanAtk::with('pemesan.pegawai')->latest()->paginate(150),
         ];
 
         return Inertia::render('admin/supplies/page', $data);

@@ -407,7 +407,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                     <div className="flex items-center gap-2">
                                         <span className="text-sm text-muted-foreground">Tampilkan</span>
                                         <Select value={String(itemsPerPage)} onValueChange={handleItemsPerPageChange}>
-                                            <SelectTrigger className="h-8 w-[70px]">
+                                            <SelectTrigger className="h-8 w-17.5">
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>

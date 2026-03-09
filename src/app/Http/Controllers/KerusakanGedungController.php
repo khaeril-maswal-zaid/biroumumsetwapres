@@ -21,7 +21,7 @@ class KerusakanGedungController extends Controller
     public function index()
     {
         $data = [
-            'kerusakan' => KerusakanGedung::with('pelapor.pegawai')->with('kategori')->latest()->paginate(50)
+            'kerusakan' => KerusakanGedung::with('pelapor.pegawai')->with('kategori')->latest()->paginate(150)
         ];
 
         return Inertia::render('admin/damages/page', $data);

@@ -23,7 +23,7 @@ class PemesananRuangRapatController extends Controller
     public function index()
     {
         $data = [
-            'bookingRooms' => PemesananRuangRapat::with('ruangans')->with('pemesan.pegawai')->latest()->paginate(50)
+            'bookingRooms' => PemesananRuangRapat::with('ruangans')->with('pemesan.pegawai')->latest()->paginate(150)
         ];
 
         return Inertia::render('admin/bookings/page', $data);
@@ -51,6 +51,7 @@ class PemesananRuangRapatController extends Controller
         // Cek apakah ruangan tersedia
         $isConflict = PemesananRuangRapat::where('daftar_ruangan_id', $room->id)
             ->where('tanggal_penggunaan', $request['date'])
+            ->where('status', 'booked')
             ->where(function ($q) use ($request) {
                 $q->whereBetween('jam_mulai', [$request['startTime'], $request['endTime']])
                     ->orWhereBetween('jam_selesai', [$request['startTime'], $request['endTime']])
