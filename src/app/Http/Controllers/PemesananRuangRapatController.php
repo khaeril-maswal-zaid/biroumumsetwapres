@@ -205,6 +205,25 @@ class PemesananRuangRapatController extends Controller
         ]);
     }
 
+    public function status(PemesananRuangRapat $pemesananRuangRapat, Request $request)
+    {
+
+        $validated = $request->validate([
+            'action' => 'required|in:rejected',
+            'message' => 'required_if:action,rejected|string|max:255',
+        ]);
+
+        $updateData = collect([
+            'status' => $validated['action'],
+        ]);
+
+        if (isset($validated['message'])) {
+            $updateData->put('keterangan', $validated['message']);
+        }
+
+        $pemesananRuangRapat->update($updateData->all());
+    }
+
     public function getAvailableRooms(Request $request)
     {
         $pemesananRuangRapat = new PemesananRuangRapat();

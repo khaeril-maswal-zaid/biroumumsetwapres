@@ -89,6 +89,8 @@ export function FormBooking() {
         },
     ];
 
+    console.log(register);
+
     return (
         <>
             {/* Informasi Pemesan */}

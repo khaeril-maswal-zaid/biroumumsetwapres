@@ -250,7 +250,7 @@ class PermintaanAtkController extends Controller
             ->all();
 
         $data = [
-            'penerima' => $permintaanAtk->with('pemesan.pegawai')->first()->pemesan->pegawai->name ?? '____________________',
+            'penerima' => $permintaanAtk->load('pemesan.pegawai')->pemesan->pegawai->name ?? '____________________',
             'tanggal' => now()->format('d-m-Y'),
             'items' => $items
         ];

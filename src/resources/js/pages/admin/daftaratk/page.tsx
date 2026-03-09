@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Edit, Package, Search, X } from 'lucide-react';
 
@@ -71,6 +72,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
+    const [minStockFilter, setMinStockFilter] = useState('all');
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [editingId, setEditingId] = useState('');
@@ -86,8 +88,9 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
         const matchesSearch =
             item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.category.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
+        const matchesMinStock = minStockFilter === 'all' || (item.available_stock > 0 && item.quantity < item.available_stock);
 
-        return matchesSearch && matchesCategory;
+        return matchesSearch && matchesCategory && matchesMinStock;
     });
 
     const handleEdit = (item: any) => {
@@ -242,6 +245,17 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                         ))}
                                     </SelectContent>
                                 </Select>
+
+                                <div className="flex items-center space-x-2">
+                                    <Switch
+                                        id="min-stock-switch"
+                                        checked={minStockFilter === 'min'}
+                                        onCheckedChange={(checked: boolean) => setMinStockFilter(checked ? 'min' : 'all')}
+                                    />
+                                    <label htmlFor="min-stock-switch" className="text-sm text-muted-foreground">
+                                        Hanya Minimum Stock
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
@@ -254,7 +268,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                         <TableHead>Kategori</TableHead>
                                         <TableHead>Satuan</TableHead>
                                         <TableHead>Saldo</TableHead>
-                                        <TableHead>Batas Atas </TableHead>
+                                        <TableHead>Minimum Stock</TableHead>
                                         <TableHead className="text-right">Aksi</TableHead>
                                     </TableRow>
                                 </TableHeader>

@@ -164,7 +164,7 @@ export default function BookingReports({
                                 <CardDescription>Persentase status pemesanan ruangan</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="h-[300px]">
+                                <div className="h-75">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <PieChart>
                                             <Pie
@@ -195,7 +195,7 @@ export default function BookingReports({
                                 <CardDescription>Distribusi jumlah pemesanan berdasarkan jam operasional</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="h-[350px]">
+                                <div className="h-87.5">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={peakHours} margin={{ top: 20, right: 30, left: 0, bottom: 40 }}>
                                             <CartesianGrid strokeDasharray="3 3" />
@@ -214,11 +214,11 @@ export default function BookingReports({
                         {/* Weekly Pattern */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Pola Mingguan</CardTitle>
-                                <CardDescription>Distribusi pemesanan berdasarkan hari dalam seminggu</CardDescription>
+                                <CardTitle>Pola Penggunaan Ruang Rapat per Hari</CardTitle>
+                                <CardDescription>Distribusi pemesanan ruang rapat berdasarkan hari (Senin–Minggu).</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="h-[300px]">
+                                <div className="h-75">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={weeklyPattern}>
                                             <CartesianGrid strokeDasharray="3 3" />
@@ -239,7 +239,7 @@ export default function BookingReports({
                                 <CardDescription>Perkembangan jumlah pemesanan dalam 6 bulan terakhir</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="h-[300px]">
+                                <div className="h-75">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <AreaChart data={monthlyTrend}>
                                             <CartesianGrid strokeDasharray="3 3" />

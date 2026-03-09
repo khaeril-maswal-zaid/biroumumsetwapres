@@ -1,6 +1,7 @@
 'use client';
 
 import { StatusBadge } from '@/components/badges/StatusBadge';
+import { UrgensiBadge } from '@/components/badges/UrgensiBadge';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -19,7 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { SharedData, type BreadcrumbItem } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Eye, ImageIcon, Search, Trash2 } from 'lucide-react';
+import { ImageIcon, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -89,7 +90,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                             </div>
                             <div className="flex items-center space-x-2">
                                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                    <SelectTrigger className="w-[180px]">
+                                    <SelectTrigger className="w-45">
                                         <SelectValue placeholder="Filter Status" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -111,6 +112,7 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                         <TableHead>Nama Pelapor</TableHead>
                                         <TableHead>Lokasi</TableHead>
                                         <TableHead className="hidden md:table-cell">Nama Item Rusak</TableHead>
+                                        <TableHead>Urgensi</TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead className="hidden md:table-cell">Foto</TableHead>
                                         <TableHead className="text-center">Aksi</TableHead>
@@ -135,6 +137,9 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                 <TableCell>{damage.lokasi}</TableCell>
                                                 <TableCell className="hidden md:table-cell">{damage.item}</TableCell>
                                                 <TableCell>
+                                                    <UrgensiBadge urgensi={damage.urgensi} />
+                                                </TableCell>
+                                                <TableCell>
                                                     <StatusBadge status={damage.status} isRead={damage.is_read} />
                                                 </TableCell>
                                                 <TableCell className="hidden md:table-cell">
@@ -148,16 +153,16 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                     )}
                                                 </TableCell>
                                                 <TableCell className="text-center">
-                                                    <div className="inline-flex items-center justify-center">
-                                                        <Link
-                                                            href={route('kerusakangedung.show', damage.kode_pelaporan)}
-                                                            className="inline-flex items-center gap-1 font-medium"
-                                                        >
-                                                            <Eye className="h-4 w-4" />
-                                                            Lihat Detail
-                                                        </Link>
+                                                    {/* <div className="inline-flex items-center justify-center"> */}
+                                                    <Link
+                                                        href={route('kerusakangedung.show', damage.kode_pelaporan)}
+                                                        className="inline-flex items-center gap-1 font-medium"
+                                                    >
+                                                        {/* <Eye className="h-4 w-4" /> */}
+                                                        Lihat Detail
+                                                    </Link>
 
-                                                        {auth?.permissions?.includes('delete_all_requests') && (
+                                                    {/* {auth?.permissions?.includes('delete_all_requests') && (
                                                             <>
                                                                 <span className="mx-3">||</span>
 
@@ -169,8 +174,8 @@ export default function DamagesAdmin({ kerusakan }: any) {
                                                                     Hapus
                                                                 </button>
                                                             </>
-                                                        )}
-                                                    </div>
+                                                        )} */}
+                                                    {/* </div> */}
                                                 </TableCell>
                                             </TableRow>
                                         ))

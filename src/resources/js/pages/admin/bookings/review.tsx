@@ -39,8 +39,8 @@ const schema = z.object({
     room_name: z.string().min(1, 'Nama ruangan wajib diisi'),
     date: z.string().min(1, 'Tanggal wajib diisi'),
     startTime: z.string().min(1, 'Jam mulai wajib diisi'),
-    // unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
     endTime: z.string().min(1, 'Jam selesai wajib diisi'),
+    jumlahPeserta: z.number().min(1, 'Jumlah peserta harus lebih dari 0'),
     purpose: z.string().min(1, 'Kegiatan wajib diisi'),
     contact: z.string().min(1, 'Kontak wajib diisi'),
     jenisRapat: z.string().nullable(),
@@ -67,8 +67,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function BookingDetailsPage({ selectedBooking }: any) {
     const { toast } = useToast();
-
-    console.log(selectedBooking);
 
     const [actionType, setActionType] = useState<'approved' | 'rejected' | null>(null);
     const [adminMessage, setAdminMessage] = useState('');
@@ -235,6 +233,7 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
             date: toDate(data?.tanggal_penggunaan),
             startTime: toTime(data?.jam_mulai),
             endTime: toTime(data?.jam_selesai),
+            jumlahPeserta: data?.jumlah_peserta ?? 0,
             purpose: data?.deskripsi ?? '',
             contact: data?.no_hp ?? '',
 

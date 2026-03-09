@@ -171,10 +171,11 @@ export default function SuppliesRequest({ availableATK }: any) {
                                         const sel = items[index];
                                         const opts = getAvailableOptions(index);
                                         const isCustomItem = isLainLain(sel);
+                                        const itemError = errors.items?.[index];
 
                                         return (
-                                            <div key={field.id} className="mt-2 space-y-2">
-                                                <div className="flex items-center gap-2">
+                                            <div key={field.id} className="mt-2 space-y-1">
+                                                <div className="flex items-center gap-1">
                                                     <div className="min-w-0 flex-1">
                                                         <Popover
                                                             open={openComboboxes[index]}
@@ -189,7 +190,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                                         isCustomItem && 'border-amber-500/50 bg-amber-50',
                                                                     )}
                                                                 >
-                                                                    <span className="truncate text-left text-sm">
+                                                                    <span className="truncate text-left text-xs">
                                                                         {isCustomItem ? 'Lain-lain' : sel?.name || 'Pilih ATK...'}
                                                                     </span>
                                                                     <ChevronsUpDown className="ml-1 h-4 w-4 shrink-0 opacity-50" />
@@ -293,7 +294,7 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                                                                 )}
                                                                                             />
                                                                                             <div className="flex min-w-0 flex-1 flex-col">
-                                                                                                <span className="truncate text-sm">{atk.name}</span>
+                                                                                                <span className="truncate text-xs">{atk.name}</span>
                                                                                                 <span className="text-xs text-muted-foreground">
                                                                                                     Satuan: {atk.satuan}
                                                                                                 </span>
@@ -322,19 +323,19 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                     {/* Jumlah - only show if NOT "Lain-lain" */}
                                                     {!isCustomItem && (
                                                         <>
-                                                            <div className="w-16 shrink-0">
+                                                            <div className="pm-0 w-12 shrink-0">
                                                                 <Input
-                                                                    type="number"
+                                                                    type=""
                                                                     placeholder="Jml"
                                                                     {...register(`items.${index}.requested` as const)}
                                                                     min={1}
                                                                     disabled={!sel?.id || sel.status === 'custom'}
-                                                                    className="text-center text-sm"
+                                                                    className="text-xs"
                                                                 />
                                                             </div>
 
                                                             {/* Satuan */}
-                                                            <div className="w-14 shrink-0">
+                                                            <div className="w-13 shrink-0 text-xs">
                                                                 <Input
                                                                     readOnly
                                                                     value={sel?.satuan || ''}
@@ -358,7 +359,6 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                         </Button>
                                                     )}
                                                 </div>
-
                                                 {isCustomItem && (
                                                     <div className="ml-0 space-y-3 rounded-lg border-2 border-dashed border-amber-300 bg-amber-50/50 p-3">
                                                         <div className="mb-2 flex items-center gap-2 text-amber-700">
@@ -399,9 +399,16 @@ export default function SuppliesRequest({ availableATK }: any) {
                                                         </div>
                                                     </div>
                                                 )}
+
+                                                {itemError && (
+                                                    <p className="text-sm text-red-600">
+                                                        {itemError.id?.message || itemError.requested?.message || itemError.satuan?.message}
+                                                    </p>
+                                                )}
                                             </div>
                                         );
                                     })}
+
                                     <Button
                                         type="button"
                                         variant="outline"

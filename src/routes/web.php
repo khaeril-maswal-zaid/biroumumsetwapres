@@ -89,11 +89,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('ruangrapat.status')
         ->middleware('permission:change_booking_status');
 
-    Route::patch('/dashboard/ruang-rapat/{pemesananRuangRapat:kode_booking}', [PemesananRuangRapatController::class, 'snacklunchApproved'])
-        ->name('ruangrapat.konsumsi')
-        ->middleware('permission:change_booking_status');
-
-
 
     //Log Proces Perbaikan kerusakan
     Route::post('/log-proses-kerusakan', [LogProsesController::class, 'store'])
