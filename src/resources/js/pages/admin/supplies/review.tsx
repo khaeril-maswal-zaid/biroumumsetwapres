@@ -1,4 +1,5 @@
 import { StatusBadge } from '@/components/badges/StatusBadge';
+import { ItemCombobox } from '@/components/biroumum/item-combobox';
 import { PartialApprovalList } from '@/components/biroumum/partial-approval-item';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -691,7 +692,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                     </>
                                 )}
 
-                                {/* {customItems.length > 0 && (
+                                {customItems.length > 0 && selectedRequest.status === 'pending' && (
                                     <>
                                         <Separator />
                                         <h4 className="mt-6 mb-4 font-medium text-amber-900">Daftar Usulan ATK baru</h4>
@@ -904,7 +905,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                             })}
                                         </div>
                                     </>
-                                )} */}
+                                )}
 
                                 {/* Admin Message Display for Approved/Rejected */}
                                 {selectedRequest.keterangan &&

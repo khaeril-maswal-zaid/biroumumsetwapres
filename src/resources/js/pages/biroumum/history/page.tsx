@@ -433,8 +433,6 @@ export default function RequestHistory({ requestHistory }: any) {
                                         const replacementItems =
                                             selectedRequest?.daftarkebutuhan?.filter((it: any) => it?.status == 'replacement') || [];
 
-                                        console.log(replacementItems);
-
                                         return (
                                             <>
                                                 <p className="mb-3 font-medium text-gray-900">Daftar Item yang Diminta</p>
@@ -504,7 +502,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                     ))}
                                                 </div>
 
-                                                {/* {customItems.length > 0 && (
+                                                {customItems.length > 0 && selectedRequest.status === 'pending' && (
                                                     <>
                                                         <Separator />
 
@@ -548,7 +546,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                                             ))}
                                                         </div>
                                                     </>
-                                                )} */}
+                                                )}
 
                                                 {replacementItems.length > 0 && (
                                                     <>

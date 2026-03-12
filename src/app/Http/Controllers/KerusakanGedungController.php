@@ -145,19 +145,17 @@ class KerusakanGedungController extends Controller
         $kerusakanGedung->update($updateData->all());
     }
 
-    public function reports()
+    public function reports(KerusakanGedung $kerusakanGedung)
     {
-        $reportsData = new KerusakanGedung();
-
         $data = [
-            'summaryData' =>  $reportsData->summaryData(),
-            'locationData' =>  $reportsData->locationData(),
-            'statusDistribution' =>  $reportsData->statusDistribution(),
-            'damageTypeData' =>  $reportsData->damageTypeData(),
-            'urgencyData' =>  $reportsData->urgencyData(),
-            'topReportersData' =>  $reportsData->reporterStats()['topReportersData'],
-            'divisionReports' =>  $reportsData->reporterStats()['divisionReports'],
-            'monthlyTrend' => $reportsData->monthlyTrends(),
+            'summaryData' =>  $kerusakanGedung->summaryData(),
+            'locationData' =>  $kerusakanGedung->locationData(),
+            'statusDistribution' =>  $kerusakanGedung->statusDistribution(),
+            'damageTypeData' =>  $kerusakanGedung->damageTypeData(),
+            'urgencyData' =>  $kerusakanGedung->urgencyData(),
+            'topReportersData' =>  $kerusakanGedung->reporterStats()['topReportersData'],
+            'divisionReports' =>  $kerusakanGedung->reporterStats()['divisionReports'],
+            'monthlyTrend' => $kerusakanGedung->monthlyTrends(),
         ];
 
         return Inertia::render('admin/reportsdamages/page', $data);

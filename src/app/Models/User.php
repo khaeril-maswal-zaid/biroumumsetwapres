@@ -4,15 +4,12 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use App\Models\Scopes\InstansiScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use LdapRecord\Laravel\Auth\LdapAuthenticatable;
 use LdapRecord\Laravel\Auth\AuthenticatesWithLdap;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\Eloquent\Attributes\ScopedBy;
-
 // #[ScopedBy([InstansiScope::class])]
 class User extends Authenticatable implements LdapAuthenticatable
 {

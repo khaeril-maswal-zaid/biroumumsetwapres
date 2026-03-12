@@ -176,31 +176,24 @@ class PemesananRuangRapatController extends Controller
         //
     }
 
-    public function reports()
+    public function reports(PemesananRuangRapat $pemesananRuangRapat)
     {
-        $reportsData = new PemesananRuangRapat();
-
-        $startOfWeek = Carbon::now()->startOfWeek(); // Senin 00:00
-        $endOfWeek = Carbon::now()->endOfWeek();     // Minggu 23:59:59
-
-        $roomSchedules = $reportsData
+        $roomSchedules = $pemesananRuangRapat
             ->where('status', 'booked')
-            // ->whereNotBetween('tanggal_penggunaan', [$startOfWeek, $endOfWeek]) //kalau mau tidak pakai data pekan ini
             ->with(['pemesan.pegawai.biro', 'ruangans'])
             ->get();
 
-
         // Kirim ke Inertia
         return Inertia::render('admin/reportsbooking/page', [
-            'summaryData'        => $reportsData->summaryData(),
-            'peakHours'          => $reportsData->peakHours(),
-            'weeklyPattern'      => $reportsData->weeklyPattern(),
-            'monthlyTrend'       => $reportsData->monthlyTrend(),
-            'topUsers'           => $reportsData->topUsers(),
-            'divisionUsage'      => $reportsData->divisionUsage(),
-            'penggunaanRuangan'  => $reportsData->penggunaanRuangan(),
-            'statusDistribution' => $reportsData->statusDistribution(),
-            'weeklySchedule'     => $reportsData->weeklySchedule(),
+            'summaryData'        => $pemesananRuangRapat->summaryData(),
+            'peakHours'          => $pemesananRuangRapat->peakHours(),
+            'weeklyPattern'      => $pemesananRuangRapat->weeklyPattern(),
+            'monthlyTrend'       => $pemesananRuangRapat->monthlyTrend(),
+            'topUsers'           => $pemesananRuangRapat->topUsers(),
+            'divisionUsage'      => $pemesananRuangRapat->divisionUsage(),
+            'penggunaanRuangan'  => $pemesananRuangRapat->penggunaanRuangan(),
+            'statusDistribution' => $pemesananRuangRapat->statusDistribution(),
+            'weeklySchedule'     => $pemesananRuangRapat->weeklySchedule(),
             'rooms'              => DaftarRuangan::select('nama_ruangan')->get(),
             'roomSchedules' =>  $roomSchedules
         ]);

@@ -210,19 +210,16 @@ class PermintaanAtkController extends Controller
     }
 
 
-
-    public function reports()
+    public function reports(PermintaanAtk $permintaanAtk)
     {
-        $reportsData = new PermintaanAtk();
-
         $data = [
-            'summaryData' => $reportsData->summaryData(),
-            'itemComparison' => $reportsData->itemComparison(),
-            'monthlyTrend' => $reportsData->monthlyTrends(),
-            'topUsers' => $reportsData->topUsersStats(),
-            'divisionStats' => $reportsData->divisionStats(),
-            'statusDistribution' => $reportsData->statusDistribution(),
-            'urgencyData' => $reportsData->urgencyData(),
+            'summaryData' => $permintaanAtk->summaryData(),
+            'itemComparison' => $permintaanAtk->itemComparison(),
+            'monthlyTrend' => $permintaanAtk->monthlyTrends(),
+            'topUsers' => $permintaanAtk->topUsersStats(),
+            'divisionStats' => $permintaanAtk->divisionStats(),
+            'statusDistribution' => $permintaanAtk->statusDistribution(),
+            'urgencyData' => $permintaanAtk->urgencyData(),
         ];
 
         return Inertia::render('admin/reportssupplies/page', $data);

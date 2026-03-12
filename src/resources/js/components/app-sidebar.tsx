@@ -5,6 +5,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import {
+    AlertTriangle,
     Building2,
     CalendarClock,
     CarFront,
@@ -14,6 +15,7 @@ import {
     FileWarning,
     Hammer,
     Home,
+    LayoutDashboard,
     LockKeyhole,
     PackageCheck,
 } from 'lucide-react';
@@ -21,9 +23,9 @@ import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Home',
+        title: 'Dashboard',
         href: route('dashboard'),
-        icon: Home,
+        icon: LayoutDashboard,
         permission: 'view_admin_dashboard',
     },
     {
@@ -33,10 +35,24 @@ const mainNavItems: NavItem[] = [
         permission: 'view_bookings',
     },
     {
+        title: 'Manajemen Ruangan',
+        href: route('rooms.index'),
+        icon: Building2,
+        permission: 'view_rooms',
+        excludePermission: 'management_access',
+    },
+    {
         title: 'Kerusakan Sarpras',
         href: route('kerusakangedung.index'),
-        icon: Hammer,
+        icon: AlertTriangle,
         permission: 'view_damages',
+    },
+    {
+        title: 'Kategori Kerusakan',
+        href: route('daftarkerusakan.index'),
+        icon: Hammer,
+        permission: 'view_category_damages',
+        excludePermission: 'management_access',
     },
     {
         title: 'Permintaan ATK',
@@ -45,10 +61,23 @@ const mainNavItems: NavItem[] = [
         permission: 'view_supplies',
     },
     {
+        title: 'Manajemen ATK',
+        href: route('daftaratk.index'),
+        icon: PackageCheck,
+        permission: 'view_atk',
+        excludePermission: 'management_access',
+    },
+    {
         title: 'Permintaan Kendaraan',
         href: '#', // Ganti nanti dengan route('permintaankendaraan.index') jika aktif
         icon: CarFront,
         permission: 'view_vehicle_requests',
+    },
+    {
+        title: 'Home Aplikasi',
+        href: route('home'),
+        icon: Home,
+        permission: 'view_homepage',
     },
 ];
 
@@ -73,27 +102,6 @@ const reportsNavItems: NavItem[] = [
     },
 ];
 
-const manajementAtkNavItems: NavItem[] = [
-    {
-        title: 'Daftar Persediaan',
-        href: route('daftaratk.index'),
-        icon: FileBarChart2,
-        permission: 'report_bookings',
-    },
-    {
-        title: 'Prolehan & Pemakaian',
-        href: route('kerusakangedung.reports'),
-        icon: FileWarning,
-        permission: 'report_damages',
-    },
-    {
-        title: 'Buku Persediaan',
-        href: route('permintaanatk.reports'),
-        icon: FileText,
-        permission: 'report_supplies',
-    },
-];
-
 const footerNavItems: NavItem[] = [
     {
         title: 'Manajemen Ruangan',
@@ -102,16 +110,16 @@ const footerNavItems: NavItem[] = [
         permission: 'view_rooms',
     },
     {
-        title: 'Manajemen ATK',
-        href: route('daftaratk.index'),
-        icon: PackageCheck,
-        permission: 'view_atk',
-    },
-    {
         title: 'Kategori Kerusakan',
         href: route('daftarkerusakan.index'),
         icon: Hammer,
         permission: 'view_category_damages',
+    },
+    {
+        title: 'Manajemen ATK',
+        href: route('daftaratk.index'),
+        icon: PackageCheck,
+        permission: 'view_atk',
     },
     {
         title: 'Pengaturan Akses',
