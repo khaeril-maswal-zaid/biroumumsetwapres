@@ -81,7 +81,7 @@ export function NavMain({ items, itemsReport }: NavMainProps) {
                                 )}
                             >
                                 <BarChart4 className="h-5 w-5" />
-                                Dashboard
+                                Laporan
                                 {isManagementOpen ? <ChevronDown className="ml-auto h-4 w-4" /> : <ChevronRight className="ml-auto h-4 w-4" />}
                             </Button>
                         </CollapsibleTrigger>

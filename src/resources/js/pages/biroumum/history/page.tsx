@@ -780,15 +780,23 @@ export default function RequestHistory({ requestHistory }: any) {
                             <DialogTitle>Foto Kerusakan</DialogTitle>
                         </DialogHeader>
 
-                        {selectedImage && (
-                            <div className="relative flex items-center justify-center bg-black/5 p-4">
-                                <img
-                                    src={selectedImage ? `/storage/${selectedImage}` : '/placeholder.svg'}
-                                    alt="Foto kerusakan"
-                                    className="max-h-[70vh] w-auto rounded-md object-contain"
+                        <div className="flex items-center justify-center bg-black/5 p-4">
+                            {selectedImage && selectedImage.includes('video/') ? (
+                                <video
+                                    src={`/storage/${selectedImage}`}
+                                    className="max-h-[70vh] w-full rounded-md object-contain"
+                                    muted
+                                    preload="metadata"
+                                    controls
                                 />
-                            </div>
-                        )}
+                            ) : (
+                                <img
+                                    src={`/storage/${selectedImage}`}
+                                    alt="Media kerusakan"
+                                    className="max-h-[70vh] w-full rounded-md object-contain"
+                                />
+                            )}
+                        </div>
 
                         <DialogFooter className="p-4 pt-2">
                             <Button variant="outline" onClick={() => setIsImageViewerOpen(false)}>
