@@ -695,7 +695,6 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                 {customItems.length > 0 && selectedRequest.status !== 'rejected' && selectedRequest.status !== 'confirmed' && (
                                     <>
                                         <Separator />
-                                        {/* Before proses */}
                                         <h4 className="mt-6 mb-4 font-medium text-amber-900">Daftar Usulan ATK baru</h4>
                                         <div className="space-y-3">
                                             {customItems.map((item: any, index: number) => {
