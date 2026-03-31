@@ -17,14 +17,12 @@ import {
     Calendar,
     CheckCircle,
     Clock,
-    Cookie,
     Edit3,
     MessageSquare,
     Monitor,
     Presentation,
     User,
     Users,
-    Utensils,
     Video,
     X,
     XCircle,
@@ -35,17 +33,27 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const schema = z.object({
-    room_code: z.string().min(1, 'Ruangan wajib dipilih'),
-    room_name: z.string().min(1, 'Nama ruangan wajib diisi'),
-    date: z.string().min(1, 'Tanggal wajib diisi'),
-    startTime: z.string().min(1, 'Jam mulai wajib diisi'),
-    // unit_kerja: z.string().min(1, 'Unit Kerja wajib diisi'),
-    endTime: z.string().min(1, 'Jam selesai wajib diisi'),
-    purpose: z.string().min(1, 'Kegiatan wajib diisi'),
-    contact: z.string().min(1, 'Kontak wajib diisi'),
+    room_code: z.string().min(1, 'Silakan pilih ruangan yang akan digunakan'),
+    room_name: z.string().min(1, 'Nama ruangan tidak boleh kosong'),
+    date: z.string().min(1, 'Tanggal rapat wajib ditentukan'),
+    startTime: z.string().min(1, 'Jam mulai rapat wajib diisi'),
+    endTime: z.string().min(1, 'Jam selesai rapat wajib diisi'),
+
+    jumlahPeserta: z.string().min(1, 'Jumlah peserta wajib diisi'),
+    purpose: z.string().min(1, 'Mohon jelaskan tujuan atau agenda rapat'),
+    contact: z
+        .string({
+            required_error: 'Nomor HP wajib diisi',
+            invalid_type_error: 'Nomor HP harus berupa teks',
+        })
+        .min(10, 'Nomor HP minimal 10 digit')
+        .regex(/^08\d{8,12}$/, 'Nomor HP harus diawali 08 dan berisi 10–14 digit'),
+
     jenisRapat: z.string().nullable(),
-    isHybrid: z.boolean(),
     needItSupport: z.boolean(),
+    isHybrid: z.boolean(),
+    itSupportDetail: z.string().optional(),
+    hybridDetail: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -71,8 +79,6 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
     const [actionType, setActionType] = useState<'approved' | 'rejected' | null>(null);
     const [adminMessage, setAdminMessage] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
-    const [snackAccCount, setSnackAccCount] = useState<number>(0);
-    const [lunchAccCount, setLunchAccCount] = useState<number>(0);
 
     const handleActionClick = (action: 'approved' | 'rejected') => {
         setActionType(action);
@@ -109,53 +115,6 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
             },
         );
     };
-
-    const handleSnacklunchApproved = async (bookingCode: string) => {
-        setIsProcessing(true);
-
-        router.patch(
-            route('ruangrapat.konsumsi', bookingCode),
-            {
-                snack_approved_count: selectedBooking?.is_makanan_ringan == 1 ? snackAccCount : undefined,
-                lunch_approved_count: selectedBooking?.is_makanan_berat == 1 ? lunchAccCount : undefined,
-            },
-            {
-                preserveScroll: true,
-                onSuccess: () => {
-                    toast({
-                        title: 'Berhasil',
-                        description: 'Jumlah disetujui Snack & Makan Siang berhasil diubah.',
-                    });
-                    setIsProcessing(false);
-                },
-                onError: (errors) => {
-                    toast({
-                        title: 'Validasi gagal',
-                        description: Object.values(errors)[0],
-                    });
-                    setIsProcessing(false);
-                },
-            },
-        );
-    };
-
-    // Sync default approved counts to jumlah peserta when booking loads
-    useEffect(() => {
-        if (selectedBooking) {
-            const baseSnack =
-                Number(selectedBooking.aproved_makanan_ringan) == 0
-                    ? Number(selectedBooking.jumlah_peserta)
-                    : Number(selectedBooking.aproved_makanan_ringan);
-
-            const baseLunch =
-                Number(selectedBooking.aproved_makanan_berat) == 0
-                    ? Number(selectedBooking.jumlah_peserta)
-                    : Number(selectedBooking.aproved_makanan_berat);
-
-            setSnackAccCount(baseSnack);
-            setLunchAccCount(baseLunch);
-        }
-    }, [selectedBooking]);
 
     //--------------------------------------
     const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
@@ -233,6 +192,7 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
             date: toDate(data?.tanggal_penggunaan),
             startTime: toTime(data?.jam_mulai),
             endTime: toTime(data?.jam_selesai),
+            jumlahPeserta: data?.jumlah_peserta ?? 0,
             purpose: data?.deskripsi ?? '',
             contact: data?.no_hp ?? '',
 
@@ -249,33 +209,24 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
         setShowRescheduleDialog(true);
     };
 
-    // jalankan useEffect untuk jaga-jaga:
     useEffect(() => {
         if (showRescheduleDialog && selectedBooking) {
             methods.reset(mapBookingToForm(selectedBooking));
         }
-    }, [showRescheduleDialog, selectedBooking]);
+    }, [showRescheduleDialog]);
 
     const kebutuhanDanDukungan = [
-        {
-            label: 'Snack/ Makanan Ringan',
-            icon: Cookie,
-            isCheck: selectedBooking?.is_makanan_ringan,
-        },
-        {
-            label: 'Makan Siang',
-            icon: Utensils,
-            isCheck: selectedBooking?.is_makanan_berat,
-        },
         {
             label: 'Rapat Hybrid',
             icon: Video,
             isCheck: selectedBooking?.is_hybrid,
+            detail: selectedBooking?.hybrid_detail,
         },
         {
             label: 'Dukungan IT',
             icon: Monitor,
             isCheck: selectedBooking?.is_ti_support,
+            detail: selectedBooking?.ti_support_detail,
         },
     ];
 
@@ -403,43 +354,47 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
 
                                             return (
                                                 <div
-                                                    className="flex w-full items-center gap-4 rounded-xl bg-linear-to-r from-violet-50 to-purple-50 px-4 py-2.5 text-left transition-all duration-200"
                                                     key={index}
+                                                    className="w-full gap-4 rounded-xl bg-linear-to-r from-violet-50 to-purple-50 px-4 py-3 text-left transition-all duration-200"
                                                 >
-                                                    {/* Custom Checkbox */}
-                                                    {need.isCheck == 1 ? (
-                                                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-violet-600 bg-violet-600 transition-all duration-200">
-                                                            <svg
-                                                                className="h-4 w-4 text-white"
-                                                                fill="none"
-                                                                viewBox="0 0 24 24"
-                                                                stroke="currentColor"
-                                                                strokeWidth={3}
-                                                            >
-                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                                            </svg>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white transition-all duration-200">
-                                                            <XCircle className="h-6 w-6 text-red-500" />
-                                                        </div>
-                                                    )}
+                                                    <div className="flex w-full items-center gap-4">
+                                                        {/* Custom Checkbox */}
+                                                        {need.isCheck == 1 ? (
+                                                            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-violet-600 bg-violet-600 transition-all duration-200">
+                                                                <svg
+                                                                    className="h-4 w-4 text-white"
+                                                                    fill="none"
+                                                                    viewBox="0 0 24 24"
+                                                                    stroke="currentColor"
+                                                                    strokeWidth={3}
+                                                                >
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                                </svg>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white transition-all duration-200">
+                                                                <XCircle className="h-6 w-6 text-red-500" />
+                                                            </div>
+                                                        )}
 
-                                                    {/* Icon & Label */}
-                                                    <div className="flex flex-1 items-center gap-3">
-                                                        <div className="rounded-lg bg-violet-100 p-2.5 transition-colors duration-200">
-                                                            <Icon
-                                                                className={`h-5 w-5 ${need.isCheck == 1 ? `text-violet-900` : `text-gray-500`} transition-colors duration-200`}
-                                                            />
-                                                        </div>
-                                                        <div>
-                                                            <p
-                                                                className={`text-sm font-semibold ${need.isCheck == 1 ? `text-violet-900` : `text-gray-500`} transition-colors duration-200`}
-                                                            >
-                                                                {need.label}
-                                                            </p>
+                                                        {/* Icon & Label */}
+                                                        <div className="flex flex-1 items-center gap-3">
+                                                            <div className="rounded-lg bg-violet-100 p-2.5 transition-colors duration-200">
+                                                                <Icon
+                                                                    className={`h-5 w-5 ${need.isCheck == 1 ? `text-violet-900` : `text-gray-500`} transition-colors duration-200`}
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <p
+                                                                    className={`text-sm font-semibold ${need.isCheck == 1 ? `text-violet-900` : `text-gray-500`} transition-colors duration-200`}
+                                                                >
+                                                                    {need.label}
+                                                                </p>
+                                                            </div>
                                                         </div>
                                                     </div>
+
+                                                    {need.detail && <p className="mt-1.5 text-sm text-violet-600 italic">"{need.detail}"</p>}
                                                 </div>
                                             );
                                         })}
@@ -563,85 +518,6 @@ export default function BookingDetailsPage({ selectedBooking }: any) {
                                                             : actionType === 'approved'
                                                               ? 'Konfirmasi Setuju'
                                                               : 'Konfirmasi Tolak'}
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {/* Approve counts UI - always visible when makanan flags present */}
-                                        {(selectedBooking.is_makanan_ringan == 1 || selectedBooking.is_makanan_berat == 1) && (
-                                            <div className="space-y-3 rounded-lg border bg-gray-50 p-4">
-                                                <p className="font-medium text-gray-900">Setujui Jumlah Snack & Makan Siang</p>
-                                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                                    {selectedBooking.is_makanan_ringan == 1 && (
-                                                        <div className="flex items-center justify-between gap-3 rounded-md border p-3">
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="rounded-md bg-violet-50 p-2">
-                                                                    <Cookie className="h-5 w-5 text-violet-700" />
-                                                                </div>
-                                                                <div>
-                                                                    <p className="font-medium">Snack / Makanan Ringan</p>
-                                                                    <p className="text-xs text-gray-500">
-                                                                        Default: jumlah peserta ({selectedBooking.jumlah_peserta})
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-                                                            <div className="flex items-center gap-2">
-                                                                <input
-                                                                    type="number"
-                                                                    min={0}
-                                                                    max={Number(selectedBooking.jumlah_peserta) || undefined}
-                                                                    value={snackAccCount}
-                                                                    onChange={(e) => {
-                                                                        const max = Number(selectedBooking.jumlah_peserta) || undefined;
-                                                                        let v = Math.max(0, Number(e.target.value) || 0);
-                                                                        if (typeof max === 'number') v = Math.min(v, max);
-                                                                        setSnackAccCount(v);
-                                                                    }}
-                                                                    className="w-16 rounded-md border px-2 py-1 text-center text-sm"
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    )}
-
-                                                    {selectedBooking.is_makanan_berat == 1 && (
-                                                        <div className="flex items-center justify-between gap-3 rounded-md border p-3">
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="rounded-md bg-amber-50 p-2">
-                                                                    <Utensils className="h-5 w-5 text-amber-700" />
-                                                                </div>
-                                                                <div>
-                                                                    <p className="font-medium">Makan Siang</p>
-                                                                    <p className="text-xs text-gray-500">
-                                                                        Default: jumlah peserta ({selectedBooking.jumlah_peserta})
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-                                                            <div className="flex items-center gap-2">
-                                                                <input
-                                                                    type="number"
-                                                                    min={0}
-                                                                    max={Number(selectedBooking.jumlah_peserta) || undefined}
-                                                                    value={lunchAccCount}
-                                                                    onChange={(e) => {
-                                                                        const max = Number(selectedBooking.jumlah_peserta) || undefined;
-                                                                        let v = Math.max(0, Number(e.target.value) || 0);
-                                                                        if (typeof max === 'number') v = Math.min(v, max);
-                                                                        setLunchAccCount(v);
-                                                                    }}
-                                                                    className="w-16 rounded-md border px-2 py-1 text-center text-sm"
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="flex justify-end pt-3">
-                                                    <Button
-                                                        className="bg-green-600 hover:bg-green-700"
-                                                        onClick={() => handleSnacklunchApproved(selectedBooking.kode_booking)}
-                                                        disabled={isProcessing}
-                                                    >
-                                                        {isProcessing ? 'Memproses...' : 'Submit Jumlah'}
                                                     </Button>
                                                 </div>
                                             </div>

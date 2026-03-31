@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Calendar, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Download, PackageSearch, RotateCcw } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, FileDown, PackageSearch, RotateCcw } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { ItemCombobox } from '@/components/biroumum/item-combobox';
@@ -121,10 +121,10 @@ export default function ATKItemsManagement({ Persediaan }: any) {
 
                                     window.open(url, '_blank');
                                 }}
-                                className="gap-2 bg-white text-indigo-600 shadow-lg hover:bg-indigo-50"
+                                className="gap-2 bg-red-600 text-white shadow-lg hover:bg-red-700"
                             >
-                                <Download className="h-4 w-4" />
-                                Export data
+                                <FileDown className="h-4 w-4" />
+                                Unduh PDF
                             </Button>
                         </div>
                     </CardHeader>
@@ -232,7 +232,7 @@ export default function ATKItemsManagement({ Persediaan }: any) {
                                 <TableHeader className="bg-muted">
                                     <TableRow>
                                         <TableHead className="w-12">No</TableHead>
-                                        <TableHead>Jenis Barang</TableHead>
+                                        <TableHead>Jenis Barang ATK</TableHead>
                                         <TableHead>Kategori</TableHead>
                                         <TableHead className="w-24">Satuan</TableHead>
                                         <TableHead className="w-20 text-right">Jumlah</TableHead>
@@ -260,26 +260,33 @@ export default function ATKItemsManagement({ Persediaan }: any) {
                                                 >
                                                     {saldoValue}
                                                 </TableCell>
-                                                <TableCell className="text-right">
-                                                    <Badge
-                                                        onClick={() => {
-                                                            router.get(
-                                                                route('stockopname.detail_pemakaian'),
-                                                                {
-                                                                    kodeAtk: item.kode_atk,
-                                                                    bulan: selectedMonth,
-                                                                    tahun: selectedYear,
-                                                                },
-                                                                {
-                                                                    preserveState: true,
-                                                                    preserveScroll: true,
-                                                                },
-                                                            );
-                                                        }}
-                                                        className="cursor-pointer bg-blue-500 text-white transition select-none hover:bg-blue-600 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 focus-visible:outline-none active:bg-blue-700"
-                                                    >
-                                                        Detail Pemakaian
-                                                    </Badge>
+                                                <TableCell className="text-right align-middle">
+                                                    <div className="flex items-center justify-end space-x-3">
+                                                        <Badge
+                                                            onClick={() => {
+                                                                router.get(
+                                                                    route('stockopname.detail_pemakaian', item.kode_atk),
+                                                                    {
+                                                                        bulan: selectedMonth,
+                                                                        tahun: selectedYear,
+                                                                    },
+                                                                    {
+                                                                        preserveState: true,
+                                                                        preserveScroll: true,
+                                                                    },
+                                                                );
+                                                            }}
+                                                            className="cursor-pointer bg-blue-500 text-white transition select-none hover:bg-blue-600 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 focus-visible:outline-none active:bg-blue-700"
+                                                        >
+                                                            Detail Pemakaian
+                                                        </Badge>
+
+                                                        <Link href={route('stockopname.rincian_buku_persediaan', item.kode_atk)}>
+                                                            <Badge className="cursor-pointer bg-blue-500 text-white transition select-none hover:bg-blue-600 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 focus-visible:outline-none active:bg-blue-700">
+                                                                Rincian Buku Persediaan
+                                                            </Badge>
+                                                        </Link>
+                                                    </div>
                                                 </TableCell>
                                             </TableRow>
                                         );

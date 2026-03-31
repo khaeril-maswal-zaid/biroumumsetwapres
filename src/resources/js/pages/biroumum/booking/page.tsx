@@ -34,10 +34,10 @@ const schema = z
             .regex(/^08\d{8,12}$/, 'Nomor HP harus diawali 08 dan berisi 10–14 digit'),
 
         jenisRapat: z.string().nullable(),
-        makanSiang: z.boolean(),
-        makanRingan: z.boolean(),
         needItSupport: z.boolean(),
         isHybrid: z.boolean(),
+        itSupportDetail: z.string().optional(),
+        hybridDetail: z.string().optional(),
     })
     .refine((data) => data.endTime > data.startTime, {
         message: 'Jam selesai harus lebih besar dari jam mulai',
@@ -57,12 +57,11 @@ export default function RoomBooking() {
             jumlahPeserta: '',
             purpose: '',
             contact: '',
-
             jenisRapat: 'internal',
-            makanRingan: false,
-            makanSiang: false,
             needItSupport: false,
             isHybrid: false,
+            hybridDetail: '',
+            itSupportDetail: '',
         },
     });
 

@@ -8,8 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { type SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
-import { Building2, Calendar, CheckCircle2, Cookie, Monitor, Users, Utensils, Video } from 'lucide-react';
-import { useEffect } from 'react';
+import { Building2, Calendar, CheckCircle2, Monitor, Users, Video } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -31,10 +30,10 @@ const schema = z.object({
         .regex(/^08\d{8,12}$/, 'Nomor HP harus diawali 08 dan berisi 10–14 digit'),
 
     jenisRapat: z.string().nullable(),
-    makanSiang: z.boolean(),
-    makanRingan: z.boolean(),
     needItSupport: z.boolean(),
     isHybrid: z.boolean(),
+    itSupportDetail: z.string().optional(),
+    hybridDetail: z.string().optional(),
 });
 
 export type FormData = z.infer<typeof schema>;
@@ -52,20 +51,9 @@ export function FormBooking() {
 
     // Read values from RHF (single source of truth)
     const formData = watch();
-    const makanRingan = watch('makanRingan') ?? false;
-    const makanSiang = watch('makanSiang') ?? false;
     const isHybrid = watch('isHybrid') ?? false;
     const needItSupport = watch('needItSupport') ?? false;
     const jenisRapat = (watch('jenisRapat') as JenisRapat) ?? 'internal';
-
-    // Register fields only — DO NOT overwrite values coming from parent
-    useEffect(() => {
-        // register('needItSupport');
-        // register('isHybrid');
-        // register('jenisRapat');
-        register('room_code');
-        // register('room_name');
-    }, [register]);
 
     const today = new Date().toISOString().split('T')[0];
 
@@ -84,28 +72,20 @@ export function FormBooking() {
 
     const kebutuhanDanDukungan = [
         {
-            label: 'Membutuhkan Snack',
-            icon: Cookie,
-            value: makanRingan,
-            valueString: 'makanRingan',
-        },
-        {
-            label: 'Membutuhkan Makan Siang',
-            icon: Utensils,
-            value: makanSiang,
-            valueString: 'makanSiang',
-        },
-        {
             label: 'Rapat Hybrid',
             icon: Video,
             value: isHybrid,
             valueString: 'isHybrid',
+            detailField: 'hybridDetail',
+            detailPlaceholder: 'Contoh: Perlu Zoom + TV + Speaker',
         },
         {
             label: 'Dukungan IT',
             icon: Monitor,
             value: needItSupport,
             valueString: 'needItSupport',
+            detailField: 'itSupportDetail',
+            detailPlaceholder: 'Contoh: Setup projector, mic wireless',
         },
     ];
 
@@ -217,9 +197,7 @@ export function FormBooking() {
                                         }}
                                         className={cn(
                                             'relative rounded-xl border-2 p-2.5 text-left transition-all duration-200',
-                                            isSelected
-                                                ? 'border-sky-200 border-sky-500 bg-sky-50 bg-sky-100 ring-2 ring-sky-200 hover:border-sky-400'
-                                                : '',
+                                            isSelected ? 'border-sky-500 bg-sky-100 ring-2 ring-sky-200 hover:border-sky-400' : '',
                                         )}
                                     >
                                         {isSelected && (
@@ -269,35 +247,39 @@ export function FormBooking() {
                     const Icon = need.icon;
 
                     return (
-                        <button
-                            type="button"
-                            key={index}
-                            onClick={() => setValue(need.valueString, !need.value)}
-                            className={cn(
-                                'mb-2 flex w-full items-center gap-4 rounded-xl border-2 px-4 py-1.5 text-left transition-all duration-200',
-                                need.value
-                                    ? 'border-sky-400 bg-linear-to-r from-sky-50 to-purple-50 ring-2 ring-sky-200'
-                                    : 'border-gray-300 bg-gray-50 hover:border-sky-300 hover:bg-sky-50/50',
-                            )}
-                        >
-                            <div
+                        <div key={index} className="mb-2">
+                            <button
+                                type="button"
+                                onClick={() => setValue(need.valueString, !need.value)}
                                 className={cn(
-                                    'flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200',
-                                    need.value ? 'border-sky-600 bg-sky-600' : 'border-gray-300 bg-white',
+                                    'flex w-full items-center gap-4 rounded-xl border-2 px-4 py-1.5 text-left transition-all duration-200',
+                                    need.value
+                                        ? 'border-sky-400 bg-linear-to-r from-sky-50 to-purple-50 ring-2 ring-sky-200'
+                                        : 'border-gray-300 bg-gray-50 hover:border-sky-300 hover:bg-sky-50/50',
                                 )}
                             >
-                                {need.value && (
-                                    <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                    </svg>
-                                )}
-                            </div>
-
-                            <div className="flex flex-1 items-center gap-3">
-                                <div className={cn('rounded-lg p-2.5 transition-colors duration-200', need.value ? 'bg-sky-100' : 'bg-gray-100')}>
-                                    <Icon className={cn('h-5 w-5 transition-colors duration-200', need.value ? 'text-sky-600' : 'text-gray-400')} />
+                                {/* CHECK ICON */}
+                                <div
+                                    className={cn(
+                                        'flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200',
+                                        need.value ? 'border-sky-600 bg-sky-600' : 'border-gray-300 bg-white',
+                                    )}
+                                >
+                                    {need.value && (
+                                        <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    )}
                                 </div>
-                                <div>
+
+                                {/* LABEL + ICON */}
+                                <div className="flex flex-1 items-center gap-3">
+                                    <div className={cn('rounded-lg p-2.5 transition-colors duration-200', need.value ? 'bg-sky-100' : 'bg-gray-100')}>
+                                        <Icon
+                                            className={cn('h-5 w-5 transition-colors duration-200', need.value ? 'text-sky-600' : 'text-gray-400')}
+                                        />
+                                    </div>
+
                                     <p
                                         className={cn(
                                             'text-sm font-semibold transition-colors duration-200',
@@ -306,13 +288,21 @@ export function FormBooking() {
                                     >
                                         {need.label}
                                     </p>
-
-                                    {/* <p className="mt-0.5 text-xs text-gray-500">{need.description}</p> */}
                                 </div>
-                            </div>
 
-                            {need.value && <span className="rounded-full bg-sky-100 px-2.5 py-1 text-xs font-semibold text-sky-700">Aktif</span>}
-                        </button>
+                                {need.value && <span className="rounded-full bg-sky-100 px-2.5 py-1 text-xs font-semibold text-sky-700">Aktif</span>}
+                            </button>
+
+                            {/* EXPAND SECTION */}
+                            {need.value && (
+                                <Textarea
+                                    placeholder={`Catatan ${need.label} (Optional)`}
+                                    className="foc mt-2 mb-3 rounded-xl border border-sky-200 bg-sky-50/40 p-2 transition-all duration-200 duration-300 ease-in-out animate-in fade-in-50 slide-in-from-top-2 placeholder:text-xs placeholder:text-sky-300"
+                                    value={watch(need.detailField)}
+                                    onChange={(e) => setValue(need.detailField, e.target.value)}
+                                />
+                            )}
+                        </div>
                     );
                 })}
             </div>

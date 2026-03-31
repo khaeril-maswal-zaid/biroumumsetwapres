@@ -21,7 +21,7 @@ class AtkItemNormalizer
             approved: (int) ($item['approved'] ?? 0),
             status: self::defaultStatus($id, $item['status'] ?? null),
             originId: $item['origin_id'] ?? null,
-            replacedBy: isset($item['replacedBy']) ? (int) $item['replacedBy'] : null
+            replacedBy: $item['replacedBy'] ?? null
         );
     }
 
@@ -40,7 +40,8 @@ class AtkItemNormalizer
             requested: $requested,
             approved: $approved,
             status: 'replacement',
-            originId: $nr['originalItemId'] ?? null
+            // prefer an explicit originalItemName if provided, otherwise fallback to originalItemId
+            originId: $nr['originalItemName'] ?? $nr['originalItemId'] ?? null
         );
     }
 

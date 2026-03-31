@@ -32,8 +32,15 @@ export function NavMain({ items, itemsReport }: NavMainProps) {
     const { url: pathname } = usePage();
     const { permissions }: any = usePage().props.auth;
 
-    const visibleMainItems = items.filter((item) => !item.permission || permissions.includes(item.permission));
-    const visibleReportItems = itemsReport.filter((item) => !item.permission || permissions.includes(item.permission));
+    const visibleMainItems = items.filter(
+        (item) =>
+            (!item.permission || permissions.includes(item.permission)) && (!item.excludePermission || !permissions.includes(item.excludePermission)),
+    );
+
+    const visibleReportItems = itemsReport.filter(
+        (item) =>
+            (!item.permission || permissions.includes(item.permission)) && (!item.excludePermission || !permissions.includes(item.excludePermission)),
+    );
 
     const [isManagementOpen, setIsManagementOpen] = useState(visibleReportItems.some((item: any) => isPathActive(pathname, item.href)));
 
@@ -61,7 +68,7 @@ export function NavMain({ items, itemsReport }: NavMainProps) {
                     );
                 })}
 
-                {visibleReportItems.length > 0 && (
+                {permissions.includes('management_access') && visibleReportItems.length > 0 && (
                     <Collapsible open={isManagementOpen} onOpenChange={setIsManagementOpen}>
                         <CollapsibleTrigger asChild>
                             <Button
@@ -74,7 +81,7 @@ export function NavMain({ items, itemsReport }: NavMainProps) {
                                 )}
                             >
                                 <BarChart4 className="h-5 w-5" />
-                                Dashboard
+                                Laporan
                                 {isManagementOpen ? <ChevronDown className="ml-auto h-4 w-4" /> : <ChevronRight className="ml-auto h-4 w-4" />}
                             </Button>
                         </CollapsibleTrigger>

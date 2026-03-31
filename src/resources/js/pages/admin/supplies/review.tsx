@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { AlertCircle, ArrowLeft, Calendar, CheckCircle, MessageSquare, Package, User, X } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Calendar, CheckCircle, MessageSquare, Package, Printer, User, X } from 'lucide-react';
 import { useState } from 'react';
 ('use client');
 
@@ -319,6 +319,21 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                     </div>
                                 </div>
 
+                                {selectedRequest.status == 'confirmed' && (
+                                    <div className="flex justify-end">
+                                        <Button
+                                            variant="outline"
+                                            className="flex items-center gap-2 bg-red-600 text-white hover:bg-red-700 hover:text-white"
+                                            onClick={() => {
+                                                window.open(route('permintaanatk.tandaterima', selectedRequest.kode_pelaporan));
+                                            }}
+                                        >
+                                            <Printer className="h-4 w-4" />
+                                            Tanda terima
+                                        </Button>
+                                    </div>
+                                )}
+
                                 {/* Request Details */}
                                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                                     <div className="space-y-4">
@@ -435,7 +450,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                                 {selectedRequest.status == 'pending' && actionType == 'confirmed' && (
                                                                     <div className="flex items-center gap-2">
                                                                         <Label htmlFor={`qty-${item.id}`} className="text-sm whitespace-nowrap">
-                                                                            Setujui a:
+                                                                            Setujui:
                                                                         </Label>
                                                                         <Input
                                                                             id={`qty-${item.id}`}
@@ -570,6 +585,9 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                                                     </span>
                                                                                 </>
                                                                             )}
+
+                                                                            <span>•</span>
+                                                                            <span>Pengganti dari permintaan ATK: {item?.origin_id}</span>
                                                                         </div>
                                                                         {selectedRequest.status == 'pending' && actionType == 'confirmed' && (
                                                                             <div className="mt-2 flex items-center gap-4 text-sm">
@@ -601,7 +619,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                                     {selectedRequest.status == 'pending' && actionType == 'confirmed' && (
                                                                         <div className="flex items-center gap-2">
                                                                             <Label htmlFor={`qty-${item.id}`} className="text-sm whitespace-nowrap">
-                                                                                Setujui a:
+                                                                                Setujui:
                                                                             </Label>
                                                                             <Input
                                                                                 id={`qty-${item.id}`}
@@ -674,7 +692,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                     </>
                                 )}
 
-                                {customItems.length > 0 && (
+                                {customItems.length > 0 && selectedRequest.status === 'pending' && (
                                     <>
                                         <Separator />
                                         <h4 className="mt-6 mb-4 font-medium text-amber-900">Daftar Usulan ATK baru</h4>
@@ -683,17 +701,14 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                 const replacementSelectedId = itemReplacements[item.id];
 
                                                 const approvedQty = approvedQuantities[replacementSelectedId] || item.approved;
-                                                const statusForRe = getItemStatusForRe(item.requested, approvedQty);
+
                                                 const status = getItemStatus(item.requested, approvedQty);
                                                 const percentage = item.requested > 0 ? (approvedQty / item.requested) * 100 : 0;
 
-                                                const isPartialStatus = statusForRe == 'partial' && selectedRequest.status == 'partial';
-                                                const isExpanded = partialApprovals[item.id]?.isExpanded;
                                                 const additionalApprovals = partialApprovals[item.id]?.additionalApprovals || [];
                                                 const additionalApproved = additionalApprovals.reduce((sum: number, a: any) => sum + a.approved, 0);
 
                                                 const itemExists = daftarAtk.some((atk: any) => atk.id == item.id);
-                                                const shouldShowItemSelector = !itemExists && selectedRequest.status == 'pending';
 
                                                 const keyId = item.id || `custom-${index}`;
 
@@ -802,6 +817,8 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                                                     </span>
                                                                                 </>
                                                                             )}
+                                                                            <span>•</span>
+                                                                            <span>Digantikan oleh ATK: {item.replacedBy}</span>
                                                                         </div>
 
                                                                         {(selectedRequest.status == 'pending' ||
@@ -841,7 +858,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                                         item.status == 'custom' && (
                                                                             <div className="mt-2 flex items-center gap-2">
                                                                                 <Label htmlFor={`qty-${keyId}`} className="text-sm whitespace-nowrap">
-                                                                                    Setujui x:
+                                                                                    Setujui :
                                                                                 </Label>
 
                                                                                 {canApproveThisItem ? (
@@ -898,15 +915,15 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                         const colorMap: any = {
                                             confirmed: {
                                                 border: 'border-green-600',
-                                                bg: 'bg-green-400',
+                                                bg: 'bg-green-200',
                                                 icon: '',
                                                 title: '',
                                                 text: '',
                                             },
 
                                             rejected: {
-                                                border: 'border-red-300',
-                                                bg: 'bg-red-300',
+                                                border: 'border-red-600',
+                                                bg: 'bg-red-200',
                                                 icon: 'text-red-600',
                                                 title: 'text-red-900',
                                                 text: 'text-red-800',
@@ -938,7 +955,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                     })()}
 
                                 {/* Action Section */}
-                                {selectedRequest.status !== 'confirmed' && (
+                                {selectedRequest.status !== 'confirmed' && selectedRequest.status !== 'rejected' && (
                                     <>
                                         <Separator />
                                         <div className="space-y-4">

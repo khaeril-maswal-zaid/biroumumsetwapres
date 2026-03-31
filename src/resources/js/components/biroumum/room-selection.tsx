@@ -23,6 +23,7 @@ interface Room {
     lokasi: string;
     status: 'available' | 'booked';
     bookedSlots?: string[];
+    bookedByBiro?: string[];
     image: string;
     facilities: string[];
 }
@@ -297,11 +298,13 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
 
                                                             {hasConflict && room.bookedSlots && room.bookedSlots.length > 0 && (
                                                                 <div className="rounded-lg border border-red-200 bg-red-50 p-3">
-                                                                    <div className="flex items-center gap-2 text-sm text-red-800">
-                                                                        <X className="h-4 w-4" />
-                                                                        <span className="font-medium">Ruang rapat sedang digunakan:</span>
+                                                                    <div className="flex items-start gap-2 text-sm text-red-800">
+                                                                        <X className="my-auto h-4 w-4 shrink-0" />
+                                                                        <p className="font-medium">
+                                                                            Ruang rapat sedang digunakan pada {room.bookedSlots.join(', ')} oleh{' '}
+                                                                            {room.bookedByBiro?.join(', ')}
+                                                                        </p>
                                                                     </div>
-                                                                    <div className="mt-1 text-xs text-red-600">{room.bookedSlots.join(', ')}</div>
                                                                 </div>
                                                             )}
                                                         </div>

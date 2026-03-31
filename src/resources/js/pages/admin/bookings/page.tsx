@@ -70,7 +70,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                             </div>
                             <div className="flex items-center space-x-2">
                                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                    <SelectTrigger className="w-[180px]">
+                                    <SelectTrigger className="w-45">
                                         <SelectValue placeholder="Filter Status" />
                                     </SelectTrigger>
                                     <SelectContent>

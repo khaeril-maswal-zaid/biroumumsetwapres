@@ -8,6 +8,7 @@ use App\Http\Requests\UpdatePermintaanAtkRequest;
 use App\Http\Requests\UpdatePermintaanAtkStatusRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Notification;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\PermintaanAtk;
 use App\Services\PermintaanAtkStatusService;
 use App\Services\StockOpnameService;
@@ -23,23 +24,23 @@ class PermintaanAtkController extends Controller
      */
     public function index(): Response
     {
-        $permintaanAtk = PermintaanAtk::with('pemesan.pegawai')->latest()->paginate(50);
+        // $permintaanAtk = PermintaanAtk::with('pemesan.pegawai')->latest()->paginate(50);
 
-        // Tambahkan stock ke daftar_kebutuhan
-        $permintaanAtk->getCollection()->transform(function ($permintaan) {
-            if ($permintaan->daftar_kebutuhan) {
-                $permintaan->daftar_kebutuhan = collect($permintaan->daftar_kebutuhan)->map(function ($item) {
-                    $daftarAtk = DaftarAtk::find($item['id']);
-                    $item['stock'] = $daftarAtk ? $daftarAtk->quantity : 0;
-                    return $item;
-                })->toArray();
-            }
-            return $permintaan;
-        });
+        // // Tambahkan stock ke daftar_kebutuhan
+        // $permintaanAtk->getCollection()->transform(function ($permintaan) {
+        //     if ($permintaan->daftar_kebutuhan) {
+        //         $permintaan->daftar_kebutuhan = collect($permintaan->daftar_kebutuhan)->map(function ($item) {
+        //             $daftarAtk = DaftarAtk::find($item['id']);
+        //             $item['stock'] = $daftarAtk ? $daftarAtk->quantity : 0;
+        //             return $item;
+        //         })->toArray();
+        //     }
+        //     return $permintaan;
+        // });
 
 
         $data = [
-            'permintaanAtk' =>  PermintaanAtk::with('pemesan.pegawai')->latest()->paginate(50),
+            'permintaanAtk' =>  PermintaanAtk::with('pemesan.pegawai')->latest()->paginate(150),
         ];
 
         return Inertia::render('admin/supplies/page', $data);
@@ -209,19 +210,16 @@ class PermintaanAtkController extends Controller
     }
 
 
-
-    public function reports()
+    public function reports(PermintaanAtk $permintaanAtk)
     {
-        $reportsData = new PermintaanAtk();
-
         $data = [
-            'summaryData' => $reportsData->summaryData(),
-            'itemComparison' => $reportsData->itemComparison(),
-            'monthlyTrend' => $reportsData->monthlyTrends(),
-            'topUsers' => $reportsData->topUsersStats(),
-            'divisionStats' => $reportsData->divisionStats(),
-            'statusDistribution' => $reportsData->statusDistribution(),
-            'urgencyData' => $reportsData->urgencyData(),
+            'summaryData' => $permintaanAtk->summaryData(),
+            'itemComparison' => $permintaanAtk->itemComparison(),
+            'monthlyTrend' => $permintaanAtk->monthlyTrends(),
+            'topUsers' => $permintaanAtk->topUsersStats(),
+            'divisionStats' => $permintaanAtk->divisionStats(),
+            'statusDistribution' => $permintaanAtk->statusDistribution(),
+            'urgencyData' => $permintaanAtk->urgencyData(),
         ];
 
         return Inertia::render('admin/reportssupplies/page', $data);
@@ -239,5 +237,25 @@ class PermintaanAtkController extends Controller
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $filename . '"'
         ]);
+    }
+
+    public function tandaTerima(PermintaanAtk $permintaanAtk)
+    {
+        $items = collect($permintaanAtk->daftar_kebutuhan)
+            ->where('approved', '>', 0)
+            ->values()
+            ->all();
+
+        $data = [
+            'penerima' => $permintaanAtk->load('pemesan.pegawai')->pemesan->pegawai->name ?? '____________________',
+            'tanggal' => now()->format('d-m-Y'),
+            'items' => $items
+        ];
+
+        $pdf = Pdf::loadView('pdf.tanda-terima-atk', $data)
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->stream();
+        return $pdf->download("buku-persediaan-{$bulan}-{$tahun}.pdf");
     }
 }

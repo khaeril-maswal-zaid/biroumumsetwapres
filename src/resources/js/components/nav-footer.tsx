@@ -4,7 +4,6 @@ import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 
 import { type ComponentPropsWithoutRef } from 'react';
-
 export function NavFooter({
     items,
     className,
@@ -14,6 +13,11 @@ export function NavFooter({
 }) {
     const { url } = usePage();
     const { permissions }: any = usePage().props.auth;
+
+    if (!permissions.includes('management_access')) {
+        return null;
+    }
+
     return (
         <SidebarGroup {...props} className={`group-data-[collapsible=icon]:p-0 ${className || ''}`}>
             <SidebarGroupContent>

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\DaftarAtk;
 use App\Models\Notification;
 use App\Models\PemesananRuangRapat;
 use App\Models\PermintaanAtk;
@@ -17,6 +18,8 @@ class NotificationService
         'damage' => ['view_damages'],
     ];
 
+    //Mengirim notifikasi pengingat untuk penggunaan ruang rapat pada H-1 dan hari H sesuai jadwal pemesanan
+    //kategori: 2
     public function sendRoomReminders(): int
     {
         $now = Carbon::now();
@@ -50,6 +53,7 @@ class NotificationService
         return $count;
     }
 
+    //kategori: 2
     protected function buildRoomReminderPayload(PemesananRuangRapat $booking, string $when): array
     {
         $title = sprintf("Pengingat Jadwal Rapat — %s", $booking->kode_booking);
@@ -77,11 +81,8 @@ class NotificationService
         ];
     }
 
-    /**
-     * Pending overdue notifications: permintaan_atks, kerusakan_gedungs, pemesanan_ruang_rapats
-     * Criteria: status = 'pending' AND created_at <= now()->subDays(2)
-     * Send every day until status changes (we just insert one notification per run).
-     */
+    //Mengirim notifikasi overdue untuk permintaan yang belum ditindaklanjuti selama 2 hari atau lebih sejak diajukan dan masih berstatus pending
+    //kategori: 3
     public function sendPendingOverdueNotifications(): int
     {
         $limitDate = Carbon::now()->subDays(2);
@@ -120,6 +121,7 @@ class NotificationService
         return $count;
     }
 
+    //kategori: 3
     protected function buildAtkOverduePayload(PermintaanAtk $item): array
     {
         $title = "Permintaan ATK Belum Ditindaklanjuti";
@@ -142,6 +144,7 @@ class NotificationService
         ];
     }
 
+    //kategori: 3
     protected function buildDamageOverduePayload(KerusakanGedung $d): array
     {
         $title = "Laporan Kerusakan Belum Ditindaklanjuti";
@@ -165,6 +168,7 @@ class NotificationService
         ];
     }
 
+    //kategori: 3
     protected function buildBookingOverduePayload(PemesananRuangRapat $b): array
     {
         $title = "Pemesanan Ruang Belum Ditindaklanjuti";
@@ -186,5 +190,34 @@ class NotificationService
             'action_url' => route('ruangrapat.show', $b, false),
             'is_read' => false,
         ];
+    }
+
+    //kategori: 4
+    public function sendLowStockNotifications(): int
+    {
+        $atkItems = DaftarAtk::where('quantity', '<', 'available_stock')->get();
+        $count = 0;
+        foreach ($atkItems as $item) {
+            $title = "Stok ATK Menipis";
+            $message = sprintf(
+                "Stok ATK (%s) saat ini %d, sudah mencapai atau di bawah threshold (%d). Silakan lakukan pengadaan.",
+                $item->nama_barang,
+                $item->stok,
+                $item->threshold
+            );
+            Notification::create([
+                'kode_unit' => $item->kode_unit,
+                'permissions' => $this->permissionMap['supplies'],
+                'type' => 'low_stock',
+                'category' => 'supplies',
+                'title' => $title,
+                'message' => $message,
+                'priority' => 'medium',
+                'action_url' => route('daftaratk.show', $item, false),
+                'is_read' => false,
+            ]);
+            $count++;
+        }
+        return $count;
     }
 }

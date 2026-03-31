@@ -8,7 +8,7 @@ class MasterPegawai extends Model
 {
     protected $fillable = [
         'nip',
-        'nama',
+        'name',
         'kode_instansi',
         'kode_unit',
         'kode_deputi',

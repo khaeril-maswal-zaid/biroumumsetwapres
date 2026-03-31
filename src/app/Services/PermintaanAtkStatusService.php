@@ -49,8 +49,13 @@ class PermintaanAtkStatusService
         foreach ($newRequests as $nr) {
             $originId = (string) ($nr['originalItemId'] ?? null);
 
+            // determine origin name (if original id points to an existing item)
+            $originName = null;
             if ($originId && isset($existingItems[$originId])) {
-                $existingItems[$originId]->markReplaced((int) $nr['id']);
+                $originName = $existingItems[$originId]->name;
+
+                // mark the original item as replaced using the replacement's name
+                $existingItems[$originId]->markReplaced($nr['name'] ?? (string) $nr['id']);
             }
 
             $newItem = AtkItemNormalizer::fromArray([
@@ -60,7 +65,8 @@ class PermintaanAtkStatusService
                 'requested' => (int) $nr['requested'],
                 'approved'  => (int) $nr['approved'],
                 'status'    => 'replacement',
-                'origin_id' => $originId,
+                // store origin as name instead of ATK id
+                'origin_id' => $originName,
             ]);
 
             $existingItems->put((string) $newItem->id, $newItem);

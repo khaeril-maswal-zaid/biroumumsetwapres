@@ -6,8 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Edit, Package, Search, Trash2, X } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Edit, Package, Search, X } from 'lucide-react';
 
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
@@ -71,10 +72,11 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
+    const [minStockFilter, setMinStockFilter] = useState('all');
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [editingId, setEditingId] = useState('');
-    const [editData, setEditData] = useState({ name: '', category: '', satuan: '' });
+    const [editData, setEditData] = useState({ name: '', category: '', satuan: '', available_stock: 0 });
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
 
@@ -86,8 +88,9 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
         const matchesSearch =
             item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.category.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
+        const matchesMinStock = minStockFilter === 'all' || (item.available_stock > 0 && item.quantity < item.available_stock);
 
-        return matchesSearch && matchesCategory;
+        return matchesSearch && matchesCategory && matchesMinStock;
     });
 
     const handleEdit = (item: any) => {
@@ -96,6 +99,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
             name: item.name,
             category: item.category,
             satuan: item.satuan,
+            available_stock: item.available_stock,
         });
     };
 
@@ -107,7 +111,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                     description: 'ATK berhasil diedit',
                 });
                 setEditingId('ATK ');
-                setEditData({ name: '', category: '', satuan: '' });
+                setEditData({ name: '', category: '', satuan: '', available_stock: 0 });
             },
             onError: (error) => {
                 toast({
@@ -121,13 +125,13 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
 
     const handleCancelEdit = () => {
         setEditingId('');
-        setEditData({ name: '', category: '', satuan: '' });
+        setEditData({ name: '', category: '', satuan: '', available_stock: 0 });
     };
 
-    const handleDelete = (item: any) => {
-        setSelectedItem(item);
-        setIsDeleteOpen(true);
-    };
+    // const handleDelete = (item: any) => {
+    //     setSelectedItem(item);
+    //     setIsDeleteOpen(true);
+    // };
 
     const handleDeleteConfirm = () => {
         router.delete(route('daftaratk.destroy', selectedItem?.id), {
@@ -229,7 +233,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                             </div>
                             <div className="flex items-center space-x-2">
                                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                                    <SelectTrigger className="w-[150px]">
+                                    <SelectTrigger className="w-37.5">
                                         <SelectValue placeholder="Kategori" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -241,6 +245,17 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                         ))}
                                     </SelectContent>
                                 </Select>
+
+                                <div className="flex items-center space-x-2">
+                                    <Switch
+                                        id="min-stock-switch"
+                                        checked={minStockFilter === 'min'}
+                                        onCheckedChange={(checked: boolean) => setMinStockFilter(checked ? 'min' : 'all')}
+                                    />
+                                    <label htmlFor="min-stock-switch" className="text-sm text-muted-foreground">
+                                        Hanya Minimum Stock
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
@@ -249,10 +264,11 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>No</TableHead>
-                                        <TableHead>Nama ATK</TableHead>
+                                        <TableHead>Jenis Barang ATK</TableHead>
                                         <TableHead>Kategori</TableHead>
                                         <TableHead>Satuan</TableHead>
-                                        <TableHead>Stok</TableHead>
+                                        <TableHead>Saldo</TableHead>
+                                        <TableHead>Minimum Stock</TableHead>
                                         <TableHead className="text-right">Aksi</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -326,7 +342,29 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                                     )}
                                                 </TableCell>
                                                 <TableCell>
-                                                    <span className="text-sm font-medium">{item.quantity}</span>
+                                                    <span
+                                                        className={`text-sm font-medium ${
+                                                            item.quantity < item.available_stock ? 'text-red-500' : ''
+                                                        }`}
+                                                    >
+                                                        {item.quantity}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell>
+                                                    {editingId === item.id ? (
+                                                        <Input
+                                                            value={editData.available_stock}
+                                                            onChange={(e) =>
+                                                                setEditData({ ...editData, available_stock: parseInt(e.target.value) || 0 })
+                                                            }
+                                                            className="w-full"
+                                                            autoFocus
+                                                        />
+                                                    ) : (
+                                                        <span className="text-sm font-medium">
+                                                            {item.available_stock == 0 ? '-' : item.available_stock}
+                                                        </span>
+                                                    )}
                                                 </TableCell>
                                                 <TableCell className="text-right">
                                                     {editingId === item.id ? (
@@ -343,14 +381,14 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                                             <Button variant="ghost" size="sm" onClick={() => handleEdit(item)}>
                                                                 <Edit className="h-4 w-4" />
                                                             </Button>
-                                                            <Button
+                                                            {/* <Button
                                                                 variant="ghost"
                                                                 size="sm"
                                                                 onClick={() => handleDelete(item)}
                                                                 className="text-red-600 hover:text-red-700"
                                                             >
                                                                 <Trash2 className="h-4 w-4" />
-                                                            </Button>
+                                                            </Button> */}
                                                         </div>
                                                     )}
                                                 </TableCell>
@@ -369,7 +407,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                     <div className="flex items-center gap-2">
                                         <span className="text-sm text-muted-foreground">Tampilkan</span>
                                         <Select value={String(itemsPerPage)} onValueChange={handleItemsPerPageChange}>
-                                            <SelectTrigger className="h-8 w-[70px]">
+                                            <SelectTrigger className="h-8 w-17.5">
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>

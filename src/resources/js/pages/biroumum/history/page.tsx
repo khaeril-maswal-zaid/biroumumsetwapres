@@ -18,7 +18,6 @@ import {
     Car,
     CheckCircle,
     Clock,
-    Cookie,
     ImageIcon,
     MapPin,
     MessageSquare,
@@ -27,7 +26,6 @@ import {
     Presentation,
     Search,
     User,
-    Utensils,
     Video,
     Wrench,
     XCircle,
@@ -128,30 +126,22 @@ export default function RequestHistory({ requestHistory }: any) {
 
     const kebutuhanDanDukungan = [
         {
-            label: 'Snack/ Makanan Ringan',
-            icon: Cookie,
-            isCheck: selectedRequest?.is_makanan_ringan,
-        },
-        {
-            label: 'Makan Siang',
-            icon: Utensils,
-            isCheck: selectedRequest?.is_makanan_berat,
-        },
-        {
             label: 'Rapat Hybrid',
             icon: Video,
             isCheck: selectedRequest?.is_hybrid,
+            detail: selectedRequest?.hybrid_detail,
         },
         {
             label: 'Dukungan IT',
             icon: Monitor,
             isCheck: selectedRequest?.is_ti_support,
+            detail: selectedRequest?.ti_support_detail,
         },
     ];
 
     return (
         <>
-            <Head title="Laporan Kerusakan Gedung" />
+            <Head title="Laporan Kerusakan Sarpras" />
             <div className="mx-auto min-h-screen w-full max-w-md bg-gray-50">
                 <div className="pb-20">
                     <div className="space-y-6 p-4">
@@ -195,10 +185,14 @@ export default function RequestHistory({ requestHistory }: any) {
                                                     <div className="min-w-0 flex-1">
                                                         <div className="mb-1 flex items-center gap-2">
                                                             <span className="font-mono text-xs text-gray-500">{request.code}</span>
-                                                            <Badge variant="outline" className="text-xs">
-                                                                {request.type}
-                                                            </Badge>
+                                                            <span className="text-xs text-gray-600">|</span>
+                                                            <span className="text-xs text-gray-600">{formatDate(request.created_at)}</span>
                                                         </div>
+
+                                                        <Badge variant="outline" className="mb-2 text-xs">
+                                                            {request.type}
+                                                        </Badge>
+
                                                         <h3 className="truncate font-semibold text-gray-900">{request.title}</h3>
                                                         <p className="line-clamp-1 text-sm text-gray-600">{request?.info}</p>
                                                     </div>
@@ -239,7 +233,7 @@ export default function RequestHistory({ requestHistory }: any) {
 
                                 {selectedRequest &&
                                     selectedRequest.id === 'damage' &&
-                                    'Detail laporan kerusakan gedung yang Anda sampaikan, termasuk status tindak lanjut oleh petugas.'}
+                                    'Detail laporan kerusakan sarpras yang Anda sampaikan, termasuk status tindak lanjut oleh petugas.'}
 
                                 {selectedRequest &&
                                     selectedRequest.id === 'vehicle' &&
@@ -354,43 +348,47 @@ export default function RequestHistory({ requestHistory }: any) {
 
                                                     return (
                                                         <div
-                                                            className="flex w-full items-center gap-4 rounded-xl bg-linear-to-r from-violet-50 to-purple-50 px-4 py-2.5 text-left transition-all duration-200"
                                                             key={index}
+                                                            className="w-full gap-4 rounded-xl bg-linear-to-r from-violet-50 to-purple-50 px-4 py-3 text-left transition-all duration-200"
                                                         >
-                                                            {/* Custom Checkbox */}
-                                                            {need.isCheck == 1 ? (
-                                                                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-violet-600 bg-violet-600 transition-all duration-200">
-                                                                    <svg
-                                                                        className="h-4 w-4 text-white"
-                                                                        fill="none"
-                                                                        viewBox="0 0 24 24"
-                                                                        stroke="currentColor"
-                                                                        strokeWidth={3}
-                                                                    >
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                                                    </svg>
-                                                                </div>
-                                                            ) : (
-                                                                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white transition-all duration-200">
-                                                                    <XCircle className="h-6 w-6 text-red-500" />
-                                                                </div>
-                                                            )}
+                                                            <div className="flex w-full items-center gap-4">
+                                                                {/* Custom Checkbox */}
+                                                                {need.isCheck == 1 ? (
+                                                                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 border-violet-600 bg-violet-600 transition-all duration-200">
+                                                                        <svg
+                                                                            className="h-4 w-4 text-white"
+                                                                            fill="none"
+                                                                            viewBox="0 0 24 24"
+                                                                            stroke="currentColor"
+                                                                            strokeWidth={3}
+                                                                        >
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                                        </svg>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white transition-all duration-200">
+                                                                        <XCircle className="h-6 w-6 text-red-500" />
+                                                                    </div>
+                                                                )}
 
-                                                            {/* Icon & Label */}
-                                                            <div className="flex flex-1 items-center gap-3">
-                                                                <div className="rounded-lg bg-violet-100 p-2.5 transition-colors duration-200">
-                                                                    <Icon
-                                                                        className={`h-5 w-5 ${need.isCheck == 1 ? `text-violet-900` : `text-gray-500`} transition-colors duration-200`}
-                                                                    />
-                                                                </div>
-                                                                <div>
-                                                                    <p
-                                                                        className={`text-sm font-semibold ${need.isCheck == 1 ? `text-violet-900` : `text-gray-500`} transition-colors duration-200`}
-                                                                    >
-                                                                        {need.label}
-                                                                    </p>
+                                                                {/* Icon & Label */}
+                                                                <div className="flex flex-1 items-center gap-3">
+                                                                    <div className="rounded-lg bg-violet-100 p-2.5 transition-colors duration-200">
+                                                                        <Icon
+                                                                            className={`h-5 w-5 ${need.isCheck == 1 ? `text-violet-900` : `text-gray-500`} transition-colors duration-200`}
+                                                                        />
+                                                                    </div>
+                                                                    <div>
+                                                                        <p
+                                                                            className={`text-sm font-semibold ${need.isCheck == 1 ? `text-violet-900` : `text-gray-500`} transition-colors duration-200`}
+                                                                        >
+                                                                            {need.label}
+                                                                        </p>
+                                                                    </div>
                                                                 </div>
                                                             </div>
+
+                                                            {need.detail && <p className="mt-1.5 text-sm text-violet-600 italic">"{need.detail}"</p>}
                                                         </div>
                                                     );
                                                 })}
@@ -426,93 +424,257 @@ export default function RequestHistory({ requestHistory }: any) {
                                     </div>
                                 </div>
 
-                                {selectedRequest.id === 'supplies' && (
-                                    <>
-                                        <p className="mb-3 font-medium text-gray-900">Daftar Barang yang Diminta</p>
-                                        <div className="space-y-3">
-                                            {selectedRequest.daftarkebutuhan.map((item: any, index: number) => (
-                                                <div key={index} className="rounded-lg border bg-gray-50 p-4">
-                                                    <div className="mb-3 flex items-center gap-3">
-                                                        <Package className="h-4 w-4 text-gray-500" />
-                                                        <span className="flex-1 text-sm font-medium">{item.name}</span>
-                                                    </div>
+                                {selectedRequest.id === 'supplies' &&
+                                    (() => {
+                                        const isItemCustom = (it: any) => it?.status == 'custom';
+                                        const customItems =
+                                            selectedRequest?.daftarkebutuhan?.filter((it: any) => isItemCustom(it) || it?.status == 'replaced') || [];
+                                        const normalItems = selectedRequest?.daftarkebutuhan?.filter((it: any) => it?.status == 'normal') || [];
+                                        const replacementItems =
+                                            selectedRequest?.daftarkebutuhan?.filter((it: any) => it?.status == 'replacement') || [];
 
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                        <div className="text-center">
-                                                            <p className="mb-1 text-xs text-gray-500">Diminta</p>
-                                                            <Badge variant="outline" className="border-blue-200 bg-blue-50 font-medium text-blue-700">
-                                                                {item.requested} {item.satuan}
-                                                            </Badge>
-                                                        </div>
-
-                                                        <div className="text-center">
-                                                            <p className="mb-1 text-xs text-gray-500">Disetujui</p>
-                                                            <Badge
-                                                                variant="outline"
-                                                                className={`font-medium ${
-                                                                    item.approved
-                                                                        ? item.approved == item.requested
-                                                                            ? 'border-green-200 bg-green-50 text-green-700'
-                                                                            : 'border-yellow-200 bg-yellow-50 text-yellow-700'
-                                                                        : 'border-red-200 bg-red-50 text-red-500'
-                                                                }`}
-                                                            >
-                                                                {item.approved} {item.satuan}
-                                                                {/* {item.approved ? `${item.approved} ${item.satuan}` : 'Belum diproses'} */}
-                                                            </Badge>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Status indicator */}
-                                                    {selectedRequest.status !== 'pending' && (
-                                                        <div className="mt-2 border-t border-gray-200 pt-2">
-                                                            <div className="flex items-center justify-center gap-1">
-                                                                {item.approved == item.requested ? (
-                                                                    <>
-                                                                        <CheckCircle className="h-3 w-3 text-green-600" />
-                                                                        <span className="text-xs text-green-600">Disetujui penuh</span>
-                                                                    </>
-                                                                ) : item.approved > 0 ? (
-                                                                    <>
-                                                                        <AlertCircle className="h-3 w-3 text-yellow-600" />
-                                                                        <span className="text-xs text-yellow-600">Disetujui sebagian</span>
-                                                                    </>
-                                                                ) : (
-                                                                    <>
-                                                                        <AlertTriangle className="h-3 w-3 text-red-600" />
-                                                                        <span className="text-xs text-red-600">Tidak disetujui/ Belum terpenuhi</span>
-                                                                    </>
-                                                                )}
+                                        return (
+                                            <>
+                                                <p className="mb-3 font-medium text-gray-900">Daftar Item yang Diminta</p>
+                                                <div className="space-y-3">
+                                                    {normalItems.map((item: any, index: number) => (
+                                                        <div key={index} className="rounded-lg border bg-gray-50 p-4">
+                                                            <div className="mb-3 flex items-center gap-3">
+                                                                <Package className="h-4 w-4 text-gray-500" />
+                                                                <span className="flex-1 text-sm font-medium">{item.name}</span>
                                                             </div>
+
+                                                            <div className="grid grid-cols-2 gap-4">
+                                                                <div className="text-center">
+                                                                    <p className="mb-1 text-xs text-gray-500">Diminta</p>
+                                                                    <Badge
+                                                                        variant="outline"
+                                                                        className="border-blue-200 bg-blue-50 font-medium text-blue-700"
+                                                                    >
+                                                                        {item.requested} {item.satuan}
+                                                                    </Badge>
+                                                                </div>
+
+                                                                <div className="text-center">
+                                                                    <p className="mb-1 text-xs text-gray-500">Disetujui</p>
+                                                                    <Badge
+                                                                        variant="outline"
+                                                                        className={`font-medium ${
+                                                                            item.approved
+                                                                                ? item.approved == item.requested
+                                                                                    ? 'border-green-200 bg-green-50 text-green-700'
+                                                                                    : 'border-yellow-200 bg-yellow-50 text-yellow-700'
+                                                                                : 'border-red-200 bg-red-50 text-red-500'
+                                                                        }`}
+                                                                    >
+                                                                        {item.approved} {item.satuan}
+                                                                        {/* {item.approved ? `${item.approved} ${item.satuan}` : 'Belum diproses'} */}
+                                                                    </Badge>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Status indicator */}
+                                                            {selectedRequest.status !== 'pending' && (
+                                                                <div className="mt-2 border-t border-gray-200 pt-2">
+                                                                    <div className="flex items-center justify-center gap-1">
+                                                                        {item.approved == item.requested ? (
+                                                                            <>
+                                                                                <CheckCircle className="h-3 w-3 text-green-600" />
+                                                                                <span className="text-xs text-green-600">Disetujui penuh</span>
+                                                                            </>
+                                                                        ) : item.approved > 0 ? (
+                                                                            <>
+                                                                                <AlertCircle className="h-3 w-3 text-yellow-600" />
+                                                                                <span className="text-xs text-yellow-600">Disetujui sebagian</span>
+                                                                            </>
+                                                                        ) : (
+                                                                            <>
+                                                                                <AlertTriangle className="h-3 w-3 text-red-600" />
+                                                                                <span className="text-xs text-red-600">
+                                                                                    Tidak disetujui/ Belum terpenuhi
+                                                                                </span>
+                                                                            </>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                    )}
+                                                    ))}
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </>
-                                )}
+
+                                                {customItems.length > 0 && selectedRequest.status === 'pending' && (
+                                                    <>
+                                                        <Separator />
+
+                                                        <p className="mb-3 font-medium text-gray-900">Daftar Usulan ATK baru</p>
+                                                        <div className="space-y-3">
+                                                            {customItems.map((item: any, index: number) => (
+                                                                <div key={index} className="rounded-lg border bg-gray-50 p-4">
+                                                                    <div className="mb-3 flex items-center gap-3">
+                                                                        <Package className="h-4 w-4 text-gray-500" />
+                                                                        <span className="flex-1 text-sm font-medium">{item.name}</span>
+                                                                    </div>
+
+                                                                    <div className="grid grid-cols-2 gap-4">
+                                                                        <div className="text-center">
+                                                                            <p className="mb-1 text-xs text-gray-500">Diminta</p>
+                                                                            <Badge
+                                                                                variant="outline"
+                                                                                className="border-blue-200 bg-blue-50 font-medium text-blue-700"
+                                                                            >
+                                                                                {item.requested} {item.satuan}
+                                                                            </Badge>
+                                                                        </div>
+
+                                                                        <div className="text-center">
+                                                                            <p className="mb-1 text-xs text-gray-500">Disetujui</p>
+                                                                            <Badge
+                                                                                variant="outline"
+                                                                                className={`font-medium ${
+                                                                                    item.approved
+                                                                                        ? item.approved == item.requested
+                                                                                            ? 'border-green-200 bg-green-50 text-green-700'
+                                                                                            : 'border-yellow-200 bg-yellow-50 text-yellow-700'
+                                                                                        : 'border-red-200 bg-red-50 text-red-500'
+                                                                                }`}
+                                                                            >
+                                                                                {item.approved} {item.satuan}
+                                                                            </Badge>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </>
+                                                )}
+
+                                                {replacementItems.length > 0 && (
+                                                    <>
+                                                        <Separator />
+
+                                                        <p className="mb-3 font-medium text-gray-900">Daftar ATK pengganti dari usulan ATK baru</p>
+                                                        <div className="space-y-3">
+                                                            {replacementItems.map((item: any, index: number) => (
+                                                                <div key={index} className="rounded-lg border bg-gray-50 p-4">
+                                                                    <div className="mb-3 flex items-center gap-3">
+                                                                        <Package className="h-4 w-4 text-gray-500" />
+                                                                        <span className="flex-1 text-sm font-medium">{item.name}</span>
+                                                                    </div>
+
+                                                                    <div className="grid grid-cols-3 gap-4">
+                                                                        <div className="text-center">
+                                                                            <p className="mb-1 text-xs text-gray-500">Diminta</p>
+                                                                            <Badge
+                                                                                variant="outline"
+                                                                                className="border-blue-200 bg-blue-50 font-medium text-blue-700"
+                                                                            >
+                                                                                {item.requested} {item.satuan}
+                                                                            </Badge>
+                                                                        </div>
+
+                                                                        <div className="text-center">
+                                                                            <p className="mb-1 text-xs text-gray-500">Disetujui</p>
+                                                                            <Badge
+                                                                                variant="outline"
+                                                                                className={`font-medium ${
+                                                                                    item.approved
+                                                                                        ? item.approved == item.requested
+                                                                                            ? 'border-green-200 bg-green-50 text-green-700'
+                                                                                            : 'border-yellow-200 bg-yellow-50 text-yellow-700'
+                                                                                        : 'border-red-200 bg-red-50 text-red-500'
+                                                                                }`}
+                                                                            >
+                                                                                {item.approved} {item.satuan}
+                                                                                {/* {item.approved ? `${item.approved} ${item.satuan}` : 'Belum diproses'} */}
+                                                                            </Badge>
+                                                                        </div>
+
+                                                                        <div className="text-center">
+                                                                            <p className="mb-1 text-xs text-gray-500">
+                                                                                Pengganti dari permintaan ATK
+                                                                            </p>
+                                                                            <Badge
+                                                                                variant="outline"
+                                                                                className="border-blue-200 bg-blue-50 font-medium text-blue-700"
+                                                                            >
+                                                                                {item.origin_id ?? 'Tidak diketahui'}
+                                                                            </Badge>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* Status indicator */}
+                                                                    {selectedRequest.status !== 'pending' && (
+                                                                        <div className="mt-2 border-t border-gray-200 pt-2">
+                                                                            <div className="flex items-center justify-center gap-1">
+                                                                                {item.approved == item.requested ? (
+                                                                                    <>
+                                                                                        <CheckCircle className="h-3 w-3 text-green-600" />
+                                                                                        <span className="text-xs text-green-600">
+                                                                                            Disetujui penuh
+                                                                                        </span>
+                                                                                    </>
+                                                                                ) : item.approved > 0 ? (
+                                                                                    <>
+                                                                                        <AlertCircle className="h-3 w-3 text-yellow-600" />
+                                                                                        <span className="text-xs text-yellow-600">
+                                                                                            Disetujui sebagian
+                                                                                        </span>
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <>
+                                                                                        <AlertTriangle className="h-3 w-3 text-red-600" />
+                                                                                        <span className="text-xs text-red-600">
+                                                                                            Tidak disetujui/ Belum terpenuhi
+                                                                                        </span>
+                                                                                    </>
+                                                                                )}
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </>
+                                        );
+                                    })()}
 
                                 {/* Photos Section */}
                                 {selectedRequest.id === 'damage' && selectedRequest.picture.length > 0 && (
                                     <div>
                                         <p className="mb-3 font-medium text-gray-900">Foto Kerusakan ({selectedRequest.picture.length})</p>
                                         <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-                                            {selectedRequest.picture.map((photo: string, index: number) => (
-                                                <div
-                                                    key={index}
-                                                    className="relative aspect-video cursor-pointer overflow-hidden rounded-lg border transition-colors hover:border-blue-300"
-                                                    onClick={() => handleViewImage(photo)}
-                                                >
-                                                    <img
-                                                        src={`/storage/${photo}` || '/placeholder.svg'}
-                                                        alt={`Foto kerusakan ${index + 1}`}
-                                                        className="object-cover"
-                                                    />
-                                                    <div className="bg-opacity-0 hover:bg-opacity-10 absolute inset-0 flex items-center justify-center transition-all">
-                                                        <ImageIcon className="h-6 w-6 text-white opacity-0 transition-opacity hover:opacity-100" />
+                                            {selectedRequest.picture.map((media: string, index: number) => {
+                                                const isVideo = media.includes('video/');
+
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        className="relative aspect-video cursor-pointer overflow-hidden rounded-lg border transition-colors hover:border-blue-300"
+                                                        onClick={() => handleViewImage(media)}
+                                                    >
+                                                        {isVideo ? (
+                                                            <video
+                                                                src={`/storage/${media}`}
+                                                                className="h-full w-full object-cover"
+                                                                muted
+                                                                preload="metadata"
+                                                            />
+                                                        ) : (
+                                                            <img
+                                                                src={`/storage/${media}?height=300&width=400&query=damage report media ${index + 1}`}
+                                                                alt={`Media kerusakan ${index + 1}`}
+                                                                className="h-full w-full object-cover"
+                                                            />
+                                                        )}
+
+                                                        <div className="bg-opacity-0 hover:bg-opacity-10 absolute inset-0 flex items-center justify-center transition-all">
+                                                            <ImageIcon className="h-6 w-6 text-white opacity-0 transition-opacity hover:opacity-100" />
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 )}
@@ -618,15 +780,23 @@ export default function RequestHistory({ requestHistory }: any) {
                             <DialogTitle>Foto Kerusakan</DialogTitle>
                         </DialogHeader>
 
-                        {selectedImage && (
-                            <div className="relative flex items-center justify-center bg-black/5 p-4">
-                                <img
-                                    src={selectedImage ? `/storage/${selectedImage}` : '/placeholder.svg'}
-                                    alt="Foto kerusakan"
-                                    className="max-h-[70vh] w-auto rounded-md object-contain"
+                        <div className="flex items-center justify-center bg-black/5 p-4">
+                            {selectedImage && selectedImage.includes('video/') ? (
+                                <video
+                                    src={`/storage/${selectedImage}`}
+                                    className="max-h-[70vh] w-full rounded-md object-contain"
+                                    muted
+                                    preload="metadata"
+                                    controls
                                 />
-                            </div>
-                        )}
+                            ) : (
+                                <img
+                                    src={`/storage/${selectedImage}`}
+                                    alt="Media kerusakan"
+                                    className="max-h-[70vh] w-full rounded-md object-contain"
+                                />
+                            )}
+                        </div>
 
                         <DialogFooter className="p-4 pt-2">
                             <Button variant="outline" onClick={() => setIsImageViewerOpen(false)}>

@@ -30,7 +30,7 @@ export function BottomNavigation() {
                         <span className="text-xs">History</span>
                     </Button>
                 </Link>
-                <Link href={route('user.create')}>
+                <Link href={route('user.show')}>
                     <Button
                         variant="ghost"
                         size="sm"

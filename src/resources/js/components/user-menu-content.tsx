@@ -24,21 +24,21 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
                     <UserInfo user={user} showEmail={true} />
                 </div>
             </DropdownMenuLabel>
-            {/* <DropdownMenuSeparator /> */}
-            {/* <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
-                    <Link
-                        className="block w-full"
-                        // href={route('profile.edit')}
-                        as="button"
-                        prefetch
-                        onClick={cleanup}
-                    >
-                        <Settings className="mr-2" />
-                        Settings
-                    </Link>
-                </DropdownMenuItem>
-            </DropdownMenuGroup> */}
+
+            {/* {user.email == 'it@set.wapresri.go.id' && (
+                <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                        <DropdownMenuItem asChild>
+                            <Link className="block w-full" href={route('developeronly.page')} as="button" prefetch onClick={cleanup}>
+                                <Settings className="mr-2" />
+                                Settings
+                            </Link>
+                        </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                </>
+            )} */}
+
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
                 <Link className="block w-full" method="post" href={route('logout')} as="button" onClick={handleLogout}>

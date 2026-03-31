@@ -30,10 +30,10 @@ class StorePemesananRuangRapatRequest extends FormRequest
             'jumlahPeserta'     => 'required|string|max:255',
             'contact'     => 'required|string|max:15',
             'jenisRapat'  => 'string|in:internal,external',
-            'makanRingan' => 'boolean',
-            'makanSiang' => 'boolean',
             'needItSupport' => 'boolean',
+            'itSupportDetail' => 'string|max:255|nullable',
             'isHybrid'  => 'boolean',
+            'hybridDetail' => 'string|max:255|nullable',
         ];
     }
 
@@ -54,10 +54,10 @@ class StorePemesananRuangRapatRequest extends FormRequest
             'contact.required'      => 'Nomor kontak wajib diisi.',
             'contact.max'           => 'Nomor kontak maksimal 15 karakter.',
             'jenisRapat.in'         => 'Jenis rapat harus berupa internal atau external.',
-            'makanRingan.boolean'   => 'Kebutuhan Snack harus berupa nilai boolean.',
-            'makanSiang.boolean'   => 'Kebutuhan Makan Siang harus berupa nilai boolean.',
             'needItSupport.boolean' => 'Dukungan TI harus berupa nilai boolean.',
             'isHybrid.boolean'      => 'Is Hybrid harus berupa nilai boolean.',
+            'itSupportDetail.max' => 'Detail Dukungan TI maksimal 255 karakter.',
+            'hybridDetail.max' => 'Detail Hybrid maksimal 255 karakter.',
         ];
     }
 }

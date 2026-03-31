@@ -65,6 +65,8 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'message'  => fn() => $request->session()->get('message'),
                 'availableRoom' => fn() => $request->session()->get('availableRoom'),
+                'error' => fn() => $request->session()->get('error'),
+                'success' => fn() => $request->session()->get('success'),
             ],
 
             'kategoriAtk' => DaftarAtk::select('category')->distinct()->pluck('category'),

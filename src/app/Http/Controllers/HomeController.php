@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DaftarRuangan;
 use App\Models\KerusakanGedung;
 use App\Models\Notification;
 use App\Models\PemesananRuangRapat;
 use App\Models\PermintaanAtk;
-use Illuminate\Http\Request;
+use App\Models\User;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,10 +45,10 @@ class HomeController extends Controller
                 'no_hp'             => $r->no_hp,
                 'deskripsi'         => $r->deskripsi,
                 'jenis_rapat'       => $r->jenis_rapat,
-                'is_makanan_berat'  => $r->is_makanan_berat,
-                'is_makanan_ringan'  => $r->is_makanan_ringan,
                 'is_ti_support'     => $r->is_ti_support,
                 'is_hybrid'         => $r->is_hybrid,
+                'ti_support_detail' => $r->ti_support_detail,
+                'hybrid_detail'     => $r->hybrid_detail,
                 'picture'           => null,
                 'keterangan'        => $r->keterangan,
                 'time' => substr($r->jam_mulai, 0, 5) . ' - ' . substr($r->jam_selesai, 0, 5),
@@ -81,11 +81,11 @@ class HomeController extends Controller
                 'keterangan'         => $k->keterangan,
                 'time'               => null,
                 'kategori'           => $k->kategori,
-                'is_makanan_berat'     => null,
-                'is_makanan_ringan'     => null,
                 'is_ti_support'     => null,
                 'is_hybrid'         => null,
                 'jenis_rapat'         => null,
+                'ti_support_detail' => null,
+                'hybrid_detail'     => null,
             ]);
 
         // Ambil data permintaan ATK + relasi pemesan
@@ -114,11 +114,11 @@ class HomeController extends Controller
                 'keterangan'         => $a->keterangan,
                 'time'               => null,
                 'kategori'           => null,
-                'is_makanan_ringan'     => null,
-                'is_ti_support'     => null,
                 'is_ti_support'     => null,
                 'is_hybrid'         => null,
                 'jenis_rapat'         => null,
+                'ti_support_detail' => null,
+                'hybrid_detail'     => null,
             ]);
 
         // Gabungkan semuanya, urutkan, batasi 10
@@ -126,7 +126,6 @@ class HomeController extends Controller
 
     public function index()
     {
-
         $requestHistory = $this->queryRapat
             ->concat($this->queryKerusakan)
             ->concat($this->queryAtk)
@@ -137,102 +136,150 @@ class HomeController extends Controller
         return Inertia::render('biroumum/home', compact('requestHistory'));
     }
 
-    public function admin()
+    public function admin(PemesananRuangRapat $pemesananRuangRapat, KerusakanGedung $kerusakanGedung, PermintaanAtk $permintaanAtk)
     {
-        $homeData = new PemesananRuangRapat();
+        $user = Auth::user();
+        if ($user->can("management_access")) {
 
-        $today = Carbon::today();
+            $today = Carbon::today();
 
-        $dashboardStats = [
-            'roomBookings' => [
-                'title' => 'Pemesanan Ruangan',
-                'icon' => 'room',
-                'total' => PemesananRuangRapat::count(),
-                'pending' => PemesananRuangRapat::where('status', 'pending')->count(),
-                'todayBookings' => PemesananRuangRapat::whereDate('tanggal_penggunaan', $today)->count(),
-            ],
-            'damageReports' => [
-                'title' => 'Laporan Kerusakan',
-                'icon' => 'damage',
-                'total' => KerusakanGedung::count(),
-                'pending' => KerusakanGedung::where('status', 'pending')->count(),
-                'todayBookings' => KerusakanGedung::whereDate('created_at', $today)->count(),
-            ],
-            'suppliesRequests' => [
-                'title' => 'Permintaan ATK',
-                'icon' => 'supplies',
-                'total' => PermintaanAtk::count(),
-                'pending' => PermintaanAtk::where('status', 'pending')->count(),
-                'todayBookings' => PermintaanAtk::whereDate('created_at', $today)->count(),
-            ],
-        ];
+            $dashboardStats = [
+                'roomBookings' => [
+                    'title' => 'Pemesanan Ruangan',
+                    'icon' => 'room',
+                    'total' => PemesananRuangRapat::count(),
+                    'pending' => PemesananRuangRapat::where('status', 'pending')->count(),
+                    'todayBookings' => PemesananRuangRapat::whereDate('tanggal_penggunaan', $today)->count(),
+                ],
+                'damageReports' => [
+                    'title' => 'Laporan Kerusakan',
+                    'icon' => 'damage',
+                    'total' => KerusakanGedung::count(),
+                    'pending' => KerusakanGedung::where('status', 'pending')->count(),
+                    'todayBookings' => KerusakanGedung::whereDate('created_at', $today)->count(),
+                ],
+                'suppliesRequests' => [
+                    'title' => 'Permintaan ATK',
+                    'icon' => 'supplies',
+                    'total' => PermintaanAtk::count(),
+                    'pending' => PermintaanAtk::where('status', 'pending')->count(),
+                    'todayBookings' => PermintaanAtk::whereDate('created_at', $today)->count(),
+                ],
+            ];
 
-        $roomActivities = PemesananRuangRapat::with(['pemesan', 'ruangans'])
-            ->latest()
-            ->take(15)
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'type' => 'room',
-                    'isRead' => $item->is_read,
-                    'title' => 'Permintaan ' . ($item->ruangans->nama_ruangan ?? '-'),
-                    'user' => ($item->pemesan->pegawai->name ?? '-') . ' - ' . ($item->pemesan->pegawai->biro->nama_biro ?? '-'),
-                    'time' => $item->created_at->diffForHumans(),
-                    'status' => $item->status,
-                    'created_at' => $item->created_at,
-                ];
-            });
+            $roomActivities = PemesananRuangRapat::with(['pemesan', 'ruangans'])
+                ->latest()
+                ->take(15)
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'type' => 'room',
+                        'isRead' => $item->is_read,
+                        'title' => 'Permintaan ' . ($item->ruangans->nama_ruangan ?? '-'),
+                        'user' => ($item->pemesan->pegawai->name ?? '-') . ' - ' . ($item->pemesan->pegawai->biro->nama_biro ?? '-'),
+                        'time' => $item->created_at->diffForHumans(),
+                        'status' => $item->status,
+                        'created_at' => $item->created_at,
+                    ];
+                });
 
-        $damageActivities = KerusakanGedung::with('pelapor')
-            ->latest()
-            ->take(15)
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'type' => 'damage',
-                    'isRead' => $item->is_read,
-                    'title' => 'Kerusakan ' . $item->item . ' di ' . $item->lokasi,
-                    'user' => ($item->pelapor->pegawai->name ?? '-') . ' - ' . ($item->pelapor->pegawai->biro->nama_biro ?? '-'),
-                    'time' => $item->created_at->diffForHumans(),
-                    'status' => $item->status,
-                    'created_at' => $item->created_at,
-                ];
-            });
+            $damageActivities = KerusakanGedung::with('pelapor')
+                ->latest()
+                ->take(15)
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'type' => 'damage',
+                        'isRead' => $item->is_read,
+                        'title' => 'Kerusakan ' . $item->item . ' di ' . $item->lokasi,
+                        'user' => ($item->pelapor->pegawai->name ?? '-') . ' - ' . ($item->pelapor->pegawai->biro->nama_biro ?? '-'),
+                        'time' => $item->created_at->diffForHumans(),
+                        'status' => $item->status,
+                        'created_at' => $item->created_at,
+                    ];
+                });
 
-        $suppliesActivities = PermintaanAtk::with('pemesan')
-            ->latest()
-            ->take(15)
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'type' => 'supplies',
-                    'isRead' => $item->is_read,
-                    'title' => 'Permintaan ATK - ' . count($item->daftar_kebutuhan) . ' item',
-                    'user' => ($item->pemesan->pegawai->name ?? '-') . ' - ' . ($item->pemesan->pegawai->biro->nama_biro ?? '-'),
-                    'time' => $item->created_at->diffForHumans(),
-                    'status' => $item->status,
-                    'created_at' => $item->created_at,
-                ];
-            });
+            $suppliesActivities = PermintaanAtk::with('pemesan')
+                ->latest()
+                ->take(15)
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'type' => 'supplies',
+                        'isRead' => $item->is_read,
+                        'title' => 'Permintaan ATK - ' . count($item->daftar_kebutuhan) . ' item',
+                        'user' => ($item->pemesan->pegawai->name ?? '-') . ' - ' . ($item->pemesan->pegawai->biro->nama_biro ?? '-'),
+                        'time' => $item->created_at->diffForHumans(),
+                        'status' => $item->status,
+                        'created_at' => $item->created_at,
+                    ];
+                });
 
-        $recentActivities = collect()
-            ->merge($roomActivities)
-            ->merge($damageActivities)
-            ->merge($suppliesActivities)
-            ->sortByDesc('created_at')
-            ->take(6) // Ambil hanya 6 data terbaru
-            ->values();
+            $recentActivities = collect()
+                ->merge($roomActivities)
+                ->merge($damageActivities)
+                ->merge($suppliesActivities)
+                ->sortByDesc('created_at')
+                ->take(6) // Ambil hanya 6 data terbaru
+                ->values();
+
+            $data = [
+                'dashboardStats' => $dashboardStats,
+                'recentActivities' => $recentActivities,
+                'upcomingBookings' => $pemesananRuangRapat->upcomingBookings(),
+            ];
+        } else if ($user->can("change_booking_status")) {
+            $roomSchedules = $pemesananRuangRapat
+                ->where('status', 'booked')
+                ->with(['pemesan.pegawai.biro', 'ruangans'])
+                ->get();
+
+            $data = [
+                'summaryData'        => $pemesananRuangRapat->summaryData(),
+                'peakHours'          => $pemesananRuangRapat->peakHours(),
+                'weeklyPattern'      => $pemesananRuangRapat->weeklyPattern(),
+                'monthlyTrend'       => $pemesananRuangRapat->monthlyTrend(),
+                'topUsers'           => $pemesananRuangRapat->topUsers(),
+                'divisionUsage'      => $pemesananRuangRapat->divisionUsage(),
+                'penggunaanRuangan'  => $pemesananRuangRapat->penggunaanRuangan(),
+                'statusDistribution' => $pemesananRuangRapat->statusDistribution(),
+                'weeklySchedule'     => $pemesananRuangRapat->weeklySchedule(),
+                'rooms'              => DaftarRuangan::select('nama_ruangan')->get(),
+                'roomSchedules' =>  $roomSchedules
+            ];
+        } else if ($user->can("change_supplies_status")) {
+
+            $data = [
+                'summaryData' => $permintaanAtk->summaryData(),
+                'itemComparison' => $permintaanAtk->itemComparison(),
+                'monthlyTrend' => $permintaanAtk->monthlyTrends(),
+                'topUsers' => $permintaanAtk->topUsersStats(),
+                'divisionStats' => $permintaanAtk->divisionStats(),
+                'statusDistribution' => $permintaanAtk->statusDistribution(),
+                'urgencyData' => $permintaanAtk->urgencyData(),
+            ];
+        } else if ($user->can("change_damage_status")) {
+            $data = [
+                'summaryData' =>  $kerusakanGedung->summaryData(),
+                'locationData' =>  $kerusakanGedung->locationData(),
+                'statusDistribution' =>  $kerusakanGedung->statusDistribution(),
+                'damageTypeData' =>  $kerusakanGedung->damageTypeData(),
+                'urgencyData' =>  $kerusakanGedung->urgencyData(),
+                'topReportersData' =>  $kerusakanGedung->reporterStats()['topReportersData'],
+                'divisionReports' =>  $kerusakanGedung->reporterStats()['divisionReports'],
+                'monthlyTrend' => $kerusakanGedung->monthlyTrends(),
+            ];
+        }
+
+
+
 
 
         // Jika pakai inertia
-        return Inertia::render('admin/home', [
-            'dashboardStats' => $dashboardStats,
-            'recentActivities' => $recentActivities,
-            'upcomingBookings' => $homeData->upcomingBookings(),
-        ]);
+        return Inertia::render('admin/home', $data);
     }
 
     public function history()
@@ -241,7 +288,7 @@ class HomeController extends Controller
             ->concat($this->queryKerusakan)
             ->concat($this->queryAtk)
             ->sortByDesc('created_at')
-            ->take(7)
+            ->take(150)
             ->values();
 
         return Inertia::render('biroumum/history/page', compact('requestHistory'));
@@ -250,10 +297,6 @@ class HomeController extends Controller
     public function isReadNotfif(Notification $notification)
     {
         $notification->delete();
-
-        // $notification->update([
-        //     'is_read' => true,
-        // ]);
     }
 
     public function isReadAllNotfif()

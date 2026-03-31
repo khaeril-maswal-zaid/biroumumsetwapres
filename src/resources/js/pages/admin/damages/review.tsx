@@ -202,7 +202,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Detal Laporan Kerusakan Gedung" />
+            <Head title="Detal Laporan Kerusakan Sarpras" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
                 <Link href={route('kerusakangedung.index')}>
                     <Button

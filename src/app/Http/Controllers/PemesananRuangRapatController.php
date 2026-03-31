@@ -23,7 +23,7 @@ class PemesananRuangRapatController extends Controller
     public function index()
     {
         $data = [
-            'bookingRooms' => PemesananRuangRapat::with('ruangans')->with('pemesan.pegawai')->latest()->paginate(50)
+            'bookingRooms' => PemesananRuangRapat::with('ruangans')->with('pemesan.pegawai')->latest()->paginate(150)
         ];
 
         return Inertia::render('admin/bookings/page', $data);
@@ -51,6 +51,7 @@ class PemesananRuangRapatController extends Controller
         // Cek apakah ruangan tersedia
         $isConflict = PemesananRuangRapat::where('daftar_ruangan_id', $room->id)
             ->where('tanggal_penggunaan', $request['date'])
+            ->where('status', 'booked')
             ->where(function ($q) use ($request) {
                 $q->whereBetween('jam_mulai', [$request['startTime'], $request['endTime']])
                     ->orWhereBetween('jam_selesai', [$request['startTime'], $request['endTime']])
@@ -78,10 +79,10 @@ class PemesananRuangRapatController extends Controller
             'no_hp' => $request->contact,
             'kode_booking' => 'RRT-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
             'status' => 'booked',
-            'is_makanan_ringan' => $request->makanRingan,
-            'is_makanan_berat' => $request->makanSiang,
             'is_hybrid' => $request->isHybrid,
             'is_ti_support' => $request->needItSupport,
+            'ti_support_detail' => $request->needItSupport ? $request->itSupportDetail : null,
+            'hybrid_detail' => $request->isHybrid ? $request->hybridDetail : null,
         ]);
 
         $pegawai = $permintaan->pemesan->pegawai;
@@ -175,50 +176,46 @@ class PemesananRuangRapatController extends Controller
         //
     }
 
-    public function snacklunchApproved(PemesananRuangRapat $pemesananRuangRapat, Request $request)
+    public function reports(PemesananRuangRapat $pemesananRuangRapat)
     {
-        $validated = $request->validate(
-            [
-                'snack_approved_count'  => 'required',
-                'lunch_approved_count' => 'required',
-            ]
-        );
-
-
-        $pemesananRuangRapat->update([
-            'aproved_makanan_berat' => $validated['lunch_approved_count'],
-            'aproved_makanan_ringan' => $validated['snack_approved_count'],
-        ]);
-    }
-
-    public function reports()
-    {
-        $reportsData = new PemesananRuangRapat();
-
-        $startOfWeek = Carbon::now()->startOfWeek(); // Senin 00:00
-        $endOfWeek = Carbon::now()->endOfWeek();     // Minggu 23:59:59
-
-        $roomSchedules = $reportsData
+        $roomSchedules = $pemesananRuangRapat
             ->where('status', 'booked')
-            // ->whereNotBetween('tanggal_penggunaan', [$startOfWeek, $endOfWeek]) //kalau mau tidak pakai data pekan ini
             ->with(['pemesan.pegawai.biro', 'ruangans'])
             ->get();
 
-
         // Kirim ke Inertia
         return Inertia::render('admin/reportsbooking/page', [
-            'summaryData'        => $reportsData->summaryData(),
-            'peakHours'          => $reportsData->peakHours(),
-            'weeklyPattern'      => $reportsData->weeklyPattern(),
-            'monthlyTrend'       => $reportsData->monthlyTrend(),
-            'topUsers'           => $reportsData->topUsers(),
-            'divisionUsage'      => $reportsData->divisionUsage(),
-            'penggunaanRuangan'  => $reportsData->penggunaanRuangan(),
-            'statusDistribution' => $reportsData->statusDistribution(),
-            'weeklySchedule'     => $reportsData->weeklySchedule(),
+            'summaryData'        => $pemesananRuangRapat->summaryData(),
+            'peakHours'          => $pemesananRuangRapat->peakHours(),
+            'weeklyPattern'      => $pemesananRuangRapat->weeklyPattern(),
+            'monthlyTrend'       => $pemesananRuangRapat->monthlyTrend(),
+            'topUsers'           => $pemesananRuangRapat->topUsers(),
+            'divisionUsage'      => $pemesananRuangRapat->divisionUsage(),
+            'penggunaanRuangan'  => $pemesananRuangRapat->penggunaanRuangan(),
+            'statusDistribution' => $pemesananRuangRapat->statusDistribution(),
+            'weeklySchedule'     => $pemesananRuangRapat->weeklySchedule(),
             'rooms'              => DaftarRuangan::select('nama_ruangan')->get(),
             'roomSchedules' =>  $roomSchedules
         ]);
+    }
+
+    public function status(PemesananRuangRapat $pemesananRuangRapat, Request $request)
+    {
+
+        $validated = $request->validate([
+            'action' => 'required|in:rejected',
+            'message' => 'required_if:action,rejected|string|max:255',
+        ]);
+
+        $updateData = collect([
+            'status' => $validated['action'],
+        ]);
+
+        if (isset($validated['message'])) {
+            $updateData->put('keterangan', $validated['message']);
+        }
+
+        $pemesananRuangRapat->update($updateData->all());
     }
 
     public function getAvailableRooms(Request $request)

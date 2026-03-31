@@ -31,7 +31,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Ranking Skor</title>
+    <title>OPNAME FISIK BARANG PERSEDIAAN</title>
     <style>
         body {
             font-family: sans-serif;

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('category', 250);
             $table->string('satuan', 250);
             $table->integer('quantity')->default(0);
+            $table->integer('available_stock')->default(0);
             $table->timestamps();
         });
     }

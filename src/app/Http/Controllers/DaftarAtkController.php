@@ -25,6 +25,7 @@ class DaftarAtkController extends Controller
             'name' => 'required|string|max:250',
             'category' => 'required|string|max:250',
             'satuan' => 'required|string|max:250',
+            'available_stock' => 'required|integer|min:0',
         ]);
 
         $daftarAtk->update($validated);
@@ -36,6 +37,7 @@ class DaftarAtkController extends Controller
             'name' => 'required|string|max:250',
             'category' => 'required|string|max:250',
             'satuan' => 'required|string|max:250',
+            'available_stock' => 'required|integer|min:0',
         ]);
 
         $validated['kode_unit'] = Auth::user()->pegawai?->unit?->kode_unit;
@@ -45,6 +47,7 @@ class DaftarAtkController extends Controller
             'category' => $validated['category'],
             'satuan' => $validated['satuan'],
             'kode_unit' => $validated['kode_unit'] ?? null,
+            'available_stock' => $validated['available_stock'],
         ]);
     }
 
