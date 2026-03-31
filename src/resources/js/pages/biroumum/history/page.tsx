@@ -502,51 +502,53 @@ export default function RequestHistory({ requestHistory }: any) {
                                                     ))}
                                                 </div>
 
-                                                {customItems.length > 0 && selectedRequest.status === 'pending' && (
-                                                    <>
-                                                        <Separator />
+                                                {customItems.length > 0 &&
+                                                    selectedRequest.status !== 'rejected' &&
+                                                    selectedRequest.status !== 'confirmed' && (
+                                                        <>
+                                                            <Separator />
 
-                                                        <p className="mb-3 font-medium text-gray-900">Daftar Usulan ATK baru</p>
-                                                        <div className="space-y-3">
-                                                            {customItems.map((item: any, index: number) => (
-                                                                <div key={index} className="rounded-lg border bg-gray-50 p-4">
-                                                                    <div className="mb-3 flex items-center gap-3">
-                                                                        <Package className="h-4 w-4 text-gray-500" />
-                                                                        <span className="flex-1 text-sm font-medium">{item.name}</span>
-                                                                    </div>
-
-                                                                    <div className="grid grid-cols-2 gap-4">
-                                                                        <div className="text-center">
-                                                                            <p className="mb-1 text-xs text-gray-500">Diminta</p>
-                                                                            <Badge
-                                                                                variant="outline"
-                                                                                className="border-blue-200 bg-blue-50 font-medium text-blue-700"
-                                                                            >
-                                                                                {item.requested} {item.satuan}
-                                                                            </Badge>
+                                                            <p className="mb-3 font-medium text-gray-900">Daftar Usulan ATK baru</p>
+                                                            <div className="space-y-3">
+                                                                {customItems.map((item: any, index: number) => (
+                                                                    <div key={index} className="rounded-lg border bg-gray-50 p-4">
+                                                                        <div className="mb-3 flex items-center gap-3">
+                                                                            <Package className="h-4 w-4 text-gray-500" />
+                                                                            <span className="flex-1 text-sm font-medium">{item.name}</span>
                                                                         </div>
 
-                                                                        <div className="text-center">
-                                                                            <p className="mb-1 text-xs text-gray-500">Disetujui</p>
-                                                                            <Badge
-                                                                                variant="outline"
-                                                                                className={`font-medium ${
-                                                                                    item.approved
-                                                                                        ? item.approved == item.requested
-                                                                                            ? 'border-green-200 bg-green-50 text-green-700'
-                                                                                            : 'border-yellow-200 bg-yellow-50 text-yellow-700'
-                                                                                        : 'border-red-200 bg-red-50 text-red-500'
-                                                                                }`}
-                                                                            >
-                                                                                {item.approved} {item.satuan}
-                                                                            </Badge>
+                                                                        <div className="grid grid-cols-2 gap-4">
+                                                                            <div className="text-center">
+                                                                                <p className="mb-1 text-xs text-gray-500">Diminta</p>
+                                                                                <Badge
+                                                                                    variant="outline"
+                                                                                    className="border-blue-200 bg-blue-50 font-medium text-blue-700"
+                                                                                >
+                                                                                    {item.requested} {item.satuan}
+                                                                                </Badge>
+                                                                            </div>
+
+                                                                            <div className="text-center">
+                                                                                <p className="mb-1 text-xs text-gray-500">Disetujui</p>
+                                                                                <Badge
+                                                                                    variant="outline"
+                                                                                    className={`font-medium ${
+                                                                                        item.approved
+                                                                                            ? item.approved == item.requested
+                                                                                                ? 'border-green-200 bg-green-50 text-green-700'
+                                                                                                : 'border-yellow-200 bg-yellow-50 text-yellow-700'
+                                                                                            : 'border-red-200 bg-red-50 text-red-500'
+                                                                                    }`}
+                                                                                >
+                                                                                    {item.approved} {item.satuan}
+                                                                                </Badge>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </>
-                                                )}
+                                                                ))}
+                                                            </div>
+                                                        </>
+                                                    )}
 
                                                 {replacementItems.length > 0 && (
                                                     <>
