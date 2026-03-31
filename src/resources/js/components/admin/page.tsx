@@ -104,7 +104,7 @@ export default function DamageReports({
                         <Card className="gap-0">
                             <CardHeader>
                                 <CardTitle>Tren Permintaan Bulanan</CardTitle>
-                                <CardDescription>Perkembangan jumlah permintaan ATK dalam 6 bulan terakhir</CardDescription>
+                                <CardDescription>Perkembangan jumlah laporan sarpras dalam 6 bulan terakhir</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <div className="h-[300px]">

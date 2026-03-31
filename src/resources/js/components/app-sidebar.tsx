@@ -23,6 +23,12 @@ import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
     {
+        title: 'Home',
+        href: route('home'),
+        icon: Home,
+        permission: 'view_homepage',
+    },
+    {
         title: 'Dashboard',
         href: route('dashboard'),
         icon: LayoutDashboard,
@@ -72,12 +78,6 @@ const mainNavItems: NavItem[] = [
         href: '#', // Ganti nanti dengan route('permintaankendaraan.index') jika aktif
         icon: CarFront,
         permission: 'view_vehicle_requests',
-    },
-    {
-        title: 'Home Aplikasi',
-        href: route('home'),
-        icon: Home,
-        permission: 'view_homepage',
     },
 ];
 
