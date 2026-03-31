@@ -17,7 +17,7 @@ class LogProsesFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            // isi
         ];
     }
 }
