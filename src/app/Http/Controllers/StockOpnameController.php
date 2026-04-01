@@ -136,10 +136,16 @@ class StockOpnameController extends Controller
         $type = $request->route('type');
 
         $bulan   = $request->bulan;
-        $tahun   = $request->tahun;
+        $tahun   = $request->tahun ?? now()->format('Y');
 
-        $start = Carbon::create($tahun, $bulan)->startOfMonth();
-        $end   = Carbon::create($tahun, $bulan)->endOfMonth();
+        // Jika bulan tidak dikirim, ambil seluruh tahun dari param `tahun`
+        if ($bulan) {
+            $start = Carbon::create($tahun, $bulan)->startOfMonth();
+            $end   = Carbon::create($tahun, $bulan)->endOfMonth();
+        } else {
+            $start = Carbon::create($tahun)->startOfYear();
+            $end   = Carbon::create($tahun)->endOfYear();
+        }
 
         $stockOpname = StockOpname::query()
             ->where('type', 'Pemakaian')
@@ -245,12 +251,17 @@ class StockOpnameController extends Controller
     public function rincianBukuPersediaan(Request $request, DaftarAtk $daftarAtk)
     {
         $type = $request->route('type');
-        $bulan = $request->bulan ?? now()->format('m');
+        $bulan = $request->bulan;
         $tahun = $request->tahun ?? now()->format('Y');
 
-        // Tentukan range tanggal
-        $start = Carbon::create($tahun, $bulan)->startOfMonth();
-        $end = Carbon::create($tahun, $bulan)->endOfMonth();
+        // Jika bulan tidak dikirim, ambil seluruh tahun dari param `tahun`
+        if ($bulan) {
+            $start = Carbon::create($tahun, $bulan)->startOfMonth();
+            $end = Carbon::create($tahun, $bulan)->endOfMonth();
+        } else {
+            $start = Carbon::create($tahun)->startOfYear();
+            $end = Carbon::create($tahun)->endOfYear();
+        }
 
         // Hitung saldo awal (sebelum periode)
         $perolehanBeforeQty = StockOpname::query()
