@@ -42,15 +42,6 @@ export default function Dashboard({ requestHistory }: any) {
                         {/* Help Desk Card */}
                         <HelpDeskCard />
 
-                        {/* Layanan Biro Umum */}
-                        <ServiceMenu />
-
-                        {/* Aktivitas */}
-                        <ActivityList activities={requestHistory} />
-
-                        {/* Footer Illustration (Mobile) */}
-                        <FooterIllustration />
-
                         {/* Quick Admin Dashboard Link (visible only with permission) */}
                         {permissions && permissions.includes('view_admin_dashboard') && (
                             <Link href={route('dashboard')} as="div" className="w-full">
@@ -66,6 +57,15 @@ export default function Dashboard({ requestHistory }: any) {
                                 </Button>
                             </Link>
                         )}
+
+                        {/* Layanan Biro Umum */}
+                        <ServiceMenu />
+
+                        {/* Aktivitas */}
+                        <ActivityList activities={requestHistory} />
+
+                        {/* Footer Illustration (Mobile) */}
+                        <FooterIllustration />
                     </div>
                 </div>
 

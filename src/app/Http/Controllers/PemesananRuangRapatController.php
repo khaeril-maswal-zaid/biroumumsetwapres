@@ -154,7 +154,6 @@ class PemesananRuangRapatController extends Controller
         }
 
         $pemesananRuangRapat->update([
-            'user_id' => Auth::id(),
             'instansi_id' => Auth::user()->instansi_id,
             'tanggal_penggunaan' => $request->date,
             'jam_mulai' => $request->startTime,
