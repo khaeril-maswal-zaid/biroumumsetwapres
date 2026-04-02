@@ -23,10 +23,8 @@ return new class extends Migration
             $table->string('deskripsi', 255); //from pengadu
             $table->enum('jenis_rapat', ['internal', 'external']);
             $table->string('no_hp', 25);
-            $table->enum('status', ['booked', 'rejected']);
+            $table->enum('status', ['booked', 'rescheduled', 'rejected']);
             $table->string('kode_booking', 255)->unique();
-            $table->string('aproved_makanan_berat')->default('0');
-            $table->string('aproved_makanan_ringan')->default('0');
             $table->string('keterangan', 255)->default(''); //from admin
             $table->boolean('is_hybrid')->default(false);
             $table->boolean('is_ti_support')->default(false);
