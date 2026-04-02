@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 
-type Status = 'pending' | 'approved' | 'booked' | 'confirmed' | 'partial' | 'process' | 'cancelled' | 'rejected';
+type Status = 'pending' | 'approved' | 'booked' | 'confirmed' | 'partial' | 'process' | 'cancelled' | 'rejected' | 'rescheduled';
 
 interface StatusBadgeProps {
     status: Status | string;
@@ -26,6 +26,10 @@ const STATUS_BADGE_CONFIG: Record<
     booked: {
         label: 'Dipesan',
         className: 'bg-green-100 text-green-800 hover:bg-green-200',
+    },
+    rescheduled: {
+        label: 'Dijadwalkan Ulang',
+        className: 'bg-purple-100 text-purple-800 hover:bg-purple-200',
     },
     confirmed: {
         label: 'Selesai',

@@ -1,6 +1,5 @@
 'use client';
 
-import ButtonKatKerusakan from '@/components/buttonnavbar/button-kat-kerusakan';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,72 +10,44 @@ import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { Edit, Plus, Search, X } from 'lucide-react';
+import { Edit, Search } from 'lucide-react';
 import { useState } from 'react';
-
-interface DamageCategory {
-    id: string;
-    name: string;
-    kode_kerusakan: string;
-    kode_unit: string;
-    sub_kategori?: string[];
-}
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Manajemen Kategori Kerusakan',
+        title: 'Kategori ATK',
         href: '/dashboard',
     },
 ];
 
-export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
+export default function ATKItemsManagement({ categoriesAtk }: any) {
     const { toast } = useToast();
 
     const [searchTerm, setSearchTerm] = useState('');
 
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-    const [editingCategory, setEditingCategory] = useState<DamageCategory | null>(null);
+    const [editingCategory, setEditingCategory] = useState<any | null>(null);
     const [formData, setFormData] = useState({
-        name: '',
-        kode_kerusakan: '',
-        sub_kategori: [] as string[],
+        nama_kategori: '',
+        kode_kategori: '',
     });
-    const [newSubItem, setNewSubItem] = useState('');
 
-    const filteredCategories = kategoriKerusakan.filter(
+    const filteredCategories = categoriesAtk.filter(
         (category: any) =>
-            category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            category.kode_kerusakan.toLowerCase().includes(searchTerm.toLowerCase()),
+            category.nama_kategori.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            category.kode_kategori.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
-    const handleAddSubKategori = () => {
-        if (newSubItem.trim()) {
-            setFormData({
-                ...formData,
-                sub_kategori: [...(formData.sub_kategori || []), newSubItem.trim()],
-            });
-            setNewSubItem('');
-        }
-    };
-
-    const handleRemoveSubKategori = (index: number) => {
-        setFormData({
-            ...formData,
-            sub_kategori: formData.sub_kategori?.filter((_, i) => i !== index) || [],
-        });
-    };
-
-    const handleEdit = (category: DamageCategory) => {
+    const handleEdit = (category: any) => {
         setEditingCategory(category);
         setFormData({
-            name: category.name,
-            kode_kerusakan: category.kode_kerusakan,
-            sub_kategori: category.sub_kategori || [],
+            nama_kategori: category.nama_kategori,
+            kode_kategori: category.kode_kategori,
         });
     };
 
     const handleUpdate = () => {
-        if (!formData.name || !formData.kode_kerusakan) {
+        if (!formData.nama_kategori || !formData.kode_kategori) {
             toast({
                 title: 'Validasi gagal',
                 description: 'Semua field harus diisi!',
@@ -86,16 +57,16 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
         }
 
         // Check if code already exists (excluding current item)
-        if (filteredCategories.some((cat: any) => cat.kode_kerusakan === formData.kode_kerusakan && cat.id !== editingCategory?.id)) {
+        if (filteredCategories.some((cat: any) => cat.kode_kategori === formData.kode_kategori && cat.id !== editingCategory?.id)) {
             toast({
                 title: 'Gagal',
-                description: 'Kode kerusakan sudah ada!',
+                description: 'Kode kategori sudah ada!',
                 variant: 'destructive',
             });
             return;
         }
 
-        router.put(route('daftarkerusakan.update', editingCategory?.id), formData, {
+        router.put(route('kategoriatk.update', editingCategory?.id), formData, {
             onSuccess: () => {
                 setEditingCategory(null);
                 resetForm();
@@ -116,38 +87,18 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
         });
     };
 
-    // const handleDelete = (id: string) => {
-    //     router.delete(route('daftarkerusakan.destroy', id), {
-    //         onSuccess: () => {
-    //             toast({
-    //                 title: 'Berhasil Dihapus',
-    //                 description: 'Kategori kerusakan berhasil dihapus!',
-    //                 variant: 'destructive',
-    //             });
-    //         },
-    //         onError: (er) => {
-    //             toast({
-    //                 title: 'Validasi gagal',
-    //                 description: Object.values(er)[0],
-    //                 variant: 'destructive',
-    //             });
-    //         },
-    //     });
-    // };
-
     const resetForm = () => {
-        setFormData({ name: '', kode_kerusakan: '', sub_kategori: [] });
+        setFormData({ nama_kategori: '', kode_kategori: '' });
         setEditingCategory(null);
-        setNewSubItem('');
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs} Button={ButtonKatKerusakan}>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
                 {/* Categories Grid */}
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {filteredCategories.map((category: any) => (
+                    {categoriesAtk.map((category: any) => (
                         <Card
                             key={category.id}
                             className="gap-2 overflow-hidden border-l-4 border-l-blue-500 px-4 py-3 transition-all duration-200 hover:shadow-lg"
@@ -156,9 +107,9 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
                                 {/* Header */}
                                 <div className="flex items-start justify-between">
                                     <div className="flex-1">
-                                        <h3 className="text-base font-semibold text-gray-900">{category.name}</h3>
+                                        <h3 className="text-base font-semibold text-gray-900">{category.nama_kategori}</h3>
                                         <Badge variant="outline" className="mt-2 border-blue-200 bg-blue-50 text-xs text-blue-700">
-                                            # {category.kode_kerusakan}
+                                            {category.kode_kategori}
                                         </Badge>
                                     </div>
                                     <div className="flex gap-1">
@@ -173,32 +124,6 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
                                         >
                                             <Edit className="h-4 w-4 text-blue-800" />
                                         </Button>
-
-                                        {/* <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <Button size="sm" variant="ghost" className="h-8 w-8 p-0 hover:bg-red-100">
-                                                    <Trash2 className="h-4 w-4 text-red-600" />
-                                                </Button>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>
-                                                    <AlertDialogTitle>Hapus Kategori</AlertDialogTitle>
-                                                    <AlertDialogDescription>
-                                                        Apakah Anda yakin ingin menghapus kategori "{category.name}"? Tindakan ini tidak dapat
-                                                        dibatalkan.
-                                                    </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                    <AlertDialogCancel>Batal</AlertDialogCancel>
-                                                    <AlertDialogAction
-                                                        onClick={() => handleDelete(category.id)}
-                                                        className="bg-red-600 hover:bg-red-700"
-                                                    >
-                                                        Hapus
-                                                    </AlertDialogAction>
-                                                </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog> */}
                                     </div>
                                 </div>
 
@@ -221,7 +146,7 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
                 </div>
 
                 {/* Empty State */}
-                {filteredCategories.length === 0 && (
+                {categoriesAtk.length === 0 && (
                     <div className="py-12 text-center">
                         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
                             <Search className="h-8 w-8 text-gray-400" />
@@ -255,61 +180,20 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
                                     className="mt-1"
                                     id="edit-name"
                                     placeholder="Masukkan nama kategori"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    value={formData.nama_kategori}
+                                    onChange={(e) => setFormData({ ...formData, nama_kategori: e.target.value })}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="edit-code">Kode Kerusakan</Label>
+                                <Label htmlFor="edit-code">Kode Kategori</Label>
                                 <Input
                                     id="edit-code"
                                     placeholder="Contoh: TU-051"
-                                    value={formData.kode_kerusakan}
+                                    value={formData.kode_kategori}
                                     readOnly
                                     className="mt-1 cursor-default bg-gray-100 text-gray-600"
                                 />
                             </div>
-
-                            {/* Sub Kategori Input */}
-                            <div>
-                                <Label htmlFor="edit-sub-item">Tambah Sub Kategori</Label>
-                                <div className="mt-2 flex gap-2">
-                                    <Input
-                                        id="edit-sub-item"
-                                        placeholder="Contoh: Exhaust Fan"
-                                        value={newSubItem}
-                                        onChange={(e) => setNewSubItem(e.target.value)}
-                                        onKeyPress={(e) => {
-                                            if (e.key === 'Enter') {
-                                                handleAddSubKategori();
-                                            }
-                                        }}
-                                    />
-                                    <Button type="button" onClick={handleAddSubKategori} className="bg-green-600 hover:bg-green-700">
-                                        <Plus className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </div>
-
-                            {/* Sub Kategori List */}
-                            {formData.sub_kategori && formData.sub_kategori.length > 0 && (
-                                <div className="space-y-2">
-                                    <Label className="text-xs">Sub Kategori:</Label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {formData.sub_kategori.map((sub: string, idx: number) => (
-                                            <div
-                                                key={idx}
-                                                className="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-sm text-green-800"
-                                            >
-                                                {sub}
-                                                <button type="button" onClick={() => handleRemoveSubKategori(idx)} className="hover:text-green-900">
-                                                    <X className="h-3 w-3" />
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
 
                             <div className="flex justify-end gap-2 pt-4">
                                 <Button

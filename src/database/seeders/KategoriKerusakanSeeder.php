@@ -77,7 +77,12 @@ class KategoriKerusakanSeeder extends Seeder
         ];
 
         foreach ($data as $item) {
-            KategoriKerusakan::create($item);
+            KategoriKerusakan::create([
+                'kode_unit' => $item['kode_unit'],
+                'name' => $item['name'],
+                // 'kode_kerusakan' => $item['kode_kerusakan'],
+                'sub_kategori' => $item['sub_kategori']
+            ]);
         }
     }
 }

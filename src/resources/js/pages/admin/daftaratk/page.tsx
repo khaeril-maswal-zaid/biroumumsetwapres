@@ -67,7 +67,7 @@ function AtkTabs({ active }: { active: 'daftar-atk' | 'prolehan-pemakaian' | 'bo
     );
 }
 
-export default function ATKItemsManagement({ daftarAtk }: any) {
+export default function ATKItemsManagement({ daftarAtk, categories }: any) {
     const { toast } = useToast();
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -76,18 +76,16 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [editingId, setEditingId] = useState('');
-    const [editData, setEditData] = useState({ name: '', category: '', satuan: '', available_stock: 0 });
+    const [editData, setEditData] = useState({ name: '', kategori_atk_id: '', satuan: '', available_stock: 0 });
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
-
-    // Get unique categories
-    const categories = Array.from(new Set(daftarAtk.map((item: any) => item.category)));
 
     // Filter items
     const filteredItems = daftarAtk.filter((item: any) => {
         const matchesSearch =
-            item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.category.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
+            item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (item.kategori_atk?.nama_kategori || '').toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = categoryFilter === 'all' || String(item.kategori_atk_id) === categoryFilter;
         const matchesMinStock = minStockFilter === 'all' || (item.available_stock > 0 && item.quantity < item.available_stock);
 
         return matchesSearch && matchesCategory && matchesMinStock;
@@ -97,21 +95,22 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
         setEditingId(item.id);
         setEditData({
             name: item.name,
-            category: item.category,
+            kategori_atk_id: String(item.kategori_atk_id),
             satuan: item.satuan,
             available_stock: item.available_stock,
         });
     };
 
     const handleSaveEdit = () => {
-        router.put(route('daftaratk.update', editingId), editData, {
+        const payload = { ...editData, kategori_atk_id: Number(editData.kategori_atk_id) };
+        router.put(route('daftaratk.update', editingId), payload, {
             onSuccess: () => {
                 toast({
                     title: 'Diupdate',
                     description: 'ATK berhasil diedit',
                 });
                 setEditingId('ATK ');
-                setEditData({ name: '', category: '', satuan: '', available_stock: 0 });
+                setEditData({ name: '', kategori_atk_id: '', satuan: '', available_stock: 0 });
             },
             onError: (error) => {
                 toast({
@@ -125,7 +124,7 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
 
     const handleCancelEdit = () => {
         setEditingId('');
-        setEditData({ name: '', category: '', satuan: '', available_stock: 0 });
+        setEditData({ name: '', kategori_atk_id: '', satuan: '', available_stock: 0 });
     };
 
     // const handleDelete = (item: any) => {
@@ -238,9 +237,9 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">Semua Kategori</SelectItem>
-                                        {categories.map((category, index) => (
-                                            <SelectItem key={index} value={String(category)}>
-                                                {String(category)}
+                                        {categories.map((category: { nama_kategori: string; id: number }) => (
+                                            <SelectItem key={category.id} value={String(category.id)}>
+                                                {String(category.nama_kategori)}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -300,22 +299,22 @@ export default function ATKItemsManagement({ daftarAtk }: any) {
                                                 <TableCell>
                                                     {editingId === item.id ? (
                                                         <Select
-                                                            value={editData.category}
-                                                            onValueChange={(value) => setEditData({ ...editData, category: value })}
+                                                            value={editData.kategori_atk_id}
+                                                            onValueChange={(value) => setEditData({ ...editData, kategori_atk_id: value })}
                                                         >
                                                             <SelectTrigger className="w-full">
                                                                 <SelectValue />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                {categories.map((category, index) => (
-                                                                    <SelectItem key={index} value={String(category)}>
-                                                                        {String(category)}
+                                                                {categories.map((category: { nama_kategori: string; id: number }) => (
+                                                                    <SelectItem key={category.id} value={String(category.id)}>
+                                                                        {String(category.nama_kategori)}
                                                                     </SelectItem>
                                                                 ))}
                                                             </SelectContent>
                                                         </Select>
                                                     ) : (
-                                                        <Badge variant="outline">{item.category}</Badge>
+                                                        <Badge variant="outline">{item.kategori_atk?.nama_kategori}</Badge>
                                                     )}
                                                 </TableCell>
                                                 <TableCell>

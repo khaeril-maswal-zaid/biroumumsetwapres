@@ -5,15 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\KategoriAtk;
 use App\Http\Requests\StoreKategoriAtkRequest;
 use App\Http\Requests\UpdateKategoriAtkRequest;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class KategoriAtkController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): Response
     {
-        //
+        $data = [
+            'categoriesAtk' => KategoriAtk::select('id', 'nama_kategori', 'kode_kategori')->orderBy('nama_kategori', 'asc')->get(),
+        ];
+
+        return Inertia::render('admin/kategoriatk/page', $data);
     }
 
     /**
@@ -53,7 +59,7 @@ class KategoriAtkController extends Controller
      */
     public function update(UpdateKategoriAtkRequest $request, KategoriAtk $kategoriAtk)
     {
-        //
+        $kategoriAtk->update($request->validated());
     }
 
     /**

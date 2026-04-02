@@ -267,7 +267,7 @@ export default function RoomsPage({ ruangans }: any) {
                                 <div className="flex items-start justify-between">
                                     <div>
                                         <CardTitle className="text-lg">{room.nama_ruangan}</CardTitle>
-                                        <p className="font-mono text-sm text-muted-foreground">{room.kode_ruangan}</p>
+                                        <p className="font-mono text-sm text-muted-foreground"># {room.kode_ruangan}</p>
                                     </div>
                                 </div>
                             </CardHeader>

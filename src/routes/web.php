@@ -3,6 +3,7 @@
 use App\Http\Controllers\DaftarAtkController;
 use App\Http\Controllers\DaftarRuanganController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\KategoriAtkController;
 use App\Http\Controllers\KategoriKerusakanController;
 use App\Http\Controllers\KerusakanGedungController;
 use App\Http\Controllers\LogProsesController;
@@ -187,6 +188,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/dashboard/daftar-atk/destroy/{daftarAtk}', [DaftarAtkController::class, 'destroy'])
         ->name('daftaratk.destroy')
         ->middleware('permission:delete_atk');
+
+
+
+    Route::get('/dashboard/kategori-atk', [KategoriAtkController::class, 'index'])
+        ->name('kategoriatk.index')
+        ->middleware('permission:view_atk');
+
+    Route::put('/dashboard/kategori-atk/{kategoriAtk}', [KategoriAtkController::class, 'update'])
+        ->name('kategoriatk.update')
+        ->middleware('permission:create_atk');
+
 
 
 

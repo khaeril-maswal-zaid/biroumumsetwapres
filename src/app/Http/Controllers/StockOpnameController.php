@@ -6,6 +6,7 @@ use App\Models\StockOpname;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\DaftarAtk;
+use App\Models\KategoriAtk;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -17,12 +18,16 @@ class StockOpnameController extends Controller
     public function index()
     {
         $data = [
-            'daftarAtk' => DaftarAtk::orderBy('name', 'asc')->get(),
+            'daftarAtk' => DaftarAtk::orderBy('name', 'asc')
+                ->with('kategoriAtk:id,nama_kategori')
+                ->get(),
             'stockOpnames' => StockOpname::with('daftarAtk')
-                ->orderBy('created_at', 'desc')      // urut kronologis
-                ->orderBy('id', 'desc')              // safety
-                // ->latest()
-                ->get()
+                ->orderBy('created_at', 'desc')
+                ->orderBy('id', 'desc')
+                ->get(),
+            'categories' => KategoriAtk::select('id', 'nama_kategori')
+                ->orderBy('nama_kategori', 'asc')
+                ->get(),
         ];
 
         return Inertia::render('admin/daftaratk/prolehan-pemakaian', $data);
@@ -109,6 +114,7 @@ class StockOpnameController extends Controller
             }], 'quantity')
 
             ->when($itemKode, fn($q) => $q->where('kode_atk', $itemKode))
+            ->with('kategoriAtk:id,nama_kategori')
             ->orderBy('name', 'asc')
             ->get()
             ->map(function ($item) {
@@ -121,7 +127,7 @@ class StockOpnameController extends Controller
                 'id'        => $i->id,
                 'name'      => $i->name,
                 'kode_atk'  => $i->kode_atk,
-                'kategori'  => $i->category,
+                'kategori'  => $i->kategoriAtk->nama_kategori ?? 'Lainnya',
                 'satuan'    => $i->satuan,
                 'jumlah'    => (int) ($i->total_perolehan ?? 0),
                 'pemakaian' => (int) ($i->total_pemakaian ?? 0),

@@ -164,6 +164,7 @@ class PemesananRuangRapatController extends Controller
             'jenis_rapat' => $request->jenisRapat,
             'is_hybrid' => $request->isHybrid,
             'is_ti_support' => $request->needItSupport,
+            'status' => 'rescheduled',
         ]);
     }
 

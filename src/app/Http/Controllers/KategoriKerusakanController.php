@@ -20,7 +20,6 @@ class KategoriKerusakanController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:250',
-            'kode_kerusakan' => 'required|string|max:50|unique:kategori_kerusakans,kode_kerusakan',
             'sub_kategori' => 'nullable|array',
             'sub_kategori.*' => 'nullable|string|max:250',
         ]);

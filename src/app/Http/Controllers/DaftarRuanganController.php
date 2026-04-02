@@ -35,9 +35,9 @@ class DaftarRuanganController extends Controller
         DaftarRuangan::create([
             'kode_unit' => Auth::user()->pegawai?->unit?->kode_unit,
             'nama_ruangan' => $request->nama_ruangan,
-            'kode_ruangan' => $request->kode_ruangan,
             'lokasi' => $request->lokasi,
             'kapasitas' => $request->kapasitas,
+            'kapasitas_max' => $request->kapasitas_max,
             'image' => $path,
             'status' => $request->status,
             'fasilitas' => $request->fasilitas,

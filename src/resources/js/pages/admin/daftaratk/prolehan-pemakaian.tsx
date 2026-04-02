@@ -86,7 +86,7 @@ type MassEntry = {
 
 const uuid = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
 
-export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any) {
+export default function ATKItemsManagement({ daftarAtk, stockOpnames = [], categories = [] }: any) {
     const { toast } = useToast();
 
     const [logCategoryFilter, setLogCategoryFilter] = useState('all');
@@ -129,85 +129,15 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
         });
     };
 
-    function MassEntryRow({ entry, idx }: { entry: MassEntry; idx: number }) {
-        const [query, setQuery] = useState('');
-
-        const q = (query || '').toLowerCase().trim();
-        const filtered = q
-            ? daftarAtk.filter(
-                  (atk: any) =>
-                      atk.name.toLowerCase().includes(q) ||
-                      String(atk.kode_atk).toLowerCase().includes(q) ||
-                      String(atk.satuan).toLowerCase().includes(q) ||
-                      String(atk.category).toLowerCase().includes(q),
-              )
-            : daftarAtk;
-
-        return (
-            <div className="grid grid-cols-12 items-center gap-3 rounded-md border bg-white p-3 shadow-sm">
-                <div className="col-span-6">
-                    <Label className="text-xs font-semibold">Pilih ATK</Label>
-                    <Select value={entry.daftar_atk_id} onValueChange={(v) => handleMassEntryChange(idx, 'daftar_atk_id', v)}>
-                        <SelectTrigger className="h-10 w-full justify-start">
-                            <SelectValue placeholder="Pilih ATK...">
-                                {entry.daftar_atk_id && <div>{daftarAtk.find((a: any) => String(a.id) === String(entry.daftar_atk_id))?.name}</div>}
-                            </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent>
-                            <div className="p-2">
-                                <Input placeholder="Cari ATK..." value={query} onChange={(e) => setQuery(e.target.value)} className="mb-2" />
-                                <div className="max-h-64 overflow-y-auto">
-                                    {filtered.map((atk: any) => (
-                                        <SelectItem key={atk.id} value={String(atk.id)}>
-                                            <div className="flex flex-col py-1">
-                                                <span className="font-medium">{atk.name}</span>
-                                                <span className="text-xs text-muted-foreground">
-                                                    {atk.kode_atk} • {atk.category} • {atk.satuan}
-                                                </span>
-                                            </div>
-                                        </SelectItem>
-                                    ))}
-                                </div>
-                            </div>
-                        </SelectContent>
-                    </Select>
-                </div>
-
-                <div className="col-span-1">
-                    <Label className="text-xs font-semibold">Jumlah</Label>
-                    <Input value={entry.quantity} onChange={(e) => handleMassEntryChange(idx, 'quantity', e.target.value)} className="h-10" />
-                </div>
-
-                <div className="col-span-2">
-                    <Label className="text-xs font-semibold">Harga Satuan (Rp)</Label>
-                    <Input value={entry.unit_price} onChange={(e) => handleMassEntryChange(idx, 'unit_price', e.target.value)} className="h-10" />
-                </div>
-
-                <div className="col-span-2 text-right">
-                    <Label className="text-xs font-semibold">Total</Label>
-                    <div className="mt-1 text-sm font-semibold">Rp {entry.total_price ? Number(entry.total_price).toLocaleString('id-ID') : '0'}</div>
-                </div>
-
-                <div className="col-span-1 text-right">
-                    <Button size="icon" variant="ghost" onClick={() => removeMassRow(idx)}>
-                        <Trash2 className="h-4 w-4 text-red-600" />
-                    </Button>
-                </div>
-            </div>
-        );
-    }
-
-    // Get unique categories
-    const categories = Array.from(new Set(daftarAtk.map((item: any) => item.category)));
-
     // Filtered logs
     const filteredLogs = stockOpnames.filter((log: any) => {
         const atk = daftarAtk.find((item: any) => item.id == log.daftar_atk_id);
         const matchesSearch =
             !logSearchTerm ||
             (atk &&
-                (atk.name.toLowerCase().includes(logSearchTerm.toLowerCase()) || atk.category.toLowerCase().includes(logSearchTerm.toLowerCase())));
-        const matchesCategory = logCategoryFilter === 'all' || (atk && atk.category === logCategoryFilter);
+                (atk.name.toLowerCase().includes(logSearchTerm.toLowerCase()) ||
+                    atk.kategori_atk?.nama_kategori.toLowerCase().includes(logSearchTerm.toLowerCase())));
+        const matchesCategory = logCategoryFilter === 'all' || (atk && atk.kategori_atk?.id == logCategoryFilter);
         return matchesSearch && matchesCategory;
     });
 
@@ -265,9 +195,9 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">Semua Kategori</SelectItem>
-                                        {categories.map((category, index) => (
-                                            <SelectItem key={index} value={String(category)}>
-                                                {String(category)}
+                                        {categories.map((category: any, index: number) => (
+                                            <SelectItem key={index} value={String(category.id)}>
+                                                {String(category.nama_kategori)}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -305,7 +235,7 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
                                                     <TableCell>{logStartIndex + index + 1}</TableCell>
                                                     <TableCell>{atk?.name || 'N/A'}</TableCell>
                                                     <TableCell>
-                                                        <Badge variant="outline">{atk?.category || 'N/A'}</Badge>
+                                                        <Badge variant="outline">{atk?.kategori_atk?.nama_kategori || 'N/A'}</Badge>
                                                     </TableCell>
                                                     <TableCell>{atk?.satuan || 'N/A'}</TableCell>
                                                     <TableCell>{log.quantity}</TableCell>
@@ -480,7 +410,7 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
                                                                               atk.name.toLowerCase().includes(q) ||
                                                                               String(atk.kode_atk).toLowerCase().includes(q) ||
                                                                               String(atk.satuan).toLowerCase().includes(q) ||
-                                                                              String(atk.category).toLowerCase().includes(q),
+                                                                              String(atk.kategori_atk?.nama_kategori).toLowerCase().includes(q),
                                                                       )
                                                                     : daftarAtk;
 
@@ -489,7 +419,7 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [] }: any
                                                                         <div className="flex flex-col py-1">
                                                                             <span className="font-medium">{atk.name}</span>
                                                                             <span className="text-xs text-muted-foreground">
-                                                                                {atk.kode_atk} • {atk.category} • {atk.satuan}
+                                                                                {atk.kode_atk} • {atk.kategori_atk?.nama_kategori} • {atk.satuan}
                                                                             </span>
                                                                         </div>
                                                                     </SelectItem>

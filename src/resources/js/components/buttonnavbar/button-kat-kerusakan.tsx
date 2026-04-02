@@ -14,7 +14,7 @@ export default function ButtonKatKerusakan() {
     const { toast } = useToast();
 
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-    const [formData, setFormData] = useState({ name: '', kode_kerusakan: '', sub_kategori: [] as string[] });
+    const [formData, setFormData] = useState({ name: '', sub_kategori: [] as string[] });
 
     const handleAddSubKategori = () => {
         if (newSubItem.trim()) {
@@ -36,10 +36,10 @@ export default function ButtonKatKerusakan() {
     };
 
     const handleCreate = () => {
-        if (!formData.name || !formData.kode_kerusakan) {
+        if (!formData.name) {
             toast({
                 title: 'Berhasil',
-                description: 'Nama dan Kode Kerusakan harus diisi!',
+                description: 'Nama Kategori Kerusakan harus diisi!',
             });
             return;
         }
@@ -64,7 +64,7 @@ export default function ButtonKatKerusakan() {
     };
 
     const resetForm = () => {
-        setFormData({ name: '', kode_kerusakan: '', sub_kategori: [] });
+        setFormData({ name: '', sub_kategori: [] });
     };
 
     return (
@@ -91,15 +91,6 @@ export default function ButtonKatKerusakan() {
                                 placeholder="Contoh: Tata Udara"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="add-code">Kode Kerusakan</Label>
-                            <Input
-                                id="add-code"
-                                placeholder="Contoh: TU-051"
-                                value={formData.kode_kerusakan}
-                                onChange={(e) => setFormData({ ...formData, kode_kerusakan: e.target.value })}
                             />
                         </div>
 

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\DaftarAtk;
+use App\Models\KategoriAtk;
 use App\Models\KerusakanGedung;
 use App\Models\PemesananRuangRapat;
 use App\Models\PermintaanAtk;
@@ -23,6 +24,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             DaftarRuanganSeeder::class,
             KategoriKerusakanSeeder::class,
+            KategoriAtkSeeder::class,
             DaftarAtkSeeder::class,
             UserSeeder::class,
             MasterPegawaiSeeder::class,
@@ -30,14 +32,5 @@ class DatabaseSeeder extends Seeder
             //kalau sudah ada pegawai di master pegawai dan di user, jangan jalankan seeder ini
             AssignRolesSeeder::class,
         ]);
-
-        // User::factory(10)->create();
-        // User::factory()->admin()->create();
-        // User::factory()->pegawai()->create();
-        // User::factory()->atasan()->create();
-
-        // PermintaanAtk::factory(50)->create();
-        // PemesananRuangRapat::factory(50)->create();
-        // KerusakanGedung::factory(50)->create();
     }
 }

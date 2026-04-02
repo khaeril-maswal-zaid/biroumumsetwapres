@@ -51,10 +51,6 @@ export default function SuppliesReports({ statusDistribution, divisionStats, top
                                     </CardHeader>
                                     <CardContent>
                                         <div className="text-4xl font-bold">{item.value}</div>
-                                        {/* <div className="flex items-center text-xs text-muted-foreground">
-                                                <TrendIcon className={`mr-1 h-3 w-3 ${trendColor}`} />
-                                                {item.change} dari bulan lalu
-                                            </div> */}
                                     </CardContent>
                                 </Card>
                             );

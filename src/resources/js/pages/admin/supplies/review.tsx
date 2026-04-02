@@ -762,7 +762,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                                                             items={daftarAtk.map((i: any) => ({
                                                                                                 id: String(i.id),
                                                                                                 name: i.name,
-                                                                                                category: i.category,
+                                                                                                category: i.kategori_atk?.nama_kategori,
                                                                                                 kode_atk: i.kode_atk,
                                                                                                 satuan: i.satuan,
                                                                                             }))}

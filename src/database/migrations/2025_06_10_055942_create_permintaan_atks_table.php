@@ -18,7 +18,6 @@ return new class extends Migration
             $table->json('daftar_kebutuhan')->nullable();
             $table->string('deskripsi', 255); //from pengadu
             $table->string('no_hp', 25);
-            // $table->string('memo', 255);
             $table->string('kode_pelaporan', 50)->unique();
             $table->enum('status', ['pending', 'partial', 'rejected', 'confirmed']);
             $table->string('keterangan', 255)->default(''); //from admin

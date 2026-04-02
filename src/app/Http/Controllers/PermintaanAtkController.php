@@ -24,20 +24,6 @@ class PermintaanAtkController extends Controller
      */
     public function index(): Response
     {
-        // $permintaanAtk = PermintaanAtk::with('pemesan.pegawai')->latest()->paginate(50);
-
-        // // Tambahkan stock ke daftar_kebutuhan
-        // $permintaanAtk->getCollection()->transform(function ($permintaan) {
-        //     if ($permintaan->daftar_kebutuhan) {
-        //         $permintaan->daftar_kebutuhan = collect($permintaan->daftar_kebutuhan)->map(function ($item) {
-        //             $daftarAtk = DaftarAtk::find($item['id']);
-        //             $item['stock'] = $daftarAtk ? $daftarAtk->quantity : 0;
-        //             return $item;
-        //         })->toArray();
-        //     }
-        //     return $permintaan;
-        // });
-
 
         $data = [
             'permintaanAtk' =>  PermintaanAtk::with('pemesan.pegawai')->latest()->paginate(150),
@@ -51,9 +37,14 @@ class PermintaanAtkController extends Controller
      */
     public function create()
     {
-        return Inertia::render('biroumum/supplies/page', [
-            'availableATK' => DaftarAtk::select(['id', 'name', 'category', 'satuan'])->orderBy('name', 'asc')->get(),
-        ]);
+        $data = [
+            'availableATK' => DaftarAtk::select(['id', 'name', 'satuan', 'kategori_atk_id'])
+                ->with('kategoriAtk:id,nama_kategori')
+                ->orderBy('name', 'asc')
+                ->get(),
+        ];
+
+        return Inertia::render('biroumum/supplies/page', $data);
     }
 
     /**
@@ -124,10 +115,15 @@ class PermintaanAtkController extends Controller
                 ->toArray();
         }
 
-        return Inertia::render('admin/supplies/review', [
+        $data = [
             'selectedRequest' => $permintaanAtk->load('pemesan.pegawai.biro'),
-            'daftarAtk' => DaftarAtk::select(['id', 'name', 'kode_atk', 'category', 'satuan', 'quantity'])->orderBy('name', 'asc')->get(),
-        ]);
+            'daftarAtk' => DaftarAtk::select(['id', 'name', 'kode_atk',  'satuan', 'quantity', 'kategori_atk_id'])
+                ->with('kategoriAtk:id,nama_kategori')
+                ->orderBy('name', 'asc')
+                ->get(),
+        ];
+
+        return Inertia::render('admin/supplies/review', $data);
     }
 
 

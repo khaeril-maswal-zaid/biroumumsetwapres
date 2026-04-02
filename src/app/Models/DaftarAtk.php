@@ -15,7 +15,7 @@ class DaftarAtk extends Model
         'name',
         'instansi_id',
         'kode_atk',
-        'category',
+        'kategori_atk_id',
         'satuan',
         'kode_unit',
         'quantity',
@@ -32,6 +32,11 @@ class DaftarAtk extends Model
 
             $layanan->kode_atk = $code;
         });
+    }
+
+    public function kategoriAtk()
+    {
+        return $this->belongsTo(KategoriAtk::class, 'kategori_atk_id');
     }
 
     public function stockOpnames()

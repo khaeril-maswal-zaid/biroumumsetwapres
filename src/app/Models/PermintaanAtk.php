@@ -155,7 +155,7 @@ class PermintaanAtk extends Model
             ->map(function ($rows, $userId) {
                 $user = $rows->first();
                 $requests = $rows->count();
-                $approved = $rows->where('status', 'approved')->count();
+                $approved = $rows->where('status', 'confirmed')->count();
                 $rate = $requests > 0 ? round(($approved / $requests) * 100) : 0;
 
                 return [
@@ -181,7 +181,7 @@ class PermintaanAtk extends Model
             ->groupBy(fn($row) => $row->pemesan->pegawai->biro->nama_biro)
             ->map(function ($rows, $division) {
                 $requests = $rows->count();
-                $approved = $rows->where('status', 'approved')->count();
+                $approved = $rows->where('status', 'confirmed')->count();
                 $rate = $requests > 0 ? round(($approved / $requests) * 100) : 0;
 
                 return [

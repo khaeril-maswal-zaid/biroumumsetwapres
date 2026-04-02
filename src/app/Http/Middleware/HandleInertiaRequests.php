@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\DaftarAtk;
+use App\Models\KategoriAtk;
 use App\Models\Notification;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
@@ -69,7 +70,7 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn() => $request->session()->get('success'),
             ],
 
-            'kategoriAtk' => DaftarAtk::select('category')->distinct()->pluck('category'),
+            'kategoriAtk' => KategoriAtk::all(),
 
             'auth' => [
                 'user' => $user ? [

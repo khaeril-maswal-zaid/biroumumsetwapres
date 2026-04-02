@@ -22,9 +22,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 interface Room {
     id: string;
     nama_ruangan: string;
-    kode_ruangan: string;
     lokasi: string;
     kapasitas: number;
+    kapasitas_max: number;
     image: string;
     fasilitas: string[];
     status: 'aktif' | 'maintenance' | 'nonaktif';
@@ -49,9 +49,9 @@ export default function ButtonRooms() {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [formData, setFormData] = useState({
         nama_ruangan: '',
-        kode_ruangan: '',
         lokasi: '',
         kapasitas: '',
+        kapasitas_max: '',
         fasilitas: [] as string[],
         status: 'aktif' as 'aktif' | 'maintenance' | 'nonaktif',
         image: '' as string,
@@ -62,9 +62,9 @@ export default function ButtonRooms() {
     const resetForm = () => {
         setFormData({
             nama_ruangan: '',
-            kode_ruangan: '',
             lokasi: '',
             kapasitas: '',
+            kapasitas_max: '',
             fasilitas: [],
             status: 'aktif',
             image: '',
@@ -93,7 +93,7 @@ export default function ButtonRooms() {
 
     const handleAdd = () => {
         // Validate required fields
-        if (!formData.nama_ruangan || !formData.kode_ruangan || !formData.lokasi || !formData.kapasitas) {
+        if (!formData.nama_ruangan || !formData.lokasi || !formData.kapasitas) {
             alert('Mohon lengkapi semua field yang wajib diisi');
             return;
         }
@@ -102,9 +102,9 @@ export default function ButtonRooms() {
             route('rooms.store'),
             {
                 nama_ruangan: formData.nama_ruangan,
-                kode_ruangan: formData.kode_ruangan,
                 lokasi: formData.lokasi,
                 kapasitas: formData.kapasitas,
+                kapasitas_max: formData.kapasitas_max,
                 fasilitas: formData.fasilitas,
                 status: formData.status,
                 photo: imageFile,
@@ -156,28 +156,17 @@ export default function ButtonRooms() {
                         <DialogTitle>Tambah Ruangan Baru</DialogTitle>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="nama_ruangan">Nama Ruangan</Label>
-                                <Input
-                                    className="mt-1"
-                                    id="nama_ruangan"
-                                    value={formData.nama_ruangan}
-                                    onChange={(e) => setFormData((prev) => ({ ...prev, nama_ruangan: e.target.value }))}
-                                    placeholder="Masukkan nama ruangan"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="kode_ruangan">Kode Ruangan</Label>
-                                <Input
-                                    className="mt-1"
-                                    id="kode_ruangan"
-                                    value={formData.kode_ruangan}
-                                    onChange={(e) => setFormData((prev) => ({ ...prev, kode_ruangan: e.target.value }))}
-                                    placeholder="Contoh: RU-001"
-                                />
-                            </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="nama_ruangan">Nama Ruangan</Label>
+                            <Input
+                                className="mt-1"
+                                id="nama_ruangan"
+                                value={formData.nama_ruangan}
+                                onChange={(e) => setFormData((prev) => ({ ...prev, nama_ruangan: e.target.value }))}
+                                placeholder="Masukkan nama ruangan"
+                            />
                         </div>
+
                         <div className="space-y-2">
                             <Label htmlFor="lokasi">Lokasi</Label>
                             <Input
@@ -210,6 +199,17 @@ export default function ButtonRooms() {
                                     type=""
                                     value={formData.kapasitas}
                                     onChange={(e) => setFormData((prev) => ({ ...prev, kapasitas: e.target.value }))}
+                                    placeholder="Jumlah orang"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="kapasitas_max">Kapasitas Maksimal</Label>
+                                <Input
+                                    className="mt-1"
+                                    id="kapasitas_max"
+                                    type=""
+                                    value={formData.kapasitas_max}
+                                    onChange={(e) => setFormData((prev) => ({ ...prev, kapasitas_max: e.target.value }))}
                                     placeholder="Jumlah orang"
                                 />
                             </div>
@@ -255,10 +255,7 @@ export default function ButtonRooms() {
                         <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
                             Batal
                         </Button>
-                        <Button
-                            onClick={handleAdd}
-                            disabled={!formData.nama_ruangan || !formData.kode_ruangan || !formData.lokasi || !formData.kapasitas}
-                        >
+                        <Button onClick={handleAdd} disabled={!formData.nama_ruangan || !formData.lokasi || !formData.kapasitas}>
                             Simpan
                         </Button>
                     </DialogFooter>

@@ -18,6 +18,7 @@ import {
     LayoutDashboard,
     LockKeyhole,
     PackageCheck,
+    Tags,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -48,7 +49,7 @@ const mainNavItems: NavItem[] = [
         excludePermission: 'management_access',
     },
     {
-        title: 'Kerusakan Sarpras',
+        title: 'Perbaikan Sarpras',
         href: route('kerusakangedung.index'),
         icon: AlertTriangle,
         permission: 'view_damages',
@@ -89,7 +90,7 @@ const reportsNavItems: NavItem[] = [
         permission: 'report_bookings',
     },
     {
-        title: 'Laporan Kerusakan',
+        title: 'Perbaikan Sarpras',
         href: route('kerusakangedung.reports'),
         icon: FileWarning,
         permission: 'report_damages',
@@ -119,6 +120,12 @@ const footerNavItems: NavItem[] = [
         title: 'Manajemen ATK',
         href: route('daftaratk.index'),
         icon: PackageCheck,
+        permission: 'view_atk',
+    },
+    {
+        title: 'Kategori ATK',
+        href: route('kategoriatk.index'),
+        icon: Tags,
         permission: 'view_atk',
     },
     {
