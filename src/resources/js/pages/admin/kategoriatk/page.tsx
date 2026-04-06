@@ -1,5 +1,6 @@
 'use client';
 
+import ButtonKatAtk from '@/components/buttonnavbar/button-kat-atk';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -93,11 +94,11 @@ export default function ATKItemsManagement({ categoriesAtk }: any) {
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <AppLayout breadcrumbs={breadcrumbs} Button={ButtonKatAtk}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
                 {/* Categories Grid */}
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                     {categoriesAtk.map((category: any) => (
                         <Card
                             key={category.id}

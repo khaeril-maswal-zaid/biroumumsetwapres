@@ -35,7 +35,9 @@ class KategoriAtkController extends Controller
      */
     public function store(StoreKategoriAtkRequest $request)
     {
-        //
+        KategoriAtk::create([
+            'nama_kategori' => $request->name,
+        ]);
     }
 
     /**

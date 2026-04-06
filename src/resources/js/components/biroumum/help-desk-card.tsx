@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Headphones } from 'lucide-react';
 
-export function HelpDeskCard() {
+export function HelpDeskCard({ mainServices }: any) {
     return (
         <Card className="border-yellow-200 bg-yellow-100 shadow-md">
             <CardContent className="">
@@ -10,8 +10,8 @@ export function HelpDeskCard() {
                         <Headphones className="h-6 w-6 text-yellow-700" />
                     </div>
                     <div className="flex-1">
-                        <h3 className="font-semibold text-gray-800">Help Desk Biro Umum</h3>
-                        <p className="text-sm text-gray-600">(021) 3842780</p>
+                        <h3 className="font-semibold text-gray-800">{mainServices?.name}</h3>
+                        <p className="text-sm text-gray-600">{mainServices?.contact}</p>
                     </div>
                 </div>
             </CardContent>

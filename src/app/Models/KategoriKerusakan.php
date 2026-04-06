@@ -14,7 +14,8 @@ class KategoriKerusakan extends Model
         'name',
         'kode_unit',
         'kode_kerusakan',
-        'sub_kategori'
+        'sub_kategori',
+        'bagian_kategori'
     ];
 
     protected $casts = [

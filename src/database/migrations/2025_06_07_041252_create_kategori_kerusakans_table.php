@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('kode_unit')->nullable();
             $table->string('kode_kerusakan', 50)->unique();
+            $table->enum('bagian_kategori', ['Bangunan', 'Perlengkapan']);
             $table->string('name', 250);
             $table->json('sub_kategori')->nullable();
             $table->timestamps();

@@ -11,7 +11,7 @@ class StoreKategoriAtkRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,17 @@ class StoreKategoriAtkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|max:255|unique:kategori_atks,nama_kategori',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Nama kategori ATK wajib diisi.',
+            'name.string' => 'Nama kategori ATK harus berupa string.',
+            'name.max' => 'Nama kategori ATK tidak boleh lebih dari 255 karakter.',
+            'name.unique' => 'Nama kategori ATK sudah ada. Silakan gunakan nama lain.',
         ];
     }
 }

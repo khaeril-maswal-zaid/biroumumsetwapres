@@ -40,10 +40,13 @@ class RolePermissionSeeder extends Seeder
             ['name' => 'delete_log_proses', 'label' => 'Hapus Log Proses Kerusakan', 'category' => 'Log Proses Kerusakan'],
 
             // 🛠️ Kerusakan
-            ['name' => 'view_damages', 'label' => 'Lihat Pengajuan Kerusakan Gedung', 'category' => 'Pengajuan Kerusakan Gedung'],
-            ['name' => 'report_damages', 'label' => 'Laporan Pengajuan Kerusakan Gedung', 'category' => 'Pengajuan Kerusakan Gedung'],
-            ['name' => 'create_damage', 'label' => 'Laporkan Kerusakan Gedung', 'category' => 'Pengajuan Kerusakan Gedung'],
-            ['name' => 'change_damage_status', 'label' => 'Konfirmasi Kerusakan Gedung', 'category' => 'Pengajuan Kerusakan Gedung'],
+            ['name' => 'view_damages', 'label' => 'Lihat Permintaan Perbaikan Sarpras & Perlengkapan', 'category' => 'Perbaikan Sarpras'],
+            ['name' => 'view_admin_damages', 'label' => 'Admin Permintaan Perbaikan Sarpras', 'category' => 'Perbaikan Sarpras'],
+            ['name' => 'view_bangunan_damages', 'label' => 'Lihat Permintaan Perbaikan Sarpras', 'category' => 'Perbaikan Sarpras'],
+            ['name' => 'view_perlengkapan_damages', 'label' => 'Lihat Permintaan Perbaikan Perlengkapan', 'category' => 'Perbaikan Sarpras'],
+            ['name' => 'report_damages', 'label' => 'Laporan Perbaikan Sarpras', 'category' => 'Perbaikan Sarpras'],
+            ['name' => 'create_damage', 'label' => 'Laporkan Kerusakan Gedung', 'category' => 'Perbaikan Sarpras'],
+            ['name' => 'change_damage_status', 'label' => 'Konfirmasi Kerusakan Gedung', 'category' => 'Perbaikan Sarpras'],
 
             // 📅 Pemesanan Ruang
             ['name' => 'view_bookings', 'label' => 'Lihat Pemesanan Ruang', 'category' => 'Pemesanan Ruang Rapat'],
@@ -197,6 +200,7 @@ class RolePermissionSeeder extends Seeder
             'change_damage_status',
             'create_damage',
             'view_damages',
+            'view_admin_damages',
             'report_damages',
 
             'delete_category_damages',
@@ -209,35 +213,60 @@ class RolePermissionSeeder extends Seeder
         ];
         $adminKerusakanGedungRole = Role::create(
             [
-                'name' => 'admin_kerusakan_gedung',
-                'label' => 'Admin Kerusakan Gedung',
+                'name' => 'admin_perbaikan_sarpras',
+                'label' => 'Admin Perbaikan Sarpras',
                 'guard_name' => 'web',
-                'description' => 'Mengelola laporan kerusakan gedung serta kategori kerusakan.'
+                'description' => 'Mengelola permintaan perbaikan sarpras serta kategori kerusakan.'
             ]
         );
         $adminKerusakanGedungRole->syncPermissions($adminKerusakanGedungPermissions);
 
-        // 🛡️ Role: Operator Kerusakan Gedung--------------------------------------
-        $operatorKerusakanGedungPermissions = [
+        // 🛡️ Role: Operator Kerusakan Gedung_Bangunan--------------------------------------
+        $operatorKerusakanGedungBangunanPermissions = [
             'view_admin_dashboard',
 
             'change_damage_status',
             'create_damage',
             'view_damages',
+            'view_bangunan_damages',
             'report_damages',
 
             'view_homepage',
             'view_history',
         ];
-        $operatorKerusakanGedungRole = Role::create(
+        $operatorKerusakanBangunanGedungRole = Role::create(
             [
-                'name' => 'operator_kerusakan_gedung',
-                'label' => 'Operator Kerusakan Gedung',
+                'name' => 'operator_bangunan_perbaikan_sarpras',
+                'label' => 'Operator Bangunan Perbaikan Sarpras',
                 'guard_name' => 'web',
-                'description' => 'Mengelola laporan kerusakan gedung.'
+                'description' => 'Mengelola permintaan perbaikan bangunan sarpras.'
             ]
         );
-        $operatorKerusakanGedungRole->syncPermissions($operatorKerusakanGedungPermissions);
+        $operatorKerusakanBangunanGedungRole->syncPermissions($operatorKerusakanGedungBangunanPermissions);
+
+
+        // 🛡️ Role: Operator Kerusakan Gedung_Perlengkapan--------------------------------------
+        $operatorKerusakanGedungPerlengkapanPermissions = [
+            'view_admin_dashboard',
+
+            'change_damage_status',
+            'create_damage',
+            'view_damages',
+            'view_perlengkapan_damages',
+            'report_damages',
+
+            'view_homepage',
+            'view_history',
+        ];
+        $operatorKerusakanPerlengkapanGedungRole = Role::create(
+            [
+                'name' => 'operator_perlengkapan_perbaikan_sarpras',
+                'label' => 'Operator Perlengkapan Perbaikan Sarpras',
+                'guard_name' => 'web',
+                'description' => 'Mengelola permintaan perbaikan perlengkapan sarpras.'
+            ]
+        );
+        $operatorKerusakanPerlengkapanGedungRole->syncPermissions($operatorKerusakanGedungPerlengkapanPermissions);
 
 
         // 👤 Role: Pegawai------------------------------
@@ -254,31 +283,31 @@ class RolePermissionSeeder extends Seeder
                 'name' => 'pegawai',
                 'label' => 'Pegawai',
                 'guard_name' => 'web',
-                'description' => 'Dapat mengajukan berbagai permintaan seperti booking ruangan, kendaraan, ATK, dan pelaporan kerusakan.'
+                'description' => 'Dapat mengajukan berbagai permintaan seperti booking ruangan, kendaraan, ATK, dan permintaan perbaikan sarpras.'
             ]
         );
         $pegawaiRole->syncPermissions($pegawaiPermissions);
 
 
-        // 👤 Role: superVisorRole------------------------------
-        $superVisorPermissions = [
-            'view_homepage',
-            'view_history',
+        // // 👤 Role: superVisorRole------------------------------
+        // $superVisorPermissions = [
+        //     'view_homepage',
+        //     'view_history',
 
-            'create_vehicle',
-            'create_damage',
-            'create_supplies',
-            'create_booking',
-        ];
-        $superVisorRole = Role::create(
-            [
-                'name' => 'supervisor',
-                'label' => 'Supervisor',
-                'guard_name' => 'web',
-                'description' => 'Dapat mengajukan berbagai permintaan seperti booking ruangan, kendaraan, ATK, dan pelaporan kerusakan.'
-            ]
-        );
-        $superVisorRole->syncPermissions($superVisorPermissions);
+        //     'create_vehicle',
+        //     'create_damage',
+        //     'create_supplies',
+        //     'create_booking',
+        // ];
+        // $superVisorRole = Role::create(
+        //     [
+        //         'name' => 'supervisor',
+        //         'label' => 'Supervisor',
+        //         'guard_name' => 'web',
+        //         'description' => 'Dapat mengajukan berbagai permintaan seperti booking ruangan, kendaraan, ATK, dan permintaan perbaikan sarpras.'
+        //     ]
+        // );
+        // $superVisorRole->syncPermissions($superVisorPermissions);
 
         // 👤 Role: Pimpinan------------------------------
         $atasanPermissions = [
@@ -296,7 +325,7 @@ class RolePermissionSeeder extends Seeder
                 'name' => 'pimpinan',
                 'label' => 'Pimpinan',
                 'guard_name' => 'web',
-                'description' => 'Dapat melihat berbagai permintaan seperti booking ruangan, kendaraan, ATK, dan pelaporan kerusakan.'
+                'description' => 'Dapat melihat berbagai permintaan seperti booking ruangan, kendaraan, ATK, dan permintaan perbaikan sarpras.'
             ]
         );
         $atasanRole->syncPermissions($atasanPermissions);
@@ -319,6 +348,7 @@ class RolePermissionSeeder extends Seeder
             'create_log_proses',
             'edit_log_proses',
             'delete_log_proses',
+            'view_admin_damages',
             'view_damages',
             'report_damages',
             'create_damage',
@@ -371,6 +401,7 @@ class RolePermissionSeeder extends Seeder
             'edit_log_proses',
             'delete_log_proses',
             'view_damages',
+            'view_admin_damages',
             'report_damages',
             'create_damage',
             'change_damage_status',

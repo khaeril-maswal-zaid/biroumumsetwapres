@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\DaftarAtk;
 use App\Models\KategoriAtk;
 use App\Models\Notification;
+use App\Models\Service;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -71,6 +72,7 @@ class HandleInertiaRequests extends Middleware
             ],
 
             'kategoriAtk' => KategoriAtk::all(),
+            'services' => Service::where('is_active', true)->where('is_main', false)->get(),
 
             'auth' => [
                 'user' => $user ? [

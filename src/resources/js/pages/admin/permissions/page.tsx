@@ -416,7 +416,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                                     <div className="space-y-4">
                                         <Label className="text-1xl">Permissions:</Label>
                                         {Object.entries(groupedPermissions).map(([category, permissions]) => (
-                                            <div key={category} className="mt-1 space-y-2">
+                                            <div key={category} className="mt-3 mb-5 space-y-1">
                                                 <h4 className="text-sm font-medium text-gray-700">{category}</h4>
                                                 <div className="grid grid-cols-2 gap-2 pl-4">
                                                     {permissions.map((permission: Permission) => (

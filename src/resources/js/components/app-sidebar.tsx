@@ -111,7 +111,7 @@ const footerNavItems: NavItem[] = [
         permission: 'view_rooms',
     },
     {
-        title: 'Kategori Kerusakan',
+        title: 'Kategori Perbaikan',
         href: route('daftarkerusakan.index'),
         icon: Hammer,
         permission: 'view_category_damages',

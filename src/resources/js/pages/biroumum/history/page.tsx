@@ -141,7 +141,7 @@ export default function RequestHistory({ requestHistory }: any) {
 
     return (
         <>
-            <Head title="Laporan Kerusakan Sarpras" />
+            <Head title="Riwayat Permintaan" />
             <div className="mx-auto min-h-screen w-full max-w-md bg-gray-50">
                 <div className="pb-20">
                     <div className="space-y-6 p-4">

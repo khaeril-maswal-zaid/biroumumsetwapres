@@ -15,12 +15,13 @@ class AssignRolesSeeder extends Seeder
     {
         $excluded = [
             'Developer165#',
-            'Adm1n945#@',
-            'Operat0r945#@',
-            'Adm1n773#@',
-            'Operat0r773#@',
-            'Adm1n165#@',
-            'Operat0r165#@',
+            'Adm1n945#',
+            'Adm1n771#',
+            'Adm1n772#',
+            'Adm1n882#',
+            'Adm1n334#',
+            'Adm1n955#',
+            'Adm1n110#',
             'User972#',
             'NA202506199903', // Khaeril Maswal Zaid
         ];
@@ -51,8 +52,10 @@ class AssignRolesSeeder extends Seeder
                     '180005431', // Ika Mailani, S.T., M.T.I.
                     '180005739', // Angga Dwijayanti, S.Kom.
                     '180005782', // Isnandy Arief Widodo, S.T.
+                    '180004763', // Woro Dyah Tri Siswanti, S.T., M.E.
                     '180005593', // Mukti Cahyani, S.H., M.H.
                     '180004929', // Wenny Setia Ningsih
+                    '180004943', // Faniagi Hardianto, S.AP., M.AP.
                     '180004237', // Hari Sugiharto, S.T., M.M.
                     '180005738', // Danang Ari Suwito, S.Sos.
                     '180004013', // Pamuji
@@ -117,20 +120,20 @@ class AssignRolesSeeder extends Seeder
             ->chunk(
                 50,
                 fn($users) =>
-                $users->each->assignRole('admin_kerusakan_gedung')
+                $users->each->assignRole('admin_perbaikan_sarpras')
             );
 
 
         // Operator Kerusakan Gedung
-        User::whereHas('pegawai', fn($q) => $q->where('kode_unit', '02'))
-            ->whereIn('nip_sso', [
-                '180005782', // Isnandy Arief Widodo, S.T.
-            ])
-            ->chunk(
-                50,
-                fn($users) =>
-                $users->each->assignRole('operator_kerusakan_gedung')
-            );
+        // User::whereHas('pegawai', fn($q) => $q->where('kode_unit', '02'))
+        //     ->whereIn('nip_sso', [
+        //         '180005782', // Isnandy Arief Widodo, S.T.
+        //     ])
+        //     ->chunk(
+        //         50,
+        //         fn($users) =>
+        //         $users->each->assignRole('operator_kerusakan_gedung')
+        //     );
 
         //----------------------------------------------------------------
 
@@ -138,6 +141,7 @@ class AssignRolesSeeder extends Seeder
         User::whereHas('pegawai', fn($q) => $q->where('kode_unit', '02'))
             ->whereIn('nip_sso', [
                 '180005593', // Mukti Cahyani, S.H., M.H.
+                '180004763', // Woro Dyah Tri Siswanti, S.T., M.E.
             ])
             ->chunk(
                 50,
@@ -162,6 +166,7 @@ class AssignRolesSeeder extends Seeder
         // Admin ATK
         User::whereHas('pegawai', fn($q) => $q->where('kode_unit', '02'))
             ->whereIn('nip_sso', [
+                '180004943', // Faniagi Hardianto, S.AP., M.AP.
                 '180004237', // Hari Sugiharto, S.T., M.M.
                 '180005738', // Danang Ari Suwito, S.Sos.
             ])

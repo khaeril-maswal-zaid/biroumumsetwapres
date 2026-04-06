@@ -49,20 +49,7 @@ class PemesananRuangRapatController extends Controller
         }
 
         // Cek apakah ruangan tersedia
-        $isConflict = PemesananRuangRapat::where('daftar_ruangan_id', $room->id)
-            ->where('tanggal_penggunaan', $request['date'])
-            ->where('status', 'booked')
-            ->where(function ($q) use ($request) {
-                $q->whereBetween('jam_mulai', [$request['startTime'], $request['endTime']])
-                    ->orWhereBetween('jam_selesai', [$request['startTime'], $request['endTime']])
-                    ->orWhere(function ($q2) use ($request) {
-                        $q2->where('jam_mulai', '<', $request['startTime'])
-                            ->where('jam_selesai', '>', $request['endTime']);
-                    });
-            })
-            ->exists();
-
-        if ($isConflict) {
+        if ($this->isTimeConflict($room->id, $request->date, $request->startTime, $request->endTime)) {
             return back()->withErrors(['room' => 'Ruangan tidak tersedia pada waktu tersebut']);
         }
 
@@ -137,19 +124,7 @@ class PemesananRuangRapatController extends Controller
         }
 
         // Cek apakah ruangan tersedia
-        $isConflict = PemesananRuangRapat::where('daftar_ruangan_id', $room->id)
-            ->where('tanggal_penggunaan', $request['date'])
-            ->where(function ($q) use ($request) {
-                $q->whereBetween('jam_mulai', [$request['startTime'], $request['endTime']])
-                    ->orWhereBetween('jam_selesai', [$request['startTime'], $request['endTime']])
-                    ->orWhere(function ($q2) use ($request) {
-                        $q2->where('jam_mulai', '<=', $request['startTime'])
-                            ->where('jam_selesai', '>=', $request['endTime']);
-                    });
-            })
-            ->exists();
-
-        if ($isConflict) {
+        if ($this->isTimeConflict($room->id, $request->date, $request->startTime, $request->endTime, $pemesananRuangRapat->id)) {
             return back()->withErrors(['room' => 'Ruangan tidak tersedia pada waktu tersebut']);
         }
 
@@ -222,5 +197,18 @@ class PemesananRuangRapatController extends Controller
     {
         $pemesananRuangRapat = new PemesananRuangRapat();
         return back()->with('availableRoom', $pemesananRuangRapat->availableRooms($request));
+    }
+
+    private function isTimeConflict($roomId, $date, $start, $end, $ignoreId = null)
+    {
+        return PemesananRuangRapat::where('daftar_ruangan_id', $roomId)
+            ->where('tanggal_penggunaan', $date)
+            ->where('status', 'booked')
+            ->when($ignoreId, fn($q) => $q->where('id', '!=', $ignoreId))
+            ->where(function ($q) use ($start, $end) {
+                $q->where('jam_mulai', '<', $end)
+                    ->where('jam_selesai', '>', $start);
+            })
+            ->exists();
     }
 }

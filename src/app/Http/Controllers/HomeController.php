@@ -7,6 +7,7 @@ use App\Models\KerusakanGedung;
 use App\Models\Notification;
 use App\Models\PemesananRuangRapat;
 use App\Models\PermintaanAtk;
+use App\Models\Service;
 use App\Models\User;
 use Inertia\Inertia;
 use Carbon\Carbon;
@@ -126,14 +127,18 @@ class HomeController extends Controller
 
     public function index()
     {
-        $requestHistory = $this->queryRapat
-            ->concat($this->queryKerusakan)
-            ->concat($this->queryAtk)
-            ->sortByDesc('created_at')
-            ->take(3)
-            ->values();
+        $data = [
+            'requestHistory' => $this->queryRapat
+                ->concat($this->queryKerusakan)
+                ->concat($this->queryAtk)
+                ->sortByDesc('created_at')
+                ->take(3)
+                ->values(),
 
-        return Inertia::render('biroumum/home', compact('requestHistory'));
+            'mainServices' => Service::where('is_main', true)->first(),
+        ];
+
+        return Inertia::render('biroumum/home', $data);
     }
 
     public function admin(PemesananRuangRapat $pemesananRuangRapat, KerusakanGedung $kerusakanGedung, PermintaanAtk $permintaanAtk)

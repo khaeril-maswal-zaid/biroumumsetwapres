@@ -18,21 +18,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
-import { SharedData, type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { type BreadcrumbItem } from '@/types';
+import { Head, Link, router } from '@inertiajs/react';
 import { ImageIcon, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Kerusakan Sarpras',
-        href: '/dashboard',
-    },
-];
+export default function DamagesAdmin({ kerusakan, typeTitle }: any) {
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: `Kerusakan Sarpras ${typeTitle}`,
+            href: '/dashboard',
+        },
+    ];
 
-export default function DamagesAdmin({ kerusakan }: any) {
     const { toast } = useToast();
-    const { auth } = usePage<SharedData>().props;
 
     useEffect(() => {
         const interval = setInterval(() => {

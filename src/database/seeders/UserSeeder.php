@@ -27,18 +27,26 @@ class UserSeeder extends Seeder
 
 
             [
-                'name' => 'Admin Kerusakan Gedung',
-                'email' => 'admingedung.umum@set.wapresri.go.id',
+                'name' => 'Admin Perbaikan Sarpras',
+                'email' => 'perbaikansarpras@set.wapresri.go.id',
                 'nip' => 'Adm1n945#',
-                'role' => 'admin_kerusakan_gedung',
+                'role' => 'admin_perbaikan_sarpras',
                 'biro' => '0238',
                 'jabatan' => 'Admin',
             ],
             [
-                'name' => 'Operator Kerusakan Gedung',
-                'email' => 'operatorgedung.umum@set.wapresri.go.id',
-                'nip' => 'Adm1n773#',
-                'role' => 'operator_kerusakan_gedung',
+                'name' => 'Operator Bangunan',
+                'email' => 'operatorbangunan@set.wapresri.go.id',
+                'nip' => 'Adm1n771#',
+                'role' => 'operator_bangunan_perbaikan_sarpras',
+                'biro' => '0238',
+                'jabatan' => 'Operator',
+            ],
+            [
+                'name' => 'Operator Perlengkapan',
+                'email' => 'operatorperlengkapan@set.wapresri.go.id',
+                'nip' => 'Adm1n772#',
+                'role' => 'operator_perlengkapan_perbaikan_sarpras',
                 'biro' => '0238',
                 'jabatan' => 'Operator',
             ],
@@ -80,15 +88,15 @@ class UserSeeder extends Seeder
             ],
 
 
-            [
-                'name' => 'User Layanan Biro Umum',
-                'email' => 'layananbiroumum@set.wapresri.go.id',
-                'nip' => 'User165#',
-                'nipsso' => '0',
-                'role' => 'supervisor',
-                'biro' => '0238',
-                'jabatan' => 'Operator',
-            ],
+            // [
+            //     'name' => 'User Layanan Biro Umum',
+            //     'email' => 'layananbiroumum@set.wapresri.go.id',
+            //     'nip' => 'User165#',
+            //     'nipsso' => '0',
+            //     'role' => 'supervisor',
+            //     'biro' => '0238',
+            //     'jabatan' => 'Operator',
+            // ],
         ];
 
         foreach ($data as $key => $value) {

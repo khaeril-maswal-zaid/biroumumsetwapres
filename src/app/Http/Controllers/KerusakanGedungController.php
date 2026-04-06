@@ -7,7 +7,6 @@ use App\Http\Requests\StoreKerusakanGedungRequest;
 use App\Http\Requests\UpdateKerusakanGedungRequest;
 use App\Models\KategoriKerusakan;
 use App\Models\Notification;
-use App\Models\UnitKerja;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
@@ -20,8 +19,29 @@ class KerusakanGedungController extends Controller
      */
     public function index()
     {
+        $permission = Auth::user()->getAllPermissions()->pluck('name');
+
+        if ($permission->contains('view_bangunan_damages')) {
+
+            $kerusakan = KerusakanGedung::whereHas('kategori', function ($query) {
+                $query->where('bagian_kategori', 'Bangunan');
+            });
+
+            $typeTitle = '- Bangunan';
+        } elseif ($permission->contains('view_perlengkapan_damages')) {
+            $kerusakan = KerusakanGedung::whereHas('kategori', function ($query) {
+                $query->where('bagian_kategori', 'Perlengkapan');
+            });
+
+            $typeTitle = '- Perlengkapan';
+        } else {
+            $kerusakan = KerusakanGedung::query();
+            $typeTitle = '';
+        }
+
         $data = [
-            'kerusakan' => KerusakanGedung::with('pelapor.pegawai')->with('kategori')->latest()->paginate(150)
+            'kerusakan' => $kerusakan->with('pelapor.pegawai')->with('kategori')->latest()->paginate(150),
+            'typeTitle' => $typeTitle,
         ];
 
         return Inertia::render('admin/damages/page', $data);
@@ -72,15 +92,22 @@ class KerusakanGedungController extends Controller
         ]);
 
         $pegawai = $laporan->pelapor->pegawai;
-        $message = "Laporan kerusakan gedung oleh {$pegawai->name} ({$pegawai->jabatan}) memerlukan peninjauan.";
+        $message = "Permintaan perbaikan sarpras oleh {$pegawai->name} ({$pegawai->jabatan}) memerlukan peninjauan.";
+
+        $isBangunan = $laporan->kategori->bagian_kategori == 'Bangunan';
+        if ($isBangunan) {
+            $permissions = ['view_admin_damages', 'view_bangunan_damages'];
+        } else {
+            $permissions = ['view_admin_damages', 'view_perlengkapan_damages'];
+        }
 
         // Buat notifikasi
         Notification::create([
             'kode_unit'   => $laporan->kode_unit,
-            'permissions' => ['view_damages'],
+            'permissions' => $permissions,
             'type'        => 'new',
             'category'    => 'damage',
-            'title'       => 'Laporan Kerusakan Gedung Baru',
+            'title'       => 'Permintaan Perbaikan Sarpras Baru',
             'message'     =>  $message,
             'priority'    => 'medium',
             'action_url'  => route('kerusakangedung.show', $laporan->kode_pelaporan, false),

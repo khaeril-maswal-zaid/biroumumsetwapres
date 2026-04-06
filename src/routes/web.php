@@ -42,11 +42,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/ruang-rapat/store', [PemesananRuangRapatController::class, 'store'])
         ->name('ruangrapat.store')->middleware('permission:create_booking');
 
+
     // Laporan Kerusakan Gedung (create_damage)
-    Route::get('/lapor-kerusakan-gedung', [KerusakanGedungController::class, 'create'])
+    Route::get('/perbaikan-perbaikan-sarana-prasarana', [KerusakanGedungController::class, 'create'])
         ->name('kerusakangedung.create')->middleware('permission:create_damage');
 
-    Route::post('/kerusakan-gedung/store', [KerusakanGedungController::class, 'store'])
+    Route::post('/perbaikan-sarana-prasarana/store', [KerusakanGedungController::class, 'store'])
         ->name('kerusakangedung.store')->middleware('permission:create_damage');
 
     // Permintaan ATK (create_supplies)
@@ -58,8 +59,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Permintaan Kendaraan (create_vehicle_request)
     Route::get('/permintaan-kendaraan', [PermintaanKendaraanController::class, 'create'])
-        ->name('permintaankendaraan.create');
-    // ->middleware('permission:create_vehicle');
+        ->name('permintaankendaraan.create')
+        ->middleware('permission:create_vehicle');
 
 
 
@@ -100,23 +101,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     // Manajemen Kerusakan (view_damages & change_damage_status)
-    Route::get('/dashboard/kerusakan-gedung', [KerusakanGedungController::class, 'index'])
+    Route::get('/dashboard/perbaikan-sarana-prasarana', [KerusakanGedungController::class, 'index'])
         ->name('kerusakangedung.index')
         ->middleware('permission:view_damages');
 
-    Route::get('/dashboard/kerusakan-gedung/detail/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'show'])
+
+    Route::get('/dashboard/perbaikan-sarana-prasarana/detail/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'show'])
         ->name('kerusakangedung.show')
         ->middleware('permission:view_damages');
 
-    Route::patch('/dashboard/kerusakan-gedung/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'status'])
+    Route::patch('/dashboard/perbaikan-sarana-prasarana/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'status'])
         ->name('kerusakangedung.status')
         ->middleware('permission:change_damage_status');
 
-    Route::patch('/dashboard/kerusakan-gedung/set-urgensi/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'urgensi'])
+    Route::patch('/dashboard/perbaikan-sarana-prasarana/set-urgensi/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'urgensi'])
         ->name('kerusakangedung.urgensi')
         ->middleware('permission:change_damage_status');
 
-    Route::delete('/dashboard/kerusakan-gedung/delete/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'destroy'])
+    Route::delete('/dashboard/perbaikan-sarana-prasarana/delete/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'destroy'])
         ->name('kerusakangedung.destroy')
         ->middleware('permission:delete_all_requests');
 
@@ -195,6 +197,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('kategoriatk.index')
         ->middleware('permission:view_atk');
 
+    Route::post('/dashboard/kategori-atk', [KategoriAtkController::class, 'store'])
+        ->name('kategoriatk.store')
+        ->middleware('permission:create_atk');
+
     Route::put('/dashboard/kategori-atk/{kategoriAtk}', [KategoriAtkController::class, 'update'])
         ->name('kategoriatk.update')
         ->middleware('permission:create_atk');
@@ -272,7 +278,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('permission:report_supplies');
 
 
-    Route::get('/dashboard/kerusakan-gedung/reports', [KerusakanGedungController::class, 'reports'])
+    Route::get('/dashboard/perbaikan-sarana-prasarana/reports', [KerusakanGedungController::class, 'reports'])
         ->name('kerusakangedung.reports')
         ->middleware('permission:report_damages');
 
