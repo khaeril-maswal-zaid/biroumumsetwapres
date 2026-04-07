@@ -18,57 +18,61 @@ class PermintaanAtkFactory extends Factory
      */
     public function definition(): array
     {
-        $atkItems = [
-            'Pulpen',
-            'Pensil',
-            'Penghapus',
-            'Penggaris',
-            'Spidol',
-            'Stabilo',
-            'Tipe-X',
-            'Buku Catatan',
-            'Sticky Notes',
-            'Map Plastik',
-            'Map Kertas',
-            'Ordner',
-            'Kertas HVS A4',
-            'Kertas HVS F4',
-            'Amplop',
-            'Binder Clip',
-            'Paper Clip',
-            'Stapler',
-            'Isi Staples',
-            'Gunting',
-            'Cutter',
-            'Lakban',
-            'Double Tape',
-            'Lem Kertas',
-            'Lem UHU',
-            'Tinta Printer',
-            'Toner',
-        ];
+        $user = User::inRandomOrder()->first();
 
+        $jumlahItem = rand(1, 5);
+
+        $items = collect(range(1, $jumlahItem))->map(function () {
+            $requested = rand(1, 20);
+            $approved = rand(0, $requested);
+
+            return [
+                'id' => rand(1, 100),
+                'name' => fake()->randomElement([
+                    'Pulpen',
+                    'Pensil',
+                    'Kertas A4',
+                    'Map Folder',
+                    'Stapler',
+                    'Spidol',
+                    'Lakban',
+                ]),
+                'satuan' => fake()->randomElement([
+                    'pcs',
+                    'box',
+                    'rim',
+                    'pack',
+                ]),
+                'status' => fake()->randomElement([
+                    'available',
+                    'limited',
+                    'empty',
+                ]),
+                'requested' => $requested,
+                'approved' => $approved,
+            ];
+        })->values()->toArray();
 
         return [
-            'user_id' => User::inRandomOrder()->first()?->id ?? 1,
-            'instansi_id' => 4,
-            // 'unit_kerja' => User::inRandomOrder()->first()?->unit_kerja ?? 'Biro Umum',
-            'daftar_kebutuhan' =>
-            collect(range(1, rand(1, 5)))->map(fn() => [
-                'id' => (string) fake()->numberBetween(1, 100),
-                'name' => fake()->randomElement($atkItems),
-                'requested' => fake()->numberBetween(1, 25),
-                'approved' => 0,
-                'unit' => fake()->randomElement(['rim', 'pak', 'lusin', 'buah']),
-            ]),
-            'deskripsi' => '',
-            // 'urgensi' => fake()->randomElement(['normal', 'mendesak', 'segera']),
+            'user_id' => $user?->id ?? 1,
+            'kode_unit' => $user?->pegawai?->unit?->kode_unit,
+
+            'daftar_kebutuhan' => $items,
+
+            'deskripsi' => fake()->sentence(),
             'no_hp' => fake()->phoneNumber(),
-            'memo' => 'memo.pdf',
+
             'kode_pelaporan' => 'ATK-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
-            'status' => fake()->randomElement(['pending']), //['pending', 'process', 'confirmed']
+
+            'status' => fake()->randomElement([
+                'pending',
+                'partial',
+                'rejected',
+                'confirmed',
+            ]),
+
+            'keterangan' => fake()->sentence(),
             'is_read' => fake()->boolean(),
-            'keterangan' => fake()->text(250),
         ];
     }
 }

@@ -29,7 +29,7 @@ class HomeController extends Controller
                 $q->where('kode_biro', $kodeBiro);
             })
             ->orderByDesc('created_at')
-            ->take(70)
+            ->take(50)
             ->get()
             ->map(fn($r) => [
                 'id'                => 'booking',
@@ -64,7 +64,7 @@ class HomeController extends Controller
             ->whereHas('pelapor.pegawai', function ($q) use ($kodeBiro) {
                 $q->where('kode_biro', $kodeBiro);
             })
-            ->take(70)
+            ->take(50)
             ->get()
             ->map(fn($k) => [
                 'id'                 => 'damage',
@@ -99,7 +99,7 @@ class HomeController extends Controller
             ->whereHas('pemesan.pegawai', function ($q) use ($kodeBiro) {
                 $q->where('kode_biro', $kodeBiro);
             })
-            ->take(70)
+            ->take(50)
             ->get()
             ->map(fn($a) => [
                 'id'                 => 'supplies',
@@ -136,7 +136,7 @@ class HomeController extends Controller
                 ->concat($this->queryKerusakan)
                 ->concat($this->queryAtk)
                 ->sortByDesc('created_at')
-                ->take(3)
+                ->take(5)
                 ->values(),
 
             'mainServices' => Service::where('is_main', true)->first(),

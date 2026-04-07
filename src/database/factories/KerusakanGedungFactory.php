@@ -19,21 +19,61 @@ class KerusakanGedungFactory extends Factory
      */
     public function definition(): array
     {
+        $user = User::inRandomOrder()->first();
+
+        $kategori = KategoriKerusakan::inRandomOrder()->first();
+
+        $pictures = [
+            'images/kerusakan-gedung/' . fake()->uuid() . '.jpg',
+            'images/kerusakan-gedung/' . fake()->uuid() . '.jpg',
+        ];
+
         return [
-            'user_id' => User::inRandomOrder()->first()?->id ?? 1,
-            'instansi_id' => 4,
-            // 'unit_kerja' => User::inRandomOrder()->first()?->unit_kerja ?? 'Biro Umum',
-            'lokasi' => 'Lantai ' . fake()->numberBetween(1, 5) . ', Ruang ' . fake()->numberBetween(101, 599),
-            'kategori_kerusakan_id' => KategoriKerusakan::inRandomOrder()->first()?->id ?? 1,
-            'item' => fake()->word(),
-            'deskripsi' => '',
-            'picture' =>  [fake()->image('public/storage/images/kerusakan-gedung', 640, 480, null, false), fake()->image('public/storage/images/kerusakan-gedung', 640, 480, null, false)],
+            'user_id' => $user?->id ?? 1,
+            'kode_unit' => $user?->pegawai?->unit?->kode_unit,
+
+            'kategori_kerusakan_id' => $kategori?->id ?? 1,
+
+            'lokasi' => fake()->randomElement([
+                'Ruang Rapat Utama',
+                'Lantai 2 Koridor Timur',
+                'Toilet Selatan',
+                'Area Parkir Belakang',
+                'Gudang Arsip',
+            ]),
+
+            'item' => fake()->randomElement([
+                'Lampu mati',
+                'AC bocor',
+                'Plafon rusak',
+                'Kran bocor',
+                'Pintu rusak',
+            ]),
+
+            'deskripsi' => fake()->sentence(),
+
+            'picture' => $pictures,
+
+            'urgensi' => fake()->randomElement([
+                'rendah',
+                'sedang',
+                'tinggi',
+                null,
+            ]),
+
             'no_hp' => fake()->phoneNumber(),
-            // 'urgensi' => fake()->randomElement(['rendah', 'sedang', 'tinggi']),
-            'kode_pelaporan' => 'KGD-' . now()->format('md') . '-' . strtoupper(Str::random(3)),
-            'status' => fake()->randomElement(['pending',]), //['pending', 'process', 'confirmed']
+
+            'kode_pelaporan' => 'KGD-' . now()->format('md') . '-' . strtoupper(fake()->unique()->bothify('???')),
+
+            'status' => fake()->randomElement([
+                'pending',
+                'process',
+                'confirmed',
+            ]),
+
+            'keterangan' => fake()->sentence(),
+
             'is_read' => fake()->boolean(),
-            'keterangan' => fake()->text(250),
         ];
     }
 }

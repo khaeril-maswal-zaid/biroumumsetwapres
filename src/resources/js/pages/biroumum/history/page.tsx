@@ -110,6 +110,28 @@ export default function RequestHistory({ requestHistory }: any) {
 
     const paginatedRequests = filteredRequests.slice((currentPage - 1) * perPage, (currentPage - 1) * perPage + perPage);
 
+    // Compact page range generator (adds ellipses when pages are many)
+    const getPageRange = () => {
+        const range: (number | string)[] = [];
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) range.push(i);
+            return range;
+        }
+
+        const left = Math.max(2, currentPage - 1);
+        const right = Math.min(totalPages - 1, currentPage + 1);
+
+        range.push(1);
+        if (left > 2) range.push('...');
+
+        for (let i = left; i <= right; i++) range.push(i);
+
+        if (right < totalPages - 1) range.push('...');
+        range.push(totalPages);
+
+        return range;
+    };
+
     const handleViewDetails = (request: any) => {
         setSelectedRequest(request);
         setIsDetailsOpen(true);
@@ -246,21 +268,23 @@ export default function RequestHistory({ requestHistory }: any) {
                                         </Button>
 
                                         <div className="flex items-center gap-1">
-                                            {Array.from({ length: totalPages }).map((_, idx) => {
-                                                const page = idx + 1;
-                                                const isActive = page === currentPage;
-                                                return (
+                                            {getPageRange().map((p, idx) =>
+                                                p === '...' ? (
+                                                    <span key={`dots-${idx}`} className="px-2 text-sm text-gray-500">
+                                                        …
+                                                    </span>
+                                                ) : (
                                                     <Button
-                                                        key={page}
-                                                        variant={isActive ? undefined : 'ghost'}
+                                                        key={`page-${p}`}
+                                                        variant={p === currentPage ? undefined : 'ghost'}
                                                         size="sm"
-                                                        onClick={() => setCurrentPage(page)}
-                                                        className={`${isActive ? 'bg-blue-600 text-white' : 'text-gray-700'} h-8 w-8 p-0`}
+                                                        onClick={() => setCurrentPage(Number(p))}
+                                                        className={`${p === currentPage ? 'bg-blue-600 text-white' : 'text-gray-700'} h-8 w-8 p-0`}
                                                     >
-                                                        {page}
+                                                        {p}
                                                     </Button>
-                                                );
-                                            })}
+                                                ),
+                                            )}
                                         </div>
 
                                         <Button
