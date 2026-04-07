@@ -748,14 +748,14 @@ export default function RequestHistory({ requestHistory }: any) {
                                                     >
                                                         {isVideo ? (
                                                             <video
-                                                                src={`/storage/${media}`}
+                                                                src={`/${media}`}
                                                                 className="h-full w-full object-cover"
                                                                 muted
                                                                 preload="metadata"
                                                             />
                                                         ) : (
                                                             <img
-                                                                src={`/storage/${media}?height=300&width=400&query=damage report media ${index + 1}`}
+                                                                src={`/${media}?height=300&width=400&query=damage report media ${index + 1}`}
                                                                 alt={`Media kerusakan ${index + 1}`}
                                                                 className="h-full w-full object-cover"
                                                             />
@@ -875,18 +875,14 @@ export default function RequestHistory({ requestHistory }: any) {
                         <div className="flex items-center justify-center bg-black/5 p-4">
                             {selectedImage && selectedImage.includes('video/') ? (
                                 <video
-                                    src={`/storage/${selectedImage}`}
+                                    src={`/${selectedImage}`}
                                     className="max-h-[70vh] w-full rounded-md object-contain"
                                     muted
                                     preload="metadata"
                                     controls
                                 />
                             ) : (
-                                <img
-                                    src={`/storage/${selectedImage}`}
-                                    alt="Media kerusakan"
-                                    className="max-h-[70vh] w-full rounded-md object-contain"
-                                />
+                                <img src={`/${selectedImage}`} alt="Media kerusakan" className="max-h-[70vh] w-full rounded-md object-contain" />
                             )}
                         </div>
 

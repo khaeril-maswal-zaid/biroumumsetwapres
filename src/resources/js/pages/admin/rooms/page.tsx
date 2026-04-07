@@ -257,7 +257,8 @@ export default function RoomsPage({ ruangans }: any) {
                         <Card key={room.id} className="min-h-135 gap-0 overflow-hidden pt-0">
                             <div className="relative aspect-video">
                                 <img
-                                    src={room.image ? `/storage/${room.image}` : '/placeholder.svg'}
+                                    src={room.image ? `/${room.image}` : '/placeholder.svg'}
+                                    // src={room.image ? `/storage/${room.image}` : '/placeholder.svg'}
                                     alt={room.nama_ruangan}
                                     className="h-68.75 w-full object-cover"
                                 />
@@ -378,7 +379,8 @@ export default function RoomsPage({ ruangans }: any) {
                                 {imagePreview && (
                                     <div className="mt-2">
                                         <img
-                                            src={`/storage/${imagePreview}` || '/placeholder.svg'}
+                                            src={`/${imagePreview}` || '/placeholder.svg'}
+                                            // src={`/storage/${imagePreview}` || '/placeholder.svg'}
                                             alt="Preview"
                                             className="h-62 w-full rounded-md border object-cover"
                                         />

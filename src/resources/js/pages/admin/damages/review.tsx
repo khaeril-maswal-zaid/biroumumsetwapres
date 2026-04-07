@@ -307,15 +307,10 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                                     onClick={() => handleViewMedia(media, index)}
                                                 >
                                                     {isVideo ? (
-                                                        <video
-                                                            src={`/storage/${media}`}
-                                                            className="h-full w-full object-cover"
-                                                            muted
-                                                            preload="metadata"
-                                                        />
+                                                        <video src={`/${media}`} className="h-full w-full object-cover" muted preload="metadata" />
                                                     ) : (
                                                         <img
-                                                            src={`/storage/${media}?height=300&width=400&query=damage report media ${index + 1}`}
+                                                            src={`/${media}?height=300&width=400&query=damage report media ${index + 1}`}
                                                             alt={`Media kerusakan ${index + 1}`}
                                                             className="h-full w-full object-cover"
                                                         />
@@ -781,13 +776,9 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                     {selectedMedia && (
                         <div className="relative flex items-center justify-center bg-black/5 p-4">
                             {selectedMedia.isVideo ? (
-                                <video src={`/storage/${selectedMedia.path}`} controls className="max-h-[70vh] w-auto rounded-md" />
+                                <video src={`/${selectedMedia.path}`} controls className="max-h-[70vh] w-auto rounded-md" />
                             ) : (
-                                <img
-                                    src={`/storage/${selectedMedia.path}`}
-                                    alt="Media kerusakan"
-                                    className="max-h-[70vh] w-auto rounded-md object-contain"
-                                />
+                                <img src={`/${selectedMedia.path}`} alt="Media kerusakan" className="max-h-[70vh] w-auto rounded-md object-contain" />
                             )}
                         </div>
                     )}
