@@ -8,7 +8,6 @@ use App\Models\Notification;
 use App\Models\PemesananRuangRapat;
 use App\Models\PermintaanAtk;
 use App\Models\Service;
-use App\Models\User;
 use Inertia\Inertia;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -21,14 +20,17 @@ class HomeController extends Controller
 
     public function __construct()
     {
-        $user = Auth::id();
+        $user = Auth::user();
+        $kodeBiro = $user->pegawai?->kode_biro;
 
         // Ambil Booking Rapat + relasi pemesan dan ruangans
         $this->queryRapat = PemesananRuangRapat::with(['pemesan.pegawai.biro', 'ruangans'])
+            ->whereHas('pemesan.pegawai', function ($q) use ($kodeBiro) {
+                $q->where('kode_biro', $kodeBiro);
+            })
             ->orderByDesc('created_at')
+            ->take(70)
             ->get()
-            ->where('user_id', $user)
-            ->take(7)
             ->map(fn($r) => [
                 'id'                => 'booking',
                 'type'              => 'Ruangan Rapat',
@@ -59,9 +61,11 @@ class HomeController extends Controller
         // Ambil data kerusakan + relasi pemesan
         $this->queryKerusakan = KerusakanGedung::with(['pelapor.pegawai.biro', 'kategori'])
             ->orderByDesc('created_at')
+            ->whereHas('pelapor.pegawai', function ($q) use ($kodeBiro) {
+                $q->where('kode_biro', $kodeBiro);
+            })
+            ->take(70)
             ->get()
-            ->where('user_id', $user)
-            ->take(7)
             ->map(fn($k) => [
                 'id'                 => 'damage',
                 'type'               => 'Kerusakan',
@@ -92,9 +96,11 @@ class HomeController extends Controller
         // Ambil data permintaan ATK + relasi pemesan
         $this->queryAtk = PermintaanAtk::with('pemesan.pegawai.biro')
             ->orderByDesc('created_at')
+            ->whereHas('pemesan.pegawai', function ($q) use ($kodeBiro) {
+                $q->where('kode_biro', $kodeBiro);
+            })
+            ->take(70)
             ->get()
-            ->where('user_id', $user)
-            ->take(7)
             ->map(fn($a) => [
                 'id'                 => 'supplies',
                 'type'               => 'ATK',
@@ -121,8 +127,6 @@ class HomeController extends Controller
                 'ti_support_detail' => null,
                 'hybrid_detail'     => null,
             ]);
-
-        // Gabungkan semuanya, urutkan, batasi 10
     }
 
     public function index()

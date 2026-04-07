@@ -2,9 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\KategoriKerusakan;
 use App\Models\KerusakanGedung;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class KerusakanGedungSeeder extends Seeder
@@ -14,6 +12,6 @@ class KerusakanGedungSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        KerusakanGedung::factory(50)->create();
     }
 }
