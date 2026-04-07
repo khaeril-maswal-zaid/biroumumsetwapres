@@ -24,7 +24,7 @@ class ServiceSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'name' => 'Perbaikan Sarpras',
+                'name' => 'Perbaikan Sarana Prasarana',
                 'contact' => '081-234-5678',
                 'url' => 'kerusakangedung.create',
                 'icon' => 'Wrench',

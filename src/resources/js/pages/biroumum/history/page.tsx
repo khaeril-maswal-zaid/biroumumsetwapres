@@ -17,6 +17,8 @@ import {
     Calendar,
     Car,
     CheckCircle,
+    ChevronLeft,
+    ChevronRight,
     Clock,
     ImageIcon,
     MapPin,
@@ -49,6 +51,10 @@ export default function RequestHistory({ requestHistory }: any) {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const [perPage, setPerPage] = useState(6);
 
     const handleComplete = async (requestCode: string, type: string) => {
         setIsProcessing(true);
@@ -89,6 +95,20 @@ export default function RequestHistory({ requestHistory }: any) {
             request.code.toLowerCase().includes(searchTerm.toLowerCase());
         return matchesSearch;
     });
+
+    // Reset to first page when filter/search changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
+    const totalPages = Math.max(1, Math.ceil(filteredRequests.length / perPage));
+
+    // Ensure current page is within valid range
+    useEffect(() => {
+        if (currentPage > totalPages) setCurrentPage(totalPages);
+    }, [currentPage, totalPages]);
+
+    const paginatedRequests = filteredRequests.slice((currentPage - 1) * perPage, (currentPage - 1) * perPage + perPage);
 
     const handleViewDetails = (request: any) => {
         setSelectedRequest(request);
@@ -176,7 +196,7 @@ export default function RequestHistory({ requestHistory }: any) {
                                     </CardContent>
                                 </Card>
                             ) : (
-                                filteredRequests.map((request: any) => (
+                                paginatedRequests.map((request: any) => (
                                     <Card key={request.code} className="gap-0 py-2 transition-shadow hover:shadow-md">
                                         <CardContent className="p-4">
                                             <div className="flex items-start justify-between">
@@ -207,6 +227,52 @@ export default function RequestHistory({ requestHistory }: any) {
                                         </CardContent>
                                     </Card>
                                 ))
+                            )}
+                            {filteredRequests.length > perPage && (
+                                <div className="mt-2 flex items-center justify-between gap-4">
+                                    <div className="text-sm text-gray-600">
+                                        Menampilkan {Math.min((currentPage - 1) * perPage + 1, filteredRequests.length)}-
+                                        {Math.min(currentPage * perPage, filteredRequests.length)} dari {filteredRequests.length}
+                                    </div>
+
+                                    <div className="flex items-center gap-1">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                            disabled={currentPage === 1}
+                                        >
+                                            <ChevronLeft className="h-4 w-4" />
+                                        </Button>
+
+                                        <div className="flex items-center gap-1">
+                                            {Array.from({ length: totalPages }).map((_, idx) => {
+                                                const page = idx + 1;
+                                                const isActive = page === currentPage;
+                                                return (
+                                                    <Button
+                                                        key={page}
+                                                        variant={isActive ? undefined : 'ghost'}
+                                                        size="sm"
+                                                        onClick={() => setCurrentPage(page)}
+                                                        className={`${isActive ? 'bg-blue-600 text-white' : 'text-gray-700'} h-8 w-8 p-0`}
+                                                    >
+                                                        {page}
+                                                    </Button>
+                                                );
+                                            })}
+                                        </div>
+
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                            disabled={currentPage === totalPages}
+                                        >
+                                            <ChevronRight className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     </div>
