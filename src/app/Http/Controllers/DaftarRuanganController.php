@@ -55,7 +55,8 @@ class DaftarRuanganController extends Controller
                 Storage::disk('public')->delete($daftarRuangan->image);
             }
 
-            $path = $request->file('photo')->store('images/rooms', 'public');
+            // $path = $request->file('photo')->store('images/rooms', 'public');
+            $path = $request->file('photo')->store('images/rooms', 'public_uploads');
         } else {
             $path = $daftarRuangan->image;
         }

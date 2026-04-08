@@ -28,7 +28,7 @@ class StoreDaftarRuanganRequest extends FormRequest
             'kapasitas_max' => 'nullable|string|max:255',
             'photo'         => 'nullable|file|image|mimes:jpg,jpeg,png,webp|max:5150',
             'status'        => 'nullable|in:aktif,maintenance,nonaktif',
-            'fasilitas'     => 'nullable|array',
+            'fasilitas'     => 'required|array',
             'fasilitas.*'   => 'string|max:100',
         ];
     }
@@ -47,6 +47,8 @@ class StoreDaftarRuanganRequest extends FormRequest
             'photo.mimes'           => 'Foto harus berformat jpg, jpeg, png, webp, gif, atau svg.',
             'photo.max'             => 'Ukuran foto maksimal 2MB.',
             'status.in'             => 'Status harus salah satu dari: aktif, maintenance, nonaktif.',
+
+            'fasilitas.required'    => 'Wajib memilih setidaknya satu fasilitas.',
             'fasilitas.array'       => 'Fasilitas harus dalam bentuk array.',
             'fasilitas.*.string'    => 'Setiap fasilitas harus berupa teks.',
         ];
