@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('daftar_ruangans', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('unit')->constrained()->cascadeOnDelete();
             $table->string('kode_unit')->nullable();
             $table->string('nama_ruangan');
             $table->string('kode_ruangan')->unique();
