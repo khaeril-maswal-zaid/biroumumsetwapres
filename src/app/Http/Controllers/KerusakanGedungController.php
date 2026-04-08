@@ -68,9 +68,9 @@ class KerusakanGedungController extends Controller
         foreach ($request->photos as $photo) {
             $mime = $photo->getMimeType();
             if (str_starts_with($mime, 'image/')) {
-                $path = $photo->store('images/kerusakan-gedung', 'public_uploads');
+                $path = $photo->store('images/kerusakan-gedung', 'public');
             } elseif (str_starts_with($mime, 'video/')) {
-                $path = $photo->store('video/kerusakan-gedung', 'public_uploads');
+                $path = $photo->store('video/kerusakan-gedung', 'public');
             }
             $photoPaths[] = $path;
         }

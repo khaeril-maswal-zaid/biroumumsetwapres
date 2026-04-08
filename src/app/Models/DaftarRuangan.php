@@ -43,7 +43,7 @@ class DaftarRuangan extends Model
         static::creating(function ($param) {
             do {
                 $random = strtoupper(Str::random(5)); // 5 huruf/angka acak
-                $code = 'KRN-' . $random;
+                $code = 'RPT-' . $random;
             } while (self::where('kode_ruangan', $code)->exists());
 
             $param->kode_ruangan = $code;

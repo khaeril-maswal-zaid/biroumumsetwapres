@@ -21,7 +21,7 @@ class KategoriAtk extends Model
         static::creating(function ($param) {
             do {
                 $random = strtoupper(Str::random(5)); // 5 huruf/angka acak
-                $code = 'KRG-' . $random;
+                $code = 'KTK-' . $random;
             } while (self::where('kode_kategori', $code)->exists());
 
             $param->kode_kategori = $code;
