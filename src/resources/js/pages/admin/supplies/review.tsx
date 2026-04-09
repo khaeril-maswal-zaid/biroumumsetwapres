@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { AlertCircle, ArrowLeft, Calendar, CheckCircle, MessageSquare, Package, Printer, User, X } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Calendar, CheckCircle, MessageSquare, Package, User, X } from 'lucide-react';
 import { useState } from 'react';
 ('use client');
 
@@ -319,21 +319,29 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                     </div>
                                 </div>
 
-                                {selectedRequest.status == 'confirmed' && (
-                                    <div className="flex justify-end">
-                                        <Button
+                                {selectedRequest.status != 'confirmed' && (
+                                    <div className="flex justify-end gap-2">
+                                        <Link href={route('pengambilan.index', selectedRequest.kode_pelaporan)}>
+                                            <Button
+                                                variant="outline"
+                                                className="flex items-center gap-2 border-blue-200 bg-transparent text-blue-700 hover:bg-blue-50"
+                                            >
+                                                Catatan Serah Terima
+                                            </Button>
+                                        </Link>
+
+                                        {/* <Button
                                             variant="outline"
-                                            className="flex items-center gap-2 bg-red-600 text-white hover:bg-red-700 hover:text-white"
+                                            className="flex items-center gap-2 border-red-600 bg-red-600 text-white hover:bg-red-700 hover:text-white"
                                             onClick={() => {
                                                 window.open(route('permintaanatk.tandaterima', selectedRequest.kode_pelaporan));
                                             }}
                                         >
-                                            <Printer className="h-4 w-4" />
+                                            <Printer className="h-4 w-4 text-white" />
                                             Tanda terima
-                                        </Button>
+                                        </Button> */}
                                     </div>
                                 )}
-
                                 {/* Request Details */}
                                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                                     <div className="space-y-4">

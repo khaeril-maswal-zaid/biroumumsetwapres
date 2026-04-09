@@ -15,7 +15,7 @@ class DaftarRuanganSeeder extends Seeder
     {
         $data = [
             [
-                'nama_ruangan' => 'Ruang Rapat',
+                'nama_ruangan' => 'Ruang Rapat GS 1',
                 'lokasi' => 'Gedung Sekretariat I Lantai 2',
                 'kapasitas' => '26+1',
                 'kapasitas_max' => '26+1',
@@ -23,7 +23,7 @@ class DaftarRuanganSeeder extends Seeder
                 'image' => 'set-1-lt-2-v1.jpg'
             ],
             [
-                'nama_ruangan' => 'Ruang Rapat',
+                'nama_ruangan' => 'Ruang Rapat GS 1',
                 'lokasi' => 'Gedung Sekretariat I Lantai 3',
                 'kapasitas' => '16+1',
                 'kapasitas_max' => '26+1',
@@ -31,7 +31,7 @@ class DaftarRuanganSeeder extends Seeder
                 'image' => 'set-1-lt-3.jpg'
             ],
             [
-                'nama_ruangan' => 'Ruang Rapat',
+                'nama_ruangan' => 'Ruang Rapat GS 1',
                 'lokasi' => 'Gedung Sekretariat I Lantai 4',
                 'kapasitas' => '26+1',
                 'kapasitas_max' => '26+1',
@@ -39,7 +39,7 @@ class DaftarRuanganSeeder extends Seeder
                 'image' => 'set-1-lt-4-v2.jpg'
             ],
             [
-                'nama_ruangan' => 'Ruang Rapat',
+                'nama_ruangan' => 'Ruang Rapat GS 1',
                 'lokasi' => 'Gedung Sekretariat I Lantai 5',
                 'kapasitas' => '16+1',
                 'kapasitas_max' => '20+1',
@@ -47,7 +47,7 @@ class DaftarRuanganSeeder extends Seeder
                 'image' => 'set-1-lt-5.jpg'
             ],
             [
-                'nama_ruangan' => 'Ruang Rapat',
+                'nama_ruangan' => 'Ruang Rapat GS 2',
                 'lokasi' => 'Gedung Sekretariat II Lantai 1',
                 'kapasitas' => '34+1',
                 'kapasitas_max' => '50+1',
@@ -55,7 +55,7 @@ class DaftarRuanganSeeder extends Seeder
                 'image' => 'set-2-lt-1-v1.jpg'
             ],
             [
-                'nama_ruangan' => 'HOLDING TAMU SKWP I',
+                'nama_ruangan' => 'Ruang Rapat HOLDING TAMU SKWP I',
                 'lokasi' => 'Ruang Sinergi Gedung Sekretariat II Lantai 2',
                 'kapasitas' => '6',
                 'kapasitas_max' => '6',
@@ -63,7 +63,7 @@ class DaftarRuanganSeeder extends Seeder
                 'image' => 'sinergi-2-lt-2-v1.jpg'
             ],
             [
-                'nama_ruangan' => 'HOLDING TAMU SKWP II',
+                'nama_ruangan' => 'Ruang Rapat HOLDING TAMU SKWP II',
                 'lokasi' => 'Ruang Sinergi Gedung Sekretariat II Lantai 2',
                 'kapasitas' => '8',
                 'kapasitas_max' => '8',
@@ -71,7 +71,7 @@ class DaftarRuanganSeeder extends Seeder
                 'image' => 'sinergi-2-lt-2-v2.jpg'
             ],
             [
-                'nama_ruangan' => 'Ruang Rapat',
+                'nama_ruangan' => 'Ruang Rapat GS 2',
                 'lokasi' => 'Gedung Sekretariat II Lantai 2',
                 'kapasitas' => '12+1',
                 'kapasitas_max' => '20+1',
@@ -79,7 +79,7 @@ class DaftarRuanganSeeder extends Seeder
                 'image' => 'set-2-lt-2-v1.jpg'
             ],
             [
-                'nama_ruangan' => 'Ruang Rapat',
+                'nama_ruangan' => 'Ruang Rapat GS 2',
                 'lokasi' => 'Gedung Sekretariat II Lantai 3',
                 'kapasitas' => '16+1',
                 'kapasitas_max' => '20+1',
@@ -87,7 +87,7 @@ class DaftarRuanganSeeder extends Seeder
                 'image' => 'set-2-lt-3.jpg'
             ],
             [
-                'nama_ruangan' => 'Ruang Rapat',
+                'nama_ruangan' => 'Ruang Rapat GS 2',
                 'lokasi' => 'Gedung Sekretariat II Lantai 4',
                 'kapasitas' => '26+1',
                 'kapasitas_max' => '26+1',
@@ -95,7 +95,7 @@ class DaftarRuanganSeeder extends Seeder
                 'image' => 'set-2-lt-4-v1.jpg'
             ],
             [
-                'nama_ruangan' => 'Ruang Rapat',
+                'nama_ruangan' => 'Ruang Rapat GS 2',
                 'lokasi' => 'Gedung Sekretariat II Lantai 5',
                 'kapasitas' => '6+1',
                 'kapasitas_max' => '10+1',
@@ -103,7 +103,7 @@ class DaftarRuanganSeeder extends Seeder
                 'image' => 'set-2-lt-5-v1.jpg'
             ],
             [
-                'nama_ruangan' => 'Ruang Rapat',
+                'nama_ruangan' => 'Ruang Rapat GS 3',
                 'lokasi' => 'Gedung Sekretariat III Lantai 2',
                 'kapasitas' => '31+1',
                 'kapasitas_max' => '31+1',
@@ -111,7 +111,7 @@ class DaftarRuanganSeeder extends Seeder
                 'image' => 'set-3-lt-2.jpg'
             ],
             [
-                'nama_ruangan' => 'Ruang Rapat',
+                'nama_ruangan' => 'Ruang Rapat GS 3',
                 'lokasi' => 'Gedung Penunjang Lantai 2',
                 'kapasitas' => '8+1',
                 'kapasitas_max' => '15+1',
@@ -120,12 +120,10 @@ class DaftarRuanganSeeder extends Seeder
             ],
         ];
 
-
         foreach ($data as $key => $value) {
             DaftarRuangan::create([
                 'kode_unit' => '02',
-                'nama_ruangan' =>  $value['lokasi'], // $value['nama_ruangan'],
-                // 'kode_ruangan' => 'RR-' . 51 + $key,
+                'nama_ruangan' => $value['nama_ruangan'],
                 'lokasi' => $value['lokasi'],
                 'kapasitas' => $value['kapasitas'],
                 'kapasitas_max' => $value['kapasitas_max'],

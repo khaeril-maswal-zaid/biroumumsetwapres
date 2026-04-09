@@ -43,13 +43,15 @@ const formatTanggalIna = (tanggal: string) => {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Detail Permintaan',
         href: '/dashboard',
     },
 ];
 
 export default function BookingDetailsPage({ selectedDamage }: any) {
     const { toast } = useToast();
+
+    console.log(selectedDamage);
 
     const [selectedMedia, setSelectedMedia] = useState<{ path: string; isVideo: boolean } | null>(null);
     const [isMediaViewerOpen, setIsMediaViewerOpen] = useState(false);
@@ -97,7 +99,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                 setIsProcessing(false);
                 setAdminMessage('');
                 setActionType(null);
-                toast({ title: 'Berhasil', description: 'Status kerusakan berhasil diperbarui' });
+                toast({ title: 'Berhasil', description: 'Status perbaikan berhasil diperbarui' });
             },
             onError: (errors) => {
                 toast({ title: 'Gagal', description: Object.values(errors)[0], variant: 'destructive' });
@@ -162,7 +164,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                 onSuccess: () => {
                     // keep the selection visible after success (UI will reflect saved urgency)
                     setIsProcessing(false);
-                    toast({ title: 'Berhasil', description: 'Urgensi kerusakan berhasil diperbarui' });
+                    toast({ title: 'Berhasil', description: 'Urgensi perbaikan berhasil diperbarui' });
                 },
                 onError: (errors) => {
                     toast({
@@ -172,7 +174,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                     });
 
                     setIsProcessing(false);
-                    toast({ title: 'Gagal', description: 'Urgensi kerusakan gagal diperbarui', variant: 'destructive' });
+                    toast({ title: 'Gagal', description: 'Urgensi perbaikan gagal diperbarui', variant: 'destructive' });
                 },
             },
         );
@@ -202,7 +204,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Detal Laporan Kerusakan Sarpras" />
+            <Head title="Detail Permintaan Perbaikan Sarpras" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
                 <Link href={route('kerusakangedung.index')}>
                     <Button
@@ -218,9 +220,9 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                     <CardHeader>
                         <CardTitle className="mb-2 flex items-center gap-1">
                             <Calendar className="inline-block h-5 w-5" />
-                            <span className="py-auto"> Detail Laporan Kerusakan</span>
+                            <span className="py-auto">Detail Permintaan Perbaikan Sarpras</span>
                         </CardTitle>
-                        <CardDescription>Tinjau informasi laporan kerusakan dan berikan tindakan dengan pesan untuk pelapor.</CardDescription>
+                        <CardDescription>Tinjau informasi permintaan perbaikan dan berikan tindakan dengan pesan untuk pelapor.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-6">
@@ -246,8 +248,8 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                     <div className="flex items-start gap-3">
                                         <Users className="my-auto h-5 w-5 text-blue-600" />
                                         <div>
-                                            <p className="font-medium text-gray-900">{selectedDamage?.pelapor?.pegawai?.name}</p>
-                                            <p className="text-xs text-gray-600">{selectedDamage?.pelapor?.pegawai?.biro?.nama_biro}</p>
+                                            <p className="font-medium text-gray-900">{selectedDamage?.pelapor?.name}</p>
+                                            <p className="text-xs text-gray-600">{selectedDamage?.pelapor?.biro?.nama_biro}</p>
                                             <p className="text-xs text-gray-500">{selectedDamage.no_hp}</p>
                                         </div>
                                     </div>
@@ -286,7 +288,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                     <div className="flex items-center gap-3">
                                         <AlertTriangle className="h-5 w-5 text-purple-600" />
                                         <div>
-                                            <p className="font-medium text-gray-900">Kategori Kerusakan</p>
+                                            <p className="font-medium text-gray-900">Kategori Perbaikan</p>
                                             <p className="text-sm text-gray-600">{selectedDamage?.kategori.name}</p>
                                         </div>
                                     </div>
@@ -296,7 +298,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                             {/* Foto / Video */}
                             {selectedDamage.picture.length > 0 && (
                                 <>
-                                    <p className="mb-3 font-medium text-gray-900">Foto / Video Kerusakan ({selectedDamage.picture.length})</p>
+                                    <p className="mb-3 font-medium text-gray-900">Foto / Video ({selectedDamage.picture.length})</p>
                                     <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
                                         {selectedDamage.picture.map((media: string, index: number) => {
                                             const isVideo = media.includes('video/');
@@ -367,7 +369,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2">
                                     <AlertTriangle className="h-5 w-5 text-amber-600" />
-                                    <h4 className="font-semibold text-gray-900">Tentukan Tingkat Urgensi Kerusakan</h4>
+                                    <h4 className="font-semibold text-gray-900">Tentukan Tingkat Urgensi Perbaikan</h4>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-3">
@@ -582,7 +584,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                                         id="admin-message"
                                                         placeholder={
                                                             actionType === 'confirmed' && selectedDamage.status === 'pending'
-                                                                ? 'Jelaskan alasan penolakan laporan kerusakan...'
+                                                                ? 'Jelaskan alasan penolakan permintaan perbaikan...'
                                                                 : actionType === 'confirmed' && selectedDamage.status === 'process'
                                                                   ? 'Konfirmasi bahwa perbaikan telah selesai dan berikan informasi terkait...'
                                                                   : 'Berikan informasi terkait persetujuan dan langkah selanjutnya...'
@@ -648,7 +650,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                                 <Clock className="h-5 w-5 text-blue-600" />
                                                 Log Aktivitas Proses
                                             </CardTitle>
-                                            <CardDescription>Riwayat update dan progres penanganan laporan kerusakan</CardDescription>
+                                            <CardDescription>Riwayat update dan progres penanganan permintaan perbaikan</CardDescription>
                                         </CardHeader>
                                         <CardContent className="space-y-4">
                                             {processLogs.length === 0 ? (
@@ -729,7 +731,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                 type="date"
                                 value={processDate}
                                 onChange={(e) => setProcessDate(e.target.value)}
-                                className="w-full"
+                                className="mt-1 w-full"
                             />
                         </div>
                         <div className="space-y-2">
@@ -740,7 +742,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                 value={processText}
                                 onChange={(e) => setProcessText(e.target.value)}
                                 rows={3}
-                                className="resize-none"
+                                className="mt-1 resize-none"
                             />
                         </div>
                     </div>
@@ -770,7 +772,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
             <Dialog open={isMediaViewerOpen} onOpenChange={setIsMediaViewerOpen}>
                 <DialogContent className="overflow-hidden p-0 sm:max-w-3xl">
                     <DialogHeader className="p-4 pb-2">
-                        <DialogTitle>Foto / Video Kerusakan</DialogTitle>
+                        <DialogTitle>Foto / Video </DialogTitle>
                     </DialogHeader>
 
                     {selectedMedia && (

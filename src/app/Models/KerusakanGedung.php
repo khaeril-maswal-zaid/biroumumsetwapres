@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 #[ScopedBy([InstansiScope::class])]
@@ -38,6 +39,23 @@ class KerusakanGedung extends Model
         'is_read'
     ];
 
+    public function scopeByPermission($query)
+    {
+        $user = Auth::user();
+        $permissions = $user->getAllPermissions()->pluck('name');
+
+        return $query->when($permissions->contains('view_bangunan_damages'), function ($q) {
+            $q->whereHas('kategori', function ($query) {
+                $query->where('bagian_kategori', 'Bangunan');
+            });
+        })->when($permissions->contains('view_perlengkapan_damages'), function ($q) {
+            $q->whereHas('kategori', function ($query) {
+                $query->where('bagian_kategori', 'Perlengkapan');
+            });
+        });
+    }
+
+
     public function pelapor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -56,52 +74,28 @@ class KerusakanGedung extends Model
 
     public function summaryData()
     {
-        $now = Carbon::now();
-        $startOfThisMonth = $now->copy()->startOfMonth();
-        $startOfLastMonth = $now->copy()->subMonth()->startOfMonth();
-        $endOfLastMonth = $now->copy()->subMonth()->endOfMonth();
+        $query = self::byPermission();
 
-        // Total semua data
-        $totalAllTime = $this->count();
-        $totalPending = $this->where('status', 'pending')->count();
-        $totalInprocess = $this->where('status', 'process')->count();
-        $totalConfirmed = $this->where('status', 'confirmed')->count();
-
-        // Bulan ini
-        $thisMonthTotal = $this->whereBetween('created_at', [$startOfThisMonth, $now])->count();
-        $thisMonthPending = $this->where('status', 'pending')->whereBetween('created_at', [$startOfThisMonth, $now])->count();
-        $thisMonthInprocess = $this->where('status', 'process')->whereBetween('created_at', [$startOfThisMonth, $now])->count();
-        $thisMonthConfirmed = $this->where('status', 'confirmed')->whereBetween('created_at', [$startOfThisMonth, $now])->count();
-
-        // Bulan lalu
-        $lastMonthTotal = $this->whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])->count();
-        $lastMonthPending = $this->where('status', 'pending')->whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])->count();
-        $lastMonthInprocess = $this->where('status', 'process')->whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])->count();
-        $lastMonthConfirmed = $this->where('status', 'confirmed')->whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])->count();
+        $totalAllTime = $query->count();
+        $totalPending = (clone $query)->where('status', 'pending')->count();
+        $totalInprocess = (clone $query)->where('status', 'process')->count();
+        $totalConfirmed = (clone $query)->where('status', 'confirmed')->count();
 
         return [
             'totalReports' => [
                 'value' => $totalAllTime,
-                'change' => $thisMonthTotal - $lastMonthTotal,
-                'trend' => ($thisMonthTotal - $lastMonthTotal) >= 0 ? 'up' : 'down',
                 'title' => 'Total Laporan',
             ],
             'pending' => [
                 'value' => $totalPending,
-                'change' => $thisMonthPending - $lastMonthPending,
-                'trend' => ($thisMonthPending - $lastMonthPending) >= 0 ? 'up' : 'down',
                 'title' => 'Menunggu',
             ],
             'processed' => [
                 'value' => $totalInprocess,
-                'change' => $thisMonthInprocess - $lastMonthInprocess,
-                'trend' => ($thisMonthInprocess - $lastMonthInprocess) >= 0 ? 'up' : 'down',
                 'title' => 'Proses',
             ],
             'confirmed' => [
                 'value' => $totalConfirmed,
-                'change' => $thisMonthConfirmed - $lastMonthConfirmed,
-                'trend' => ($thisMonthConfirmed - $lastMonthConfirmed) >= 0 ? 'up' : 'down',
                 'title' => 'Selesai',
             ],
         ];
@@ -109,20 +103,22 @@ class KerusakanGedung extends Model
 
     public function statusDistribution()
     {
+        $query = self::byPermission();
+
         return [
             [
                 'name'  => 'Selesai',
-                'value' => $this->where('status', 'confirmed')->count(),
+                'value' => (clone $query)->where('status', 'confirmed')->count(),
                 'color' => '#10b981',
             ],
             [
                 'name'  => 'Proses',
-                'value' => $this->where('status', 'process')->count(),
+                'value' => (clone $query)->where('status', 'process')->count(),
                 'color' => '#ef4444',
             ],
             [
                 'name'  => 'Menunggu',
-                'value' => $this->where('status', 'pending')->count(),
+                'value' => (clone $query)->where('status', 'pending')->count(),
                 'color' => '#f59e0b',
             ],
         ];
@@ -130,7 +126,8 @@ class KerusakanGedung extends Model
 
     public function damageTypeData()
     {
-        $data = $this->with('kategori')
+        $query = self::byPermission();
+        $data =  (clone $query)->with('kategori')
             ->get()
             ->groupBy('kategori_kerusakan_id')
             ->map(function ($items) {
@@ -150,7 +147,8 @@ class KerusakanGedung extends Model
 
     public function reporterStats()
     {
-        $topReporters = $this->with('pelapor.pegawai.biro')
+        $query = self::byPermission();
+        $topReporters =  (clone $query)->with('pelapor.pegawai.biro')
             ->get()
             ->groupBy('user_id')
             ->map(function ($group) {
@@ -165,7 +163,7 @@ class KerusakanGedung extends Model
             ->take(5)
             ->values();
 
-        $divisionReports = $this->with('pelapor.pegawai.biro')
+        $divisionReports =  (clone $query)->with('pelapor.pegawai.biro')
             ->get()
             ->groupBy(fn($item) => $item?->pelapor->pegawai->biro->nama_biro  ?? 'Tidak Diketahui')
             ->map(function ($group, $division) {
@@ -185,7 +183,8 @@ class KerusakanGedung extends Model
 
     public function locationData()
     {
-        return $this->get()
+        $query = self::byPermission();
+        return (clone $query)->get()
             ->groupBy('lokasi')
             ->sortByDesc('reports')
             ->map(function ($group, $location) {
@@ -200,6 +199,7 @@ class KerusakanGedung extends Model
 
     public function monthlyTrends()
     {
+        $query = self::byPermission();
         $now = Carbon::now();
 
         // Siapkan array 6 bulan terakhir
@@ -213,7 +213,7 @@ class KerusakanGedung extends Model
             $monthEnd = $monthStart->copy()->endOfMonth();
             $monthLabel = $monthStart->translatedFormat('F'); // atau 'F' untuk panjang
 
-            $query = $this->whereBetween('created_at', [$monthStart, $monthEnd]);
+            $query =  (clone $query)->whereBetween('created_at', [$monthStart, $monthEnd]);
 
             $total = $query->count();
             $monthlyData[] = [
@@ -228,13 +228,14 @@ class KerusakanGedung extends Model
 
     public function urgencyData()
     {
+        $query = self::byPermission();
         $colors = [
             'rendah' => '#10b981',   // green
             'sedang' => '#f59e0b',   // yellow
             'tinggi' => '#ef4444',   // red
         ];
 
-        return $this->get()
+        return (clone $query)->get()
             ->groupBy('urgensi')
             ->map(function ($group, $urgensi) use ($colors) {
                 return [

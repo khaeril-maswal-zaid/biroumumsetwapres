@@ -131,7 +131,10 @@ export default function SuppliesAdmin({ permintaanAtk }: any) {
                                                     </Button>
                                                 </TableCell> */}
                                                 <TableCell className="text-right">
-                                                    <Link className="font-medium" href={route('permintaanatk.show', supply.kode_pelaporan)}>
+                                                    <Link
+                                                        className="inline-flex items-center gap-1 font-medium text-gray-600 hover:text-gray-800"
+                                                        href={route('permintaanatk.show', supply.kode_pelaporan)}
+                                                    >
                                                         Detail
                                                     </Link>
                                                 </TableCell>

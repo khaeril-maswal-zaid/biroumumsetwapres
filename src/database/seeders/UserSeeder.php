@@ -119,6 +119,8 @@ class UserSeeder extends Seeder
             ]);
         }
 
+        die;
+
         $users = [
             [
                 'id' => '1',

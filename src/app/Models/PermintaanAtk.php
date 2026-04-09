@@ -37,6 +37,16 @@ class PermintaanAtk extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function pengambilanDetails()
+    {
+        return $this->hasManyThrough(
+            PengambilanAtkDetail::class,
+            PengambilanAtk::class
+        );
+    }
+
+
+
     public function summaryData()
     {
         $now = Carbon::now();

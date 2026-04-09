@@ -20,13 +20,13 @@ import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ImageIcon, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function DamagesAdmin({ kerusakan, typeTitle }: any) {
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: `Kerusakan Sarpras ${typeTitle}`,
+            title: `Perbaikan Sarpras ${typeTitle}`,
             href: '/dashboard',
         },
     ];
@@ -45,6 +45,7 @@ export default function DamagesAdmin({ kerusakan, typeTitle }: any) {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [bagianFilter, setBagianFilter] = useState('all');
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
     // Filter damages based on search term and status
@@ -55,8 +56,8 @@ export default function DamagesAdmin({ kerusakan, typeTitle }: any) {
             damage.kode_pelaporan.toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesStatus = statusFilter === 'all' || damage.status === statusFilter;
-
-        return matchesSearch && matchesStatus;
+        const matchesBagian = bagianFilter === 'all' || damage?.kategori?.bagian_kategori === bagianFilter;
+        return matchesSearch && matchesStatus && matchesBagian;
     });
 
     const handleDelete = (kodePelaporan: string) => {
@@ -96,7 +97,17 @@ export default function DamagesAdmin({ kerusakan, typeTitle }: any) {
                                         <SelectItem value="all">Semua Status</SelectItem>
                                         <SelectItem value="pending">Menunggu</SelectItem>
                                         <SelectItem value="confirmed">Selesai</SelectItem>
-                                        <SelectItem value="cancelled">Ditolak</SelectItem>
+                                    </SelectContent>
+                                </Select>
+
+                                <Select value={bagianFilter} onValueChange={setBagianFilter}>
+                                    <SelectTrigger className="w-45">
+                                        <SelectValue placeholder="Filter Bagian" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Semua Bagian</SelectItem>
+                                        <SelectItem value="Perlengkapan">Perlengkapan</SelectItem>
+                                        <SelectItem value="Bangunan">Bangunan</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -110,10 +121,11 @@ export default function DamagesAdmin({ kerusakan, typeTitle }: any) {
                                         <TableHead>Kode Laporan</TableHead>
                                         <TableHead>Nama Pelapor</TableHead>
                                         <TableHead>Lokasi</TableHead>
-                                        <TableHead className="hidden md:table-cell">Nama Item Rusak</TableHead>
+                                        <TableHead>Nama Item Rusak</TableHead>
+                                        <TableHead>Kategori</TableHead>
                                         <TableHead>Urgensi</TableHead>
+                                        {typeTitle != '- Bangunan' && typeTitle != '- Perlengkapan' && <TableHead>Bagian</TableHead>}
                                         <TableHead>Status</TableHead>
-                                        <TableHead className="hidden md:table-cell">Foto</TableHead>
                                         <TableHead className="text-center">Aksi</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -134,28 +146,35 @@ export default function DamagesAdmin({ kerusakan, typeTitle }: any) {
                                                     <div className="text-sm text-gray-500">{damage.unit_kerja}</div>
                                                 </TableCell>
                                                 <TableCell>{damage.lokasi}</TableCell>
-                                                <TableCell className="hidden md:table-cell">{damage.item}</TableCell>
+                                                <TableCell>{damage.item}</TableCell>
+                                                <TableCell>{damage?.kategori?.name}</TableCell>
                                                 <TableCell>
                                                     <UrgensiBadge urgensi={damage.urgensi} />
                                                 </TableCell>
+                                                {typeTitle != '- Bangunan' && typeTitle != '- Perlengkapan' && (
+                                                    <TableCell>
+                                                        <Badge
+                                                            variant="outline"
+                                                            className={
+                                                                damage?.kategori?.bagian_kategori === 'Perlengkapan'
+                                                                    ? 'border-blue-200 bg-blue-100 text-blue-700'
+                                                                    : damage?.kategori?.bagian_kategori === 'Bangunan'
+                                                                      ? 'border-amber-200 bg-amber-100 text-amber-700'
+                                                                      : 'border-gray-200 bg-gray-100 text-gray-700'
+                                                            }
+                                                        >
+                                                            {damage?.kategori?.bagian_kategori}
+                                                        </Badge>
+                                                    </TableCell>
+                                                )}
                                                 <TableCell>
                                                     <StatusBadge status={damage.status} isRead={damage.is_read} />
-                                                </TableCell>
-                                                <TableCell className="hidden md:table-cell">
-                                                    {damage.picture.length > 0 ? (
-                                                        <Badge variant="outline" className="flex items-center gap-1">
-                                                            <ImageIcon className="h-3 w-3" />
-                                                            <span>{damage.picture.length}</span>
-                                                        </Badge>
-                                                    ) : (
-                                                        <span className="text-sm text-gray-500">-</span>
-                                                    )}
                                                 </TableCell>
                                                 <TableCell className="text-center">
                                                     {/* <div className="inline-flex items-center justify-center"> */}
                                                     <Link
                                                         href={route('kerusakangedung.show', damage.kode_pelaporan)}
-                                                        className="inline-flex items-center gap-1 font-medium"
+                                                        className="inline-flex items-center gap-1 font-medium text-gray-600 hover:text-gray-800"
                                                     >
                                                         {/* <Eye className="h-4 w-4" /> */}
                                                         Lihat Detail

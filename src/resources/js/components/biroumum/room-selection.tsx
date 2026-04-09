@@ -347,28 +347,24 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
 
                             {/* Room Info */}
                             <div className="space-y-5">
-                                <div>
+                                <div className="space-y-3">
                                     <h3 className="text-xl font-semibold">{selectedRoomDetail.nama_ruangan}</h3>
-                                    {/* <p className="text-sm text-gray-500">Kode Ruangan: {selectedRoomDetail.kode_ruangan}</p> */}
-                                </div>
-
-                                <div className="space-y-3 text-sm">
                                     {/* Lokasi */}
                                     <div className="flex items-center gap-2">
                                         <MapPin className="h-4 w-4 text-gray-500" />
-                                        <span>{selectedRoomDetail.lokasi}</span>
+                                        <span className="text-sm">{selectedRoomDetail.lokasi}</span>
                                     </div>
 
                                     {/* Kapasitas */}
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="flex items-center gap-2">
                                             <User className="h-4 w-4 text-gray-500" />
-                                            <span>Kapasitas: {selectedRoomDetail.kapasitas} orang</span>
+                                            <span className="text-sm">Kapasitas: {selectedRoomDetail.kapasitas} orang</span>
                                         </div>
 
                                         <div className="flex items-center gap-2">
                                             <Users className="h-4 w-4 text-gray-500" />
-                                            <span>Kapasitas Max: {selectedRoomDetail.kapasitas_max} orang</span>
+                                            <span className="text-sm">Kapasitas Max: {selectedRoomDetail.kapasitas_max} orang</span>
                                         </div>
                                     </div>
                                 </div>

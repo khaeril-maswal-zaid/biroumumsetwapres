@@ -40,7 +40,12 @@ class KerusakanGedungController extends Controller
         }
 
         $data = [
-            'kerusakan' => $kerusakan->with('pelapor.pegawai')->with('kategori')->latest()->paginate(150),
+            'kerusakan' => $kerusakan
+                ->select('id', 'kode_pelaporan', 'user_id', 'kategori_kerusakan_id', 'lokasi', 'item', 'urgensi', 'status')
+                ->with('pelapor.pegawai:name,nip')
+                ->with('kategori:id,name,bagian_kategori')
+                ->latest()
+                ->paginate(150),
             'typeTitle' => $typeTitle,
         ];
 
@@ -119,12 +124,33 @@ class KerusakanGedungController extends Controller
      */
     public function show(KerusakanGedung $kerusakanGedung)
     {
-        $kerusakanGedung->update(([
+        $kerusakanGedung->update([
             'is_read' => true
-        ]));
+        ]);
+
+        $kerusakanGedung->load('kategori', 'pelapor.pegawai.biro', 'logProgres');
 
         return Inertia::render('admin/damages/review', [
-            'selectedDamage' => $kerusakanGedung->load('kategori', 'pelapor.pegawai.biro', 'logProgres'),
+            'selectedDamage' => [
+                ...$kerusakanGedung->only([
+                    'id',
+                    'kode_pelaporan',
+                    'user_id',
+                    'kategori_kerusakan_id',
+                    'lokasi',
+                    'item',
+                    'deskripsi',
+                    'picture',
+                    'urgensi',
+                    'status',
+                    'keterangan',
+                    'no_hp',
+                    'created_at',
+                ]),
+                'kategori' => $kerusakanGedung->kategori->only('name'),
+                'pelapor' => $kerusakanGedung->pelapor->pegawai,
+                'processLogs' => $kerusakanGedung->logProgres,
+            ],
         ]);
     }
 

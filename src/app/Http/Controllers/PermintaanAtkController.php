@@ -221,20 +221,6 @@ class PermintaanAtkController extends Controller
         return Inertia::render('admin/reportssupplies/page', $data);
     }
 
-    public function showMemo($filename)
-    {
-        $path = storage_path("app/public/memo/{$filename}");
-
-        if (! file_exists($path)) {
-            abort(404, 'File not found.');
-        }
-
-        return response()->file($path, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="' . $filename . '"'
-        ]);
-    }
-
     public function tandaTerima(PermintaanAtk $permintaanAtk)
     {
         $items = collect($permintaanAtk->daftar_kebutuhan)

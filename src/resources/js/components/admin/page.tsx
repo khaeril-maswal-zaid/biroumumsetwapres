@@ -3,7 +3,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, CheckCircle, Clock, MapPin, TrendingDown, TrendingUp, Users, XCircle } from 'lucide-react';
+import { Calendar, CheckCircle, Clock, MapPin, Users, XCircle } from 'lucide-react';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 const iconMap: any = {
@@ -28,8 +28,8 @@ export default function DamageReports({
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <div className="ps-2">
-                        <h1 className="text-lg font-bold tracking-tight">Dashboard laporan Kerusakan Sarpras</h1>
-                        <p className="text-sm text-gray-500">Analisis mendalam tentang laporan kerusakan fasilitas.</p>
+                        <h1 className="text-lg font-bold tracking-tight">Dashboard permintaan perbaikan Sarpras</h1>
+                        <p className="text-sm text-gray-500">Analisis mendalam tentang permintaan perbaikan fasilitas.</p>
                     </div>
                 </div>
             </div>
@@ -46,9 +46,6 @@ export default function DamageReports({
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                         {Object.entries(summaryData).map(([key, item]: any) => {
                             const Icon = iconMap[key] || Calendar;
-                            const TrendIcon = item.trend === 'up' ? TrendingUp : TrendingDown;
-                            const trendColor = item.trend === 'up' ? 'text-green-500' : 'text-red-500';
-                            const trendPrefix = item.trend === 'up' ? '+' : '';
 
                             return (
                                 <Card key={key} className="gap-0">
@@ -58,11 +55,6 @@ export default function DamageReports({
                                     </CardHeader>
                                     <CardContent>
                                         <div className="text-4xl font-bold">{item.value}</div>
-                                        {/* <div className="flex items-center text-xs text-muted-foreground">
-                                                <TrendIcon className={`mr-1 h-3 w-3 ${trendColor}`} />
-                                                {trendPrefix}
-                                                {Math.abs(item.change)} dari bulan lalu
-                                            </div> */}
                                     </CardContent>
                                 </Card>
                             );
@@ -171,11 +163,11 @@ export default function DamageReports({
                                 <CardDescription>Rata-rata waktu respons dalam hari</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="h-[300px]">
-                                    <ResponsiveContainer width="100%" height={500}>
-                                        <BarChart data={damageTypeData}>
+                                <div className="h-96">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={damageTypeData} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
                                             <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="name" fontSize={12} />
+                                            <XAxis dataKey="name" fontSize={12} angle={-45} textAnchor="end" interval={0} height={60} />{' '}
                                             <YAxis fontSize={12} />
                                             <Tooltip
                                                 formatter={(value: any) => [`${value} laporan`, 'Jumlah']}
@@ -258,24 +250,12 @@ export default function DamageReports({
                                         <div key={division.division} className="space-y-2">
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <h4 className="font-medium">{division.division}</h4>
-                                                    <p className="text-sm text-gray-500">
+                                                    <h5 className="text-sm font-medium">{division.division}</h5>
+                                                    <p className="text-xs text-gray-500">
                                                         {division.reports} laporan • {division.resolved} selesai
                                                     </p>
                                                 </div>
-                                                {/* <Badge
-                                                        className={
-                                                            division.resolved / division.reports >= 0.8
-                                                                ? 'bg-green-100 text-green-800'
-                                                                : division.resolved / division.reports >= 0.6
-                                                                  ? 'bg-yellow-100 text-yellow-800'
-                                                                  : 'bg-red-100 text-red-800'
-                                                        }
-                                                    >
-                                                        {Math.round((division.resolved / division.reports) * 100)}% selesai
-                                                    </Badge> */}
                                             </div>
-                                            {/* <Progress value={(division.resolved / division.reports) * 100} className="h-2" /> */}
                                         </div>
                                     ))}
                                 </div>

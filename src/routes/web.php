@@ -8,6 +8,7 @@ use App\Http\Controllers\KategoriKerusakanController;
 use App\Http\Controllers\KerusakanGedungController;
 use App\Http\Controllers\LogProsesController;
 use App\Http\Controllers\PemesananRuangRapatController;
+use App\Http\Controllers\PengambilanAtkController;
 use App\Http\Controllers\PermintaanAtkController;
 use App\Http\Controllers\PermintaanKendaraanController;
 use App\Http\Controllers\RoleController;
@@ -124,7 +125,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 
-    // Manajemen ATK (view_supplies_requests & change_supplies_status)
+    // Manajemen Permintaan ATK (view_supplies_requests & change_supplies_status)
     Route::get('/dashboard/permintaan-atk', [PermintaanAtkController::class, 'index'])
         ->name('permintaanatk.index')
         ->middleware('permission:view_supplies');
@@ -318,6 +319,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/dashboard/isread-notfikasi-all', [HomeController::class, 'isReadAllNotfif'])
         ->name('notif.isreadall')
         ->middleware('permission:view_admin_dashboard');
+
+
+    //Pengambilan ATK
+    Route::get('/dashboard/pengambilan-atk/{permintaanAtk:kode_pelaporan}', [PengambilanAtkController::class, 'index'])
+        ->name('pengambilan.index')
+        ->middleware('permission:view_supplies');
+
+    Route::post('/dashboard/pengambilan-atk/store/{permintaanAtk:kode_pelaporan}', [PengambilanAtkController::class, 'store'])
+        ->name('pengambilan.store')
+        ->middleware('permission:view_supplies');
 });
 
 

@@ -28,7 +28,11 @@ export function UrgensiBadge({ urgensi, isRead }: StatusBadgeProps) {
     const config = STATUS_BADGE_CONFIG[urgensi as Urgensi];
 
     if (!config) {
-        return <Badge variant="outline">Belum Ditentukan</Badge>;
+        return (
+            <Badge variant="outline" className="bg-gray-100 text-gray-700">
+                Belum Ditentukan
+            </Badge>
+        );
     }
 
     const className = typeof config.className === 'function' ? config.className({ urgensi, isRead }) : config.className;

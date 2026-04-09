@@ -124,7 +124,10 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                                     <StatusBadge status={booking.status} isRead={booking.is_read} />
                                                 </TableCell>
                                                 <TableCell className="text-right">
-                                                    <Link className="font-medium" href={route('ruangrapat.show', booking.kode_booking)}>
+                                                    <Link
+                                                        className="inline-flex items-center gap-1 font-medium text-gray-600 hover:text-gray-800"
+                                                        href={route('ruangrapat.show', booking.kode_booking)}
+                                                    >
                                                         Detail
                                                     </Link>
                                                 </TableCell>
