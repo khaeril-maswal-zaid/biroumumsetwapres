@@ -37,13 +37,18 @@ class PermintaanAtk extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function pengambilanDetails()
+    public function pengambilans()
     {
-        return $this->hasManyThrough(
-            PengambilanAtkDetail::class,
-            PengambilanAtk::class
-        );
+        return $this->hasMany(PengambilanAtk::class);
     }
+
+    // public function pengambilanDetails()
+    // {
+    //     return $this->hasManyThrough(
+    //         PengambilanAtkDetail::class,
+    //         PengambilanAtk::class
+    //     );
+    // }
 
     public function summaryData()
     {

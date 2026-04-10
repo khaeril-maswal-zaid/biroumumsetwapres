@@ -10,9 +10,36 @@ class PengambilanAtkController extends Controller
 {
     public function index(PermintaanAtk $permintaanAtk)
     {
+        $permintaanAtk->load('pemesan.pegawai');
+
+        $pengambilan = $permintaanAtk
+            ->pengambilans()
+            ->with('details')
+            ->latest()
+            ->get();
+
+        $takenMap = $pengambilan
+            ->groupBy('item_id')
+            ->map(fn($items) => $items->sum('qty_diambil'));
+
+        $items = collect($permintaanAtk->daftar_kebutuhan)
+            ->map(function ($item) use ($takenMap) {
+                $taken = $takenMap[$item['id']] ?? 0;
+                $approved = (int) ($item['approved'] ?? 0);
+
+                return [
+                    ...$item,
+                    'sudah_diambil' => $taken,
+                    'sisa' => max(0, $approved - $taken),
+                ];
+            })->values();
+
         $data = [
-            'permintaanAtk' => $permintaanAtk->load('pemesan.pegawai'),
-            'pengambilanAtk' => $permintaanAtk->pengambilanDetails()->get(),
+            'permintaanAtk' => $permintaanAtk,
+            'pengambilanAtk' => $pengambilan,
+            'itemsSummary' => $items,
+            'kodePermintaan' => $permintaanAtk->kode_pelaporan,
+
         ];
 
         return inertia('admin/pengambilanatk/page', $data);

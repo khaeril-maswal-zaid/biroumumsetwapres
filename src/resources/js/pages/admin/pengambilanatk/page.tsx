@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Hand, Pen } from 'lucide-react';
+import { ArrowLeft, Calendar, Hand, Pen, Phone } from 'lucide-react';
 import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -20,10 +20,8 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk }: any) {
+export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk, itemsSummary, kodePermintaan }: any) {
     const { toast } = useToast();
-
-    console.log(pengambilanAtk, permintaanAtk);
 
     const [openModal, setOpenModal] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -45,11 +43,11 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk }: an
             no_hp: form.no_hp,
             tanggal_ambil: form.tanggal_ambil,
             keterangan: form.keterangan,
-            details: permintaanAtk.daftar_kebutuhan
-                .filter((item: any) => item.approved > 0 && item.status !== 'replaced')
+            details: itemsSummary
+                .filter((item: any) => item.sisa > 0)
                 .map((item: any) => ({
                     item_id: item.id,
-                    qty_diambil: item.approved,
+                    qty_diambil: item.sisa,
                 })),
         };
 
@@ -75,11 +73,13 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk }: an
         });
     };
 
+    const hasRemaining = itemsSummary.some((item: any) => item.sisa > 0);
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
-                <Link href={route('permintaanatk.index')}>
+                <Link href={route('permintaanatk.show', kodePermintaan)}>
                     <Button
                         variant="ghost"
                         className="mb-1 flex items-center space-x-2 border bg-accent text-accent-foreground hover:border-gray-300 hover:bg-gray-200"
@@ -105,12 +105,82 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk }: an
                                     className="flex items-center gap-2 border-blue-200 bg-transparent text-blue-700 hover:bg-blue-50"
                                     onClick={() => {
                                         setOpenModal(true);
+                                        setForm({
+                                            nama_pengambil: '',
+                                            no_hp: '',
+                                            tanggal_ambil: new Date().toISOString().slice(0, 10),
+                                            keterangan: '',
+                                            details: [],
+                                        });
                                     }}
                                 >
                                     <Pen className="h-4 w-4" />
                                     Buat Serah Terima
                                 </Button>
                             </div>
+
+                            {pengambilanAtk.length === 0 ? (
+                                <div className="text-center text-sm text-muted-foreground">Belum ada histori pengambilan.</div>
+                            ) : (
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    {pengambilanAtk.map((p: any) => (
+                                        <Card key={p.id} className="gap-0 p-4">
+                                            <div className="flex items-start justify-between gap-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-tr from-blue-600 to-indigo-600 font-semibold text-white">
+                                                        {String(p.nama_pengambil || '-')
+                                                            .split(' ')
+                                                            .map((n: any) => n[0])
+                                                            .slice(0, 2)
+                                                            .join('')}
+                                                    </div>
+
+                                                    <div>
+                                                        <p className="text-sm font-medium">{p.nama_pengambil}</p>
+                                                        <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                            <Phone className="h-3 w-3" /> {p.no_hp ?? '-'}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="text-right">
+                                                    <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                        <Calendar className="h-4 w-4" /> {p.tanggal_ambil}
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground">{p.kode ?? ''}</p>
+                                                </div>
+                                            </div>
+
+                                            {/* <div className="mt-3 text-sm text-muted-foreground">{p.keterangan ?? '-'}</div> */}
+
+                                            <div className="mt-4 divide-y divide-muted-foreground/20">
+                                                {p.details.map((d: any) => (
+                                                    <div key={d.id} className="flex items-center justify-between py-3 text-sm">
+                                                        <div className="min-w-0">
+                                                            <p className="truncate font-medium">{d.item_name}</p>
+                                                            <p className="text-xs text-muted-foreground">Satuan: {d.satuan ?? '-'}</p>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="text-right">
+                                                                <div className="font-medium">{d.qty_diambil}</div>
+                                                                <div className="text-xs text-muted-foreground">Diambil</div>
+                                                            </div>
+
+                                                            {/* <div className="text-right">
+                                                                <div className="text-sm font-medium text-emerald-600">
+                                                                    {d.sisa ?? d.remaining ?? '-'}
+                                                                </div>
+                                                                <div className="text-xs text-muted-foreground">Sisa</div>
+                                                            </div> */}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </Card>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
@@ -120,6 +190,8 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk }: an
                         <DialogHeader>
                             <DialogTitle className="flex items-center gap-2">Catat Serah Terima Item</DialogTitle>
                         </DialogHeader>
+
+                        {!hasRemaining && <p className="text-center text-sm text-muted-foreground">Semua item sudah diambil.</p>}
 
                         <div className="space-y-4">
                             <div className="grid gap-2">
@@ -153,8 +225,8 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk }: an
                             </div>
 
                             <div className="space-y-2">
-                                {permintaanAtk.daftar_kebutuhan
-                                    .filter((item: any) => item.approved > 0 && item.status !== 'replaced')
+                                {itemsSummary
+                                    .filter((item: any) => item.sisa > 0)
                                     .map((item: any) => (
                                         <div key={item.id} className="space-y-2 rounded-md border p-3">
                                             <div className="flex items-start justify-between">
@@ -163,6 +235,10 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk }: an
                                                     <p className="text-sm text-muted-foreground">
                                                         Approved: {item.approved} {item.satuan}
                                                     </p>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        Sudah diambil: {item.sudah_diambil} {item.satuan}
+                                                    </p>
+                                                    <p className="text-sm font-medium text-green-600">Sisa: {item.sisa}</p>
 
                                                     {item.status === 'replacement' && (
                                                         <p className="text-xs text-amber-600">Pengganti dari: {item.origin_id}</p>
@@ -178,7 +254,7 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk }: an
                             <Button variant="outline" onClick={() => setOpenModal(false)}>
                                 Batal
                             </Button>
-                            <Button onClick={() => handleSubmitCatatan()} disabled={isProcessing}>
+                            <Button onClick={() => handleSubmitCatatan()} disabled={isProcessing || !hasRemaining}>
                                 {isProcessing ? 'Menyimpan...' : 'Simpan & Serah Terima'}
                             </Button>
                         </DialogFooter>
