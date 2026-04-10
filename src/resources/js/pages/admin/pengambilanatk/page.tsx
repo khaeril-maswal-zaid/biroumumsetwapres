@@ -20,8 +20,10 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function SupplieDetailsPage({ permintaanAtk }: any) {
+export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk }: any) {
     const { toast } = useToast();
+
+    console.log(pengambilanAtk, permintaanAtk);
 
     const [openModal, setOpenModal] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);

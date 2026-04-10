@@ -12,6 +12,7 @@ class PengambilanAtkController extends Controller
     {
         $data = [
             'permintaanAtk' => $permintaanAtk->load('pemesan.pegawai'),
+            'pengambilanAtk' => $permintaanAtk->pengambilanDetails()->get(),
         ];
 
         return inertia('admin/pengambilanatk/page', $data);

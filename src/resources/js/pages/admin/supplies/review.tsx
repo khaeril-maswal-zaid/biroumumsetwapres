@@ -319,7 +319,7 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                     </div>
                                 </div>
 
-                                {selectedRequest.status != 'confirmed' && (
+                                {selectedRequest.status != 'pending' && (
                                     <div className="flex justify-end gap-2">
                                         <Link href={route('pengambilan.index', selectedRequest.kode_pelaporan)}>
                                             <Button

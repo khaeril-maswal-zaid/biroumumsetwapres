@@ -45,8 +45,6 @@ class PermintaanAtk extends Model
         );
     }
 
-
-
     public function summaryData()
     {
         $now = Carbon::now();
