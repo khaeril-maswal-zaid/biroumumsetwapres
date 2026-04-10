@@ -59,6 +59,7 @@ COPY ./config/.env /var/www
 RUN mkdir -p storage/app/public/images \
     && cp -r public/images/. storage/app/public/images/
 
+RUN ln -s /data/umumswp/public/images /var/www/storage/app/public/images
 
 RUN composer install --optimize-autoloader --no-dev
 # RUN composer install 
