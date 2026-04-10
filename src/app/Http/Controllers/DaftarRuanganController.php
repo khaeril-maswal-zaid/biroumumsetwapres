@@ -30,7 +30,7 @@ class DaftarRuanganController extends Controller
      */
     public function store(StoreDaftarRuanganRequest $request)
     {
-        $path = $request->photo->store('images/rooms', '/data/umumswp');
+        $path = $request->photo->store('images/rooms', 'public');
 
         DaftarRuangan::create([
             'kode_unit' => Auth::user()->pegawai?->unit?->kode_unit,

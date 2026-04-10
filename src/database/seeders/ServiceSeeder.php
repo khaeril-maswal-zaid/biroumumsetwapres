@@ -48,7 +48,7 @@ class ServiceSeeder extends Seeder
                 'icon' => 'Car',
                 'permission' => 'create_vehicle',
                 'is_main' => false,
-                'is_active' => true,
+                'is_active' => false,
             ],
             [
                 'name' => 'Help Desk Biro Umum',
