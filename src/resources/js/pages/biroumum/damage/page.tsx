@@ -336,58 +336,6 @@ export default function DamageReport({ kategoriKerusakan }: any) {
                                         />
                                     </div>
 
-                                    {/* Creative Urgency Selection */}
-                                    {/* <div>
-                                        <Label className="text-base font-medium">Tingkat Urgensi <span className="text-red-500">*</span></Label>
-                                        <Controller
-                                            name="urgency"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <div className="mt-3 space-y-3">
-                                                    {urgencyOptions.map((option) => {
-                                                        const Icon = option.icon;
-                                                        const isSelected = field.value === option.value;
-
-                                                        return (
-                                                            <div
-                                                                key={option.value}
-                                                                onClick={() => field.onChange(option.value)}
-                                                                className={cn(
-                                                                    'relative cursor-pointer rounded-xl border-2 p-3 transition-all duration-300 hover:shadow-lg',
-                                                                    isSelected ? `${option.selectedColor} shadow-lg` : option.color,
-                                                                )}
-                                                            >
-                                                                <div className="flex items-start space-x-4">
-                                                                    <div
-                                                                        className={cn(
-                                                                            'rounded-full p-2.5',
-                                                                            isSelected ? 'bg-white/60' : 'bg-white/40',
-                                                                        )}
-                                                                    >
-                                                                        <Icon className={cn('h-6 w-6', option.iconColor)} />
-                                                                    </div>
-                                                                    <div className="min-w-0 flex-1">
-                                                                        <div className="flex items-center justify-between">
-                                                                            <h3 className="text-sm font-semibold">{option.label}</h3>
-                                                                            {isSelected && (
-                                                                                <div className={cn('h-3 w-3 rounded-full', option.badgeColor)}></div>
-                                                                            )}
-                                                                        </div>
-                                                                        <p className="mb-1 text-xs opacity-80">{option.description}</p>
-                                                                    </div>
-                                                                </div>
-                                                                {isSelected && (
-                                                                    <div className="pointer-events-none absolute inset-0 rounded-xl border-2 border-current opacity-20"></div>
-                                                                )}
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                            )}
-                                        />
-                                        {errors.urgency && <p className="mt-2 text-sm text-red-500">{errors.urgency.message}</p>}
-                                    </div> */}
-
                                     <div>
                                         <Label htmlFor="contact">
                                             No Hp <span className="text-red-500">*</span>

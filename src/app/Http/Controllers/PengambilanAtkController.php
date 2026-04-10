@@ -15,10 +15,11 @@ class PengambilanAtkController extends Controller
         $pengambilan = $permintaanAtk
             ->pengambilans()
             ->with('details')
-            ->latest()
+            // ->latest()
             ->get();
 
         $takenMap = $pengambilan
+            ->flatMap(fn($p) => $p->details) // ambil semua detail
             ->groupBy('item_id')
             ->map(fn($items) => $items->sum('qty_diambil'));
 
@@ -35,11 +36,65 @@ class PengambilanAtkController extends Controller
             })->values();
 
         $data = [
-            'permintaanAtk' => $permintaanAtk,
-            'pengambilanAtk' => $pengambilan,
+            'pengambilans' => $pengambilan,
             'itemsSummary' => $items,
-            'kodePermintaan' => $permintaanAtk->kode_pelaporan,
+            'kodeLaporan' => $permintaanAtk->kode_pelaporan,
+        ];
+        return inertia('admin/pengambilanatk/page', $data);
+    }
 
+
+    public function indexX(PermintaanAtk $permintaanAtk)
+    {
+        $permintaanAtk->load('pemesan.pegawai');
+
+        $pengambilanRaw = $permintaanAtk
+            ->pengambilans()
+            ->with('details')
+            ->latest()
+            ->get();
+
+        $takenMap = $pengambilanRaw
+            ->flatMap(fn($p) => $p->details)
+            ->groupBy('item_id')
+            ->map(fn($items) => $items->sum('qty_diambil'));
+
+        $kebutuhanMap = collect($permintaanAtk->daftar_kebutuhan)
+            ->keyBy('id');
+
+        $items = $kebutuhanMap
+            ->map(function ($item) use ($takenMap) {
+                $taken = $takenMap[$item['id']] ?? 0;
+                $approved = (int) ($item['approved'] ?? 0);
+
+                return [
+                    ...$item,
+                    'sudah_diambil' => $taken,
+                    'sisa' => max(0, $approved - $taken),
+                ];
+            })
+            ->values();
+
+        $pengambilans = $pengambilanRaw->map(function ($p) use ($takenMap, $kebutuhanMap) {
+            $p->setRelation('details', collect($p->details)->map(function ($d) use ($takenMap, $kebutuhanMap) {
+                $item = $kebutuhanMap[$d->item_id] ?? null;
+                $approved = (int) ($item['approved'] ?? 0);
+                $totalTaken = $takenMap[$d->item_id] ?? 0;
+
+                return [
+                    ...$d->toArray(),
+                    'total_diambil' => $totalTaken,
+                    'sisa' => max(0, $approved - $totalTaken),
+                ];
+            }));
+
+            return $p;
+        });
+
+        $data = [
+            'pengambilans' => $pengambilans,
+            'itemsSummary' => $items,
+            'kodeLaporan' => $permintaanAtk->kode_pelaporan,
         ];
 
         return inertia('admin/pengambilanatk/page', $data);

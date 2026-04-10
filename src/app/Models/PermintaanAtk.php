@@ -42,13 +42,13 @@ class PermintaanAtk extends Model
         return $this->hasMany(PengambilanAtk::class);
     }
 
-    // public function pengambilanDetails()
-    // {
-    //     return $this->hasManyThrough(
-    //         PengambilanAtkDetail::class,
-    //         PengambilanAtk::class
-    //     );
-    // }
+    public function pengambilanDetails()
+    {
+        return $this->hasManyThrough(
+            PengambilanAtkDetail::class,
+            PengambilanAtk::class
+        );
+    }
 
     public function summaryData()
     {

@@ -1,6 +1,7 @@
 'use client';
 
 import { StatusBadge } from '@/components/badges/StatusBadge';
+import { KategoriSelector } from '@/components/biroumum/kategori-kerusakan';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -12,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import type { BreadcrumbItem } from '@/types';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Head, Link, router } from '@inertiajs/react';
 import {
     AlertCircle,
@@ -21,6 +23,7 @@ import {
     Calendar,
     CheckCircle,
     Clock,
+    Edit3,
     ImageIcon,
     MapPin,
     MessageSquare,
@@ -32,6 +35,8 @@ import {
     X,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const formatTanggalIna = (tanggal: string) => {
     return new Intl.DateTimeFormat('id-ID', {
@@ -48,10 +53,17 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function BookingDetailsPage({ selectedDamage }: any) {
-    const { toast } = useToast();
+const schema = z.object({
+    kategori: z
+        .string({
+            required_error: 'Kategori wajib diisi',
+            invalid_type_error: 'Kategori harus berupa teks',
+        })
+        .min(3, 'Kategori minimal 3 karakter'),
+});
 
-    console.log(selectedDamage);
+export default function BookingDetailsPage({ selectedDamage, kategoriKerusakan }: any) {
+    const { toast } = useToast();
 
     const [selectedMedia, setSelectedMedia] = useState<{ path: string; isVideo: boolean } | null>(null);
     const [isMediaViewerOpen, setIsMediaViewerOpen] = useState(false);
@@ -63,6 +75,16 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
     const [processText, setProcessText] = useState<string>('');
     const [processLogs, setProcessLogs] = useState(selectedDamage?.log_progres);
     const [selectedUrgency, setSelectedUrgency] = useState<'tinggi' | 'rendah' | null>(null);
+    const [changeKategoriDialog, setChangeKategoriDialog] = useState(false);
+
+    const {
+        handleSubmit,
+        control,
+        formState: { errors },
+        reset,
+    } = useForm<FormData>({
+        resolver: zodResolver(schema),
+    });
 
     const handleActionClick = (action: 'cancelled' | 'confirmed' | 'process') => {
         if (action === 'process' && selectedDamage.status === 'process') {
@@ -79,7 +101,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
         setIsMediaViewerOpen(true);
     };
 
-    const handleSubmit = (raportCode: string) => {
+    const handleSubmitProses = (raportCode: string) => {
         setIsProcessing(true);
 
         const trimmedMessage = adminMessage.trim();
@@ -191,6 +213,30 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
         };
     };
 
+    const onSubmit = (data: FormData) => {
+        setIsProcessing(true);
+
+        router.patch(route('kerusakangedung.ubahbagian', selectedDamage.kode_pelaporan), data, {
+            onError: (errors) => {
+                toast({
+                    title: 'Gagal',
+                    description: Object.values(errors)[0],
+                    variant: 'destructive',
+                });
+            },
+            onSuccess: () => {
+                reset();
+                setChangeKategoriDialog(false);
+                setIsProcessing(false);
+
+                toast({
+                    title: 'Berhasil',
+                    description: 'Kategori kerusakan berhasil diperbarui',
+                });
+            },
+        });
+    };
+
     useEffect(() => {
         setProcessLogs(selectedDamage?.log_progres ?? []);
     }, [selectedDamage?.log_progres]);
@@ -226,6 +272,17 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-6">
+                            <div className="flex justify-end">
+                                <Button
+                                    variant="outline"
+                                    className="flex items-center gap-2 border-blue-200 bg-transparent text-blue-700 hover:bg-blue-50"
+                                    onClick={() => setChangeKategoriDialog(true)}
+                                >
+                                    <Edit3 className="h-4 w-4" />
+                                    Ubah Kategori
+                                </Button>
+                            </div>
+
                             <div className="flex flex-col gap-4 rounded-lg bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
                                     <div className="mb-2 flex items-center gap-1">
@@ -266,14 +323,6 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                         <p className="mb-2 font-medium text-gray-900">Keterangan</p>
                                         <p className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">{selectedDamage.deskripsi}</p>
                                     </div>
-
-                                    {/* <div className="flex items-center gap-3">
-                                        <AlertCircle className="h-5 w-5 text-orange-600" />
-                                        <div>
-                                            <p className="font-medium text-gray-900">Tingkat Urgensi</p>
-                                            {getUrgencyBadge(selectedDamage.urgensi)}
-                                        </div>
-                                    </div> */}
                                 </div>
 
                                 <div className="space-y-4">
@@ -488,21 +537,21 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                 {/* Submit Button (only show when not already submitted on server) */}
                                 {selectedUrgency && !selectedDamage?.urgensi && (
                                     <div className="flex gap-2 border-t pt-4">
-                                        <button
+                                        <Button
                                             type="button"
                                             onClick={() => setSelectedUrgency(null)}
                                             className="flex-1 rounded-lg border-2 border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
                                         >
                                             Batal
-                                        </button>
-                                        <button
+                                        </Button>
+                                        <Button
                                             type="button"
                                             onClick={handleSubmitUrgency}
                                             disabled={isProcessing}
                                             className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:bg-gray-400"
                                         >
                                             {isProcessing ? 'Menyimpan...' : 'Simpan Urgensi'}
-                                        </button>
+                                        </Button>
                                     </div>
                                 )}
                             </div>
@@ -619,7 +668,7 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                                                 </Button>
                                                 <Button
                                                     onClick={() => {
-                                                        handleSubmit(selectedDamage.kode_pelaporan);
+                                                        handleSubmitProses(selectedDamage.kode_pelaporan);
                                                     }}
                                                     disabled={
                                                         isProcessing ||
@@ -799,6 +848,45 @@ export default function BookingDetailsPage({ selectedDamage }: any) {
                             Tutup
                         </Button>
                     </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={changeKategoriDialog} onOpenChange={setChangeKategoriDialog}>
+                <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-md">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2">
+                                <Edit3 className="h-5 w-5 text-blue-600" />
+                                Ubah Kategori Kerusakan
+                            </DialogTitle>
+                        </DialogHeader>
+
+                        <div className="space-y-4">
+                            <Label htmlFor="kategori-select">Kategori Kerusakan</Label>
+                            <Controller
+                                control={control}
+                                name="kategori"
+                                render={({ field }) => (
+                                    <div className="mt-2">
+                                        <KategoriSelector
+                                            kategoriList={kategoriKerusakan}
+                                            selectedValue={field.value || ''}
+                                            onSelect={field.onChange}
+                                        />
+                                    </div>
+                                )}
+                            />
+                        </div>
+
+                        <DialogFooter className="flex gap-2">
+                            <Button variant="outline" onClick={() => setChangeKategoriDialog(false)}>
+                                Batal
+                            </Button>
+                            <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={isProcessing}>
+                                {isProcessing ? 'Mengupdate...' : 'Update Pemesanan'}
+                            </Button>
+                        </DialogFooter>
+                    </form>
                 </DialogContent>
             </Dialog>
         </AppLayout>

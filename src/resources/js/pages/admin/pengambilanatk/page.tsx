@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Calendar, Hand, Pen, Phone } from 'lucide-react';
+import { ArrowLeft, Calendar, Hand, Pen, Phone, User } from 'lucide-react';
 import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -20,7 +20,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk, itemsSummary, kodePermintaan }: any) {
+export default function SupplieDetailsPage({ pengambilans, itemsSummary, kodeLaporan }: any) {
     const { toast } = useToast();
 
     const [openModal, setOpenModal] = useState(false);
@@ -52,7 +52,7 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk, item
         };
 
         // send to backend; use patch to existing route or adjust to your API
-        router.post(route('pengambilan.store', permintaanAtk.kode_pelaporan), payload, {
+        router.post(route('pengambilan.store', kodeLaporan), payload, {
             preserveScroll: true,
             onSuccess: () => {
                 toast({
@@ -79,7 +79,7 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk, item
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
-                <Link href={route('permintaanatk.show', kodePermintaan)}>
+                <Link href={route('permintaanatk.show', kodeLaporan)}>
                     <Button
                         variant="ghost"
                         className="mb-1 flex items-center space-x-2 border bg-accent text-accent-foreground hover:border-gray-300 hover:bg-gray-200"
@@ -119,11 +119,11 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk, item
                                 </Button>
                             </div>
 
-                            {pengambilanAtk.length === 0 ? (
+                            {pengambilans.length === 0 ? (
                                 <div className="text-center text-sm text-muted-foreground">Belum ada histori pengambilan.</div>
                             ) : (
                                 <div className="grid gap-4 md:grid-cols-2">
-                                    {pengambilanAtk.map((p: any) => (
+                                    {pengambilans.map((p: any) => (
                                         <Card key={p.id} className="gap-0 p-4">
                                             <div className="flex items-start justify-between gap-4">
                                                 <div className="flex items-center gap-3">
@@ -136,9 +136,12 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk, item
                                                     </div>
 
                                                     <div>
-                                                        <p className="text-sm font-medium">{p.nama_pengambil}</p>
+                                                        <p className="flex items-center gap-2 text-sm font-medium">
+                                                            <User className="h-3.5 w-3.5" />
+                                                            {p.nama_pengambil}
+                                                        </p>
                                                         <p className="flex items-center gap-2 text-xs text-muted-foreground">
-                                                            <Phone className="h-3 w-3" /> {p.no_hp ?? '-'}
+                                                            <Phone className="h-3.5 w-3.5" /> {p.no_hp ?? '-'}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -150,10 +153,11 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk, item
                                                     <p className="text-xs text-muted-foreground">{p.kode ?? ''}</p>
                                                 </div>
                                             </div>
+                                            <div className="mt-3 text-sm text-muted-foreground">
+                                                {p.keterangan != null ? `"${p.keterangan}"` : '-'}
+                                            </div>
 
-                                            {/* <div className="mt-3 text-sm text-muted-foreground">{p.keterangan ?? '-'}</div> */}
-
-                                            <div className="mt-4 divide-y divide-muted-foreground/20">
+                                            <div className="mt-2.5 divide-y divide-muted-foreground/20">
                                                 {p.details.map((d: any) => (
                                                     <div key={d.id} className="flex items-center justify-between py-3 text-sm">
                                                         <div className="min-w-0">
@@ -168,9 +172,7 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk, item
                                                             </div>
 
                                                             {/* <div className="text-right">
-                                                                <div className="text-sm font-medium text-emerald-600">
-                                                                    {d.sisa ?? d.remaining ?? '-'}
-                                                                </div>
+                                                                <div className="text-sm font-medium text-emerald-600">{d.sisa ?? '-'}</div>
                                                                 <div className="text-xs text-muted-foreground">Sisa</div>
                                                             </div> */}
                                                         </div>
@@ -188,10 +190,8 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk, item
                 <Dialog open={openModal} onOpenChange={setOpenModal}>
                     <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-md">
                         <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2">Catat Serah Terima Item</DialogTitle>
+                            <DialogTitle className="flex items-center gap-2">Tambah Serah Terima ATK</DialogTitle>
                         </DialogHeader>
-
-                        {!hasRemaining && <p className="text-center text-sm text-muted-foreground">Semua item sudah diambil.</p>}
 
                         <div className="space-y-4">
                             <div className="grid gap-2">
@@ -201,17 +201,28 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk, item
                                         value={form.nama_pengambil}
                                         onChange={(e) => updateField('nama_pengambil', e.target.value)}
                                         placeholder="Nama pengambil"
+                                        className="mt-0.5"
                                     />
                                 </div>
 
                                 <div>
                                     <Label className="mb-1">No. HP</Label>
-                                    <Input value={form.no_hp} onChange={(e) => updateField('no_hp', e.target.value)} placeholder="0812..." />
+                                    <Input
+                                        value={form.no_hp}
+                                        onChange={(e) => updateField('no_hp', e.target.value)}
+                                        placeholder="0812..."
+                                        className="mt-0.5"
+                                    />
                                 </div>
 
                                 <div>
                                     <Label className="mb-1">Tanggal Ambil</Label>
-                                    <Input type="date" value={form.tanggal_ambil} onChange={(e) => updateField('tanggal_ambil', e.target.value)} />
+                                    <Input
+                                        type="date"
+                                        value={form.tanggal_ambil}
+                                        onChange={(e) => updateField('tanggal_ambil', e.target.value)}
+                                        className="mt-0.5"
+                                    />
                                 </div>
 
                                 <div>
@@ -220,6 +231,7 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk, item
                                         value={form.keterangan}
                                         onChange={(e) => updateField('keterangan', e.target.value)}
                                         placeholder="Catatan atau tujuan serah terima"
+                                        className="mt-0.5"
                                     />
                                 </div>
                             </div>
@@ -228,7 +240,7 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk, item
                                 {itemsSummary
                                     .filter((item: any) => item.sisa > 0)
                                     .map((item: any) => (
-                                        <div key={item.id} className="space-y-2 rounded-md border p-3">
+                                        <div key={item.id} className="space-y-2 rounded-md border bg-gray-50 p-3">
                                             <div className="flex items-start justify-between">
                                                 <div>
                                                     <p className="font-medium">{item.name}</p>
@@ -248,6 +260,7 @@ export default function SupplieDetailsPage({ permintaanAtk, pengambilanAtk, item
                                         </div>
                                     ))}
                             </div>
+                            {!hasRemaining && <p className="text-center text-sm text-red-500">Semua item sudah diambil.</p>}
                         </div>
 
                         <DialogFooter className="flex gap-2">

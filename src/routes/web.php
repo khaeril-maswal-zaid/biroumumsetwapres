@@ -119,6 +119,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('kerusakangedung.urgensi')
         ->middleware('permission:change_damage_status');
 
+    Route::patch('/dashboard/perbaikan-sarana-prasarana/ubah-bagian-kategori/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'ubahBagianKategori'])
+        ->name('kerusakangedung.ubahbagian')
+        ->middleware('permission:change_damage_status');
+
     Route::delete('/dashboard/perbaikan-sarana-prasarana/delete/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'destroy'])
         ->name('kerusakangedung.destroy')
         ->middleware('permission:delete_all_requests');

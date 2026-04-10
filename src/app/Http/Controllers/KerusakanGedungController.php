@@ -130,7 +130,7 @@ class KerusakanGedungController extends Controller
 
         $kerusakanGedung->load('kategori', 'pelapor.pegawai.biro', 'logProgres');
 
-        return Inertia::render('admin/damages/review', [
+        $data = [
             'selectedDamage' => [
                 ...$kerusakanGedung->only([
                     'id',
@@ -147,11 +147,14 @@ class KerusakanGedungController extends Controller
                     'no_hp',
                     'created_at',
                 ]),
-                'kategori' => $kerusakanGedung->kategori->only('name'),
+                'kategori' => $kerusakanGedung->kategori->only(['name', 'bagian_kategori']),
                 'pelapor' => $kerusakanGedung->pelapor->pegawai,
                 'processLogs' => $kerusakanGedung->logProgres,
             ],
-        ]);
+            'kategoriKerusakan' => KategoriKerusakan::all(),
+        ];
+
+        return Inertia::render('admin/damages/review', $data);
     }
 
     /**
@@ -221,5 +224,18 @@ class KerusakanGedungController extends Controller
         ]);
 
         $kerusakanGedung->update($validated);
+    }
+
+    public function ubahBagianKategori(KerusakanGedung $kerusakanGedung, Request $request)
+    {
+        $kategoriQuery  = KategoriKerusakan::where('kode_kerusakan', $request->kategori)->first();
+
+        if ($kategoriQuery->kode_kerusakan !=  $request->kategori) {
+            return redirect()->back()->withErrors(['kategori' => 'Kategori kerusakan tidak valid']);
+        }
+
+        $kerusakanGedung->update([
+            'kategori_kerusakan_id' => $kategoriQuery->id,
+        ]);
     }
 }

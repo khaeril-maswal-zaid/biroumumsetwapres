@@ -3,7 +3,7 @@
 import ButtonKatKerusakan from '@/components/buttonnavbar/button-kat-kerusakan';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,6 +18,7 @@ interface DamageCategory {
     id: string;
     name: string;
     kode_kerusakan: string;
+    bagian_kategori: string;
     kode_unit: string;
     sub_kategori?: string[];
 }
@@ -39,6 +40,7 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
     const [formData, setFormData] = useState({
         name: '',
         kode_kerusakan: '',
+        bagian_kategori: '',
         sub_kategori: [] as string[],
     });
     const [newSubItem, setNewSubItem] = useState('');
@@ -71,25 +73,16 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
         setFormData({
             name: category.name,
             kode_kerusakan: category.kode_kerusakan,
+            bagian_kategori: category.bagian_kategori,
             sub_kategori: category.sub_kategori || [],
         });
     };
 
     const handleUpdate = () => {
-        if (!formData.name || !formData.kode_kerusakan) {
+        if (!formData.name || !formData.bagian_kategori) {
             toast({
                 title: 'Validasi gagal',
                 description: 'Semua field harus diisi!',
-                variant: 'destructive',
-            });
-            return;
-        }
-
-        // Check if code already exists (excluding current item)
-        if (filteredCategories.some((cat: any) => cat.kode_kerusakan === formData.kode_kerusakan && cat.id !== editingCategory?.id)) {
-            toast({
-                title: 'Gagal',
-                description: 'Kode kerusakan sudah ada!',
                 variant: 'destructive',
             });
             return;
@@ -136,7 +129,7 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
     // };
 
     const resetForm = () => {
-        setFormData({ name: '', kode_kerusakan: '', sub_kategori: [] });
+        setFormData({ name: '', kode_kerusakan: '', bagian_kategori: '', sub_kategori: [] });
         setEditingCategory(null);
         setNewSubItem('');
     };
@@ -155,13 +148,13 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
                             <CardContent className="space-y-4 p-4">
                                 {/* Header */}
                                 <div className="flex items-start justify-between">
-                                    <div className="flex-1">
+                                    <div className="flex-1 space-y-1">
                                         <h3 className="text-base font-semibold text-gray-900">{category.name}</h3>
-                                        <Badge variant="outline" className="mt-2 border-blue-200 bg-blue-50 text-xs text-blue-700">
-                                            # {category.kode_kerusakan}
+                                        <Badge variant="outline" className="border-blue-200 bg-blue-50 text-xs text-blue-700">
+                                            {category.bagian_kategori}
                                         </Badge>
                                     </div>
-                                    <div className="flex gap-1">
+                                    <div className="gap-1 text-right">
                                         <Button
                                             size="sm"
                                             variant="ghost"
@@ -173,6 +166,8 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
                                         >
                                             <Edit className="h-4 w-4 text-blue-800" />
                                         </Button>
+
+                                        <span className="block text-xs"># {category.kode_kerusakan}</span>
 
                                         {/* <AlertDialog>
                                             <AlertDialogTrigger asChild>
@@ -247,6 +242,7 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
                     <DialogContent className="max-w-md">
                         <DialogHeader>
                             <DialogTitle>Edit Kategori Kerusakan</DialogTitle>
+                            <CardDescription className="text-sm text-muted-foreground"># {editingCategory?.kode_kerusakan}</CardDescription>
                         </DialogHeader>
                         <div className="space-y-4 pt-4">
                             <div>
@@ -260,13 +256,13 @@ export default function DamageCategoriesPage({ kategoriKerusakan }: any) {
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="edit-code">Kode Kerusakan</Label>
+                                <Label htmlFor="edit-code">Bagian Kerusakan</Label>
                                 <Input
                                     id="edit-code"
-                                    placeholder="Contoh: TU-051"
-                                    value={formData.kode_kerusakan}
-                                    readOnly
-                                    className="mt-1 cursor-default bg-gray-100 text-gray-600"
+                                    placeholder="Bangunan/ Perlengkapan"
+                                    value={formData.bagian_kategori}
+                                    onChange={(e) => setFormData({ ...formData, bagian_kategori: e.target.value })}
+                                    className="mt-1 cursor-default"
                                 />
                             </div>
 

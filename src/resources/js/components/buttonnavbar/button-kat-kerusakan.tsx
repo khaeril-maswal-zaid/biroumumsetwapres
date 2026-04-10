@@ -14,7 +14,7 @@ export default function ButtonKatKerusakan() {
     const { toast } = useToast();
 
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-    const [formData, setFormData] = useState({ name: '', sub_kategori: [] as string[] });
+    const [formData, setFormData] = useState({ name: '', bagian_kategori: '', sub_kategori: [] as string[] });
 
     const handleAddSubKategori = () => {
         if (newSubItem.trim()) {
@@ -64,7 +64,7 @@ export default function ButtonKatKerusakan() {
     };
 
     const resetForm = () => {
-        setFormData({ name: '', sub_kategori: [] });
+        setFormData({ name: '', bagian_kategori: '', sub_kategori: [] });
     };
 
     return (
@@ -91,6 +91,17 @@ export default function ButtonKatKerusakan() {
                                 placeholder="Contoh: Tata Udara"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            />
+                        </div>
+
+                        <div>
+                            <Label htmlFor="add-name">Bagian Kategori</Label>
+                            <Input
+                                className="mt-1"
+                                id="add-name"
+                                placeholder="Bangunan atau Perlengkapan"
+                                value={formData.bagian_kategori}
+                                onChange={(e) => setFormData({ ...formData, bagian_kategori: e.target.value })}
                             />
                         </div>
 
