@@ -44,7 +44,7 @@ COPY --from=composer/composer:latest-bin /composer /usr/bin/composer
 
 ENV TZ Asia/Jakarta
 
-RUN mkdir /data-setneg-point
+RUN mkdir /data-umumswp
 
 COPY ./config/nginx.conf /etc/nginx/nginx.conf
 COPY ./config/fpm-pool.conf /etc/php84/php-fpm.d/www.conf
@@ -68,7 +68,7 @@ RUN npm install --legacy-peer-deps
 RUN npm run build
 
 RUN addgroup -g 1945 -S pplsi && adduser -u 1945 -S pplsi -G pplsi
-RUN chown -R pplsi:pplsi /var/www /run /var/lib/nginx /var/log/nginx /data-setneg-point
+RUN chown -R pplsi:pplsi /var/www /run /var/lib/nginx /var/log/nginx /data-umumswp
 USER pplsi
 
 EXPOSE 8080
