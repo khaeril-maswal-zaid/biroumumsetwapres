@@ -48,7 +48,7 @@ export default function HomeDashboard({ dashboardStats, recentActivities, upcomi
     return (
         <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4 xl:gap-6">
+            <div className={`grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-${Object.keys(dashboardStats).length} xl:gap-3`}>
                 {Object.entries(dashboardStats).map(([key, item], index: any) => (
                     <Card key={index} className="gap-2">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -63,19 +63,6 @@ export default function HomeDashboard({ dashboardStats, recentActivities, upcomi
                         </CardContent>
                     </Card>
                 ))}
-
-                <Card className="gap-2">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Permintaan Kendaraan</CardTitle>
-                        <Car className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">
-                            123 <span className="text-sm">Total Permintaan</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground">123 menunggu persetujuan</p>
-                    </CardContent>
-                </Card>
             </div>
 
             <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 xl:gap-6">

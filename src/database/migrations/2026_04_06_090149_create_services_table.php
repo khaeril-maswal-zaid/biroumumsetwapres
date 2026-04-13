@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('name');
+            $table->string('code')->unique()->nullable();
             $table->string('contact')->nullable();
             $table->boolean('is_active')->default(true);
             $table->boolean('is_main')->default(false);

@@ -40,25 +40,25 @@ class RolePermissionSeeder extends Seeder
             ['name' => 'delete_log_proses', 'label' => 'Hapus Log Proses Kerusakan', 'category' => 'Log Proses Kerusakan'],
 
             // 🛠️ Kerusakan
-            ['name' => 'view_damages', 'label' => 'Lihat Permintaan Perbaikan Sarpras & Perlengkapan', 'category' => 'Perbaikan Sarpras'],
-            ['name' => 'view_admin_damages', 'label' => 'Admin Permintaan Perbaikan Sarpras', 'category' => 'Perbaikan Sarpras'],
-            ['name' => 'view_bangunan_damages', 'label' => 'Lihat Permintaan Perbaikan Sarpras', 'category' => 'Perbaikan Sarpras'],
-            ['name' => 'view_perlengkapan_damages', 'label' => 'Lihat Permintaan Perbaikan Perlengkapan', 'category' => 'Perbaikan Sarpras'],
+            ['name' => 'view_damages', 'label' => 'Lihat Permintaan Perbaikan Sarpras', 'category' => 'Perbaikan Sarpras'],
             ['name' => 'report_damages', 'label' => 'Laporan Perbaikan Sarpras', 'category' => 'Perbaikan Sarpras'],
-            ['name' => 'create_damage', 'label' => 'Laporkan Kerusakan Gedung', 'category' => 'Perbaikan Sarpras'],
-            ['name' => 'change_damage_status', 'label' => 'Konfirmasi Kerusakan Gedung', 'category' => 'Perbaikan Sarpras'],
+            ['name' => 'create_damage', 'label' => 'Ajukan Permintaan Perbaikan Sarpras', 'category' => 'Perbaikan Sarpras'],
+            ['name' => 'change_damage_status', 'label' => 'Tindak lanjuti Permintaan Perbaikan Sarpras', 'category' => 'Perbaikan Sarpras'],
+            ['name' => 'view_admin_damages', 'label' => 'Admin Permintaan Perbaikan Sarpras', 'category' => 'Perbaikan Sarpras'],
+            ['name' => 'view_bangunan_damages', 'label' => 'Operator Permintaan Perbaikan Bangunan', 'category' => 'Perbaikan Sarpras'],
+            ['name' => 'view_perlengkapan_damages', 'label' => 'Operator Permintaan Perbaikan Perlengkapan', 'category' => 'Perbaikan Sarpras'],
 
             // 📅 Pemesanan Ruang
             ['name' => 'view_bookings', 'label' => 'Lihat Pemesanan Ruang', 'category' => 'Pemesanan Ruang Rapat'],
             ['name' => 'report_bookings', 'label' => 'Laporan Pemesanan Ruang', 'category' => 'Pemesanan Ruang Rapat'],
             ['name' => 'create_booking', 'label' => 'Ajukan Pemesanan Ruang', 'category' => 'Pemesanan Ruang Rapat'],
-            ['name' => 'change_booking_status', 'label' => 'Konfirmasi Pemesanan Ruang', 'category' => 'Pemesanan Ruang Rapat'],
+            ['name' => 'change_booking_status', 'label' => 'Tindak lanjuti Pemesanan Ruang', 'category' => 'Pemesanan Ruang Rapat'],
 
             // 🖊️ ATK
             ['name' => 'view_supplies', 'label' => 'Lihat Permintaan ATK', 'category' => 'Permintaan ATK'],
             ['name' => 'report_supplies', 'label' => 'Laporan Permintaan ATK', 'category' => 'Permintaan ATK'],
             ['name' => 'create_supplies', 'label' => 'Ajukan Permintaan ATK', 'category' => 'Permintaan ATK'],
-            ['name' => 'change_supplies_status', 'label' => 'Konfirmasi Permintaan ATK', 'category' => 'Permintaan ATK'],
+            ['name' => 'change_supplies_status', 'label' => 'Tindak lanjuti Permintaan ATK', 'category' => 'Permintaan ATK'],
 
             // 🚗 Kendaraan
             ['name' => 'view_vehicles', 'label' => 'Lihat Permintaan Kendaraan', 'category' => 'Kendaraan'],

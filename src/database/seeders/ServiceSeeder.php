@@ -16,6 +16,7 @@ class ServiceSeeder extends Seeder
         $services = [
             [
                 'name' => 'Pemesanan Ruang Rapat',
+                'code' => 'bookings',
                 'contact' => '081-234-5678',
                 'url' => 'ruangrapat.create',
                 'icon' => 'Users',
@@ -25,6 +26,7 @@ class ServiceSeeder extends Seeder
             ],
             [
                 'name' => 'Perbaikan Sarana Prasarana',
+                'code' => 'damages',
                 'contact' => '081-234-5678',
                 'url' => 'kerusakangedung.create',
                 'icon' => 'Wrench',
@@ -34,6 +36,7 @@ class ServiceSeeder extends Seeder
             ],
             [
                 'name' => 'Permintaan ATK',
+                'code' => 'supplies',
                 'contact' => '081-234-5678',
                 'url' => 'permintaanatk.create',
                 'icon' => 'PenTool',
@@ -43,6 +46,7 @@ class ServiceSeeder extends Seeder
             ],
             [
                 'name' => 'Permintaan Kendaraan',
+                'code' => 'vehicles',
                 'contact' => '081-234-5678',
                 'url' => 'permintaankendaraan.create', // sementara
                 'icon' => 'Car',
@@ -52,6 +56,7 @@ class ServiceSeeder extends Seeder
             ],
             [
                 'name' => 'Help Desk Biro Umum',
+                'code' => 'main',
                 'contact' => '(021) 3842780',
                 'url' => 'home',
                 'icon' => 'Headphones',

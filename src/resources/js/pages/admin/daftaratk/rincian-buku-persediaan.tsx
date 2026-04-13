@@ -36,12 +36,6 @@ function formatBulanTahun({ bulan, tahun }: any) {
     return `${MONTHS_ID[monthIndex]} ${tahun}`;
 }
 
-function formatBulan({ bulan }: any) {
-    if (!bulan) return '';
-    const monthIndex = Number(bulan) - 1;
-    return MONTHS_ID[monthIndex] ?? '';
-}
-
 function formatCurrency(value: number | string) {
     const num = Number(value) || 0;
     return num.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
@@ -49,7 +43,6 @@ function formatCurrency(value: number | string) {
 
 export default function rincianBukuPersediaan({ filters, atk, rows = [] }: any) {
     const periodeBulan = formatBulanTahun(filters || {});
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="RINCIAN BUKU PERSEDIAAN" />
@@ -127,8 +120,8 @@ export default function rincianBukuPersediaan({ filters, atk, rows = [] }: any) 
                                         <TableHead className="w-32 border-r border-muted/50 text-center last:border-r-0">Jumlah</TableHead>
 
                                         <TableHead className="w-24 border-r border-muted/50 text-center last:border-r-0">Unit</TableHead>
-                                        {/* <TableHead className="w-32 border-r border-muted/50 text-center last:border-r-0">Harga</TableHead>
-                                        <TableHead className="w-32 text-center">Jumlah</TableHead> */}
+                                        <TableHead className="w-32 border-r border-muted/50 text-center last:border-r-0">Harga</TableHead>
+                                        <TableHead className="w-32 text-center">Jumlah</TableHead>
                                     </TableRow>
                                 </TableHeader>
 
@@ -169,10 +162,10 @@ export default function rincianBukuPersediaan({ filters, atk, rows = [] }: any) 
                                                 <TableCell className="border-r border-muted/50 text-center font-medium last:border-r-0">
                                                     {row.saldo.unit}
                                                 </TableCell>
-                                                {/* <TableCell className="border-r border-muted/50 text-right last:border-r-0">
+                                                <TableCell className="border-r border-muted/50 text-right last:border-r-0">
                                                     {formatCurrency(row.saldo.harga)}
                                                 </TableCell>
-                                                <TableCell className="text-right font-semibold">{formatCurrency(row.saldo.jumlah)}</TableCell> */}
+                                                <TableCell className="text-right font-semibold">{formatCurrency(row.saldo.jumlah)}</TableCell>
                                             </TableRow>
                                         ))
                                     ) : (

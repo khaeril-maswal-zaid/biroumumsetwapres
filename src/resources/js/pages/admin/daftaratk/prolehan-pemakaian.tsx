@@ -17,9 +17,11 @@ import {
     ClipboardList,
     Plus,
     Search,
+    Sheet,
     Trash2,
 } from 'lucide-react';
 
+import ImportPerolehanAtkDialog from '@/components/admin/importProlehan';
 import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
@@ -91,6 +93,7 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [], categ
 
     const [logCategoryFilter, setLogCategoryFilter] = useState('all');
     const [isAddMassOpen, setIsAddMassOpen] = useState(false);
+    const [isImportOpen, setIsImportOpen] = useState(false);
     const [logSearchTerm, setLogSearchTerm] = useState('');
     const [logCurrentPage, setLogCurrentPage] = useState(1);
     const [logItemsPerPage, setLogItemsPerPage] = useState(10);
@@ -167,6 +170,13 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [], categ
                                 <CardDescription className="text-indigo-50">Riwayat pergerakan stok alat tulis kantor.</CardDescription>
                             </div>
                             <div className="flex items-center gap-2">
+                                <Button
+                                    onClick={() => setIsImportOpen(true)}
+                                    className="gap-2 bg-white text-emerald-600 shadow-lg hover:bg-emerald-50"
+                                >
+                                    <Sheet className="h-4 w-4" />
+                                    Import Perolehan
+                                </Button>
                                 <Button
                                     onClick={() => setIsAddMassOpen(true)}
                                     className="gap-2 bg-white text-indigo-600 shadow-lg hover:bg-indigo-50"
@@ -480,6 +490,8 @@ export default function ATKItemsManagement({ daftarAtk, stockOpnames = [], categ
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
+
+                <ImportPerolehanAtkDialog open={isImportOpen} onOpenChange={setIsImportOpen} />
             </div>
         </AppLayout>
     );

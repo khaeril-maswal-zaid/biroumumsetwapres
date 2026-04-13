@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AtkTemplateExport;
 use App\Models\DaftarAtk;
 use App\Models\KategoriAtk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DaftarAtkController extends Controller
 {
@@ -58,5 +60,10 @@ class DaftarAtkController extends Controller
     public function destroy(DaftarAtk $daftarAtk)
     {
         $daftarAtk->delete();
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new AtkTemplateExport, 'template-import-perolehan-atk.xlsx');
     }
 }

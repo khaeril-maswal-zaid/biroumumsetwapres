@@ -196,6 +196,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('daftaratk.destroy')
         ->middleware('permission:delete_atk');
 
+    Route::get('/dashboard/daftar-atk/download', [DaftarAtkController::class, 'downloadTemplate'])
+        ->name('daftaratk.downloadtemplate')
+        ->middleware('permission:view_atk');
 
 
     Route::get('/dashboard/kategori-atk', [KategoriAtkController::class, 'index'])
@@ -240,11 +243,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard/stock-opname-atk/rincian-buku-persediaan/{daftarAtk:kode_atk}', [StockOpnameController::class, 'rincianBukuPersediaan'])
         ->name('stockopname.rincian_buku_persediaan')
-
         ->middleware('permission:create_atk');
+
     Route::get('/dashboard/stock-opname-atk/rincian-buku-persediaan-pdf/{daftarAtk:kode_atk}', [StockOpnameController::class, 'rincianBukuPersediaan'])
         ->name('stockopname.rincian_buku_persediaan_pdf')
         ->defaults('type', 'pdf')
+        ->middleware('permission:create_atk');
+
+    Route::post('/dashboard/stock-opname-atk/import', [StockOpnameController::class, 'importPerolehan'])
+        ->name('stockopname.import')
         ->middleware('permission:create_atk');
 
 

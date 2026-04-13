@@ -152,23 +152,26 @@ class HomeController extends Controller
 
             $today = Carbon::today();
 
+            $servicies = Service::where('is_active', 1)
+                ->pluck('name', 'code');;
+
             $dashboardStats = [
                 'roomBookings' => [
-                    'title' => 'Pemesanan Ruangan',
+                    'title' => $servicies['bookings'] ?? 'Default',
                     'icon' => 'room',
                     'total' => PemesananRuangRapat::count(),
                     'pending' => PemesananRuangRapat::where('status', 'pending')->count(),
                     'todayBookings' => PemesananRuangRapat::whereDate('tanggal_penggunaan', $today)->count(),
                 ],
                 'damageReports' => [
-                    'title' => 'Laporan Kerusakan',
+                    'title' => $servicies['damages'] ?? 'Default',
                     'icon' => 'damage',
                     'total' => KerusakanGedung::count(),
                     'pending' => KerusakanGedung::where('status', 'pending')->count(),
                     'todayBookings' => KerusakanGedung::whereDate('created_at', $today)->count(),
                 ],
                 'suppliesRequests' => [
-                    'title' => 'Permintaan ATK',
+                    'title' => $servicies['supplies'] ?? 'Default',
                     'icon' => 'supplies',
                     'total' => PermintaanAtk::count(),
                     'pending' => PermintaanAtk::where('status', 'pending')->count(),
@@ -283,11 +286,6 @@ class HomeController extends Controller
             ];
         }
 
-
-
-
-
-        // Jika pakai inertia
         return Inertia::render('admin/home', $data);
     }
 

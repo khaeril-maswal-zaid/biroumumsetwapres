@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\StockOpname;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\DaftarAtk;
 use App\Models\KategoriAtk;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -39,30 +41,20 @@ class StockOpnameController extends Controller
             '*.daftar_atk_id' => ['required', 'exists:daftar_atks,id'],
             '*.quantity' => ['required', 'integer', 'min:1'],
             '*.unit_price' => ['required', 'integer', 'min:0'],
-            '*.permintaan_atk_id' => ['nullable', 'exists:permintaan_atks,id'],
-            '*.kode_unit' => ['nullable', 'string'],
         ]);
 
         DB::transaction(function () use ($validated) {
-
             foreach ($validated as $item) {
-
                 $quantity = (int) $item['quantity'];
                 $unitPrice = (int) $item['unit_price'];
                 $totalPrice = $quantity * $unitPrice;
 
-                $kodeUnit = $item['kode_unit']
-                    ?? Auth::user()->pegawai?->unit?->kode_unit
-                    ?? null;
-
-                $stock = StockOpname::create([
-                    'kode_unit' => $kodeUnit,
+                StockOpname::create([
+                    'kode_unit' => Auth::user()->pegawai?->unit?->kode_unit,
                     'daftar_atk_id' => $item['daftar_atk_id'],
                     'quantity' => $quantity,
                     'remaining_quantity' => $quantity,
                     'type' => 'Perolehan',
-                    'permintaan_atk_id' => $item['permintaan_atk_id'] ?? null,
-                    'source_stockopname_id' => null,
                     'unit_price' => $unitPrice,
                     'total_price' => $totalPrice,
                 ]);
@@ -320,11 +312,28 @@ class StockOpnameController extends Controller
         $transactions = StockOpname::query()
             ->where('daftar_atk_id', $daftarAtk->id)
             ->whereBetween('created_at', [$start, $end])
-            ->orderBy('created_at', 'asc')
-            ->with('permintaanAtk')
             ->get();
 
-        foreach ($transactions as $t) {
+        $perolehan = $transactions->where('type', 'Perolehan')->keyBy('id');
+        $pemakaian = $transactions->where('type', 'Pemakaian')->groupBy('source_stockopname_id');
+
+        $ordered = collect();
+
+        // urutkan perolehan berdasarkan tanggal (FIFO layer)
+        foreach ($perolehan->sortBy('created_at') as $p) {
+
+            // tampilkan perolehan dulu
+            $ordered->push($p);
+
+            // lalu semua pemakaian yg ambil dari layer ini
+            if (isset($pemakaian[$p->id])) {
+                foreach ($pemakaian[$p->id]->sortBy('created_at') as $use) {
+                    $ordered->push($use);
+                }
+            }
+        }
+
+        foreach ($ordered as $t) {
             $in = ['unit' => 0, 'harga' => 0, 'jumlah' => 0];
             $out = ['unit' => 0, 'harga' => 0, 'jumlah' => 0];
 
@@ -380,5 +389,109 @@ class StockOpnameController extends Controller
         }
 
         return Inertia::render('admin/daftaratk/rincian-buku-persediaan', $data);
+    }
+
+    public function importPerolehan(Request $request)
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:xlsx,xls'],
+        ]);
+
+        // Ambil data excel jadi array
+        $rows = Excel::toCollection(null, $request->file('file'))->first();
+
+        if ($rows->isEmpty()) {
+            return back()->withErrors(['file' => 'File kosong.']);
+        }
+
+        // Ambil header
+        $header = $rows->first()->map(fn($h) => trim($h))->toArray();
+
+        $expectedHeader = [
+            'No',
+            'Kode ATK',
+            'Nama ATK',
+            'Kategori',
+            'Satuan',
+            'Perolehan',
+            'Harga Satuan',
+        ];
+
+        if ($header !== $expectedHeader) {
+            return back()->withErrors(['file' => 'Format header tidak sesuai template.']);
+        }
+
+        // Buang header
+        $dataRows = $rows->skip(1);
+
+        $payload = [];
+        $errors = [];
+
+        foreach ($dataRows as $index => $row) {
+            if ($row->filter()->isEmpty()) {
+                continue;
+            }
+
+            $kodeAtk = $row[1];
+            $quantity = $row[5];
+            $unitPrice = $row[6];
+
+            // Cari daftar_atk_id dari kode
+            $atk = DaftarAtk::where('kode_atk', $kodeAtk)->first();
+
+            if (!$atk) {
+                $errors[] = "Baris " . ($index + 2) . ": Kode ATK tidak ditemukan";
+                continue;
+            }
+
+            $item = [
+                'daftar_atk_id' => $atk->id,
+                'quantity' => (int) $quantity,
+                'unit_price' => (int) $unitPrice,
+            ];
+
+            // Validasi per row
+            $validator = Validator::make($item, [
+                'daftar_atk_id' => ['required', 'exists:daftar_atks,id'],
+                'quantity' => ['required', 'integer', 'min:1'],
+                'unit_price' => ['required', 'integer', 'min:0'],
+            ]);
+
+            if ($validator->fails()) {
+                $errors[] = "Baris " . ($index + 2) . ": " . implode(', ', $validator->errors()->all());
+                continue;
+            }
+
+            $payload[] = $item;
+        }
+
+        // Kalau ada error → return
+        if (!empty($errors)) {
+            return back()->withErrors([
+                'import' => $errors,
+            ]);
+        }
+
+        foreach ($payload as $item) {
+            StockOpname::create([
+                'kode_unit' => Auth::user()->pegawai?->unit?->kode_unit,
+                'daftar_atk_id' => $item['daftar_atk_id'],
+                'quantity' => $item['quantity'],
+                'remaining_quantity' => $item['quantity'],
+                'type' => 'Perolehan',
+                'unit_price' => $item['unit_price'],
+                'total_price' => $item['quantity'] * $item['unit_price'],
+            ]);
+
+            // Lock row biar aman dari race condition
+            $daftar = DaftarAtk::lockForUpdate()
+                ->find($item['daftar_atk_id']);
+
+            if ($daftar) {
+                $daftar->increment('quantity', $quantity);
+            }
+        }
+
+        return back()->with('success', 'Import berhasil');
     }
 }
