@@ -7053,7 +7053,7 @@ class UserSeeder extends Seeder
                 'is_ldap' => '0',
                 'email' => 'khaeril.maswal.zaid@set.wapresri.go.id',
                 'role' => '["evaluator"]',
-                'password' => '$2y$12$8JNMhFAlGohpY6QxsnU6kedib0eLi6hxaubOasSMF6di4F0RjFO8.',
+                'password' => '$2y$12$8JNMhFAlGohpY6QxsnU6kedib0eLi6hxaubOasSMF6di4F0RjFO8.', //NA202506199903
                 'is_active' => '1',
             ],
         ];
