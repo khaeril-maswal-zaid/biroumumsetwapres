@@ -55,9 +55,17 @@
             margin-bottom: 10px;
         }
 
+        .cell-content {
+            height: 27px;
+        }
+
         .saldo-row {
             background: #7fd0cf;
             font-weight: bold;
+        }
+
+        .saldo-content {
+            height: 10px;
         }
 
         .section-space {
@@ -97,9 +105,9 @@
                 <div>METODE PENILAIAN : {{ $metode_penilaian ?? '-' }} </div>
             </td> --}}
             <td width="40%">
-                <div>KODE BARANG : {{ $kode_barang }}</div>
-                <div>NAMA BARANG : {{ $nama_barang }}</div>
-                <div>SATUAN : {{ $satuan }}</div>
+                <div>KODE BARANG : {{ $atk->kode_atk }}</div>
+                <div>NAMA BARANG : {{ $atk->name }}</div>
+                <div>SATUAN : {{ $atk->satuan }}</div>
             </td>
         </tr>
     </table>
@@ -134,22 +142,22 @@
         <tbody>
             @foreach ($rows as $i => $row)
                 {{-- Baris transaksi --}}
-                <tr>
-                    <td class="text-center">{{ $i + 1 }}</td>
-                    <td class="text-center">{{ $row['tanggal'] }}</td>
+                <tr class="transaksi-row">
+                    <td class="cell-content text-center">{{ $i + 1 }}</td>
+                    <td class="cell-content text-center">{{ $row['tanggal'] }}</td>
                     <td>{{ $row['keterangan'] }}</td>
 
-                    <td class="text-right">{{ $row['masuk']['unit'] ?? 0 }}</td>
-                    <td class="text-right">{{ number_format($row['masuk']['harga'] ?? 0) }}</td>
-                    <td class="text-right">{{ number_format($row['masuk']['jumlah'] ?? 0) }}</td>
+                    <td class="cell-content text-right">{{ $row['masuk']['unit'] ?? 0 }}</td>
+                    <td class="cell-content text-right">{{ number_format($row['masuk']['harga'] ?? 0) }}</td>
+                    <td class="cell-content text-right">{{ number_format($row['masuk']['jumlah'] ?? 0) }}</td>
 
-                    <td class="text-right">{{ $row['keluar']['unit'] ?? 0 }}</td>
-                    <td class="text-right">{{ number_format($row['keluar']['harga'] ?? 0) }}</td>
-                    <td class="text-right">{{ number_format($row['keluar']['jumlah'] ?? 0) }}</td>
+                    <td class="cell-content text-right">{{ $row['keluar']['unit'] ?? 0 }}</td>
+                    <td class="cell-content text-right">{{ number_format($row['keluar']['harga'] ?? 0) }}</td>
+                    <td class="cell-content text-right">{{ number_format($row['keluar']['jumlah'] ?? 0) }}</td>
 
-                    <td class="text-right">{{ $row['saldo']['unit'] ?? 0 }}</td>
-                    <td class="text-right">{{ number_format($row['saldo']['harga'] ?? 0) }}</td>
-                    <td class="text-right">{{ number_format($row['saldo']['jumlah'] ?? 0) }}</td>
+                    <td class="cell-content text-right">{{ $row['saldo']['unit'] ?? 0 }}</td>
+                    <td class="cell-content text-right">{{ number_format($row['saldo']['harga'] ?? 0) }}</td>
+                    <td class="cell-content text-right">{{ number_format($row['saldo']['jumlah'] ?? 0) }}</td>
                 </tr>
 
                 {{-- Baris saldo highlight --}}
@@ -172,7 +180,7 @@
                 {{ now()->format('d-m-Y') }}
             </td>
             <td width="50%" class="text-right">
-                {{ $halaman ?? '1 dari 1' }}
+                {{-- {{ $halaman ?? '1 dari 1' }} --}}
             </td>
         </tr>
     </table>

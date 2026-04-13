@@ -41,11 +41,11 @@ function formatCurrency(value: number | string) {
     return num.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
 }
 
-export default function rincianBukuPersediaan({ filters, atk, rows = [] }: any) {
+export default function rincianBukuPersediaan({ filters, atk, dataStok = [] }: any) {
     const periodeBulan = formatBulanTahun(filters || {});
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Rincian Buku Persediaan" />
+            <Head title="Kartu Buku Persediaan" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-50 p-6">
                 <Link href={route('stockopname.buku_persediaan')}>
                     <Button variant="ghost" className="mb-1 flex items-center space-x-2">
@@ -98,74 +98,48 @@ export default function rincianBukuPersediaan({ filters, atk, rows = [] }: any) 
                                             Tanggal
                                         </TableHead>
                                         <TableHead rowSpan={2} className="border-r border-muted/50 last:border-r-0">
-                                            Keterangan
+                                            Diterima/ Diserahkan
                                         </TableHead>
-                                        <TableHead colSpan={3} className="border-r border-muted/50 text-center last:border-r-0">
+                                        <TableHead rowSpan={2} className="border-r border-muted/50 text-center last:border-r-0">
                                             Masuk
                                         </TableHead>
-                                        <TableHead colSpan={3} className="border-r border-muted/50 text-center last:border-r-0">
+                                        <TableHead rowSpan={2} className="border-r border-muted/50 text-center last:border-r-0">
+                                            Harga Perolehan
+                                        </TableHead>
+                                        <TableHead rowSpan={2} className="text-center">
                                             Keluar
                                         </TableHead>
-                                        <TableHead colSpan={3} className="text-center">
-                                            Saldo Persediaan
+                                        <TableHead colSpan={2} className="text-center">
+                                            Saldo
                                         </TableHead>
                                     </TableRow>
                                     <TableRow>
-                                        <TableHead className="w-24 border-r border-muted/50 text-center last:border-r-0">Unit</TableHead>
-                                        <TableHead className="w-32 border-r border-muted/50 text-center last:border-r-0">Harga</TableHead>
-                                        <TableHead className="w-32 border-r border-muted/50 text-center last:border-r-0">Jumlah</TableHead>
-
-                                        <TableHead className="w-24 border-r border-muted/50 text-center last:border-r-0">Unit</TableHead>
-                                        <TableHead className="w-32 border-r border-muted/50 text-center last:border-r-0">Harga</TableHead>
-                                        <TableHead className="w-32 border-r border-muted/50 text-center last:border-r-0">Jumlah</TableHead>
-
-                                        <TableHead className="w-24 border-r border-muted/50 text-center last:border-r-0">Unit</TableHead>
-                                        <TableHead className="w-32 border-r border-muted/50 text-center last:border-r-0">Harga</TableHead>
+                                        {/* <TableHead className="w-32 border-r border-muted/50 text-center last:border-r-0">Jumlah</TableHead> */}
                                         <TableHead className="w-32 text-center">Jumlah</TableHead>
+                                        <TableHead className="w-32 text-center">Nilai</TableHead>
                                     </TableRow>
                                 </TableHeader>
 
                                 <TableBody>
-                                    {rows.length > 0 ? (
-                                        rows.map((row: any, idx: number) => (
+                                    {dataStok.length > 0 ? (
+                                        dataStok.map((opname: any, idx: number) => (
                                             <TableRow key={idx} className="transition-colors hover:bg-muted/50">
-                                                <TableCell className="border-r border-muted/50 font-medium text-muted-foreground last:border-r-0">
-                                                    {idx + 1}
+                                                <TableCell className="py-2 text-xs">{idx + 1}</TableCell>
+                                                <TableCell className="py-2 text-xs">{formatTanggalIna(opname.tanggal)}</TableCell>
+                                                <TableCell className="py-2 text-xs">{opname.uraian}</TableCell>
+                                                <TableCell className="py-2 text-center text-xs">
+                                                    {opname.type == 'Perolehan' ? opname.quantity : '-'}
                                                 </TableCell>
-                                                <TableCell className="border-r border-muted/50 last:border-r-0">
-                                                    {formatTanggalIna(row.tanggal)}
+                                                <TableCell className="py-2 text-center text-xs">
+                                                    {opname.quantity > 0 ? formatCurrency(opname.harga) : '-'}
                                                 </TableCell>
-                                                <TableCell className="max-w-sm border-r border-muted/50 text-sm text-muted-foreground last:border-r-0">
-                                                    {row.keterangan}
+                                                <TableCell className="py-2 text-center text-xs">
+                                                    {opname.type == 'Pemakaian' ? opname.quantity : '-'}
                                                 </TableCell>
-
-                                                <TableCell className="border-r border-muted/50 text-center font-medium last:border-r-0">
-                                                    {row.masuk.unit}
+                                                <TableCell className="py-2 text-center text-xs">{opname.saldo}</TableCell>
+                                                <TableCell className="py-2 text-center text-xs">
+                                                    {opname.saldo > 0 ? formatCurrency(opname.saldo * opname.harga) : '-'}
                                                 </TableCell>
-                                                <TableCell className="border-r border-muted/50 text-right last:border-r-0">
-                                                    {formatCurrency(row.masuk.harga)}
-                                                </TableCell>
-                                                <TableCell className="border-r border-muted/50 text-right font-semibold last:border-r-0">
-                                                    {formatCurrency(row.masuk.jumlah)}
-                                                </TableCell>
-
-                                                <TableCell className="border-r border-muted/50 text-center font-medium last:border-r-0">
-                                                    {row.keluar.unit}
-                                                </TableCell>
-                                                <TableCell className="border-r border-muted/50 text-right last:border-r-0">
-                                                    {formatCurrency(row.keluar.harga)}
-                                                </TableCell>
-                                                <TableCell className="border-r border-muted/50 text-right font-semibold last:border-r-0">
-                                                    {formatCurrency(row.keluar.jumlah)}
-                                                </TableCell>
-
-                                                <TableCell className="border-r border-muted/50 text-center font-medium last:border-r-0">
-                                                    {row.saldo.unit}
-                                                </TableCell>
-                                                <TableCell className="border-r border-muted/50 text-right last:border-r-0">
-                                                    {formatCurrency(row.saldo.harga)}
-                                                </TableCell>
-                                                <TableCell className="text-right font-semibold">{formatCurrency(row.saldo.jumlah)}</TableCell>
                                             </TableRow>
                                         ))
                                     ) : (

@@ -129,64 +129,6 @@ class StockOpnameController extends Controller
         ]);
     }
 
-    public function detailPemakaian(Request $request, DaftarAtk $daftarAtk)
-    {
-        $type = $request->route('type');
-
-        $bulan   = $request->bulan;
-        $tahun   = $request->tahun ?? now()->format('Y');
-
-        // Jika bulan tidak dikirim, ambil seluruh tahun dari param `tahun`
-        if ($bulan) {
-            $start = Carbon::create($tahun, $bulan)->startOfMonth();
-            $end   = Carbon::create($tahun, $bulan)->endOfMonth();
-        } else {
-            $start = Carbon::create($tahun)->startOfYear();
-            $end   = Carbon::create($tahun)->endOfYear();
-        }
-
-        $stockOpname = StockOpname::query()
-            ->where('type', 'Pemakaian')
-            ->whereBetween('created_at', [$start, $end])
-            ->whereHas(
-                'daftarAtk',
-                fn($q) =>
-                $q->where('kode_atk', $daftarAtk->kode_atk)
-            )
-            ->with([
-                'daftarAtk:id,name,satuan,kode_atk',
-                'permintaanAtk.pemesan.pegawai',
-            ])
-            ->get()
-            ->map(fn($row) => [
-                'tanggal'        => $row->created_at,
-                'jumlah'         => $row->quantity,
-                'harga'         => $row->unit_price,
-                'total'         => $row->total_price,
-                'itemAtk'       => $row->daftarAtk,
-                'satuan'         => $row->daftarAtk->satuan,
-                'digunakan_oleh' => $row->permintaanAtk?->pemesan->pegawai?->name,
-                'unit_kerja'     => $row->permintaanAtk?->kode_unit,
-                'keterangan'     => $row->permintaanAtk?->deskripsi,
-            ]);
-
-        $data =    [
-            'Persediaan' => $stockOpname,
-            'filters' => $request->only(['kode_atk', 'bulan', 'tahun']),
-            'atk' => $daftarAtk
-        ];
-
-        if ($type === 'pdf') {
-            $pdf = PDF::loadView('pdf.detail-pemakaian', $data)
-                ->setPaper('A4', 'landscape');
-
-            return $pdf->stream("buku-persediaan.pdf");
-            return $pdf->download('detail-pemakaian.pdf');
-        }
-
-        return Inertia::render('admin/daftaratk/detail-pemakaian', $data);
-    }
-
     public function ExportBukuPersediaan(Request $request)
     {
         $bulan  = $request->bulan;
@@ -245,6 +187,66 @@ class StockOpnameController extends Controller
         return $pdf->stream();
         return $pdf->download("buku-persediaan-{$bulan}-{$tahun}.pdf");
     }
+
+
+    public function detailPemakaian(Request $request, DaftarAtk $daftarAtk)
+    {
+        $type = $request->route('type');
+
+        $bulan   = $request->bulan;
+        $tahun   = $request->tahun ?? now()->format('Y');
+
+        // Jika bulan tidak dikirim, ambil seluruh tahun dari param `tahun`
+        if ($bulan) {
+            $start = Carbon::create($tahun, $bulan)->startOfMonth();
+            $end   = Carbon::create($tahun, $bulan)->endOfMonth();
+        } else {
+            $start = Carbon::create($tahun)->startOfYear();
+            $end   = Carbon::create($tahun)->endOfYear();
+        }
+
+        $stockOpname = StockOpname::query()
+            ->where('type', 'Pemakaian')
+            ->whereBetween('created_at', [$start, $end])
+            ->whereHas(
+                'daftarAtk',
+                fn($q) =>
+                $q->where('kode_atk', $daftarAtk->kode_atk)
+            )
+            ->with([
+                'daftarAtk:id,name,satuan,kode_atk',
+                'permintaanAtk.pemesan.pegawai',
+            ])
+            ->get()
+            ->map(fn($row) => [
+                'tanggal'        => $row->created_at,
+                'jumlah'         => $row->quantity,
+                'harga'         => $row->unit_price,
+                'total'         => $row->total_price,
+                'itemAtk'       => $row->daftarAtk,
+                'satuan'         => $row->daftarAtk->satuan,
+                'digunakan_oleh' => $row->permintaanAtk?->pemesan->pegawai?->name,
+                'unit_kerja'     => $row->permintaanAtk?->kode_unit,
+                'keterangan'     => $row->permintaanAtk?->deskripsi,
+            ]);
+
+        $data =    [
+            'Persediaan' => $stockOpname,
+            'filters' => $request->only(['kode_atk', 'bulan', 'tahun']),
+            'atk' => $daftarAtk
+        ];
+
+        if ($type === 'pdf') {
+            $pdf = PDF::loadView('pdf.detail-pemakaian', $data)
+                ->setPaper('A4', 'landscape');
+
+            return $pdf->stream("buku-persediaan.pdf");
+            return $pdf->download('detail-pemakaian.pdf');
+        }
+
+        return Inertia::render('admin/daftaratk/detail-pemakaian', $data);
+    }
+
 
     public function rincianBukuPersediaan(Request $request, DaftarAtk $daftarAtk)
     {
@@ -369,13 +371,8 @@ class StockOpnameController extends Controller
         $data = [
             'periode_awal' => $start->toDateString(),
             'periode_akhir' => $end->toDateString(),
-            'metode_pencatatan' => 'PERPETUAL',
-            'metode_penilaian' => 'BERATAN',
-            'kode_barang' => $daftarAtk->kode_atk,
-            'nama_barang' => $daftarAtk->name,
-            'satuan' => $daftarAtk->satuan,
             'rows' => $rows,
-            'filters' => $request->only(['bulan', 'tahun', 'kode_atk', 'daftar_atk_kode']),
+            'filters' => $request->only(['bulan', 'tahun']),
             'halaman' => '1 dari 1',
             'atk' => $daftarAtk,
         ];
@@ -389,6 +386,96 @@ class StockOpnameController extends Controller
         }
 
         return Inertia::render('admin/daftaratk/rincian-buku-persediaan', $data);
+    }
+
+    public function kartuBukuPersediaan(Request $request, DaftarAtk $daftarAtk)
+    {
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+
+        $start = Carbon::create($tahun, $bulan)->startOfMonth();
+        $end = Carbon::create($tahun, $bulan)->endOfMonth();
+
+        // Hitung saldo awal (sebelum periode)
+        $perolehanBeforeQty = StockOpname::query()
+            ->where('daftar_atk_id', $daftarAtk->id)
+            ->where('type', 'Perolehan')
+            ->where('created_at', '<', $start)
+            ->sum('quantity');
+
+        $pemakaianBeforeQty = StockOpname::query()
+            ->where('daftar_atk_id', $daftarAtk->id)
+            ->where('type', 'Pemakaian')
+            ->where('created_at', '<', $start)
+            ->sum('quantity');
+
+        $perolehanBeforeValue = StockOpname::query()
+            ->where('daftar_atk_id', $daftarAtk->id)
+            ->where('type', 'Perolehan')
+            ->where('created_at', '<', $start)
+            ->sum('total_price');
+
+        $pemakaianBeforeValue = StockOpname::query()
+            ->where('daftar_atk_id', $daftarAtk->id)
+            ->where('type', 'Pemakaian')
+            ->where('created_at', '<', $start)
+            ->sum('total_price');
+
+        $openingUnits = (int) ($perolehanBeforeQty - $pemakaianBeforeQty);
+        $openingValue = (int) ($perolehanBeforeValue - $pemakaianBeforeValue);
+        $openingUnitPrice = $openingUnits ? (int) round($openingValue / $openingUnits) : 0;
+
+        $runningUnits = $openingUnits;
+
+        $rows = [];
+
+        // Saldo awal (tampilkan di tanggal periode pertama)
+        $rows[] = [
+            'tanggal' => $start->toDateString(),
+            'uraian' => 'Saldo per ' . $start->copy()->subDay()->toDateString(),
+            'quantity' => $openingUnits,
+            'harga' => $openingUnitPrice,
+            'type' => 'Perolehan',
+            'saldo' => $runningUnits,
+        ];
+
+        $opnames = StockOpname::query()
+            ->where('daftar_atk_id', $daftarAtk->id)
+            ->whereBetween('created_at', [$start, $end])
+            ->with('permintaanAtk.pemesan.pegawai')
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        foreach ($opnames as $op) {
+            $qty = (int) $op->quantity;
+            $harga = (int) $op->unit_price;
+
+            // uraian: for pemakaian prefer pemesan name or deskripsi, for perolehan prefer deskripsi
+            if ($op->type === 'Pemakaian') {
+                $uraian = $op->permintaanAtk?->pemesan->pegawai?->name ?? $op->permintaanAtk?->deskripsi ?? $op->type;
+                $runningUnits -= $qty;
+            } else {
+                $uraian = $op->permintaanAtk?->deskripsi ?? $op->type;
+                $runningUnits += $qty;
+            }
+
+            $rows[] = [
+                'tanggal' => $op->created_at->toDateString(),
+                'uraian' => $uraian,
+                'quantity' => $qty,
+                'harga' => $harga,
+                'type' => $op->type,
+                'saldo' => $runningUnits,
+            ];
+        }
+
+        $data = [
+            'atk' => $daftarAtk,
+            'filters' => $request->only(['bulan', 'tahun']),
+            'dataStok' => $rows,
+        ];
+
+        return Inertia::render('admin/daftaratk/kartu-buku-persediaan', $data);
     }
 
     public function importPerolehan(Request $request)
@@ -440,7 +527,7 @@ class StockOpnameController extends Controller
             $atk = DaftarAtk::where('kode_atk', $kodeAtk)->first();
 
             if (!$atk) {
-                $errors[] = "Baris " . ($index + 2) . ": Kode ATK tidak ditemukan";
+                $errors[] = "Baris " . ($index) . ": Kode ATK tidak ditemukan";
                 continue;
             }
 
@@ -451,14 +538,36 @@ class StockOpnameController extends Controller
             ];
 
             // Validasi per row
-            $validator = Validator::make($item, [
-                'daftar_atk_id' => ['required', 'exists:daftar_atks,id'],
-                'quantity' => ['required', 'integer', 'min:1'],
-                'unit_price' => ['required', 'integer', 'min:0'],
-            ]);
+            $validator = Validator::make(
+                $item,
+                [
+                    'daftar_atk_id' => ['required', 'exists:daftar_atks,id'],
+                    'quantity' => ['required', 'integer', 'min:1'],
+                    'unit_price' => ['required', 'integer', 'min:0'],
+                ],
+                [
+                    // custom messages
+                    'daftar_atk_id.required' => 'Barang wajib dipilih.',
+                    'daftar_atk_id.exists'   => 'Barang tidak valid atau tidak ditemukan.',
+
+                    'quantity.required' => 'Jumlah wajib diisi.',
+                    'quantity.integer'  => 'Jumlah harus berupa angka.',
+                    'quantity.min'      => 'Jumlah minimal 1.',
+
+                    'unit_price.required' => 'Harga satuan wajib diisi.',
+                    'unit_price.integer'  => 'Harga satuan harus berupa angka.',
+                    'unit_price.min'      => 'Harga satuan tidak boleh kurang dari 0.',
+                ],
+                [
+                    // custom attribute (opsional, kalau pakai :attribute di message)
+                    'daftar_atk_id' => 'Barang',
+                    'quantity' => 'Jumlah',
+                    'unit_price' => 'Harga satuan',
+                ]
+            );
 
             if ($validator->fails()) {
-                $errors[] = "Baris " . ($index + 2) . ": " . implode(', ', $validator->errors()->all());
+                $errors[] = "Baris " . ($index) . ": " . implode(', ', $validator->errors()->all());
                 continue;
             }
 
@@ -488,7 +597,7 @@ class StockOpnameController extends Controller
                 ->find($item['daftar_atk_id']);
 
             if ($daftar) {
-                $daftar->increment('quantity', $quantity);
+                $daftar->increment('quantity', $item['quantity']);
             }
         }
 

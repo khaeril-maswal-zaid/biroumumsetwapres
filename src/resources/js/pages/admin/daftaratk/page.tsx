@@ -232,7 +232,7 @@ export default function ATKItemsManagement({ daftarAtk, categories }: any) {
                             </div>
                             <div className="flex items-center space-x-2">
                                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                                    <SelectTrigger className="w-37.5">
+                                    <SelectTrigger className="w-64">
                                         <SelectValue placeholder="Kategori" />
                                     </SelectTrigger>
                                     <SelectContent>

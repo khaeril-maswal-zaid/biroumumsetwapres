@@ -187,7 +187,7 @@ export default function ImportPerolehanAtkDialog({ open, onOpenChange }: { open:
                                 onDragLeave={() => setIsDragActive(false)}
                                 onDrop={handleDrop}
                                 className={cn(
-                                    'group flex min-h-[180px] flex-col items-center justify-center gap-3 rounded-3xl border-2 border-dashed p-6 text-center transition duration-200',
+                                    'group flex min-h-45 flex-col items-center justify-center gap-3 rounded-3xl border-2 border-dashed p-6 text-center transition duration-200',
                                     isDragActive ? 'border-emerald-400 bg-emerald-100/80' : 'border-emerald-200 bg-white hover:border-emerald-300',
                                 )}
                             >
@@ -232,12 +232,12 @@ export default function ImportPerolehanAtkDialog({ open, onOpenChange }: { open:
 
                             <div className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50">
                                 {isImportProcessing ? (
-                                    <div className="flex min-h-[220px] flex-col items-center justify-center gap-3 px-4 py-12 text-slate-500">
+                                    <div className="flex min-h-55 flex-col items-center justify-center gap-3 px-4 py-12 text-slate-500">
                                         <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
                                         <p className="text-sm">Mempersiapkan preview data...</p>
                                     </div>
                                 ) : previewRows.length === 0 ? (
-                                    <div className="flex min-h-[220px] flex-col items-center justify-center gap-3 px-4 py-12 text-center text-slate-500">
+                                    <div className="flex min-h-55 flex-col items-center justify-center gap-3 px-4 py-12 text-center text-slate-500">
                                         <FileText className="h-8 w-8" />
                                         <div>
                                             <p className="text-sm font-semibold text-slate-900">Belum ada file</p>
@@ -249,6 +249,7 @@ export default function ImportPerolehanAtkDialog({ open, onOpenChange }: { open:
                                         <Table>
                                             <TableHeader>
                                                 <TableRow>
+                                                    <TableHead className="py-2 text-sm">No</TableHead>
                                                     <TableHead className="py-2 text-sm">Nama Barang</TableHead>
                                                     <TableHead className="py-2 text-sm">Jumlah</TableHead>
                                                     <TableHead className="py-2 text-sm">Satuan</TableHead>
@@ -256,8 +257,9 @@ export default function ImportPerolehanAtkDialog({ open, onOpenChange }: { open:
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                {previewRows.map((row) => (
-                                                    <TableRow key={row.id} className="odd:bg-slate-50">
+                                                {previewRows.map((row, index) => (
+                                                    <TableRow key={row.id || index} className="odd:bg-slate-50">
+                                                        <TableCell className="py-2 text-xs">{index + 1}</TableCell>
                                                         <TableCell className="py-2 text-xs">{row.name}</TableCell>
                                                         <TableCell className="py-2 text-xs">{row.quantity}</TableCell>
                                                         <TableCell className="py-2 text-xs">{row.unit}</TableCell>

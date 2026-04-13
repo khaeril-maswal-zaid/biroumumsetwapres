@@ -55,17 +55,26 @@ class AtkTemplateExport implements FromCollection, WithHeadings, WithMapping, Wi
 
     public function styles(Worksheet $sheet)
     {
-        // Lock semua cell dulu
-        $sheet->getStyle('A1:E1000')->getProtection()->setLocked(true);
+        // Lock hanya kolom A–E
+        // $sheet->getStyle('A1:E1000')->getProtection()->setLocked(true);
 
-        // Unlock kolom Stok (F)
-        $sheet->getStyle('F2:G1000')->getProtection()->setLocked(false);
+        // Unlock kolom F–G
+        // $sheet->getStyle('F2:G1000')->getProtection()->setLocked(false);
 
-        // Aktifkan proteksi sheet
-        $sheet->getProtection()->setSheet(true);
+        $sheet->setAutoFilter('A1:G1000');
+
+        // Aktifkan proteksi
+        // $protection = $sheet->getProtection();
+        // $protection->setSheet(true);
+
+        // IZINKAN AKSI YANG KAMU MAU
+        // $protection->setDeleteRows(true);     // bisa delete row
+        // $protection->setInsertRows(true);     // bisa tambah row
+        // $protection->setAutoFilter(true);     // bisa filter
+        // $protection->setSort(true);           // bisa sort
 
         return [
-            1 => ['font' => ['bold' => true]], // header bold
+            1 => ['font' => ['bold' => true]],
         ];
     }
 }

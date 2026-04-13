@@ -1,9 +1,10 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Calendar, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, FileDown, PackageSearch, RotateCcw } from 'lucide-react';
+import { Calendar, ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, FileDown, PackageSearch, RotateCcw } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { ItemCombobox } from '@/components/biroumum/item-combobox';
@@ -64,13 +65,11 @@ function AtkTabs({ active }: { active: 'daftar-atk' | 'perolehan-pemakaian' | 'b
 
 const MONTHS = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
-const YEARS = ['2026'];
-
 export default function ATKItemsManagement({ Persediaan }: any) {
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
     const [selectedKodeAtk, setSelectedKodeAtk] = useState<string | null>(null);
     const [selectedMonth, setSelectedMonth] = useState('');
-    const [selectedYear, setSelectedYear] = useState('2026');
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
     const [logItemsPerPage, setLogItemsPerPage] = useState(10);
     const [logCurrentPage, setLogCurrentPage] = useState(1);
 
@@ -173,8 +172,8 @@ export default function ATKItemsManagement({ Persediaan }: any) {
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {YEARS.map((year) => (
-                                            <SelectItem key={year} value={year}>
+                                        {Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - i).map((year) => (
+                                            <SelectItem key={year} value={year.toString()}>
                                                 {year}
                                             </SelectItem>
                                         ))}
@@ -262,43 +261,69 @@ export default function ATKItemsManagement({ Persediaan }: any) {
                                                 </TableCell>
                                                 <TableCell className="text-right align-middle">
                                                     <div className="flex items-center justify-end space-x-3">
-                                                        <Badge
-                                                            onClick={() => {
-                                                                router.get(
-                                                                    route('stockopname.detail_pemakaian', item.kode_atk),
-                                                                    {
-                                                                        bulan: selectedMonth,
-                                                                        tahun: selectedYear,
-                                                                    },
-                                                                    {
-                                                                        preserveState: true,
-                                                                        preserveScroll: true,
-                                                                    },
-                                                                );
-                                                            }}
-                                                            className="cursor-pointer bg-blue-500 text-white transition select-none hover:bg-blue-600 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 focus-visible:outline-none active:bg-blue-700"
-                                                        >
-                                                            Detail Pemakaian
-                                                        </Badge>
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Badge className="cursor-pointer bg-blue-500 ps-3 text-white transition select-none hover:bg-blue-600 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 focus-visible:outline-none active:bg-blue-700">
+                                                                    Detail <ChevronDown className="h-4 w-4" />
+                                                                </Badge>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent>
+                                                                <DropdownMenuGroup>
+                                                                    <DropdownMenuItem
+                                                                        onClick={() => {
+                                                                            router.get(
+                                                                                route('stockopname.detail_pemakaian', item.kode_atk),
+                                                                                {
+                                                                                    bulan: selectedMonth,
+                                                                                    tahun: selectedYear,
+                                                                                },
+                                                                                {
+                                                                                    preserveState: true,
+                                                                                    preserveScroll: true,
+                                                                                },
+                                                                            );
+                                                                        }}
+                                                                    >
+                                                                        Detail Pemakaian
+                                                                    </DropdownMenuItem>
+                                                                    <DropdownMenuItem
+                                                                        onClick={() => {
+                                                                            router.get(
+                                                                                route('stockopname.rincian_buku_persediaan', item.kode_atk),
+                                                                                {
+                                                                                    bulan: selectedMonth,
+                                                                                    tahun: selectedYear,
+                                                                                },
+                                                                                {
+                                                                                    preserveState: true,
+                                                                                    preserveScroll: true,
+                                                                                },
+                                                                            );
+                                                                        }}
+                                                                    >
+                                                                        Rincian Buku Persediaan
+                                                                    </DropdownMenuItem>
 
-                                                        <Badge
-                                                            onClick={() => {
-                                                                router.get(
-                                                                    route('stockopname.rincian_buku_persediaan', item.kode_atk),
-                                                                    {
-                                                                        bulan: selectedMonth,
-                                                                        tahun: selectedYear,
-                                                                    },
-                                                                    {
-                                                                        preserveState: true,
-                                                                        preserveScroll: true,
-                                                                    },
-                                                                );
-                                                            }}
-                                                            className="cursor-pointer bg-blue-500 text-white transition select-none hover:bg-blue-600 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 focus-visible:outline-none active:bg-blue-700"
-                                                        >
-                                                            Rincian Buku Persediaan
-                                                        </Badge>
+                                                                    <DropdownMenuItem
+                                                                        onClick={() => {
+                                                                            router.get(
+                                                                                route('stockopname.kartu_buku_persediaan', item.kode_atk),
+                                                                                {
+                                                                                    bulan: selectedMonth,
+                                                                                    tahun: selectedYear,
+                                                                                },
+                                                                                {
+                                                                                    preserveState: true,
+                                                                                    preserveScroll: true,
+                                                                                },
+                                                                            );
+                                                                        }}
+                                                                    >
+                                                                        Kartu Buku Persediaan
+                                                                    </DropdownMenuItem>
+                                                                </DropdownMenuGroup>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
