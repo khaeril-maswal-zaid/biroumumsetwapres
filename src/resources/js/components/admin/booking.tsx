@@ -491,7 +491,7 @@ export default function BookingReports({
                                                 </div>
 
                                                 {/* Jadwal Ruangan */}
-                                                <div className="space-y-1 px-5">
+                                                <div className="space-y-1 px-0.5">
                                                     {daySchedules.map((schedule: any) => (
                                                         <Badge
                                                             key={schedule.id}
@@ -503,7 +503,7 @@ export default function BookingReports({
                                                                 <span className="w-full truncate">{schedule?.ruangans?.nama_ruangan}</span>
                                                                 <span className="flex items-center gap-1 text-xs opacity-75">
                                                                     <Clock className="h-3 w-3" />
-                                                                    {schedule.jam_mulai} - {schedule.jam_selesai}
+                                                                    {schedule.jam_mulai.slice(0, 5)} - {schedule.jam_selesai.slice(0, 5)}
                                                                 </span>
                                                             </div>
                                                         </Badge>
@@ -550,7 +550,7 @@ export default function BookingReports({
                                                 <div className="ml-0.5 flex items-center gap-1.5 text-muted-foreground">
                                                     <Clock className="h-4 w-4" />
                                                     <span>
-                                                        {selectedSchedule.jam_mulai} - {selectedSchedule.jam_selesai}
+                                                        {selectedSchedule.jam_mulai.slice(0, 5)} - {selectedSchedule.jam_selesai.slice(0, 5)}
                                                     </span>
                                                 </div>
                                                 <div>
