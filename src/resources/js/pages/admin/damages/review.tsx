@@ -73,7 +73,7 @@ export default function BookingDetailsPage({ selectedDamage, kategoriKerusakan }
     const [isUpdateProcessOpen, setIsUpdateProcessOpen] = useState(false);
     const [processDate, setProcessDate] = useState<string>('');
     const [processText, setProcessText] = useState<string>('');
-    const [processLogs, setProcessLogs] = useState(selectedDamage?.log_progres);
+    const [processLogs, setProcessLogs] = useState(selectedDamage?.processLogs ?? []);
     const [selectedUrgency, setSelectedUrgency] = useState<'tinggi' | 'rendah' | null>(null);
     const [changeKategoriDialog, setChangeKategoriDialog] = useState(false);
 
@@ -238,8 +238,8 @@ export default function BookingDetailsPage({ selectedDamage, kategoriKerusakan }
     };
 
     useEffect(() => {
-        setProcessLogs(selectedDamage?.log_progres ?? []);
-    }, [selectedDamage?.log_progres]);
+        setProcessLogs(selectedDamage?.processLogs ?? [] ?? []);
+    }, [selectedDamage?.processLogs ?? []]);
 
     // sync selected urgency from server when selectedDamage changes
     useEffect(() => {
@@ -540,7 +540,7 @@ export default function BookingDetailsPage({ selectedDamage, kategoriKerusakan }
                                         <Button
                                             type="button"
                                             onClick={() => setSelectedUrgency(null)}
-                                            className="flex-1 rounded-lg border-2 border-gray-300 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                                            className="flex-1 rounded-lg border-2 border-gray-300 bg-gray-50 px-4 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-100"
                                         >
                                             Batal
                                         </Button>
@@ -707,60 +707,63 @@ export default function BookingDetailsPage({ selectedDamage, kategoriKerusakan }
                                             <CardDescription>Riwayat update dan progres penanganan permintaan perbaikan</CardDescription>
                                         </CardHeader>
                                         <CardContent className="space-y-4">
-                                            {processLogs.length === 0 ? (
+                                            {processLogs && processLogs.length === 0 ? (
                                                 <div className="flex flex-col items-center justify-center py-8 text-center">
                                                     <Clock className="mb-3 h-12 w-12 text-gray-300" />
-                                                    <p className="text-sm text-gray-500">Belum ada log aktivitas</p>
+                                                    <p className="text-sm text-gray-500">
+                                                        {selectedDamage.status == 'process' ? 'Belum ada log aktivitas' : 'Tidak ada log aktivitas'}
+                                                    </p>
                                                 </div>
                                             ) : (
                                                 <div className="space-y-4">
-                                                    {processLogs.map((log: any, index: any) => {
-                                                        const style = getLogTypeStyle(log.type, index);
-                                                        const IconComponent = style.icon;
-                                                        const isLatest = index === processLogs.length - 1;
+                                                    {processLogs &&
+                                                        processLogs.map((log: any, index: any) => {
+                                                            const style = getLogTypeStyle(log.type, index);
+                                                            const IconComponent = style.icon;
+                                                            const isLatest = index === processLogs.length - 1;
 
-                                                        return (
-                                                            <div key={log.id} className="relative">
-                                                                {index !== processLogs.length - 1 && (
-                                                                    <div className="absolute top-8 left-4 h-full w-0.5 bg-gray-200" />
-                                                                )}
+                                                            return (
+                                                                <div key={log.id} className="relative">
+                                                                    {index !== processLogs.length - 1 && (
+                                                                        <div className="absolute top-8 left-4 h-full w-0.5 bg-gray-200" />
+                                                                    )}
 
-                                                                <div
-                                                                    className={`relative rounded-lg border p-3 transition-all hover:shadow-sm ${style.border} ${style.bg} ${
-                                                                        isLatest ? 'ring-2 ring-blue-100' : ''
-                                                                    }`}
-                                                                >
-                                                                    <div className="flex items-start gap-3">
-                                                                        <div
-                                                                            className={`flex h-8 w-8 items-center justify-center rounded-full border-2 bg-white ${style.border}`}
-                                                                        >
-                                                                            <IconComponent className={`h-4 w-4 ${style.color}`} />
-                                                                        </div>
-
-                                                                        {/* Konten teks */}
-                                                                        <div className="min-w-0 flex-1">
-                                                                            <div className="mb-1 flex items-center gap-2">
-                                                                                <span className="text-xs font-medium text-gray-600">
-                                                                                    {formatTanggalIna(log.tanggal)}
-                                                                                </span>
-                                                                            </div>
-                                                                            <p className="text-sm leading-relaxed text-gray-700">{log.title}</p>
-                                                                        </div>
-
-                                                                        {/* Tombol hapus di kanan */}
-                                                                        {selectedDamage.status === 'process' && (
-                                                                            <button
-                                                                                onClick={() => handleLogProcessDelete(log.id)}
-                                                                                className="my-auto ml-2 text-red-400 transition-colors hover:text-red-800"
+                                                                    <div
+                                                                        className={`relative rounded-lg border p-3 transition-all hover:shadow-sm ${style.border} ${style.bg} ${
+                                                                            isLatest ? 'ring-2 ring-blue-100' : ''
+                                                                        }`}
+                                                                    >
+                                                                        <div className="flex items-start gap-3">
+                                                                            <div
+                                                                                className={`flex h-8 w-8 items-center justify-center rounded-full border-2 bg-white ${style.border}`}
                                                                             >
-                                                                                <Trash2 className="h-4 w-4" />
-                                                                            </button>
-                                                                        )}
+                                                                                <IconComponent className={`h-4 w-4 ${style.color}`} />
+                                                                            </div>
+
+                                                                            {/* Konten teks */}
+                                                                            <div className="min-w-0 flex-1">
+                                                                                <div className="mb-1 flex items-center gap-2">
+                                                                                    <span className="text-xs font-medium text-gray-600">
+                                                                                        {formatTanggalIna(log.tanggal)}
+                                                                                    </span>
+                                                                                </div>
+                                                                                <p className="text-sm leading-relaxed text-gray-700">{log.title}</p>
+                                                                            </div>
+
+                                                                            {/* Tombol hapus di kanan */}
+                                                                            {selectedDamage.status === 'process' && (
+                                                                                <button
+                                                                                    onClick={() => handleLogProcessDelete(log.id)}
+                                                                                    className="my-auto ml-2 text-red-400 transition-colors hover:text-red-800"
+                                                                                >
+                                                                                    <Trash2 className="h-4 w-4" />
+                                                                                </button>
+                                                                            )}
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        );
-                                                    })}
+                                                            );
+                                                        })}
                                                 </div>
                                             )}
                                         </CardContent>
