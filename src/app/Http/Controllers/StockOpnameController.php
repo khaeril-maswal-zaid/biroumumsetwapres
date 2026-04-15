@@ -121,6 +121,7 @@ class StockOpnameController extends Controller
                 'kode_atk'  => $i->kode_atk,
                 'kategori'  => $i->kategoriAtk->nama_kategori ?? 'Lainnya',
                 'satuan'    => $i->satuan,
+                'min_stok'  => $i->available_stock,
                 'jumlah'    => (int) ($i->total_perolehan ?? 0),
                 'pemakaian' => (int) ($i->total_pemakaian ?? 0),
                 'saldo'     => (int) ($i->sisa ?? 0),
@@ -373,7 +374,6 @@ class StockOpnameController extends Controller
             'periode_akhir' => $end->toDateString(),
             'rows' => $rows,
             'filters' => $request->only(['bulan', 'tahun']),
-            'halaman' => '1 dari 1',
             'atk' => $daftarAtk,
         ];
 
@@ -429,10 +429,12 @@ class StockOpnameController extends Controller
 
         $rows = [];
 
+        \Carbon\Carbon::setLocale('id');
+
         // Saldo awal (tampilkan di tanggal periode pertama)
         $rows[] = [
             'tanggal' => $start->toDateString(),
-            'uraian' => 'Saldo per ' . $start->copy()->subDay()->toDateString(),
+            'uraian' => 'Saldo per ' . $start->copy()->subDay()->translatedFormat('d F Y'),
             'quantity' => $openingUnits,
             'harga' => $openingUnitPrice,
             'type' => 'Perolehan',

@@ -96,8 +96,8 @@
             @forelse($items as $i => $item)
                 <tr>
                     <td class="text-center">{{ $i + 1 }}</td>
-                    <td>{{ $item['name'] }}</td>
-                    <td class="text-center">{{ $item['approved'] }}</td>
+                    <td>{{ $item['item_name'] }}</td>
+                    <td class="text-center">{{ $item['qty_diambil'] }}</td>
                     <td class="text-center">{{ $item['satuan'] }}</td>
                     <td>{{ $item['keterangan'] ?? '' }}</td>
                 </tr>

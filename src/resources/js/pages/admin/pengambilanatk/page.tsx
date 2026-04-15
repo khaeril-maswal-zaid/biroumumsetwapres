@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Calendar, Hand, Pen, Phone, User } from 'lucide-react';
+import { ArrowLeft, Calendar, Hand, Pen, Phone, Printer, User } from 'lucide-react';
 import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -96,29 +96,29 @@ export default function SupplieDetailsPage({ pengambilans, itemsSummary, kodeLap
                             Catatan Serah Terima ATK
                         </CardTitle>
                         <CardDescription>Catatan serah terima item ATK yang diberikan kepada user.</CardDescription>
+
+                        <div className="flex justify-end gap-2">
+                            <Button
+                                variant="outline"
+                                className="flex items-center gap-2 border-blue-200 bg-transparent text-blue-700 hover:bg-blue-50"
+                                onClick={() => {
+                                    setOpenModal(true);
+                                    setForm({
+                                        nama_pengambil: '',
+                                        no_hp: '',
+                                        tanggal_ambil: new Date().toISOString().slice(0, 10),
+                                        keterangan: '',
+                                        details: [],
+                                    });
+                                }}
+                            >
+                                <Pen className="h-4 w-4" />
+                                Buat Serah Terima
+                            </Button>
+                        </div>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-6">
-                            <div className="flex justify-end gap-2">
-                                <Button
-                                    variant="outline"
-                                    className="flex items-center gap-2 border-blue-200 bg-transparent text-blue-700 hover:bg-blue-50"
-                                    onClick={() => {
-                                        setOpenModal(true);
-                                        setForm({
-                                            nama_pengambil: '',
-                                            no_hp: '',
-                                            tanggal_ambil: new Date().toISOString().slice(0, 10),
-                                            keterangan: '',
-                                            details: [],
-                                        });
-                                    }}
-                                >
-                                    <Pen className="h-4 w-4" />
-                                    Buat Serah Terima
-                                </Button>
-                            </div>
-
                             {pengambilans.length === 0 ? (
                                 <div className="text-center text-sm text-muted-foreground">Belum ada histori pengambilan.</div>
                             ) : (
@@ -135,25 +135,36 @@ export default function SupplieDetailsPage({ pengambilans, itemsSummary, kodeLap
                                                             .join('')}
                                                     </div>
 
-                                                    <div>
-                                                        <p className="flex items-center gap-2 text-sm font-medium">
+                                                    <div className="gap-1">
+                                                        <p className="mb-1 flex items-center gap-2 text-sm font-medium">
                                                             <User className="h-3.5 w-3.5" />
                                                             {p.nama_pengambil}
                                                         </p>
-                                                        <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                        <p className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
                                                             <Phone className="h-3.5 w-3.5" /> {p.no_hp ?? '-'}
+                                                        </p>
+                                                        <p className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
+                                                            <Calendar className="h-3.5 w-3.5" /> {p.tanggal_ambil}
                                                         </p>
                                                     </div>
                                                 </div>
 
                                                 <div className="text-right">
-                                                    <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                        <Calendar className="h-4 w-4" /> {p.tanggal_ambil}
-                                                    </p>
                                                     <p className="text-xs text-muted-foreground">{p.kode ?? ''}</p>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="flex items-center gap-0.5 border-red-600 bg-red-600 text-xs text-white hover:bg-red-700 hover:text-white"
+                                                        onClick={() => {
+                                                            window.open(route('pengambilan.show-pdf', p.id));
+                                                        }}
+                                                    >
+                                                        <Printer className="h-2 w-2 text-white" />
+                                                        Tanda terima
+                                                    </Button>
                                                 </div>
                                             </div>
-                                            <div className="mt-3 text-sm text-muted-foreground">
+                                            <div className="mt-4 text-sm text-muted-foreground">
                                                 {p.keterangan != null ? `"${p.keterangan}"` : '-'}
                                             </div>
 
@@ -170,11 +181,6 @@ export default function SupplieDetailsPage({ pengambilans, itemsSummary, kodeLap
                                                                 <div className="font-medium">{d.qty_diambil}</div>
                                                                 <div className="text-xs text-muted-foreground">Diambil</div>
                                                             </div>
-
-                                                            {/* <div className="text-right">
-                                                                <div className="text-sm font-medium text-emerald-600">{d.sisa ?? '-'}</div>
-                                                                <div className="text-xs text-muted-foreground">Sisa</div>
-                                                            </div> */}
                                                         </div>
                                                     </div>
                                                 ))}

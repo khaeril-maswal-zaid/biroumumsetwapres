@@ -138,10 +138,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('permintaanatk.show')
         ->middleware('permission:view_supplies');
 
-    Route::get('/dashboard/download-tanda-terima/{permintaanAtk:kode_pelaporan}', [PermintaanAtkController::class, 'tandaTerima'])
-        ->name('permintaanatk.tandaterima')
-        ->middleware('permission:view_supplies');
-
     Route::patch('/dashboard/permintaan-atk/{permintaanAtk:kode_pelaporan}', [PermintaanAtkController::class, 'status'])
         ->name('permintaanatk.status')
         ->middleware('permission:change_supplies_status');
@@ -343,6 +339,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/dashboard/pengambilan-atk/store/{permintaanAtk:kode_pelaporan}', [PengambilanAtkController::class, 'store'])
         ->name('pengambilan.store')
+        ->middleware('permission:view_supplies');
+
+    Route::get('/dashboard/pengambilan-atk-show-pdf/{pengambilanAtk}', [PengambilanAtkController::class, 'tandaTerima'])
+        ->name('pengambilan.show-pdf')
         ->middleware('permission:view_supplies');
 });
 

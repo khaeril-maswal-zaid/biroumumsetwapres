@@ -41,7 +41,7 @@ class DaftarAtkController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:250',
-            'category' => 'required|string|max:250',
+            'kode_kategori_atk' => 'required|exists:kategori_atks,kode_kategori',
             'satuan' => 'required|string|max:250',
             'available_stock' => 'required|integer|min:0',
         ]);
@@ -50,7 +50,7 @@ class DaftarAtkController extends Controller
 
         DaftarAtk::create([
             'name' => $validated['name'],
-            'category' => $validated['category'],
+            'kategori_atk_id' => KategoriAtk::where('kode_kategori', $validated['kode_kategori_atk'])->first()->id,
             'satuan' => $validated['satuan'],
             'kode_unit' => $validated['kode_unit'] ?? null,
             'available_stock' => $validated['available_stock'],

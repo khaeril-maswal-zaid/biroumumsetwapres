@@ -47,7 +47,7 @@ export default function rincianBukuPersediaan({ filters, atk, rows = [] }: any) 
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Rincian Buku Persediaan" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-50 p-6">
-                <Link href={route('stockopname.buku_persediaan')}>
+                <Link href={route('stockopname.buku_persediaan') + `?bulan=${filters?.bulan ?? ''}&tahun=${filters?.tahun ?? ''}`}>
                     <Button variant="ghost" className="mb-1 flex items-center space-x-2">
                         <ArrowLeft className="h-4 w-4" />
                         <span>Kembali</span>
@@ -76,7 +76,12 @@ export default function rincianBukuPersediaan({ filters, atk, rows = [] }: any) 
                                 <Button
                                     className="inline-flex items-center gap-2 bg-red-600 text-white hover:bg-red-700"
                                     onClick={() => {
-                                        window.open(route('stockopname.rincian_buku_persediaan_pdf', atk?.kode_atk));
+                                        window.open(
+                                            route(
+                                                'stockopname.rincian_buku_persediaan_pdf',
+                                                atk?.kode_atk + `?bulan=${filters?.bulan || ''}&tahun=${filters?.tahun || ''}`,
+                                            ),
+                                        );
                                     }}
                                 >
                                     <FileDown className="h-4 w-4" />
@@ -111,17 +116,17 @@ export default function rincianBukuPersediaan({ filters, atk, rows = [] }: any) 
                                         </TableHead>
                                     </TableRow>
                                     <TableRow>
-                                        <TableHead className="w-24 border-r border-muted/50 text-center last:border-r-0">Unit</TableHead>
-                                        <TableHead className="w-32 border-r border-muted/50 text-center last:border-r-0">Harga</TableHead>
-                                        <TableHead className="w-32 border-r border-muted/50 text-center last:border-r-0">Jumlah</TableHead>
+                                        <TableHead className="w-24 border-r border-muted/50 text-center text-sm last:border-r-0">Unit</TableHead>
+                                        <TableHead className="w-32 border-r border-muted/50 text-center text-sm last:border-r-0">Harga</TableHead>
+                                        <TableHead className="w-32 border-r border-muted/50 text-center text-sm last:border-r-0">Jumlah</TableHead>
 
-                                        <TableHead className="w-24 border-r border-muted/50 text-center last:border-r-0">Unit</TableHead>
-                                        <TableHead className="w-32 border-r border-muted/50 text-center last:border-r-0">Harga</TableHead>
-                                        <TableHead className="w-32 border-r border-muted/50 text-center last:border-r-0">Jumlah</TableHead>
+                                        <TableHead className="w-24 border-r border-muted/50 text-center text-sm last:border-r-0">Unit</TableHead>
+                                        <TableHead className="w-32 border-r border-muted/50 text-center text-sm last:border-r-0">Harga</TableHead>
+                                        <TableHead className="w-32 border-r border-muted/50 text-center text-sm last:border-r-0">Jumlah</TableHead>
 
-                                        <TableHead className="w-24 border-r border-muted/50 text-center last:border-r-0">Unit</TableHead>
-                                        <TableHead className="w-32 border-r border-muted/50 text-center last:border-r-0">Harga</TableHead>
-                                        <TableHead className="w-32 text-center">Jumlah</TableHead>
+                                        <TableHead className="w-24 border-r border-muted/50 text-center text-sm last:border-r-0">Unit</TableHead>
+                                        <TableHead className="w-32 border-r border-muted/50 text-center text-sm last:border-r-0">Harga</TableHead>
+                                        <TableHead className="w-32 text-center text-sm">Jumlah</TableHead>
                                     </TableRow>
                                 </TableHeader>
 
@@ -129,43 +134,45 @@ export default function rincianBukuPersediaan({ filters, atk, rows = [] }: any) 
                                     {rows.length > 0 ? (
                                         rows.map((row: any, idx: number) => (
                                             <TableRow key={idx} className="transition-colors hover:bg-muted/50">
-                                                <TableCell className="border-r border-muted/50 font-medium text-muted-foreground last:border-r-0">
+                                                <TableCell className="border-r border-muted/50 py-2 text-xs font-medium text-muted-foreground last:border-r-0">
                                                     {idx + 1}
                                                 </TableCell>
-                                                <TableCell className="border-r border-muted/50 last:border-r-0">
+                                                <TableCell className="border-r border-muted/50 py-2 text-xs last:border-r-0">
                                                     {formatTanggalIna(row.tanggal)}
                                                 </TableCell>
-                                                <TableCell className="max-w-sm border-r border-muted/50 text-sm text-muted-foreground last:border-r-0">
+                                                <TableCell className="max-w-sm border-r border-muted/50 py-2 text-xs text-muted-foreground last:border-r-0">
                                                     {row.keterangan}
                                                 </TableCell>
 
-                                                <TableCell className="border-r border-muted/50 text-center font-medium last:border-r-0">
+                                                <TableCell className="border-r border-muted/50 py-2 text-center text-xs font-medium last:border-r-0">
                                                     {row.masuk.unit}
                                                 </TableCell>
-                                                <TableCell className="border-r border-muted/50 text-right last:border-r-0">
+                                                <TableCell className="border-r border-muted/50 py-2 text-right text-xs last:border-r-0">
                                                     {formatCurrency(row.masuk.harga)}
                                                 </TableCell>
-                                                <TableCell className="border-r border-muted/50 text-right font-semibold last:border-r-0">
+                                                <TableCell className="border-r border-muted/50 py-2 text-right text-xs font-semibold last:border-r-0">
                                                     {formatCurrency(row.masuk.jumlah)}
                                                 </TableCell>
 
-                                                <TableCell className="border-r border-muted/50 text-center font-medium last:border-r-0">
+                                                <TableCell className="border-r border-muted/50 py-2 text-center text-xs font-medium last:border-r-0">
                                                     {row.keluar.unit}
                                                 </TableCell>
-                                                <TableCell className="border-r border-muted/50 text-right last:border-r-0">
+                                                <TableCell className="border-r border-muted/50 py-2 text-right text-xs last:border-r-0">
                                                     {formatCurrency(row.keluar.harga)}
                                                 </TableCell>
-                                                <TableCell className="border-r border-muted/50 text-right font-semibold last:border-r-0">
+                                                <TableCell className="border-r border-muted/50 py-2 text-right text-xs font-semibold last:border-r-0">
                                                     {formatCurrency(row.keluar.jumlah)}
                                                 </TableCell>
 
-                                                <TableCell className="border-r border-muted/50 text-center font-medium last:border-r-0">
+                                                <TableCell className="border-r border-muted/50 py-2 text-center text-xs font-medium last:border-r-0">
                                                     {row.saldo.unit}
                                                 </TableCell>
-                                                <TableCell className="border-r border-muted/50 text-right last:border-r-0">
+                                                <TableCell className="border-r border-muted/50 py-2 text-right text-xs last:border-r-0">
                                                     {formatCurrency(row.saldo.harga)}
                                                 </TableCell>
-                                                <TableCell className="text-right font-semibold">{formatCurrency(row.saldo.jumlah)}</TableCell>
+                                                <TableCell className="py-2 text-right text-xs font-semibold">
+                                                    {formatCurrency(row.saldo.jumlah)}
+                                                </TableCell>
                                             </TableRow>
                                         ))
                                     ) : (

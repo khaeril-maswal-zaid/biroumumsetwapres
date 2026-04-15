@@ -59,7 +59,7 @@ export default function detailPemakaian({ Persediaan, filters, atk }: any) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-100 p-4">
-                <Link href={route('stockopname.buku_persediaan')}>
+                <Link href={route('stockopname.buku_persediaan') + `?bulan=${filters?.bulan ?? ''}&tahun=${filters?.tahun ?? ''}`}>
                     <Button
                         variant="ghost"
                         className="mb-1 flex items-center space-x-2 border bg-accent text-accent-foreground hover:border-gray-300 hover:bg-gray-200"
@@ -144,14 +144,14 @@ export default function detailPemakaian({ Persediaan, filters, atk }: any) {
                                     {filteredData.length > 0 ? (
                                         filteredData.map((usage: any, idx: number) => (
                                             <TableRow key={idx} className="transition-colors hover:bg-muted/50">
-                                                <TableCell className="font-medium text-muted-foreground">{idx + 1}</TableCell>
-                                                <TableCell>{formatTanggalIna(usage.tanggal)}</TableCell>
-                                                <TableCell className="text-right font-medium">{usage.jumlah}</TableCell>
-                                                <TableCell className="text-muted-foreground">{usage.satuan}</TableCell>
-                                                <TableCell className="text-muted-foreground">{usage.harga}</TableCell>
-                                                <TableCell className="text-muted-foreground">{usage.total}</TableCell>
-                                                <TableCell className="font-medium">{usage.digunakan_oleh}</TableCell>
-                                                <TableCell className="text-sm text-muted-foreground">{usage.keterangan}</TableCell>
+                                                <TableCell className="py-2 text-xs font-medium text-muted-foreground">{idx + 1}</TableCell>
+                                                <TableCell className="py-2 text-xs">{formatTanggalIna(usage.tanggal)}</TableCell>
+                                                <TableCell className="py-2 text-right text-xs font-medium">{usage.jumlah}</TableCell>
+                                                <TableCell className="py-2 text-xs text-muted-foreground">{usage.satuan}</TableCell>
+                                                <TableCell className="py-2 text-xs text-muted-foreground">{usage.harga}</TableCell>
+                                                <TableCell className="py-2 text-xs text-muted-foreground">{usage.total}</TableCell>
+                                                <TableCell className="py-2 text-xs font-medium">{usage.digunakan_oleh}</TableCell>
+                                                <TableCell className="py-2 text-xs text-muted-foreground">{usage.keterangan}</TableCell>
                                             </TableRow>
                                         ))
                                     ) : (

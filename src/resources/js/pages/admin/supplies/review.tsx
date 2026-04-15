@@ -329,17 +329,6 @@ export default function SupplieDetailsPage({ selectedRequest, daftarAtk }: any) 
                                                 Catatan Serah Terima
                                             </Button>
                                         </Link>
-
-                                        {/* <Button
-                                            variant="outline"
-                                            className="flex items-center gap-2 border-red-600 bg-red-600 text-white hover:bg-red-700 hover:text-white"
-                                            onClick={() => {
-                                                window.open(route('permintaanatk.tandaterima', selectedRequest.kode_pelaporan));
-                                            }}
-                                        >
-                                            <Printer className="h-4 w-4 text-white" />
-                                            Tanda terima
-                                        </Button> */}
                                     </div>
                                 )}
                                 {/* Request Details */}

@@ -8,7 +8,6 @@ use App\Http\Requests\UpdatePermintaanAtkRequest;
 use App\Http\Requests\UpdatePermintaanAtkStatusRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Notification;
-use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\PermintaanAtk;
 use App\Services\PermintaanAtkStatusService;
 use App\Services\StockOpnameService;
@@ -219,25 +218,5 @@ class PermintaanAtkController extends Controller
         ];
 
         return Inertia::render('admin/reportssupplies/page', $data);
-    }
-
-    public function tandaTerima(PermintaanAtk $permintaanAtk)
-    {
-        $items = collect($permintaanAtk->daftar_kebutuhan)
-            ->where('approved', '>', 0)
-            ->values()
-            ->all();
-
-        $data = [
-            'penerima' => $permintaanAtk->load('pemesan.pegawai')->pemesan->pegawai->name ?? '____________________',
-            'tanggal' => now()->format('d-m-Y'),
-            'items' => $items
-        ];
-
-        $pdf = Pdf::loadView('pdf.tanda-terima-atk', $data)
-            ->setPaper('A4', 'portrait');
-
-        return $pdf->stream();
-        return $pdf->download("buku-persediaan-{$bulan}-{$tahun}.pdf");
     }
 }

@@ -47,7 +47,7 @@ export default function rincianBukuPersediaan({ filters, atk, dataStok = [] }: a
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Kartu Buku Persediaan" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl bg-linear-to-br from-white to-blue-50 p-6">
-                <Link href={route('stockopname.buku_persediaan')}>
+                <Link href={route('stockopname.buku_persediaan') + `?bulan=${filters?.bulan ?? ''}&tahun=${filters?.tahun ?? ''}`}>
                     <Button variant="ghost" className="mb-1 flex items-center space-x-2">
                         <ArrowLeft className="h-4 w-4" />
                         <span>Kembali</span>
@@ -67,7 +67,7 @@ export default function rincianBukuPersediaan({ filters, atk, dataStok = [] }: a
                             </div>
                             <div className="items-end gap-2 text-right">
                                 <div className="mb-4">
-                                    <h1 className="text-2xl font-extrabold tracking-tight">RINCIAN BUKU PERSEDIAAN</h1>
+                                    <h1 className="text-2xl font-extrabold tracking-tight">KARTU BUKU PERSEDIAAN</h1>
                                     <p className="text-sm text-muted-foreground">
                                         Periode: <span className="font-medium">{periodeBulan || '-'}</span>
                                     </p>
@@ -115,8 +115,8 @@ export default function rincianBukuPersediaan({ filters, atk, dataStok = [] }: a
                                     </TableRow>
                                     <TableRow>
                                         {/* <TableHead className="w-32 border-r border-muted/50 text-center last:border-r-0">Jumlah</TableHead> */}
-                                        <TableHead className="w-32 text-center">Jumlah</TableHead>
-                                        <TableHead className="w-32 text-center">Nilai</TableHead>
+                                        <TableHead className="w-32 py-2 text-center">Jumlah</TableHead>
+                                        <TableHead className="w-32 py-2 text-center">Nilai</TableHead>
                                     </TableRow>
                                 </TableHeader>
 

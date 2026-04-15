@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PengambilanAtk;
 use App\Models\PermintaanAtk;
 use App\Services\PengambilanAtkService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class PengambilanAtkController extends Controller
@@ -15,7 +17,6 @@ class PengambilanAtkController extends Controller
         $pengambilan = $permintaanAtk
             ->pengambilans()
             ->with('details')
-            // ->latest()
             ->get();
 
         $takenMap = $pengambilan
@@ -35,6 +36,7 @@ class PengambilanAtkController extends Controller
                 ];
             })->values();
 
+
         $data = [
             'pengambilans' => $pengambilan,
             'itemsSummary' => $items,
@@ -43,62 +45,6 @@ class PengambilanAtkController extends Controller
         return inertia('admin/pengambilanatk/page', $data);
     }
 
-
-    public function indexX(PermintaanAtk $permintaanAtk)
-    {
-        $permintaanAtk->load('pemesan.pegawai');
-
-        $pengambilanRaw = $permintaanAtk
-            ->pengambilans()
-            ->with('details')
-            ->latest()
-            ->get();
-
-        $takenMap = $pengambilanRaw
-            ->flatMap(fn($p) => $p->details)
-            ->groupBy('item_id')
-            ->map(fn($items) => $items->sum('qty_diambil'));
-
-        $kebutuhanMap = collect($permintaanAtk->daftar_kebutuhan)
-            ->keyBy('id');
-
-        $items = $kebutuhanMap
-            ->map(function ($item) use ($takenMap) {
-                $taken = $takenMap[$item['id']] ?? 0;
-                $approved = (int) ($item['approved'] ?? 0);
-
-                return [
-                    ...$item,
-                    'sudah_diambil' => $taken,
-                    'sisa' => max(0, $approved - $taken),
-                ];
-            })
-            ->values();
-
-        $pengambilans = $pengambilanRaw->map(function ($p) use ($takenMap, $kebutuhanMap) {
-            $p->setRelation('details', collect($p->details)->map(function ($d) use ($takenMap, $kebutuhanMap) {
-                $item = $kebutuhanMap[$d->item_id] ?? null;
-                $approved = (int) ($item['approved'] ?? 0);
-                $totalTaken = $takenMap[$d->item_id] ?? 0;
-
-                return [
-                    ...$d->toArray(),
-                    'total_diambil' => $totalTaken,
-                    'sisa' => max(0, $approved - $totalTaken),
-                ];
-            }));
-
-            return $p;
-        });
-
-        $data = [
-            'pengambilans' => $pengambilans,
-            'itemsSummary' => $items,
-            'kodeLaporan' => $permintaanAtk->kode_pelaporan,
-        ];
-
-        return inertia('admin/pengambilanatk/page', $data);
-    }
 
     public function store(Request $request, PermintaanAtk $permintaanAtk, PengambilanAtkService $service)
     {
@@ -127,5 +73,20 @@ class PengambilanAtkController extends Controller
         );
 
         return back()->with('success', 'Pengambilan berhasil disimpan.');
+    }
+
+
+    public function tandaTerima(PengambilanAtk $pengambilanAtk)
+    {
+        $data = [
+            'penerima' => $pengambilanAtk->nama_pengambil ?? '____________________',
+            'items' => $pengambilanAtk->details,
+        ];
+
+        $pdf = Pdf::loadView('pdf.tanda-terima-atk', $data)
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->stream();
+        return $pdf->download("buku-persediaan-{$bulan}-{$tahun}.pdf");
     }
 }

@@ -16,19 +16,18 @@ export default function ButtonAtk() {
 
     const { kategoriAtk } = usePage().props;
     const [isAddOpen, setIsAddOpen] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
     const [formData, setFormData] = useState({
-        kode_atk: '',
         name: '',
-        category: '',
+        kode_kategori_atk: '',
         satuan: '',
         available_stock: 0,
     });
 
     const handleAdd = () => {
         setFormData({
-            kode_atk: '',
             name: '',
-            category: '',
+            kode_kategori_atk: '',
             satuan: '',
             available_stock: 0,
         });
@@ -36,6 +35,7 @@ export default function ButtonAtk() {
     };
 
     const handleSubmit = (e: React.FormEvent) => {
+        setIsProcessing(true);
         e.preventDefault();
         router.post(route('daftaratk.store'), formData, {
             onSuccess: () => {
@@ -45,12 +45,12 @@ export default function ButtonAtk() {
                 });
                 setIsAddOpen(false);
                 setFormData({
-                    kode_atk: '',
                     name: '',
-                    category: '',
+                    kode_kategori_atk: '',
                     satuan: '',
                     available_stock: 0,
                 });
+                setIsProcessing(false);
             },
             onError: (er) => {
                 toast({
@@ -58,6 +58,7 @@ export default function ButtonAtk() {
                     description: Object.values(er)[0],
                     variant: 'destructive',
                 });
+                setIsProcessing(false);
             },
         });
     };
@@ -78,18 +79,6 @@ export default function ButtonAtk() {
                     </DialogHeader>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        {/* <div>
-                            <Label htmlFor="name">Kode ATK</Label>
-                            <Input
-                                className="mt-1"
-                                id="kode_atk"
-                                value='1234567'
-                                onChange={(e) => setFormData({ ...formData, kode_atk: e.target.value })}
-                                required
-                                autoFocus
-                            />
-                        </div> */}
-
                         <div>
                             <Label htmlFor="name">Jenis Barang ATK</Label>
                             <Input
@@ -103,14 +92,17 @@ export default function ButtonAtk() {
 
                         <div>
                             <Label htmlFor="category">Kategori</Label>
-                            <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                            <Select
+                                value={formData.kode_kategori_atk}
+                                onValueChange={(value) => setFormData({ ...formData, kode_kategori_atk: value })}
+                            >
                                 <SelectTrigger className="mt-1">
                                     <SelectValue placeholder="Pilih kategori" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {kategoriAtk.map((kategori: string) => (
-                                        <SelectItem key={kategori} value={kategori}>
-                                            {kategori}
+                                    {kategoriAtk.map((kategori: any) => (
+                                        <SelectItem key={kategori.kode_kategori} value={kategori.kode_kategori}>
+                                            {kategori.nama_kategori}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -151,7 +143,9 @@ export default function ButtonAtk() {
                             <Button type="button" variant="outline" onClick={() => setIsAddOpen(false)}>
                                 Batal
                             </Button>
-                            <Button type="submit">Tambah ATK</Button>
+                            <Button type="submit" disabled={isProcessing}>
+                                {isProcessing ? 'Menambahkan...' : 'Tambah ATK'}
+                            </Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>

@@ -65,11 +65,11 @@ function AtkTabs({ active }: { active: 'daftar-atk' | 'perolehan-pemakaian' | 'b
 
 const MONTHS = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
-export default function ATKItemsManagement({ Persediaan }: any) {
+export default function ATKItemsManagement({ Persediaan, filters }: any) {
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
     const [selectedKodeAtk, setSelectedKodeAtk] = useState<string | null>(null);
-    const [selectedMonth, setSelectedMonth] = useState('');
-    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
+    const [selectedMonth, setSelectedMonth] = useState(filters?.bulan);
+    const [selectedYear, setSelectedYear] = useState(filters?.tahun || new Date().getFullYear().toString());
     const [logItemsPerPage, setLogItemsPerPage] = useState(10);
     const [logCurrentPage, setLogCurrentPage] = useState(1);
 
@@ -242,10 +242,6 @@ export default function ATKItemsManagement({ Persediaan }: any) {
                                 </TableHeader>
                                 <TableBody>
                                     {paginatedLogs.map((item: any, idx: number) => {
-                                        const saldoValue = item.saldo;
-                                        const isLow = saldoValue <= 5;
-                                        const isPositive = saldoValue > 0;
-
                                         return (
                                             <TableRow key={item.id} className="transition-colors hover:bg-muted/50">
                                                 <TableCell className="font-medium text-muted-foreground">{logStartIndex + idx + 1}</TableCell>
@@ -255,9 +251,9 @@ export default function ATKItemsManagement({ Persediaan }: any) {
                                                 <TableCell className="text-right font-medium">{item?.jumlah || 0}</TableCell>
                                                 <TableCell className="text-right font-medium">{item?.pemakaian || 0}</TableCell>
                                                 <TableCell
-                                                    className={`text-right font-medium ${isLow ? 'text-destructive' : isPositive ? 'text-green-600 dark:text-green-400' : 'text-destructive'}`}
+                                                    className={`text-right font-medium ${item.saldo < item.min_stok ? 'text-destructive' : 'text-green-600 dark:text-green-400'}`}
                                                 >
-                                                    {saldoValue}
+                                                    {item.saldo}
                                                 </TableCell>
                                                 <TableCell className="text-right align-middle">
                                                     <div className="flex items-center justify-end space-x-3">
