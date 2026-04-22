@@ -10,6 +10,7 @@ import { router, usePage } from '@inertiajs/react';
 import { Camera, Info, MapPin, Mic, Speaker, User, Users } from 'lucide-react';
 import { useState } from 'react';
 
+import { Separator } from '@/components/ui/separator';
 import { CheckCircle, Clock, Monitor, PenSquare, Tv, X } from 'lucide-react';
 import type React from 'react';
 import { useEffect } from 'react';
@@ -418,6 +419,23 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                             </div>
                         </div>
                     )}
+
+                    <Separator className="mt-4" />
+
+                    <div className="space-y-3">
+                        <h3 className="mb-1 text-lg font-semibold">Deskripsi Nama Ruangan</h3>
+                        <p className="text-sm text-muted-foreground">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis
+                            natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque
+                            eu, pretium quis, sem. Nulla consequat massa quis enim.
+                        </p>
+                        <img src="/storage/images/filosofi-rooms/rooms1.jpeg" alt="Placeholder" className="h-64 w-full rounded object-cover" />
+                        <p className="mb-4text-sm text-muted-foreground">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis
+                            natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque
+                            eu, pretium quis, sem. Nulla consequat massa quis enim.
+                        </p>
+                    </div>
 
                     <div className="flex justify-end">
                         <Button variant="outline" onClick={() => setIsDetailOpen(false)}>
