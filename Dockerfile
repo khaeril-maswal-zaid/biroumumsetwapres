@@ -44,7 +44,7 @@ COPY --from=composer/composer:latest-bin /composer /usr/bin/composer
 
 ENV TZ Asia/Jakarta
 
-RUN mkdir /data-umumswp
+#RUN mkdir /data/umumswp
 
 COPY ./config/nginx.conf /etc/nginx/nginx.conf
 COPY ./config/fpm-pool.conf /etc/php84/php-fpm.d/www.conf
@@ -56,10 +56,9 @@ COPY src/ /var/www
 COPY ./config/.env /var/www
 
 # Copy images from public/images to storage/app/public/images
-RUN mkdir -p storage/app/public/images \
-    && cp -r public/images/. storage/app/public/images/
+#RUN mkdir -p storage/app/public/images 
 
-RUN ln -s /data/umumswp/public/images /var/www/storage/app/public/images
+RUN ln -s /data/umumswp/images /var/www/storage/app/public/images
 
 RUN composer install --optimize-autoloader --no-dev
 # RUN composer install 
@@ -69,7 +68,7 @@ RUN npm install --legacy-peer-deps
 RUN npm run build
 
 RUN addgroup -g 1945 -S pplsi && adduser -u 1945 -S pplsi -G pplsi
-RUN chown -R pplsi:pplsi /var/www /run /var/lib/nginx /var/log/nginx /data-umumswp
+RUN chown -R pplsi:pplsi /var/www /run /var/lib/nginx /var/log/nginx
 USER pplsi
 
 EXPOSE 8080
