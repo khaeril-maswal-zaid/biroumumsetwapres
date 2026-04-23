@@ -328,7 +328,7 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
 
             {/* Room Detail Modal */}
             <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-                <DialogContent className="sm:max-w-lg">
+                <DialogContent className="max-h-11/12 overflow-y-auto sm:max-w-lg">
                     <DialogHeader>
                         <DialogTitle>Detail Ruangan</DialogTitle>
                         <DialogDescription>Informasi lengkap tentang ruangan yang dipilih.</DialogDescription>
@@ -429,7 +429,7 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                             natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque
                             eu, pretium quis, sem. Nulla consequat massa quis enim.
                         </p>
-                        <img src="/storage/images/filosofi-rooms/rooms1.jpeg" alt="Placeholder" className="h-64 w-full rounded object-cover" />
+                        <img src="/images/filosofi-rooms/rooms1.jpeg" alt="Placeholder" className="h-64 w-full rounded object-cover" />
                         <p className="mb-4text-sm text-muted-foreground">
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis
                             natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque

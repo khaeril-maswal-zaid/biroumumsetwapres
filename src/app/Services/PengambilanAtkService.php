@@ -9,9 +9,6 @@ use Illuminate\Validation\ValidationException;
 
 class PengambilanAtkService
 {
-    public function __construct(
-        protected StockOpnameService $stockOpnameService
-    ) {}
 
     public function handle(
         PermintaanAtk $permintaan,
@@ -63,15 +60,6 @@ class PengambilanAtkService
                     'satuan' => $item['satuan'] ?? null,
                     'qty_diambil' => $qty,
                 ]);
-
-                if (is_numeric($itemId)) {
-                    $this->stockOpnameService->consume(
-                        (int) $itemId,
-                        $qty,
-                        $permintaan->id,
-                        $permintaan->kode_unit
-                    );
-                }
             }
 
             return $pengambilan;
