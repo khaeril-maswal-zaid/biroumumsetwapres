@@ -44,7 +44,7 @@ COPY --from=composer/composer:latest-bin /composer /usr/bin/composer
 
 ENV TZ Asia/Jakarta
 
-#RUN mkdir /data-umumswp
+RUN mkdir /data/umumswp
 
 COPY ./config/nginx.conf /etc/nginx/nginx.conf
 COPY ./config/fpm-pool.conf /etc/php84/php-fpm.d/www.conf
