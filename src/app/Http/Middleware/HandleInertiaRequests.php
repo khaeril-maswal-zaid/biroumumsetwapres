@@ -89,6 +89,7 @@ class HandleInertiaRequests extends Middleware
                     ] : null,
                 ] : null,
                 'permissions' => $permissions,
+                'isPimpinan' => $user?->getRoleNames()->contains('pimpinan') ? true : false,
             ],
         ];
     }

@@ -31,6 +31,7 @@ type NavMainProps = {
 export function NavMain({ items, itemsReport }: NavMainProps) {
     const { url: pathname } = usePage();
     const { permissions }: any = usePage().props.auth;
+    const { isPimpinan }: any = usePage().props.auth;
 
     const visibleMainItems = items.filter(
         (item) =>
@@ -68,7 +69,7 @@ export function NavMain({ items, itemsReport }: NavMainProps) {
                     );
                 })}
 
-                {permissions.includes('management_access') && visibleReportItems.length > 0 && (
+                {(permissions.includes('management_access') || isPimpinan) && visibleReportItems.length > 0 && (
                     <Collapsible open={isManagementOpen} onOpenChange={setIsManagementOpen}>
                         <CollapsibleTrigger asChild>
                             <Button

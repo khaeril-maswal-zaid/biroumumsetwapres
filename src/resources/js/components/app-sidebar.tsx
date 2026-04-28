@@ -75,6 +75,12 @@ const mainNavItems: NavItem[] = [
         excludePermission: 'management_access',
     },
     {
+        title: 'Kategori ATK',
+        href: route('kategoriatk.index'),
+        icon: Tags,
+        permission: 'view_atk',
+    },
+    {
         title: 'Permintaan Kendaraan',
         href: '#', // Ganti nanti dengan route('permintaankendaraan.index') jika aktif
         icon: CarFront,

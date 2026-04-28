@@ -544,7 +544,7 @@ export default function BookingReports({
                                             <CardContent className="space-y-4">
                                                 <div className="mb-2 flex items-center gap-1.5 text-muted-foreground">
                                                     <MapPin className="h-5 w-5" />
-                                                    {selectedSchedule?.ruangans?.nama_ruangan}
+                                                    {selectedSchedule?.ruangans?.lokasi}
                                                 </div>
 
                                                 <div className="ml-0.5 flex items-center gap-1.5 text-muted-foreground">

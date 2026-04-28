@@ -148,7 +148,7 @@ class HomeController extends Controller
     public function admin(PemesananRuangRapat $pemesananRuangRapat, KerusakanGedung $kerusakanGedung, PermintaanAtk $permintaanAtk)
     {
         $user = Auth::user();
-        if ($user->can("management_access")) {
+        if ($user->can("management_access") || $user?->getRoleNames()->contains('pimpinan')) {
 
             $today = Carbon::today();
 

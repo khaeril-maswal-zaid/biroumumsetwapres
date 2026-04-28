@@ -40,12 +40,13 @@ export default function AdminDashboard({
     rooms,
 }: any) {
     const { permissions }: any = usePage().props.auth;
+    const { isPimpinan }: any = usePage().props.auth;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
 
-            {permissions && permissions.includes('management_access') ? (
+            {(permissions && permissions.includes('management_access')) || isPimpinan ? (
                 <HomeDashboard dashboardStats={dashboardStats} recentActivities={recentActivities} upcomingBookings={upcomingBookings} />
             ) : permissions && permissions.includes('change_supplies_status') ? (
                 <SuppliesReports
