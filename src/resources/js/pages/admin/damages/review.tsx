@@ -626,34 +626,34 @@ export default function BookingDetailsPage({ selectedDamage, kategoriKerusakan }
                                                 </h5>
                                             </div>
 
-                                            {actionType && actionType != 'confirmed' && (
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="admin-message">
-                                                        Pesan untuk Pelapor{' '}
-                                                        {actionType === 'confirmed' && selectedDamage.status === 'pending' && (
-                                                            <span className="text-red-500">*</span>
-                                                        )}
-                                                    </Label>
-                                                    <Textarea
-                                                        id="admin-message"
-                                                        placeholder={
-                                                            actionType === 'confirmed' && selectedDamage.status === 'pending'
-                                                                ? 'Jelaskan alasan penolakan permintaan perbaikan...'
-                                                                : actionType === 'confirmed' && selectedDamage.status === 'process'
-                                                                  ? 'Konfirmasi bahwa perbaikan telah selesai dan berikan informasi terkait...'
-                                                                  : 'Berikan informasi terkait persetujuan dan langkah selanjutnya...'
-                                                        }
-                                                        value={adminMessage}
-                                                        onChange={(e) => setAdminMessage(e.target.value)}
-                                                        rows={3}
-                                                        className="mt-1 resize-none"
-                                                    />
-
-                                                    {actionType === 'confirmed' && selectedDamage.status === 'pending' && !adminMessage.trim() && (
-                                                        <p className="text-sm text-red-600">Pesan wajib diisi untuk penolakan</p>
+                                            {/* {actionType && actionType != 'confirmed' && ( */}
+                                            <div className="space-y-2">
+                                                <Label htmlFor="admin-message">
+                                                    Pesan untuk Pelapor{' '}
+                                                    {actionType === 'confirmed' && selectedDamage.status === 'pending' && (
+                                                        <span className="text-red-500">*</span>
                                                     )}
-                                                </div>
-                                            )}
+                                                </Label>
+                                                <Textarea
+                                                    id="admin-message"
+                                                    placeholder={
+                                                        actionType === 'confirmed' && selectedDamage.status === 'pending'
+                                                            ? 'Jelaskan alasan penolakan permintaan perbaikan...'
+                                                            : actionType === 'confirmed' && selectedDamage.status === 'process'
+                                                              ? 'Konfirmasi bahwa perbaikan telah selesai dan berikan informasi terkait...'
+                                                              : 'Berikan informasi terkait persetujuan dan langkah selanjutnya...'
+                                                    }
+                                                    value={adminMessage}
+                                                    onChange={(e) => setAdminMessage(e.target.value)}
+                                                    rows={3}
+                                                    className="mt-1 resize-none"
+                                                />
+
+                                                {actionType === 'confirmed' && selectedDamage.status === 'pending' && !adminMessage.trim() && (
+                                                    <p className="text-sm text-red-600">Pesan wajib diisi untuk penolakan</p>
+                                                )}
+                                            </div>
+                                            {/* )} */}
 
                                             <div className="flex gap-2 pt-2">
                                                 <Button
