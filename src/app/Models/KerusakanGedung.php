@@ -72,6 +72,21 @@ class KerusakanGedung extends Model
         return $this->hasMany(LogProses::class, 'kerusakan_gedung_id')->orderBy('tanggal', 'asc');
     }
 
+
+    public function getPictureAttribute($value)
+    {
+        if (!$value) return [];
+
+        $paths = is_array($value) ? $value : json_decode($value, true);
+
+        return collect($paths)->map(function ($path) {
+            return route('file-view', [
+                'pathFromFileDB' => $path
+            ]);
+        })->toArray();
+    }
+
+
     public function summaryData()
     {
         $query = self::byPermission();

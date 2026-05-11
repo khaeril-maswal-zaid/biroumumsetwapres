@@ -72,12 +72,16 @@ class KerusakanGedungController extends Controller
 
         foreach ($request->photos as $photo) {
             $mime = $photo->getMimeType();
-            if (str_starts_with($mime, 'image/')) {
-                $path = $photo->store('images/kerusakan-gedung', 'public');
-            } elseif (str_starts_with($mime, 'video/')) {
-                $path = $photo->store('video/kerusakan-gedung', 'public');
-            }
-            $photoPaths[] = $path;
+
+            $folder = match (true) {
+                str_starts_with($mime, 'image/') => 'images/kerusakan-gedung',
+                str_starts_with($mime, 'video/') => 'videos/kerusakan-gedung',
+                default => null
+            };
+
+            if (!$folder) continue;
+
+            $photoPaths[] = $photo->store($folder);
         }
 
         $idKat  = KategoriKerusakan::where('kode_kerusakan', $request->kategori)->value('id');
@@ -153,6 +157,9 @@ class KerusakanGedungController extends Controller
             ],
             'kategoriKerusakan' => KategoriKerusakan::all(),
         ];
+
+        Notification::where('action_url', route('kerusakangedung.show', $kerusakanGedung->kode_pelaporan, false))
+            ->delete();
 
         return Inertia::render('admin/damages/review', $data);
     }

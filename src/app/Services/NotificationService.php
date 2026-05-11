@@ -192,19 +192,23 @@ class NotificationService
         ];
     }
 
+    //Mengirim notifikasi stok ATK yang menipis berdasarkan threshold yang ditentukan
     //kategori: 4
     public function sendLowStockNotifications(): int
     {
-        $atkItems = DaftarAtk::where('quantity', '<', 'available_stock')->get();
+        $atkItems = DaftarAtk::whereColumn('quantity', '<', 'available_stock')
+            ->where('available_stock', '!=', 0)
+            ->get();
+
+
         $count = 0;
         foreach ($atkItems as $item) {
             $title = "Stok ATK Menipis";
-            $message = sprintf(
-                "Stok ATK (%s) saat ini %d, sudah mencapai atau di bawah threshold (%d). Silakan lakukan pengadaan.",
-                $item->nama_barang,
-                $item->stok,
-                $item->threshold
-            );
+
+            $message = "Stok ATK {$item->name} saat ini tersisa {$item->quantity} {$item->satuan}, "
+                . "lebih rendah dari stok ideal yaitu {$item->available_stock} {$item->satuan}. "
+                . "Silakan lakukan pengadaan.";
+
             Notification::create([
                 'kode_unit' => $item->kode_unit,
                 'permissions' => $this->permissionMap['supplies'],
@@ -212,8 +216,8 @@ class NotificationService
                 'category' => 'supplies',
                 'title' => $title,
                 'message' => $message,
-                'priority' => 'medium',
-                'action_url' => route('daftaratk.show', $item, false),
+                'priority' => 'high',
+                'action_url' => route('daftaratk.index', null, false),
                 'is_read' => false,
             ]);
             $count++;

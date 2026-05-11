@@ -96,7 +96,7 @@ export default function BookingDetailsPage({ selectedDamage, kategoriKerusakan }
     };
 
     const handleViewMedia = (path: string, index: number) => {
-        const isVideo = path.includes('video/');
+        const isVideo = path.includes('videos/');
         setSelectedMedia({ path, isVideo });
         setIsMediaViewerOpen(true);
     };
@@ -350,7 +350,8 @@ export default function BookingDetailsPage({ selectedDamage, kategoriKerusakan }
                                     <p className="mb-3 font-medium text-gray-900">Foto / Video ({selectedDamage.picture.length})</p>
                                     <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
                                         {selectedDamage.picture.map((media: string, index: number) => {
-                                            const isVideo = media.includes('video/');
+                                            console.log('Media path:', media);
+                                            const isVideo = media.includes('videos/');
                                             return (
                                                 <div
                                                     key={index}
@@ -358,15 +359,10 @@ export default function BookingDetailsPage({ selectedDamage, kategoriKerusakan }
                                                     onClick={() => handleViewMedia(media, index)}
                                                 >
                                                     {isVideo ? (
-                                                        <video
-                                                            src={`/storage/${media}`}
-                                                            className="h-full w-full object-cover"
-                                                            muted
-                                                            preload="metadata"
-                                                        />
+                                                        <video src={media} className="h-full w-full object-cover" muted preload="metadata" />
                                                     ) : (
                                                         <img
-                                                            src={`/storage/${media}?height=300&width=400&query=damage report media ${index + 1}`}
+                                                            src={`${media}?height=300&width=400&query=damage report media ${index + 1}`}
                                                             alt={`Media kerusakan ${index + 1}`}
                                                             className="h-full w-full object-cover"
                                                         />
@@ -835,13 +831,9 @@ export default function BookingDetailsPage({ selectedDamage, kategoriKerusakan }
                     {selectedMedia && (
                         <div className="relative flex items-center justify-center bg-black/5 p-4">
                             {selectedMedia.isVideo ? (
-                                <video src={`/storage/${selectedMedia.path}`} controls className="max-h-[70vh] w-auto rounded-md" />
+                                <video src={selectedMedia.path} controls className="max-h-[70vh] w-auto rounded-md" />
                             ) : (
-                                <img
-                                    src={`/storage/${selectedMedia.path}`}
-                                    alt="Media kerusakan"
-                                    className="max-h-[70vh] w-auto rounded-md object-contain"
-                                />
+                                <img src={selectedMedia.path} alt="Media kerusakan" className="max-h-[70vh] w-auto rounded-md object-contain" />
                             )}
                         </div>
                     )}

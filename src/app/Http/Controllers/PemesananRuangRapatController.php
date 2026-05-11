@@ -97,6 +97,9 @@ class PemesananRuangRapatController extends Controller
             'is_read' => true
         ]));
 
+        Notification::where('action_url', route('ruangrapat.show', $pemesananRuangRapat->kode_booking, false))
+            ->delete();
+
         return Inertia::render('admin/bookings/review', [
             'selectedBooking' => $pemesananRuangRapat->load('ruangans', 'pemesan.pegawai.biro'),
         ]);

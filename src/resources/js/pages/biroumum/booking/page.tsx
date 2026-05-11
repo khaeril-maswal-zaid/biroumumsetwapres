@@ -69,6 +69,7 @@ export default function RoomBooking() {
 
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
     const [errorServer, setErrorServer] = useState<null | Record<string, string[]>>(null);
+    const [submitting, setSubmitting] = useState(false);
 
     const handleConfirm = () => {
         setShowSuccessDialog(false);
@@ -76,6 +77,7 @@ export default function RoomBooking() {
     };
 
     const onSubmit = (data: FormData) => {
+        setSubmitting(true);
         router.post(route('ruangrapat.store'), data, {
             onSuccess: () => {
                 reset();
@@ -123,8 +125,8 @@ export default function RoomBooking() {
                                 <FormProvider {...methods}>
                                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                                         <FormBooking />
-                                        <Button type="submit" className="w-full">
-                                            Ajukan Pemesanan
+                                        <Button type="submit" className="w-full" disabled={submitting}>
+                                            {submitting ? 'Mengirim...' : 'Ajukan Pemesanan'}
                                         </Button>
                                     </form>
                                 </FormProvider>

@@ -26,6 +26,9 @@ class DaftarRuangan extends Model
         'image',
         'status',
         'fasilitas',
+        'deskripsi',
+        'image_desc',
+        'lokasi_desc'
     ];
 
     public function unit()
@@ -48,5 +51,12 @@ class DaftarRuangan extends Model
 
             $param->kode_ruangan = $code;
         });
+    }
+
+    public function getImageAttribute($value = null)
+    {
+        return url(route('file-view', [
+            'pathFromFileDB' => $value
+        ]));
     }
 }

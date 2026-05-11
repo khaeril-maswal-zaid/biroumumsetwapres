@@ -19,19 +19,6 @@ class StoreKerusakanGedungRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    // public function rules(): array
-    // {
-    //     return [
-    //         'location'    => 'required|string|max:255',
-    //         'damageType'  => 'required|string|max:255',
-    //         'kategori'    => 'required|string|exists:kategori_kerusakans,kode_kerusakan',
-    //         'description' => 'required|string|max:255',
-    //         'photos'      => 'required|array',
-    //         'photos.*'    => 'image|mimes:jpeg,png,jpg,heic,mp4,mov,avi,mkv,webm|max:5125',
-    //         // 'urgency'     => 'required|in:rendah,sedang,tinggi',
-    //         'contact'     => 'required|string|max:15',
-    //     ];
-    // }
 
     public function rules(): array
     {
@@ -79,10 +66,6 @@ class StoreKerusakanGedungRequest extends FormRequest
             'photos.*.required'    => 'Setiap file dokumentasi wajib diunggah.',
             'photos.*.file'        => 'File dokumentasi tidak valid.',
             'photos.*.mimes'       => 'Format file harus berupa foto (jpg, jpeg, png, heic) atau video (mp4, mov, avi, mkv, webm).',
-
-            // ⚠️ TIDAK perlu:
-            // - photos.*.image
-            // - photos.*.max
 
             'contact.required'     => 'Nomor kontak wajib diisi.',
             'contact.max'          => 'Nomor kontak maksimal 15 karakter.',

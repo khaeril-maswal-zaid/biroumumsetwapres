@@ -75,6 +75,7 @@ export default function DamageReport({ kategoriKerusakan }: any) {
     const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [errorServer, setErrorServer] = useState<null | Record<string, string[]>>(null);
+    const [submitting, setSubmitting] = useState(false);
 
     const {
         register,
@@ -93,6 +94,7 @@ export default function DamageReport({ kategoriKerusakan }: any) {
     };
 
     const onSubmit = (data: FormData) => {
+        setSubmitting(true);
         router.post(
             route('kerusakangedung.store'),
             { ...data, photos },
@@ -343,8 +345,8 @@ export default function DamageReport({ kategoriKerusakan }: any) {
                                         <Input id="contact" {...register('contact')} className={`mt-1 ${errors.contact && 'border-red-500'}`} />
                                         {errors.contact && <p className="mt-1 text-sm text-red-500">{errors.contact.message}</p>}
                                     </div>
-                                    <Button type="submit" className="w-full">
-                                        Kirim Laporan
+                                    <Button type="submit" className="w-full" disabled={submitting}>
+                                        {submitting ? 'Mengirim...' : 'Kirim Laporan'}
                                     </Button>
                                 </form>
                             </CardContent>

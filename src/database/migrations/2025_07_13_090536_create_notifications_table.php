@@ -33,7 +33,7 @@ return new class extends Migration
             $table->id();
             $table->string('kode_unit')->nullable();
             $table->json('permissions')->nullable();
-            $table->string('type'); // overdue, reminder, new
+            $table->string('type'); // overdue, reminder, new, low_stock
             $table->string('category'); // room, supplies, damage
             $table->string('title');
             $table->text('message');

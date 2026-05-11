@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDaftarRuanganRequest;
+use Illuminate\Support\Facades\Storage;
 use App\Models\DaftarRuangan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Storage;
 
 class DaftarRuanganController extends Controller
 {
@@ -15,7 +15,7 @@ class DaftarRuanganController extends Controller
 
     public function __construct()
     {
-        $this->ruangans = DaftarRuangan::latest()->paginate(15);
+        $this->ruangans = DaftarRuangan::latest()->paginate(50);
     }
 
     public function index()
@@ -30,7 +30,7 @@ class DaftarRuanganController extends Controller
      */
     public function store(StoreDaftarRuanganRequest $request)
     {
-        $path = $request->photo->store('images/rooms', 'public');
+        $path = $request->photo->store('images/rooms');
 
         DaftarRuangan::create([
             'kode_unit' => Auth::user()->pegawai?->unit?->kode_unit,

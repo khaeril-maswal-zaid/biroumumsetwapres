@@ -411,6 +411,9 @@ class PemesananRuangRapat extends Model
                 'kapasitas_max',
                 'image',
                 'fasilitas',
+                'deskripsi',
+                'image_desc',
+                'lokasi_desc'
             ])->where('status', 'aktif')
                 ->with('pemesanRupat')
                 ->orderBy('nama_ruangan')
@@ -440,6 +443,9 @@ class PemesananRuangRapat extends Model
                     'status'       => count($slots) ? 'booked' : 'available',
                     'bookedSlots'  => $slots,
                     'image'        => $r->image,
+                    'image_desc'   => $r->image_desc,
+                    'lokasi_desc'  => $r->lokasi_desc,
+                    'deskripsi'    => $r->deskripsi,
                     'facilities'   => $r->fasilitas,
                     'bookedByBiro'       => $r->pemesanRupat->map(fn($p) => $p->pemesan?->pegawai?->biro?->nama_biro ?? '-')->unique()->values()->all(),
                 ];

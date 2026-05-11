@@ -27,6 +27,9 @@ interface Room {
     bookedByBiro?: string[];
     image: string;
     facilities: string[];
+    deskripsi: string;
+    image_desc: string;
+    lokasi_desc: string;
 }
 
 interface RoomSelectionProps {
@@ -335,107 +338,108 @@ export function RoomSelection({ selectedRoom, onRoomChange, selectedDate, select
                     </DialogHeader>
 
                     {selectedRoomDetail && (
-                        <div className="space-y-4">
-                            {/* Room Image */}
-                            <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-                                <img
-                                    src={`/storage/${selectedRoomDetail.image}` || '/placeholder.svg'}
-                                    alt={selectedRoomDetail.nama_ruangan}
-                                    className="h-full w-full object-cover"
-                                />
-                                <div className="absolute top-2 right-2">{getStatusBadge(selectedRoomDetail)}</div>
-                            </div>
-
-                            {/* Room Info */}
-                            <div className="space-y-5">
-                                <div className="space-y-3">
-                                    <h3 className="text-xl font-semibold">{selectedRoomDetail.nama_ruangan}</h3>
-                                    {/* Lokasi */}
-                                    <div className="flex items-center gap-2">
-                                        <MapPin className="h-4 w-4 text-gray-500" />
-                                        <span className="text-sm">{selectedRoomDetail.lokasi}</span>
-                                    </div>
-
-                                    {/* Kapasitas */}
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="flex items-center gap-2">
-                                            <User className="h-4 w-4 text-gray-500" />
-                                            <span className="text-sm">Kapasitas: {selectedRoomDetail.kapasitas} orang</span>
-                                        </div>
-
-                                        <div className="flex items-center gap-2">
-                                            <Users className="h-4 w-4 text-gray-500" />
-                                            <span className="text-sm">Kapasitas Max: {selectedRoomDetail.kapasitas_max} orang</span>
-                                        </div>
-                                    </div>
+                        <>
+                            <div className="space-y-4">
+                                {/* Room Image */}
+                                <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+                                    <img
+                                        src={selectedRoomDetail.image || '/placeholder.svg'}
+                                        alt={selectedRoomDetail.nama_ruangan}
+                                        className="h-full w-full object-cover"
+                                    />
+                                    <div className="absolute top-2 right-2">{getStatusBadge(selectedRoomDetail)}</div>
                                 </div>
 
-                                {/* Facilities */}
-                                <div>
-                                    <h4 className="mb-2 font-medium">Fasilitas Ruangan:</h4>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {selectedRoomDetail.facilities.map((facility) => {
-                                            const Icon = getFacilityIcon(facility);
-                                            return (
-                                                <div key={facility} className="flex items-center gap-2 text-sm">
-                                                    <Icon className="h-4 w-4 text-blue-600" />
-                                                    {getFacilityLabel(facility)}
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
+                                {/* Room Info */}
+                                <div className="space-y-5">
+                                    <div className="space-y-3">
+                                        <h3 className="text-xl font-semibold">{selectedRoomDetail.nama_ruangan}</h3>
+                                        {/* Lokasi */}
+                                        <div className="flex items-center gap-2">
+                                            <MapPin className="h-4 w-4 text-gray-500" />
+                                            <span className="text-sm">{selectedRoomDetail.lokasi}</span>
+                                        </div>
 
-                                {/* Booking Status */}
-                                {selectedRoomDetail.status === 'booked' &&
-                                    selectedRoomDetail.bookedSlots &&
-                                    selectedRoomDetail.bookedSlots.length > 0 && (
-                                        <div className="rounded-lg border border-red-200 bg-red-50 p-3">
-                                            <div className="flex items-center gap-2 text-red-800">
-                                                <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                                                <span className="font-medium">Jadwal yang sudah dipesan:</span>
+                                        {/* Kapasitas */}
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="flex items-center gap-2">
+                                                <User className="h-4 w-4 text-gray-500" />
+                                                <span className="text-sm">Kapasitas: {selectedRoomDetail.kapasitas} orang</span>
                                             </div>
-                                            <div className="mt-2 space-y-1">
-                                                {selectedRoomDetail.bookedSlots.map((slot, index) => (
-                                                    <div key={index} className="rounded bg-red-100 px-2 py-1 text-sm text-red-600">
-                                                        {slot}
+
+                                            <div className="flex items-center gap-2">
+                                                <Users className="h-4 w-4 text-gray-500" />
+                                                <span className="text-sm">Kapasitas Max: {selectedRoomDetail.kapasitas_max} orang</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Facilities */}
+                                    <div>
+                                        <h4 className="mb-2 font-medium">Fasilitas Ruangan:</h4>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {selectedRoomDetail.facilities.map((facility) => {
+                                                const Icon = getFacilityIcon(facility);
+                                                return (
+                                                    <div key={facility} className="flex items-center gap-2 text-sm">
+                                                        <Icon className="h-4 w-4 text-blue-600" />
+                                                        {getFacilityLabel(facility)}
                                                     </div>
-                                                ))}
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Booking Status */}
+                                    {selectedRoomDetail.status === 'booked' &&
+                                        selectedRoomDetail.bookedSlots &&
+                                        selectedRoomDetail.bookedSlots.length > 0 && (
+                                            <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                                                <div className="flex items-center gap-2 text-red-800">
+                                                    <div className="h-2 w-2 rounded-full bg-red-500"></div>
+                                                    <span className="font-medium">Jadwal yang sudah dipesan:</span>
+                                                </div>
+                                                <div className="mt-2 space-y-1">
+                                                    {selectedRoomDetail.bookedSlots.map((slot, index) => (
+                                                        <div key={index} className="rounded bg-red-100 px-2 py-1 text-sm text-red-600">
+                                                            {slot}
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
+                                        )}
+
+                                    {selectedRoomDetail.status === 'available' && (
+                                        <div className="rounded-lg border border-green-200 bg-green-50 p-3">
+                                            <div className="flex items-center gap-2 text-green-800">
+                                                <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                                                <span className="font-medium">Ruangan Tersedia</span>
+                                            </div>
+                                            <p className="mt-1 text-sm text-green-600">
+                                                Ruangan dapat dipesan untuk waktu: {selectedStartTime} - {selectedEndTime}
+                                            </p>
                                         </div>
                                     )}
-
-                                {selectedRoomDetail.status === 'available' && (
-                                    <div className="rounded-lg border border-green-200 bg-green-50 p-3">
-                                        <div className="flex items-center gap-2 text-green-800">
-                                            <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                                            <span className="font-medium">Ruangan Tersedia</span>
-                                        </div>
-                                        <p className="mt-1 text-sm text-green-600">
-                                            Ruangan dapat dipesan untuk waktu: {selectedStartTime} - {selectedEndTime}
-                                        </p>
-                                    </div>
-                                )}
+                                </div>
                             </div>
-                        </div>
+
+                            {selectedRoomDetail.deskripsi && (
+                                <>
+                                    <Separator className="mt-4" />
+                                    <div className="space-y-3">
+                                        <h3 className="mb-1 text-lg font-semibold">Deskripsi Nama Ruangan</h3>
+
+                                        <img src={selectedRoomDetail.image_desc} alt="Placeholder" className="h-64 w-full rounded object-cover" />
+                                        <span className="flex items-center gap-1 text-xs text-gray-500">
+                                            <Info className="h-4 w-4" />
+                                            Lokasi: {selectedRoomDetail.lokasi_desc}
+                                        </span>
+                                        <p className="mb-4 text-sm text-muted-foreground">{selectedRoomDetail.deskripsi}</p>
+                                    </div>
+                                </>
+                            )}
+                        </>
                     )}
-
-                    <Separator className="mt-4" />
-
-                    <div className="space-y-3">
-                        <h3 className="mb-1 text-lg font-semibold">Deskripsi Nama Ruangan</h3>
-                        <p className="text-sm text-muted-foreground">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis
-                            natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque
-                            eu, pretium quis, sem. Nulla consequat massa quis enim.
-                        </p>
-                        <img src="/images/filosofi-rooms/rooms1.jpeg" alt="Placeholder" className="h-64 w-full rounded object-cover" />
-                        <p className="mb-4text-sm text-muted-foreground">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis
-                            natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque
-                            eu, pretium quis, sem. Nulla consequat massa quis enim.
-                        </p>
-                    </div>
 
                     <div className="flex justify-end">
                         <Button variant="outline" onClick={() => setIsDetailOpen(false)}>

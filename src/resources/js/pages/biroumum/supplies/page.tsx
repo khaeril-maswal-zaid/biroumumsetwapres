@@ -73,6 +73,7 @@ export default function SuppliesRequest({ availableATK }: any) {
     });
 
     const [errorServer, setErrorServer] = useState<null | Record<string, string[]>>(null);
+    const [submitting, setSubmitting] = useState(false);
 
     const { fields, append, remove, update } = useFieldArray({ control, name: 'items' });
     const items = watch('items');
@@ -89,6 +90,7 @@ export default function SuppliesRequest({ availableATK }: any) {
 
     const onSubmit = (data: FormData) => {
         const formData = new FormData();
+        setSubmitting(true);
 
         formData.append('justification', data.justification);
         formData.append('contact', data.contact);
@@ -452,8 +454,8 @@ export default function SuppliesRequest({ availableATK }: any) {
                                     {errors.contact && <p className="mt-1 text-sm text-red-600">{errors.contact.message}</p>}
                                 </div>
 
-                                <Button type="submit" className="w-full">
-                                    Ajukan Permintaan
+                                <Button type="submit" className="w-full" disabled={submitting}>
+                                    {submitting ? 'Mengirim...' : 'Ajukan Permintaan'}
                                 </Button>
                             </form>
                         </CardContent>

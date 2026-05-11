@@ -122,6 +122,9 @@ class PermintaanAtkController extends Controller
                 ->get(),
         ];
 
+        Notification::where('action_url', route('permintaanatk.show', $permintaanAtk->kode_pelaporan, false))
+            ->delete();
+
         return Inertia::render('admin/supplies/review', $data);
     }
 

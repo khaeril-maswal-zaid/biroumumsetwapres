@@ -79,7 +79,7 @@ const facilityOptions = [
 export default function RoomsPage({ ruangans }: any) {
     const { toast } = useToast();
 
-    const [rooms, setRooms] = useState<Room[]>(ruangans.data);
+    const [rooms, setRooms] = useState<Room[]>(ruangans.data || []);
     const [searchTerm, setSearchTerm] = useState('');
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
@@ -96,7 +96,7 @@ export default function RoomsPage({ ruangans }: any) {
     });
 
     useEffect(() => {
-        setRooms(ruangans.data);
+        setRooms(ruangans.data || []);
     }, [ruangans.data]);
 
     const [imagePreview, setImagePreview] = useState<string>('');
@@ -258,7 +258,7 @@ export default function RoomsPage({ ruangans }: any) {
                             <div className="relative aspect-video">
                                 <img
                                     // src={room.image ? `/${room.image}` : '/placeholder.svg'}
-                                    src={room.image ? `/storage/${room.image}` : '/placeholder.svg'}
+                                    src={room.image ? room.image : '/placeholder.svg'}
                                     alt={room.nama_ruangan}
                                     className="h-68.75 w-full object-cover"
                                 />
@@ -379,8 +379,7 @@ export default function RoomsPage({ ruangans }: any) {
                                 {imagePreview && (
                                     <div className="mt-2">
                                         <img
-                                            // src={`/${imagePreview}` || '/placeholder.svg'}
-                                            src={`/storage/${imagePreview}` || '/placeholder.svg'}
+                                            src={imagePreview || '/placeholder.svg'}
                                             alt="Preview"
                                             className="h-62 w-full rounded-md border object-cover"
                                         />

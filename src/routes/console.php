@@ -2,8 +2,6 @@
 
 use App\Services\NotificationCleanupService;
 use App\Services\NotificationService;
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
 /*
@@ -27,4 +25,5 @@ Schedule::call(function () {
 
     $service->sendRoomReminders();
     $service->sendPendingOverdueNotifications();
+    $service->sendLowStockNotifications();
 })->dailyAt('06:00')->name('generate-notifications');

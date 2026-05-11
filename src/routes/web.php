@@ -11,6 +11,7 @@ use App\Http\Controllers\PemesananRuangRapatController;
 use App\Http\Controllers\PengambilanAtkController;
 use App\Http\Controllers\PermintaanAtkController;
 use App\Http\Controllers\PermintaanKendaraanController;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StockOpnameController;
 use App\Http\Controllers\UserController;
@@ -351,4 +352,17 @@ require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
 
 // routes/web.php
-Route::get('/{filename}', [PermintaanAtkController::class, 'showMemo'])->name('memo');
+Route::get(
+    '/{pathFromFileDB}',
+
+    function ($path = null) {
+        abort_if(!$path || !Storage::disk('s3')->exists($path), 404);
+
+        $stream = Storage::disk('s3')->readStream($path);
+        $mime = Storage::disk('s3')->mimeType($path);
+
+        return response()->stream(function () use ($stream) {
+            fpassthru($stream);
+        }, 200, ['Content-Type' => $mime,]);
+    }
+)->name('file-view')->where('pathFromFileDB', '.*');
