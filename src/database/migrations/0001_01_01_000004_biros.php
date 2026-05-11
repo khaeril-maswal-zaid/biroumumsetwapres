@@ -18,14 +18,6 @@ return new class extends Migration
             $table->string('kode_deputi')->nullable(); // FK string
             $table->timestamps();
         });
-
-        // Schema::create('biros', function (Blueprint $table) {
-        //     $table->id();
-        //     $table->integer('kode_biro')->unique();
-        //     $table->string('nama_biro');
-        //     $table->foreignId('deputi_id')->constrained('deputis')->cascadeOnDelete();
-        //     $table->timestamps();
-        // });
     }
 
     /**

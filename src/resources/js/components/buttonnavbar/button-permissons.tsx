@@ -14,6 +14,7 @@ interface Permission {
     name: string;
     label: string;
     category: string;
+    klasifikasi?: string | null;
 }
 
 export default function ButtonPermission({ availablePermissions }: any) {

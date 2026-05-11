@@ -148,7 +148,9 @@ class HomeController extends Controller
     public function admin(PemesananRuangRapat $pemesananRuangRapat, KerusakanGedung $kerusakanGedung, PermintaanAtk $permintaanAtk)
     {
         $user = Auth::user();
-        if ($user->can("management_access") || $user?->getRoleNames()->contains('pimpinan')) {
+        $executiveRoles = ['pimpinan', 'karo_protokol', 'karo_umum', 'karo_tusdm', 'pic'];
+
+        if ($user->can('management_access') || $user->hasAnyRole($executiveRoles)) {
 
             $today = Carbon::today();
 
@@ -243,7 +245,7 @@ class HomeController extends Controller
                 'recentActivities' => $recentActivities,
                 'upcomingBookings' => $pemesananRuangRapat->upcomingBookings(),
             ];
-        } else if ($user->can("change_booking_status")) {
+        } else if ($user->can('tindak_lanjuti_bookings')) {
             $roomSchedules = $pemesananRuangRapat
                 ->where('status', 'booked')
                 ->with(['pemesan.pegawai.biro', 'ruangans'])
@@ -262,7 +264,7 @@ class HomeController extends Controller
                 'rooms'              => DaftarRuangan::select('nama_ruangan')->get(),
                 'roomSchedules' =>  $roomSchedules
             ];
-        } else if ($user->can("change_supplies_status")) {
+        } else if ($user->can('tindak_lanjuti_supplies')) {
 
             $data = [
                 'summaryData' => $permintaanAtk->summaryData(),
@@ -273,7 +275,7 @@ class HomeController extends Controller
                 'statusDistribution' => $permintaanAtk->statusDistribution(),
                 'urgencyData' => $permintaanAtk->urgencyData(),
             ];
-        } else if ($user->can("change_damage_status")) {
+        } else if ($user->can('tindak_lanjuti_bangunan_damages') || $user->can('tindak_lanjuti_perlengkapan_damages')) {
             $data = [
                 'summaryData' =>  $kerusakanGedung->summaryData(),
                 'locationData' =>  $kerusakanGedung->locationData(),

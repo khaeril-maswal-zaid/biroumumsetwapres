@@ -44,15 +44,30 @@ class KerusakanGedung extends Model
         $user = Auth::user();
         $permissions = $user->getAllPermissions()->pluck('name');
 
-        return $query->when($permissions->contains('view_bangunan_damages'), function ($q) {
-            $q->whereHas('kategori', function ($query) {
-                $query->where('bagian_kategori', 'Bangunan');
+        if ($permissions->contains('view_damages')) {
+            return $query;
+        }
+
+        $bangunan = $permissions->contains('view_bangunan_damages');
+        $perlengkapan = $permissions->contains('view_perlengkapan_damages');
+
+        if ($bangunan && $perlengkapan) {
+            return $query->whereHas('kategori', function ($q) {
+                $q->whereIn('bagian_kategori', ['Bangunan', 'Perlengkapan']);
             });
-        })->when($permissions->contains('view_perlengkapan_damages'), function ($q) {
-            $q->whereHas('kategori', function ($query) {
-                $query->where('bagian_kategori', 'Perlengkapan');
+        }
+        if ($bangunan) {
+            return $query->whereHas('kategori', function ($q) {
+                $q->where('bagian_kategori', 'Bangunan');
             });
-        });
+        }
+        if ($perlengkapan) {
+            return $query->whereHas('kategori', function ($q) {
+                $q->where('bagian_kategori', 'Perlengkapan');
+            });
+        }
+
+        return $query;
     }
 
 

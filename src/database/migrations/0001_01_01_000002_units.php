@@ -18,15 +18,6 @@ return new class extends Migration
             $table->string('kode_cabang')->nullable();
             $table->timestamps();
         });
-
-        // Schema::create('units', function (Blueprint $table) {
-        //     $table->id();
-        //     $table->integer('kode_unit')->unique();
-        //     $table->string('nama_unit');
-        //     $table->foreignId('instansi_id')->constrained('instansis')->cascadeOnDelete();
-        //     $table->integer('kode_cabang')->nullable();
-        //     $table->timestamps();
-        // });
     }
 
     /**

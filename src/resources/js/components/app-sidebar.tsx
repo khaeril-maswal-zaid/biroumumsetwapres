@@ -84,7 +84,7 @@ const mainNavItems: NavItem[] = [
         title: 'Permintaan Kendaraan',
         href: '#', // Ganti nanti dengan route('permintaankendaraan.index') jika aktif
         icon: CarFront,
-        permission: 'view_vehicle_requests',
+        permission: 'view_vehicles',
     },
 ];
 
@@ -93,19 +93,19 @@ const reportsNavItems: NavItem[] = [
         title: 'Pemesanan Ruangan',
         href: route('ruangrapat.reports'),
         icon: FileBarChart2,
-        permission: 'report_bookings',
+        permission: 'view_bookings',
     },
     {
         title: 'Perbaikan Sarpras',
         href: route('kerusakangedung.reports'),
         icon: FileWarning,
-        permission: 'report_damages',
+        permissionAny: ['view_damages', 'view_bangunan_damages', 'view_perlengkapan_damages'],
     },
     {
         title: 'Permintaan ATK',
         href: route('permintaanatk.reports'),
         icon: FileText,
-        permission: 'report_supplies',
+        permission: 'view_supplies',
     },
 ];
 

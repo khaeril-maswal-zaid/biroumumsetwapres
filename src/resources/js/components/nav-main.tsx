@@ -31,17 +31,19 @@ type NavMainProps = {
 export function NavMain({ items, itemsReport }: NavMainProps) {
     const { url: pathname } = usePage();
     const { permissions }: any = usePage().props.auth;
-    const { isPimpinan }: any = usePage().props.auth;
+    const { hasExecutiveDashboard }: any = usePage().props.auth;
 
-    const visibleMainItems = items.filter(
-        (item) =>
-            (!item.permission || permissions.includes(item.permission)) && (!item.excludePermission || !permissions.includes(item.excludePermission)),
-    );
+    const itemVisible = (item: NavItem) => {
+        const permOk =
+            (!item.permission || permissions.includes(item.permission)) &&
+            (!item.permissionAny || item.permissionAny.some((p: string) => permissions.includes(p)));
+        const excluded = item.excludePermission && permissions.includes(item.excludePermission);
+        return permOk && !excluded;
+    };
 
-    const visibleReportItems = itemsReport.filter(
-        (item) =>
-            (!item.permission || permissions.includes(item.permission)) && (!item.excludePermission || !permissions.includes(item.excludePermission)),
-    );
+    const visibleMainItems = items.filter(itemVisible);
+
+    const visibleReportItems = itemsReport.filter(itemVisible);
 
     const [isManagementOpen, setIsManagementOpen] = useState(visibleReportItems.some((item: any) => isPathActive(pathname, item.href)));
 
@@ -69,7 +71,13 @@ export function NavMain({ items, itemsReport }: NavMainProps) {
                     );
                 })}
 
-                {(permissions.includes('management_access') || isPimpinan) && visibleReportItems.length > 0 && (
+                {(hasExecutiveDashboard ||
+                    permissions.includes('view_bookings') ||
+                    permissions.includes('view_supplies') ||
+                    permissions.includes('view_damages') ||
+                    permissions.includes('view_bangunan_damages') ||
+                    permissions.includes('view_perlengkapan_damages')) &&
+                    visibleReportItems.length > 0 && (
                     <Collapsible open={isManagementOpen} onOpenChange={setIsManagementOpen}>
                         <CollapsibleTrigger asChild>
                             <Button

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::table('permissions', function (Blueprint $table) {
             $table->string('label')->nullable();
             $table->string('category')->nullable();
+            $table->string('klasifikasi')->nullable();
         });
     }
 
@@ -23,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('permissions', function (Blueprint $table) {
-            $table->dropColumn(['label', 'category']);
+            $table->dropColumn(['label', 'category', 'klasifikasi']);
         });
     }
 };

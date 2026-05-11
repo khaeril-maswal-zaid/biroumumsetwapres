@@ -11,430 +11,255 @@ class RolePermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        // di paling atas run()
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
         $permissions = [
-            // 🔐 Ruangan
-            ['name' => 'view_rooms', 'label' => 'Lihat Data Ruangan', 'category' => 'Ruangan'],
-            ['name' => 'create_rooms', 'label' => 'Tambah Ruangan', 'category' => 'Ruangan'],
-            ['name' => 'edit_rooms', 'label' => 'Ubah Ruangan', 'category' => 'Ruangan'],
-            ['name' => 'delete_rooms', 'label' => 'Hapus Ruangan', 'category' => 'Ruangan'],
+            // Daftar Ruangan (master)
+            ['name' => 'create_rooms', 'label' => 'Tambah ruangan', 'category' => 'Daftar Ruangan', 'klasifikasi' => 'master'],
+            ['name' => 'view_rooms', 'label' => 'Lihat data ruangan', 'category' => 'Daftar Ruangan', 'klasifikasi' => 'master'],
+            ['name' => 'manage_rooms', 'label' => 'Kelola ruangan', 'category' => 'Daftar Ruangan', 'klasifikasi' => 'master'],
 
-            // 🔐 Daftar Atk
-            ['name' => 'view_atk', 'label' => 'Lihat Data Daftar ATK', 'category' => 'Daftar ATK'],
-            ['name' => 'create_atk', 'label' => 'Tambah Daftar ATK', 'category' => 'Daftar ATK'],
-            ['name' => 'edit_atk', 'label' => 'Ubah Daftar ATK', 'category' => 'Daftar ATK'],
-            ['name' => 'delete_atk', 'label' => 'Hapus Daftar ATK', 'category' => 'Daftar ATK'],
+            // Daftar ATK (master)
+            ['name' => 'create_atk', 'label' => 'Tambah daftar ATK', 'category' => 'Daftar ATK', 'klasifikasi' => 'master'],
+            ['name' => 'view_atk', 'label' => 'Lihat daftar ATK', 'category' => 'Daftar ATK', 'klasifikasi' => 'master'],
+            ['name' => 'manage_atk', 'label' => 'Kelola daftar ATK', 'category' => 'Daftar ATK', 'klasifikasi' => 'master'],
 
-            // 🔐 Kategori Kerusakan
-            ['name' => 'view_category_damages', 'label' => 'Lihat Data Kategory Kerusakan', 'category' => 'Kategory Kerusakan'],
-            ['name' => 'create_category_damages', 'label' => 'Tambah Kategory Kerusakan', 'category' => 'Kategory Kerusakan'],
-            ['name' => 'edit_category_damages', 'label' => 'Ubah Kategory Kerusakan', 'category' => 'Kategory Kerusakan'],
-            ['name' => 'delete_category_damages', 'label' => 'Hapus Kategory Kerusakan', 'category' => 'Kategory Kerusakan'],
+            // Kategori kerusakan (master)
+            ['name' => 'create_category_damages', 'label' => 'Tambah kategori kerusakan', 'category' => 'Kategory Kerusakan', 'klasifikasi' => 'master'],
+            ['name' => 'view_category_damages', 'label' => 'Lihat kategori kerusakan', 'category' => 'Kategory Kerusakan', 'klasifikasi' => 'master'],
+            ['name' => 'manage_category_damages', 'label' => 'Kelola kategori kerusakan', 'category' => 'Kategory Kerusakan', 'klasifikasi' => 'master'],
 
-            //Log Proses
-            // ['name' => 'view_log_proses', 'label' => 'Lihat Data Kategory Kerusakan', 'category' => 'Kategory Kerusakan'], //Karena 1 page dengan 'view_category_damages'
-            ['name' => 'create_log_proses', 'label' => 'Tambah Log Proses Kerusakan', 'category' => 'Log Proses Kerusakan'],
-            ['name' => 'edit_log_proses', 'label' => 'Ubah Log Proses Kerusakan', 'category' => 'Log Proses Kerusakan'],
-            ['name' => 'delete_log_proses', 'label' => 'Hapus Log Proses Kerusakan', 'category' => 'Log Proses Kerusakan'],
+            // Pengemudi (master)
+            ['name' => 'create_drivers', 'label' => 'Tambah data pengemudi', 'category' => 'Kendaraan', 'klasifikasi' => 'master'],
+            ['name' => 'view_drivers', 'label' => 'Lihat data pengemudi', 'category' => 'Kendaraan', 'klasifikasi' => 'master'],
+            ['name' => 'manage_drivers', 'label' => 'Kelola data pengemudi', 'category' => 'Kendaraan', 'klasifikasi' => 'master'],
 
-            // 🛠️ Kerusakan
-            ['name' => 'view_damages', 'label' => 'Lihat Permintaan Perbaikan Sarpras', 'category' => 'Perbaikan Sarpras'],
-            ['name' => 'report_damages', 'label' => 'Laporan Perbaikan Sarpras', 'category' => 'Perbaikan Sarpras'],
-            ['name' => 'create_damage', 'label' => 'Ajukan Permintaan Perbaikan Sarpras', 'category' => 'Perbaikan Sarpras'],
-            ['name' => 'change_damage_status', 'label' => 'Tindak lanjuti Permintaan Perbaikan Sarpras', 'category' => 'Perbaikan Sarpras'],
-            ['name' => 'view_admin_damages', 'label' => 'Admin Permintaan Perbaikan Sarpras', 'category' => 'Perbaikan Sarpras'],
-            ['name' => 'view_bangunan_damages', 'label' => 'Operator Permintaan Perbaikan Bangunan', 'category' => 'Perbaikan Sarpras'],
-            ['name' => 'view_perlengkapan_damages', 'label' => 'Operator Permintaan Perbaikan Perlengkapan', 'category' => 'Perbaikan Sarpras'],
+            // Kendaraan (master)
+            ['name' => 'create_vehicles_master', 'label' => 'Tambah daftar kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'master'],
+            ['name' => 'view_vehicles_master', 'label' => 'Lihat daftar kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'master'],
+            ['name' => 'manage_vehicles_master', 'label' => 'Kelola daftar kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'master'],
 
-            // 📅 Pemesanan Ruang
-            ['name' => 'view_bookings', 'label' => 'Lihat Pemesanan Ruang', 'category' => 'Pemesanan Ruang Rapat'],
-            ['name' => 'report_bookings', 'label' => 'Laporan Pemesanan Ruang', 'category' => 'Pemesanan Ruang Rapat'],
-            ['name' => 'create_booking', 'label' => 'Ajukan Pemesanan Ruang', 'category' => 'Pemesanan Ruang Rapat'],
-            ['name' => 'change_booking_status', 'label' => 'Tindak lanjuti Pemesanan Ruang', 'category' => 'Pemesanan Ruang Rapat'],
+            // Perbaikan sarpras (layanan: lihat, ajukan, tindak lanjuti; filter bangunan / perlengkapan)
+            ['name' => 'create_damage', 'label' => 'Ajukan permintaan perbaikan sarpras', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'layanan'],
+            ['name' => 'view_damages', 'label' => 'Lihat seluruh permintaan perbaikan sarpras', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'layanan'],
+            ['name' => 'view_bangunan_damages', 'label' => 'Lihat permintaan perbaikan (Bangunan)', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'layanan'],
+            ['name' => 'view_perlengkapan_damages', 'label' => 'Lihat permintaan perbaikan (Perlengkapan)', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'layanan'],
+            ['name' => 'tindak_lanjuti_bangunan_damages', 'label' => 'Tindak lanjuti permintaan perbaikan (Bangunan)', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'layanan'],
+            ['name' => 'tindak_lanjuti_perlengkapan_damages', 'label' => 'Tindak lanjuti permintaan perbaikan (Perlengkapan)', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'layanan'],
 
-            // 🖊️ ATK
-            ['name' => 'view_supplies', 'label' => 'Lihat Permintaan ATK', 'category' => 'Permintaan ATK'],
-            ['name' => 'report_supplies', 'label' => 'Laporan Permintaan ATK', 'category' => 'Permintaan ATK'],
-            ['name' => 'create_supplies', 'label' => 'Ajukan Permintaan ATK', 'category' => 'Permintaan ATK'],
-            ['name' => 'change_supplies_status', 'label' => 'Tindak lanjuti Permintaan ATK', 'category' => 'Permintaan ATK'],
+            // Pemesanan ruang rapat (layanan)
+            ['name' => 'create_booking', 'label' => 'Ajukan pemesanan ruang rapat', 'category' => 'Pemesanan Ruang Rapat', 'klasifikasi' => 'layanan'],
+            ['name' => 'view_bookings', 'label' => 'Lihat pemesanan & laporan ruang rapat', 'category' => 'Pemesanan Ruang Rapat', 'klasifikasi' => 'layanan'],
+            ['name' => 'tindak_lanjuti_bookings', 'label' => 'Tindak lanjuti pemesanan ruang rapat', 'category' => 'Pemesanan Ruang Rapat', 'klasifikasi' => 'layanan'],
 
-            // 🚗 Kendaraan
-            ['name' => 'view_vehicles', 'label' => 'Lihat Permintaan Kendaraan', 'category' => 'Kendaraan'],
-            ['name' => 'create_vehicle', 'label' => 'Ajukan Permintaan Kendaraan', 'category' => 'Kendaraan'],
-            ['name' => 'change_vehicle_status', 'label' => 'Konfirmasi Permintaan Kendaraan', 'category' => 'Kendaraan'],
-            // Tambahan Permissions 🚗 Kendaraan
-            ['name' => 'view_drivers', 'label' => 'Lihat Data Pengemudi', 'category' => 'Kendaraan'],
-            ['name' => 'manage_drivers', 'label' => 'Kelola Data Pengemudi', 'category' => 'Kendaraan'],
-            ['name' => 'view_vehicles_master', 'label' => 'Lihat Daftar Kendaraan', 'category' => 'Kendaraan'],
-            ['name' => 'manage_vehicles_master', 'label' => 'Kelola Daftar Kendaraan', 'category' => 'Kendaraan'],
+            // Permintaan ATK (layanan)
+            ['name' => 'view_supplies', 'label' => 'Lihat permintaan & laporan ATK', 'category' => 'Permintaan ATK', 'klasifikasi' => 'layanan'],
+            ['name' => 'create_supplies', 'label' => 'Ajukan permintaan ATK', 'category' => 'Permintaan ATK', 'klasifikasi' => 'layanan'],
+            ['name' => 'tindak_lanjuti_supplies', 'label' => 'Tindak lanjuti permintaan ATK', 'category' => 'Permintaan ATK', 'klasifikasi' => 'layanan'],
 
+            // Kendaraan (layanan + master pengemudi / kendaraan)
+            ['name' => 'create_vehicle', 'label' => 'Ajukan permintaan kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'layanan'],
+            ['name' => 'view_vehicles', 'label' => 'Lihat permintaan kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'layanan'],
+            ['name' => 'tindak_lanjuti_vehicles', 'label' => 'Tindak lanjuti permintaan kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'layanan'],
 
-            // 📊 Umum
-            ['name' => 'view_admin_dashboard', 'label' => 'Lihat Dashboard', 'category' => 'Umum'],
-            ['name' => 'view_history', 'label' => 'Lihat Riwayat', 'category' => 'Umum'],
-            ['name' => 'view_homepage', 'label' => 'Lihat Beranda', 'category' => 'Umum'],
+            // Umum
+            ['name' => 'view_admin_dashboard', 'label' => 'Lihat dashboard', 'category' => 'Umum'],
+            ['name' => 'view_history', 'label' => 'Lihat riwayat', 'category' => 'Umum'],
+            ['name' => 'view_homepage', 'label' => 'Lihat beranda', 'category' => 'Umum'],
 
-            ['name' => 'management_access', 'label' => 'Akses Manajement', 'category' => 'Khusus'],
-            ['name' => 'delete_all_requests', 'label' => 'Hapus Permintaan User', 'category' => 'Khusus'],
+            // Khusus
+            ['name' => 'management_access', 'label' => 'Akses manajemen role & izin', 'category' => 'Khusus'],
+            ['name' => 'delete_all_requests', 'label' => 'Hapus permintaan pengguna', 'category' => 'Khusus'],
         ];
 
-        // 🔁 Buat atau update semua permission dengan label & kategori
         foreach ($permissions as $perm) {
+            $attrs = [
+                'label' => $perm['label'],
+                'category' => $perm['category'],
+                'guard_name' => 'web',
+            ];
+            if (array_key_exists('klasifikasi', $perm)) {
+                $attrs['klasifikasi'] = $perm['klasifikasi'];
+            }
+
             Permission::updateOrCreate(
                 ['name' => $perm['name']],
-                [
-                    'label' => $perm['label'],
-                    'category' => $perm['category'],
-                    'guard_name' => 'web',
-                ]
+                $attrs
             );
         }
 
 
-        // 🛡️ Role: Admin ATK---------------------------------------------
-        $adminAtkPermissions = [
-            'view_admin_dashboard',
+        $dashboard = ['view_admin_dashboard'];
+        $createServicies = [
+            'view_homepage',
+            'view_history',
 
-            'change_supplies_status',
+            'create_booking',
             'create_supplies',
-            'view_supplies',
-            'report_supplies',
+            'create_damage',
+            'create_vehicle',
+        ];
 
-            'delete_atk',
-            'edit_atk',
+        //----------------------------------  ATK ----------------------------------
+        $operatorAtk = array_merge($dashboard, $createServicies, [
+            'view_supplies',
+            'tindak_lanjuti_supplies',
+        ]);
+
+        $adminAtk = array_merge($operatorAtk, [
             'create_atk',
             'view_atk',
+            'manage_atk',
+        ]);
 
-            'view_homepage',
-            'view_history',
-        ];
-        $adminAtkRole = Role::create(
-            [
-                'name' => 'admin_atk',
-                'label' => 'Admin ATK',
-                'guard_name' => 'web',
-                'description' => 'Bertanggung jawab mengelola data permintaan dan ketersediaan ATK serta statusnya.'
-            ]
-        );
-        $adminAtkRole->syncPermissions($adminAtkPermissions);
+        //----------------------------------  Ruang Rapat ----------------------------------
+        $operatorRuangRapat = array_merge($dashboard, $createServicies, [
+            'view_bookings',
+            'tindak_lanjuti_bookings',
+        ]);
 
-        // 🛡️ Role: Operator ATK---------------------------------------------
-        $operatorAtkPermissions = [
-            'view_admin_dashboard',
-
-            'change_supplies_status',
-            'create_supplies',
-            'view_supplies',
-            'report_supplies',
-
-            'view_homepage',
-            'view_history',
-        ];
-        $operatorAtkRole = Role::create(
-            [
-                'name' => 'operator_atk',
-                'label' => 'Operator ATK',
-                'guard_name' => 'web',
-                'description' => 'Bertanggung jawab mengelola data permintaan ATK serta statusnya.'
-            ]
-        );
-        $operatorAtkRole->syncPermissions($operatorAtkPermissions);
-
-
-        // 🛡️ Role: Admin Ruangan--------------------------------------
-        $adminRuanganPermissions = [
-            'view_admin_dashboard',
-
-            'change_booking_status',
+        $adminRuangRapat = array_merge($operatorRuangRapat, [
             'create_booking',
             'view_bookings',
-            'report_bookings',
+            'manage_bookings',
+        ]);
 
-            'delete_rooms',
-            'edit_rooms',
-            'create_rooms',
-            'view_rooms',
-
-            'view_homepage',
-            'view_history',
-        ];
-        $adminRuanganRole = Role::create(
-            [
-                'name' => 'admin_ruangan',
-                'label' => 'Admin Ruangan Rapat',
-                'guard_name' => 'web',
-                'description' => 'Mengelola ruangan rapat dan seluruh permintaan booking yang masuk serta mengelola daftar dan status ruangan.'
-            ]
-        );
-        $adminRuanganRole->syncPermissions($adminRuanganPermissions);
-
-        // 🛡️ Role: Operator Ruangan--------------------------------------
-        $operatorRuanganPermissions = [
-            'view_admin_dashboard',
-
-            'change_booking_status',
-            'create_booking',
-            'view_bookings',
-            'report_bookings',
-
-            'view_homepage',
-            'view_history',
-        ];
-        $operatorRuanganRole = Role::create(
-            [
-                'name' => 'operator_ruangan',
-                'label' => 'Operator Ruangan Rapat',
-                'guard_name' => 'web',
-                'description' => 'Mengelola ruangan rapat dan seluruh permintaan booking yang masuk.'
-            ]
-        );
-        $operatorRuanganRole->syncPermissions($operatorRuanganPermissions);
-
-
-        // 🛡️ Role: Admin Kerusakan Gedung--------------------------------------
-        $adminKerusakanGedungPermissions = [
-            'view_admin_dashboard',
-
-            'change_damage_status',
-            'create_damage',
-            'view_damages',
-            'view_admin_damages',
-            'report_damages',
-
-            'delete_category_damages',
-            'edit_category_damages',
-            'create_category_damages',
-            'view_category_damages',
-
-            'view_homepage',
-            'view_history',
-        ];
-        $adminKerusakanGedungRole = Role::create(
-            [
-                'name' => 'admin_perbaikan_sarpras',
-                'label' => 'Admin Perbaikan Sarpras',
-                'guard_name' => 'web',
-                'description' => 'Mengelola permintaan perbaikan sarpras serta kategori kerusakan.'
-            ]
-        );
-        $adminKerusakanGedungRole->syncPermissions($adminKerusakanGedungPermissions);
-
-        // 🛡️ Role: Operator Kerusakan Gedung_Bangunan--------------------------------------
-        $operatorKerusakanGedungBangunanPermissions = [
-            'view_admin_dashboard',
-
-            'change_damage_status',
-            'create_damage',
+        //----------------------------------  Perbaikan Sarpras _ Bangunan ----------------------------------
+        $operatorBangunan = array_merge($dashboard, $createServicies, [
             'view_damages',
             'view_bangunan_damages',
-            'report_damages',
+            'tindak_lanjuti_bangunan_damages',
+        ]);
 
-            'view_homepage',
-            'view_history',
-        ];
-        $operatorKerusakanBangunanGedungRole = Role::create(
-            [
-                'name' => 'operator_bangunan_perbaikan_sarpras',
-                'label' => 'Operator Bangunan Perbaikan Sarpras',
-                'guard_name' => 'web',
-                'description' => 'Mengelola permintaan perbaikan bangunan sarpras.'
-            ]
-        );
-        $operatorKerusakanBangunanGedungRole->syncPermissions($operatorKerusakanGedungBangunanPermissions);
+        $adminBangunan = array_merge($operatorBangunan, [
+            'manage_damages',
+        ]);
 
-
-        // 🛡️ Role: Operator Kerusakan Gedung_Perlengkapan--------------------------------------
-        $operatorKerusakanGedungPerlengkapanPermissions = [
-            'view_admin_dashboard',
-
-            'change_damage_status',
-            'create_damage',
+        //----------------------------------  Perbaikan Sarpras _ Perlengkapan ----------------------------------
+        $operatorPerlengkapan = array_merge($dashboard, $createServicies, [
             'view_damages',
             'view_perlengkapan_damages',
-            'report_damages',
+            'tindak_lanjuti_perlengkapan_damages',
+        ]);
 
-            'view_homepage',
-            'view_history',
-        ];
-        $operatorKerusakanPerlengkapanGedungRole = Role::create(
-            [
-                'name' => 'operator_perlengkapan_perbaikan_sarpras',
-                'label' => 'Operator Perlengkapan Perbaikan Sarpras',
-                'guard_name' => 'web',
-                'description' => 'Mengelola permintaan perbaikan perlengkapan sarpras.'
-            ]
+        $adminPerlengkapan = array_merge($operatorPerlengkapan, [
+            'manage_damages',
+        ]);
+
+        $syncRole = function (string $name, string $label, ?string $description, array $perms): void {
+            $role = Role::updateOrCreate(
+                ['name' => $name, 'guard_name' => 'web'],
+                [
+                    'label' => $label,
+                    'description' => $description ?? '',
+                ]
+            );
+            $role->syncPermissions($perms);
+        };
+
+
+        $syncRole('pimpinan', 'Pimpinan', 'Monitoring permintaan lintas modul.', $createServicies);
+        $syncRole('pic', 'PIC', 'Monitoring (data pegawai menyusul).', $createServicies);
+
+        // --- Karo (tingkat akses berbeda sesuai lembar role) ---
+        $syncRole(
+            'karo_protokol',
+            'Karo Protokol',
+            'Monitoring terbatas protokol.',
+            $adminBangunan
         );
-        $operatorKerusakanPerlengkapanGedungRole->syncPermissions($operatorKerusakanGedungPerlengkapanPermissions);
 
-
-        // 👤 Role: Pegawai------------------------------
-        $pegawaiPermissions = [
-            'view_homepage',
-            'view_history',
-
-            'create_vehicle',
-            'create_damage',
-            'create_supplies',
-        ];
-        $pegawaiRole = Role::create(
-            [
-                'name' => 'pegawai',
-                'label' => 'Pegawai',
-                'guard_name' => 'web',
-                'description' => 'Dapat mengajukan berbagai permintaan seperti booking ruangan, kendaraan, ATK, dan permintaan perbaikan sarpras.'
-            ]
+        $syncRole(
+            'karo_umum',
+            'Karo Umum',
+            'Monitoring luas birumum.',
+            array_merge($adminRuangRapat, $adminAtk, $adminPerlengkapan, $adminBangunan)
         );
-        $pegawaiRole->syncPermissions($pegawaiPermissions);
 
-
-        // // 👤 Role: superVisorRole------------------------------
-        // $superVisorPermissions = [
-        //     'view_homepage',
-        //     'view_history',
-
-        //     'create_vehicle',
-        //     'create_damage',
-        //     'create_supplies',
-        //     'create_booking',
-        // ];
-        // $superVisorRole = Role::create(
-        //     [
-        //         'name' => 'supervisor',
-        //         'label' => 'Supervisor',
-        //         'guard_name' => 'web',
-        //         'description' => 'Dapat mengajukan berbagai permintaan seperti booking ruangan, kendaraan, ATK, dan permintaan perbaikan sarpras.'
-        //     ]
-        // );
-        // $superVisorRole->syncPermissions($superVisorPermissions);
-
-        // 👤 Role: Pimpinan------------------------------
-        $atasanPermissions = [
-            'view_rooms',
-            'view_admin_dashboard',
-            'view_vehicles',
-            'view_supplies',
-            'view_bookings',
-            'view_damages',
-            'view_category_damages',
-            'view_atk',
-        ];
-        $atasanRole = Role::create(
-            [
-                'name' => 'pimpinan',
-                'label' => 'Pimpinan',
-                'guard_name' => 'web',
-                'description' => 'Dapat melihat berbagai permintaan seperti booking ruangan, kendaraan, ATK, dan permintaan perbaikan sarpras.'
-            ]
+        $syncRole(
+            'karo_tusdm',
+            'Karo TUSDM',
+            'Monitoring terbatas.',
+            $adminRuangRapat
         );
-        $atasanRole->syncPermissions($atasanPermissions);
 
 
-        // 🎖️ Role: Super Admin--------------------------------
-        $superAdminPermissions = [
-            'view_rooms',
-            'create_rooms',
-            'edit_rooms',
-            'delete_rooms',
-            'view_atk',
-            'create_atk',
-            'edit_atk',
-            'delete_atk',
-            'view_category_damages',
-            'create_category_damages',
-            'edit_category_damages',
-            'delete_category_damages',
-            'create_log_proses',
-            'edit_log_proses',
-            'delete_log_proses',
-            'view_admin_damages',
-            'view_damages',
-            'report_damages',
-            'create_damage',
-            'change_damage_status',
-            'view_bookings',
-            'report_bookings',
-            'create_booking',
-            'change_booking_status',
-            'view_supplies',
-            'report_supplies',
-            'create_supplies',
-            'change_supplies_status',
-            'view_vehicles',
-            'create_vehicle',
-            'change_vehicle_status',
-            'view_admin_dashboard',
-            'view_history',
-            'view_homepage',
-            'management_access',
-            'delete_all_requests'
-        ];
-
-        $super_adminRole = Role::create(
-            [
-                'name' => 'super_admin',
-                'label' => 'Super Admin',
-                'guard_name' => 'web',
-                'description' => 'Memiliki akses tampilan dan monitoring seluruh data dan modul permintaan.'
-            ]
+        $syncRole(
+            'perlengkapan_admin_1',
+            'Admin perlengkapan (utama)',
+            'Penuh ATK, ruangan, perbaikan, dan kategori.',
+            array_merge($adminAtk,  $adminPerlengkapan)
         );
-        $super_adminRole->syncPermissions($superAdminPermissions);
 
 
-        // ---------------------------------------------------------
-        // 🎖️ Role: Developer--------------------------------
-        $developerPermissions = [
-            'view_rooms',
-            'create_rooms',
-            'edit_rooms',
-            'delete_rooms',
-            'view_atk',
-            'create_atk',
-            'edit_atk',
-            'delete_atk',
-            'view_category_damages',
-            'create_category_damages',
-            'edit_category_damages',
-            'delete_category_damages',
-            'create_log_proses',
-            'edit_log_proses',
-            'delete_log_proses',
-            'view_damages',
-            'view_admin_damages',
-            'report_damages',
-            'create_damage',
-            'change_damage_status',
-            'view_bookings',
-            'report_bookings',
-            'create_booking',
-            'change_booking_status',
-            'view_supplies',
-            'report_supplies',
-            'create_supplies',
-            'change_supplies_status',
-            'view_vehicles',
-            'create_vehicle',
-            'change_vehicle_status',
-            'view_admin_dashboard',
-            'view_history',
-            'view_homepage',
-            'management_access',
-            'view_drivers',
-            'manage_drivers',
-            'view_vehicles_master',
-            'manage_vehicles_master',
-            'delete_all_requests'
-        ];
-
-        $developerRole = Role::create(
-            [
-                'name' => 'developer_swp',
-                'label' => 'Developer Setwapres',
-                'guard_name' => 'web',
-                'description' => 'Memiliki akses tampilan dan monitoring seluruh data dan modul permintaan.'
-            ]
+        $syncRole(
+            'perlengkapan_admin_2',
+            'Admin perlengkapan',
+            'Setara admin utama; penyesuaian organisasi.',
+            array_merge($adminAtk,  $operatorPerlengkapan)
         );
-        $developerRole->syncPermissions($developerPermissions);
+
+
+        $syncRole(
+            'perlengkapan_operator',
+            'Operator perlengkapan',
+            'Tindak lanjuti permintaan ATK & perbaikan perlengkapan.',
+            $operatorPerlengkapan
+        );
+
+
+        $syncRole(
+            'rumga_admin_1',
+            'Admin ruang rapat',
+            'Kelola master ruangan & pemesanan.',
+            $adminRuangRapat
+        );
+
+
+        $syncRole(
+            'rumga_operator',
+            'Operator ruang rapat',
+            'Tindak lanjuti pemesanan ruang rapat.',
+            $operatorRuangRapat
+        );
+
+        $syncRole(
+            'bangunan_admin_1',
+            'Admin perbaikan bangunan (utama)',
+            'Koordinasi penuh perbaikan & layanan terkait.',
+            array_merge($adminRuangRapat, $adminBangunan, $adminPerlengkapan)
+        );
+
+
+        $syncRole(
+            'bangunan_admin_2',
+            'Admin perbaikan bangunan',
+            'Setara admin utama; penyesuaian organisasi.',
+            array_merge($adminBangunan, $operatorPerlengkapan)
+        );
+
+        $syncRole(
+            'bangunan_operator',
+            'Operator perbaikan bangunan',
+            'Tindak lanjuti laporan kerusakan bangunan.',
+            $operatorBangunan
+        );
+
+        // --- Super admin & developer ---
+        $all = collect($permissions)->pluck('name')->all();
+        $syncRole(
+            'super_admin',
+            'Super Admin',
+            'Akses penuh aplikasi.',
+            $all
+        );
+
+        $developerPerms = $all;
+        $syncRole(
+            'developer_swp',
+            'Developer Setwapres',
+            'Akses penuh termasuk master kendaraan & pengemudi.',
+            $developerPerms
+        );
     }
 }

@@ -56,7 +56,12 @@ class RoleController extends Controller
 
         return Inertia::render('admin/permissions/page', [
             'mockRoles' => $roles,
-            'availablePermissions' => Permission::select(['name', 'label', 'category'])->get(),
+            'availablePermissions' => Permission::query()
+                ->select(['name', 'label', 'category', 'klasifikasi'])
+                ->orderBy('category')
+                ->whereNot('category', 'Kendaraan')
+                ->orderBy('name')
+                ->get(),
             'mockUsers' => $users,
         ]);
     }

@@ -21,7 +21,10 @@ export interface NavItem {
     href: string;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    /** User needs this permission (if set). */
     permission?: string;
+    /** User needs at least one of these permissions (if set). */
+    permissionAny?: string[];
     excludePermission?: string;
 }
 

@@ -40,15 +40,15 @@ export default function AdminDashboard({
     rooms,
 }: any) {
     const { permissions }: any = usePage().props.auth;
-    const { isPimpinan }: any = usePage().props.auth;
+    const { hasExecutiveDashboard }: any = usePage().props.auth;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
 
-            {(permissions && permissions.includes('management_access')) || isPimpinan ? (
+            {hasExecutiveDashboard ? (
                 <HomeDashboard dashboardStats={dashboardStats} recentActivities={recentActivities} upcomingBookings={upcomingBookings} />
-            ) : permissions && permissions.includes('change_supplies_status') ? (
+            ) : permissions && permissions.includes('tindak_lanjuti_supplies') ? (
                 <SuppliesReports
                     statusDistribution={statusDistribution}
                     divisionStats={divisionStats}
@@ -57,7 +57,8 @@ export default function AdminDashboard({
                     summaryData={summaryData}
                     itemComparison={itemComparison}
                 />
-            ) : permissions && permissions.includes('change_damage_status') ? (
+            ) : permissions &&
+              (permissions.includes('tindak_lanjuti_bangunan_damages') || permissions.includes('tindak_lanjuti_perlengkapan_damages')) ? (
                 <DamageReports
                     monthlyTrend={monthlyTrend}
                     locationData={locationData}
@@ -68,7 +69,7 @@ export default function AdminDashboard({
                     damageTypeData={damageTypeData}
                     urgencyData={urgencyData}
                 />
-            ) : permissions && permissions.includes('change_booking_status') ? (
+            ) : permissions && permissions.includes('tindak_lanjuti_bookings') ? (
                 <BookingReports
                     penggunaanRuangan={penggunaanRuangan}
                     divisionUsage={divisionUsage}

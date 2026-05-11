@@ -3,17 +3,17 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class AssignRolesSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Pemetaan NIP (users.nip atau users.nip_sso) → role sesuai lembar "Role Aplikasi Layanan Umum".
+     * Pegawai unit 02 yang tidak termasuk peta ini mendapat role `pegawai`.
      */
     public function run(): void
     {
-        $excluded = [
+        $excludedFromSeeder = [
             'Developer165#',
             'Adm1n945#',
             'Adm1n771#',
@@ -23,172 +23,53 @@ class AssignRolesSeeder extends Seeder
             'Adm1n955#',
             'Adm1n110#',
             'User972#',
-            'NA202506199903', // Khaeril Maswal Zaid
         ];
 
-        // Pegawai
-        User::whereHas('pegawai', fn($q) => $q->where('kode_unit', '02'))
-            ->whereNotIn('nip', $excluded)
-            ->whereNotIn(
-                'nip_sso',
-                [
-                    '180005456', // Ayu Setiarini S.T., M.T.I.
-                    '180007005', // Joko Prihantoro
-                    '250000552', // Yan Adikusuma, S.Kom., M.Eng.
-                    '740003469', // Purwono Prihantoro Budi Trisnanto, S.E., M.Si.
-                    '180004571', // Yayat Hidayat, S.IP.
-                    '030215619',  // Drs. Rusmin Nuryadin, M.H.
-                    '180004602', // Dr. Eka Denny Mansjur S.Si., M.Si.
-                    '180003956', // Ahmad Lutfie, S.E., M.M.
-                    '180004042', // Celvya Betty Manurung, S.IP., M.P.M.
-                    '180004051', // Drs. Abdul Muis
-                    '180004296', // Slamet Widodo, S.S., M.Si.
-                    '180004389', // Pranggono Dwianto, S.IP., M.Si.
-                    '180004427', // Dr. Adyawarman, S.IP., M.D.M.
-                    '180004810', // Mita Apriyanti, S.Sos., M.Si.
-                    '180004802', // Afif Juniar, S.H., M.H.
-                    '180005734', // Fajar Triwardono, S.T., M.T.
-                    '180005735', // Halim Fadillah Suwito Jati, S.E.
-                    '180005431', // Ika Mailani, S.T., M.T.I.
-                    '180005739', // Angga Dwijayanti, S.Kom.
-                    '180005782', // Isnandy Arief Widodo, S.T.
-                    '180004763', // Woro Dyah Tri Siswanti, S.T., M.E.
-                    '180005593', // Mukti Cahyani, S.H., M.H.
-                    '180004929', // Wenny Setia Ningsih
-                    '180004943', // Faniagi Hardianto, S.AP., M.AP.
-                    '180004237', // Hari Sugiharto, S.T., M.M.
-                    '180005738', // Danang Ari Suwito, S.Sos.
-                    '180004013', // Pamuji
-                ]
-            )
-            ->chunk(
-                50,
-                fn($users) =>
-                $users->each->assignRole('pegawai')
-            );
+        /** @var array<string, string> nip => role_name */
+        $nipToRole = [
+            '198509302005011002' => 'perlengkapan_admin_1',
+            '197612051996031002' => 'perlengkapan_admin_2',
+            '198707042015031001' => 'perlengkapan_admin_1',
+            '200208182025062009' => 'perlengkapan_operator',
+            '197203022005011010' => 'perlengkapan_operator',
+            '197911142005012002' => 'rumga_admin_1',
+            '198502122012122001' => 'rumga_admin_1',
+            '198007052005012001' => 'rumga_operator',
+            '199512262018012001' => 'rumga_operator',
+            '198804292025211073' => 'rumga_operator',
+            '197205032025212009' => 'rumga_operator',
+            '199002112015031001' => 'bangunan_admin_1',
+            '198505092009012005' => 'bangunan_admin_2',
+            '199110162015031001' => 'bangunan_admin_2',
+            '198706212015032002' => 'bangunan_admin_2',
+            '198910212015031001' => 'bangunan_operator',
+            '197703112025211028' => 'bangunan_operator',
+            '197312092007011002' => 'bangunan_operator',
+            '199508132025061004' => 'bangunan_operator',
+            '199608222025211040' => 'bangunan_operator',
+            '197506251994121001' => 'karo_protokol',
+            '196909081990031001' => 'karo_umum',
+            '197404071999031001' => 'karo_tusdm',
+            '196606021992031004' => 'pimpinan',
+            '196912262002121001' => 'pimpinan',
+            '196809261994031001' => 'pimpinan',
+            '196809271995032001' => 'pimpinan',
+            '196605111995031002' => 'pimpinan',
+            '196806171996031001' => 'pimpinan',
+            '197112211997031002' => 'pimpinan',
+            '197305121998031002' => 'pimpinan',
+            '198204202005012004' => 'pimpinan',
+            'NA202506199903' => 'super_admin',
+        ];
 
-
-        // Super Admin
-        User::whereHas('pegawai', fn($q) => $q->where('kode_unit', '02'))
-            ->whereIn('nip_sso', [
-                '180005456', // Ayu Setiarini S.T., M.T.I.
-                '180007005', // Joko Prihantoro
-            ])
-            ->orWhereIn('nip', [
-                'NA202506199903', // Khaeril Maswal Zaid
-            ])
-            ->chunk(
-                50,
-                fn($users) =>
-                $users->each->assignRole('super_admin')
-            );
-
-
-        // Pimpinan
-        User::whereHas('pegawai', fn($q) => $q->where('kode_unit', '02'))
-            ->whereIn('nip_sso', [
-                '250000552', // Yan Adikusuma, S.Kom., M.Eng.
-                '740003469', // Purwono Prihantoro Budi Trisnanto, S.E., M.Si.
-                '180004571', // Yayat Hidayat, S.IP.
-                '030215619',  // Drs. Rusmin Nuryadin, M.H.
-                '180004602', // Dr. Eka Denny Mansjur S.Si., M.Si.
-                '180003956', // Ahmad Lutfie, S.E., M.M.
-                '180004042', // Celvya Betty Manurung, S.IP., M.P.M.
-                '180004051', // Drs. Abdul Muis
-                '180004296', // Slamet Widodo, S.S., M.Si.
-                '180004389', // Pranggono Dwianto, S.IP., M.Si.
-                '180004427', // Dr. Adyawarman, S.IP., M.D.M.
-                '180004810', // Mita Apriyanti, S.Sos., M.Si.
-                '180004802', // Afif Juniar, S.H., M.H.
-            ])
-            ->chunk(
-                50,
-                fn($users) =>
-                $users->each->assignRole('pimpinan')
-            );
-
-
-        //----------------------------------------------------------------
-        // Admin Kerusakan Gedung
-        User::whereHas('pegawai', fn($q) => $q->where('kode_unit', '02'))
-            ->whereIn('nip_sso', [
-                '180005734', // Fajar Triwardono, S.T., M.T.
-                '180005735', // Halim Fadillah Suwito Jati, S.E.
-                '180005431', // Ika Mailani, S.T., M.T.I.
-                '180005739', // Angga Dwijayanti, S.Kom.
-            ])
-            ->chunk(
-                50,
-                fn($users) =>
-                $users->each->assignRole('admin_perbaikan_sarpras')
-            );
-
-
-        // Operator Kerusakan Gedung
-        // User::whereHas('pegawai', fn($q) => $q->where('kode_unit', '02'))
-        //     ->whereIn('nip_sso', [
-        //         '180005782', // Isnandy Arief Widodo, S.T.
-        //     ])
-        //     ->chunk(
-        //         50,
-        //         fn($users) =>
-        //         $users->each->assignRole('operator_kerusakan_gedung')
-        //     );
-
-        //----------------------------------------------------------------
-
-        // Admin Ruangan
-        User::whereHas('pegawai', fn($q) => $q->where('kode_unit', '02'))
-            ->whereIn('nip_sso', [
-                '180005593', // Mukti Cahyani, S.H., M.H.
-                '180004763', // Woro Dyah Tri Siswanti, S.T., M.E.
-            ])
-            ->chunk(
-                50,
-                fn($users) =>
-                $users->each->assignRole('admin_ruangan')
-            );
-
-
-        // Operator Ruangan
-        User::whereHas('pegawai', fn($q) => $q->where('kode_unit', '02'))
-            ->whereIn('nip_sso', [
-                '180004929', // Wenny Setia Ningsih
-            ])
-            ->chunk(
-                50,
-                fn($users) =>
-                $users->each->assignRole('operator_ruangan')
-            );
-
-
-        //----------------------------------------------------------------
-        // Admin ATK
-        User::whereHas('pegawai', fn($q) => $q->where('kode_unit', '02'))
-            ->whereIn('nip_sso', [
-                '180004943', // Faniagi Hardianto, S.AP., M.AP.
-                '180004237', // Hari Sugiharto, S.T., M.M.
-                '180005738', // Danang Ari Suwito, S.Sos.
-            ])
-            ->chunk(
-                50,
-                fn($users) =>
-                $users->each->assignRole('admin_atk')
-            );
-
-
-        // Operator ATK
-        User::whereHas('pegawai', fn($q) => $q->where('kode_unit', '02'))
-            ->whereIn('nip_sso', [
-                '180004013', // Pamuji
-            ])
-            ->chunk(
-                50,
-                fn($users) =>
-                $users->each->assignRole('operator_atk')
-            );
-
-        //----------------------------------------------------------------
-
+        User::query()
+            ->whereHas('pegawai', fn($q) => $q->where('kode_unit', '02'))
+            ->whereNotIn('nip', $excludedFromSeeder)
+            ->chunk(50, function ($users) use ($nipToRole): void {
+                foreach ($users as $user) {
+                    $role = $nipToRole[$user->nip] ?? ($user->nip_sso ? ($nipToRole[$user->nip_sso] ?? null) : null);
+                    $user->syncRoles([$role]);
+                }
+            });
     }
 }

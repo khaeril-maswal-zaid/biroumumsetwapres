@@ -21,18 +21,18 @@ class KerusakanGedungController extends Controller
     {
         $permission = Auth::user()->getAllPermissions()->pluck('name');
 
-        if ($permission->contains('view_bangunan_damages')) {
-
+        if ($permission->contains('view_damages')) {
+            $kerusakan = KerusakanGedung::query();
+            $typeTitle = '';
+        } elseif ($permission->contains('view_bangunan_damages')) {
             $kerusakan = KerusakanGedung::whereHas('kategori', function ($query) {
                 $query->where('bagian_kategori', 'Bangunan');
             });
-
             $typeTitle = '- Bangunan';
         } elseif ($permission->contains('view_perlengkapan_damages')) {
             $kerusakan = KerusakanGedung::whereHas('kategori', function ($query) {
                 $query->where('bagian_kategori', 'Perlengkapan');
             });
-
             $typeTitle = '- Perlengkapan';
         } else {
             $kerusakan = KerusakanGedung::query();
@@ -105,9 +105,9 @@ class KerusakanGedungController extends Controller
 
         $isBangunan = $laporan->kategori->bagian_kategori == 'Bangunan';
         if ($isBangunan) {
-            $permissions = ['view_admin_damages', 'view_bangunan_damages'];
+            $permissions = ['view_bangunan_damages', 'tindak_lanjuti_bangunan_damages'];
         } else {
-            $permissions = ['view_admin_damages', 'view_perlengkapan_damages'];
+            $permissions = ['view_perlengkapan_damages', 'tindak_lanjuti_perlengkapan_damages'];
         }
 
         // Buat notifikasi
@@ -190,6 +190,8 @@ class KerusakanGedungController extends Controller
 
     public function status(KerusakanGedung $kerusakanGedung, Request $request)
     {
+        $this->assertCanTindakLanjutiKerusakan($kerusakanGedung);
+
         $validated = $request->validate([
             'action' => 'required|in:pending,process,confirmed,cancelled',
             'message' => 'required_if:action,cancelled|string|max:255',
@@ -226,6 +228,8 @@ class KerusakanGedungController extends Controller
 
     public function urgensi(KerusakanGedung $kerusakanGedung, Request $request)
     {
+        $this->assertCanTindakLanjutiKerusakan($kerusakanGedung);
+
         $validated = $request->validate([
             'urgensi' => 'required|in:tinggi,rendah',
         ]);
@@ -235,6 +239,8 @@ class KerusakanGedungController extends Controller
 
     public function ubahBagianKategori(KerusakanGedung $kerusakanGedung, Request $request)
     {
+        $this->assertCanTindakLanjutiKerusakan($kerusakanGedung);
+
         $kategoriQuery  = KategoriKerusakan::where('kode_kerusakan', $request->kategori)->first();
 
         if ($kategoriQuery->kode_kerusakan !=  $request->kategori) {
@@ -244,5 +250,20 @@ class KerusakanGedungController extends Controller
         $kerusakanGedung->update([
             'kategori_kerusakan_id' => $kategoriQuery->id,
         ]);
+    }
+
+    protected function assertCanTindakLanjutiKerusakan(KerusakanGedung $kerusakanGedung): void
+    {
+        $user = Auth::user();
+        $bagian = $kerusakanGedung->kategori?->bagian_kategori;
+
+        if ($bagian === 'Bangunan' && $user->can('tindak_lanjuti_bangunan_damages')) {
+            return;
+        }
+        if ($bagian === 'Perlengkapan' && $user->can('tindak_lanjuti_perlengkapan_damages')) {
+            return;
+        }
+
+        abort(403);
     }
 }

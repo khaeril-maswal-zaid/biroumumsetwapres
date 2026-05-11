@@ -39,7 +39,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('ruangrapat.create')->middleware('permission:create_booking');
 
     Route::get('/pemesanan-ruang-rapat-available/', [PemesananRuangRapatController::class, 'getAvailableRooms'])
-        ->name('ruangrapat.available');
+        ->name('ruangrapat.available')
+        ->middleware('permission:create_booking');
 
     Route::post('/ruang-rapat/store', [PemesananRuangRapatController::class, 'store'])
         ->name('ruangrapat.store')->middleware('permission:create_booking');
@@ -76,7 +77,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 
-    // Manajemen Booking (view_bookings & change_booking_status)
+    // Manajemen Booking (view_bookings & tindak_lanjuti_bookings)
     Route::get('/dashboard/ruang-rapat', [PemesananRuangRapatController::class, 'index'])
         ->name('ruangrapat.index')
         ->middleware('permission:view_bookings');
@@ -91,38 +92,40 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::patch('/dashboard/ruang-rapat/{pemesananRuangRapat:kode_booking}', [PemesananRuangRapatController::class, 'status'])
         ->name('ruangrapat.status')
-        ->middleware('permission:change_booking_status');
+        ->middleware('permission:tindak_lanjuti_bookings');
 
 
     //Log Proces Perbaikan kerusakan
     Route::post('/log-proses-kerusakan', [LogProsesController::class, 'store'])
-        ->name('logproses.store')->middleware('permission:create_log_proses');
+        ->name('logproses.store')
+        ->middleware('permission:tindak_lanjuti_bangunan_damages|tindak_lanjuti_perlengkapan_damages');
     Route::delete('/log-proses-kerusakan/delete/{logProses}', [LogProsesController::class, 'destroy'])
-        ->name('logproses.destroy')->middleware('permission:delete_log_proses');
+        ->name('logproses.destroy')
+        ->middleware('permission:tindak_lanjuti_bangunan_damages|tindak_lanjuti_perlengkapan_damages');
 
 
 
-    // Manajemen Kerusakan (view_damages & change_damage_status)
+    // Manajemen Kerusakan (view_* & tindak_lanjuti_*)
     Route::get('/dashboard/perbaikan-sarana-prasarana', [KerusakanGedungController::class, 'index'])
         ->name('kerusakangedung.index')
-        ->middleware('permission:view_damages');
+        ->middleware('permission:view_damages|view_bangunan_damages|view_perlengkapan_damages');
 
 
     Route::get('/dashboard/perbaikan-sarana-prasarana/detail/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'show'])
         ->name('kerusakangedung.show')
-        ->middleware('permission:view_damages');
+        ->middleware('permission:view_damages|view_bangunan_damages|view_perlengkapan_damages');
 
     Route::patch('/dashboard/perbaikan-sarana-prasarana/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'status'])
         ->name('kerusakangedung.status')
-        ->middleware('permission:change_damage_status');
+        ->middleware('permission:tindak_lanjuti_bangunan_damages|tindak_lanjuti_perlengkapan_damages');
 
     Route::patch('/dashboard/perbaikan-sarana-prasarana/set-urgensi/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'urgensi'])
         ->name('kerusakangedung.urgensi')
-        ->middleware('permission:change_damage_status');
+        ->middleware('permission:tindak_lanjuti_bangunan_damages|tindak_lanjuti_perlengkapan_damages');
 
     Route::patch('/dashboard/perbaikan-sarana-prasarana/ubah-bagian-kategori/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'ubahBagianKategori'])
         ->name('kerusakangedung.ubahbagian')
-        ->middleware('permission:change_damage_status');
+        ->middleware('permission:tindak_lanjuti_bangunan_damages|tindak_lanjuti_perlengkapan_damages');
 
     Route::delete('/dashboard/perbaikan-sarana-prasarana/delete/{kerusakanGedung:kode_pelaporan}', [KerusakanGedungController::class, 'destroy'])
         ->name('kerusakangedung.destroy')
@@ -130,7 +133,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 
-    // Manajemen Permintaan ATK (view_supplies_requests & change_supplies_status)
+    // Manajemen Permintaan ATK (view_supplies & tindak_lanjuti_supplies)
     Route::get('/dashboard/permintaan-atk', [PermintaanAtkController::class, 'index'])
         ->name('permintaanatk.index')
         ->middleware('permission:view_supplies');
@@ -141,18 +144,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::patch('/dashboard/permintaan-atk/{permintaanAtk:kode_pelaporan}', [PermintaanAtkController::class, 'status'])
         ->name('permintaanatk.status')
-        ->middleware('permission:change_supplies_status');
+        ->middleware('permission:tindak_lanjuti_supplies');
 
 
 
-    // Manajemen Permintaan Kendaraan (view_vehicle_requests)
+    // Manajemen Permintaan Kendaraan (view_vehicles)
     Route::get('/dashboard/permintaan-kendaraan', [PermintaanKendaraanController::class, 'index'])
         ->name('permintaankendaraan.index')
-        ->middleware('permission:view_vehicle_requests');
+        ->middleware('permission:view_vehicles');
 
 
 
-    // Manajemen Daftar Ruangan (view_rooms, create_rooms, edit_rooms, delete_rooms)
+    // Manajemen Daftar Ruangan (view_rooms, create_rooms, manage_rooms)
     Route::get('/dashboard/manajemen-ruangan', [DaftarRuanganController::class, 'index'])
         ->name('rooms.index')
         ->middleware('permission:view_rooms');
@@ -165,12 +168,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::put('/dashboard/manajemen-ruangan/update/{daftarRuangan:kode_ruangan}', [DaftarRuanganController::class, 'update'])
         ->name('rooms.update')
-        ->middleware('permission:edit_rooms');
+        ->middleware('permission:manage_rooms');
 
 
     Route::delete('/dashboard/manajemen-ruangan/delete/{daftarRuangan:kode_ruangan}', [DaftarRuanganController::class, 'destroy'])
         ->name('rooms.delete')
-        ->middleware('permission:delete_rooms');
+        ->middleware('permission:manage_rooms');
 
 
 
@@ -181,17 +184,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::put('/dashboard/daftar-atk/{daftarAtk}', [DaftarAtkController::class, 'update'])
         ->name('daftaratk.update')
-        ->middleware('permission:create_atk');
+        ->middleware('permission:manage_atk');
 
 
     Route::post('/dashboard/daftar-atk/store', [DaftarAtkController::class, 'store'])
         ->name('daftaratk.store')
-        ->middleware('permission:edit_atk');
+        ->middleware('permission:create_atk');
 
 
     Route::delete('/dashboard/daftar-atk/destroy/{daftarAtk}', [DaftarAtkController::class, 'destroy'])
         ->name('daftaratk.destroy')
-        ->middleware('permission:delete_atk');
+        ->middleware('permission:manage_atk');
 
     Route::get('/dashboard/daftar-atk/download', [DaftarAtkController::class, 'downloadTemplate'])
         ->name('daftaratk.downloadtemplate')
@@ -208,52 +211,52 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::put('/dashboard/kategori-atk/{kategoriAtk}', [KategoriAtkController::class, 'update'])
         ->name('kategoriatk.update')
-        ->middleware('permission:create_atk');
+        ->middleware('permission:manage_atk');
 
 
 
 
     Route::get('/dashboard/stock-opname-atk', [StockOpnameController::class, 'index'])
         ->name('stockopname.index')
-        ->middleware('permission:create_atk');
+        ->middleware('permission:manage_atk');
 
     Route::post('/dashboard/stock-opname-atk/store', [StockOpnameController::class, 'store'])
         ->name('stockopname.store')
-        ->middleware('permission:create_atk');
+        ->middleware('permission:manage_atk');
 
     Route::get('/dashboard/stock-opname-atk/buku-persediaan', [StockOpnameController::class, 'bukuPersediaan'])
         ->name('stockopname.buku_persediaan')
-        ->middleware('permission:create_atk');
+        ->middleware('permission:manage_atk');
 
     Route::get('/dashboard/stock-opname-atk/buku-persediaan/export', [StockOpnameController::class, 'ExportBukuPersediaan'])
         ->name('stockopname.export_buku_persediaan')
-        ->middleware('permission:create_atk');
+        ->middleware('permission:manage_atk');
 
     Route::get('/dashboard/stock-opname-atk/detail-pemakaian/{daftarAtk:kode_atk}', [StockOpnameController::class, 'detailPemakaian'])
         ->name('stockopname.detail_pemakaian')
-        ->middleware('permission:create_atk');
+        ->middleware('permission:manage_atk');
 
     Route::get('/dashboard/stock-opname-atk/detail-pemakaian-pdf/{daftarAtk:kode_atk}', [StockOpnameController::class, 'detailPemakaian'])
         ->name('stockopname.detail_pemakaian_pdf')
         ->defaults('type', 'pdf')
-        ->middleware('permission:create_atk');
+        ->middleware('permission:manage_atk');
 
     Route::get('/dashboard/stock-opname-atk/rincian-buku-persediaan/{daftarAtk:kode_atk}', [StockOpnameController::class, 'rincianBukuPersediaan'])
         ->name('stockopname.rincian_buku_persediaan')
-        ->middleware('permission:create_atk');
+        ->middleware('permission:manage_atk');
 
     Route::get('/dashboard/stock-opname-atk/rincian-buku-persediaan-pdf/{daftarAtk:kode_atk}', [StockOpnameController::class, 'rincianBukuPersediaan'])
         ->name('stockopname.rincian_buku_persediaan_pdf')
         ->defaults('type', 'pdf')
-        ->middleware('permission:create_atk');
+        ->middleware('permission:manage_atk');
 
     Route::get('/dashboard/stock-opname-atk/kartu-buku-persediaan/{daftarAtk:kode_atk}', [StockOpnameController::class, 'kartuBukuPersediaan'])
         ->name('stockopname.kartu_buku_persediaan')
-        ->middleware('permission:create_atk');
+        ->middleware('permission:manage_atk');
 
     Route::post('/dashboard/stock-opname-atk/import', [StockOpnameController::class, 'importPerolehan'])
         ->name('stockopname.import')
-        ->middleware('permission:create_atk');
+        ->middleware('permission:manage_atk');
 
 
 
@@ -270,12 +273,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::put('/dashboard/daftar-kategori-kerusakan/update/{kategoriKerusakan}', [KategoriKerusakanController::class, 'update'])
         ->name('daftarkerusakan.update')
-        ->middleware('permission:edit_category_damages');
+        ->middleware('permission:manage_category_damages');
 
 
     Route::delete('/dashboard/daftar-kategori-kerusakan/destroy/{kategoriKerusakan}', [KategoriKerusakanController::class, 'destroy'])
         ->name('daftarkerusakan.destroy')
-        ->middleware('permission:delete_category_damages');
+        ->middleware('permission:manage_category_damages');
 
 
 
@@ -283,17 +286,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //Data Report
     Route::get('/dashboard/ruang-rapat/reports', [PemesananRuangRapatController::class, 'reports'])
         ->name('ruangrapat.reports')
-        ->middleware('permission:report_bookings');
+        ->middleware('permission:view_bookings');
 
 
     Route::get('/dashboard/permintaan-atk/reports', [PermintaanAtkController::class, 'reports'])
         ->name('permintaanatk.reports')
-        ->middleware('permission:report_supplies');
+        ->middleware('permission:view_supplies');
 
 
     Route::get('/dashboard/perbaikan-sarana-prasarana/reports', [KerusakanGedungController::class, 'reports'])
         ->name('kerusakangedung.reports')
-        ->middleware('permission:report_damages');
+        ->middleware('permission:view_damages|view_bangunan_damages|view_perlengkapan_damages');
 
 
     // (Opsional) Manajemen Permissions via UI
