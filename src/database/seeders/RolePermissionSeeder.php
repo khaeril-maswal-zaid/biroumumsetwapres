@@ -121,7 +121,7 @@ class RolePermissionSeeder extends Seeder
         $adminRuangRapat = array_merge($operatorRuangRapat, [
             'create_booking',
             'view_bookings',
-            'manage_bookings',
+            'manage_rooms',
         ]);
 
         //----------------------------------  Perbaikan Sarpras _ Bangunan ----------------------------------
@@ -132,7 +132,7 @@ class RolePermissionSeeder extends Seeder
         ]);
 
         $adminBangunan = array_merge($operatorBangunan, [
-            'manage_damages',
+            'manage_category_damages',
         ]);
 
         //----------------------------------  Perbaikan Sarpras _ Perlengkapan ----------------------------------
@@ -143,7 +143,7 @@ class RolePermissionSeeder extends Seeder
         ]);
 
         $adminPerlengkapan = array_merge($operatorPerlengkapan, [
-            'manage_damages',
+            'manage_category_damages',
         ]);
 
         $syncRole = function (string $name, string $label, ?string $description, array $perms): void {

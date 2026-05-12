@@ -60,6 +60,8 @@ class AssignRolesSeeder extends Seeder
             '197305121998031002' => 'pimpinan',
             '198204202005012004' => 'pimpinan',
             'NA202506199903' => 'super_admin',
+            '198605282009122001' => 'super_admin',
+            '198503022009021001' => 'super_admin',
         ];
 
         User::query()
