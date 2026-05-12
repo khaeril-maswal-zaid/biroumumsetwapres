@@ -9,7 +9,6 @@ services:
     working_dir: /var/www/
     volumes:
       - ./src:/var/www
-      - storage-data:/var/www/storage #
     ports:
       - "8004:8080"
     networks:
@@ -22,7 +21,6 @@ services:
     working_dir: /var/www/
     volumes:
       - ./src:/var/www
-      - storage-data:/var/www/storage #
     command: php artisan schedule:work
     networks:
       - alzaid-net
@@ -30,6 +28,3 @@ services:
 networks:
   alzaid-net:
     external: true
-
-volumes:
-  storage-data: #
