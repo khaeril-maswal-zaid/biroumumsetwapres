@@ -84,6 +84,7 @@ export default function RoomsPage({ ruangans }: any) {
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
+    const [disabled, setDisabled] = useState(false);
     const [formData, setFormData] = useState({
         nama_ruangan: '',
         kode_ruangan: '',
@@ -163,6 +164,8 @@ export default function RoomsPage({ ruangans }: any) {
 
         if (!selectedRoom) return;
 
+        setDisabled(true);
+
         // Validasi...
         const form = new FormData();
         form.append('_method', 'PUT');
@@ -187,6 +190,8 @@ export default function RoomsPage({ ruangans }: any) {
                     title: 'Berhasil',
                     description: 'Mengubah informasi ruangan berhasil',
                 });
+
+                setDisabled(false);
             },
             onError: (errors) => {
                 toast({
@@ -451,9 +456,9 @@ export default function RoomsPage({ ruangans }: any) {
                             </Button>
                             <Button
                                 onClick={handleUpdate}
-                                disabled={!formData.nama_ruangan || !formData.kode_ruangan || !formData.lokasi || !formData.kapasitas}
+                                disabled={!formData.nama_ruangan || !formData.kode_ruangan || !formData.lokasi || !formData.kapasitas || disabled}
                             >
-                                Simpan Perubahan
+                                {disabled ? 'Menyimpan...' : 'Simpan Perubahan'}
                             </Button>
                         </DialogFooter>
                     </DialogContent>

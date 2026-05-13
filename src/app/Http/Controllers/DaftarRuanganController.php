@@ -50,13 +50,13 @@ class DaftarRuanganController extends Controller
     {
         if ($request->hasFile('photo')) {
             // Hapus file lama
-            if ($daftarRuangan->image && Storage::disk('public')->exists($daftarRuangan->image)) {
-                Storage::disk('public')->delete($daftarRuangan->image);
+            if ($daftarRuangan->image && Storage::exists($daftarRuangan->image)) {
+                Storage::delete($daftarRuangan->image);
             }
 
-            $path = $request->file('photo')->store('images/rooms', 'public');
-        } else {
-            $path = $daftarRuangan->image;
+            $daftarRuangan->update([
+                'image' => $request->file('photo')->store('images/rooms'),
+            ]);
         }
 
         $daftarRuangan->update([
@@ -64,7 +64,6 @@ class DaftarRuanganController extends Controller
             'lokasi' => $request->input('lokasi'),
             'kapasitas' => $request->input('kapasitas'),
             'kapasitas_max' => $request->input('kapasitas_max'),
-            'image' => $path,
             'status' => $request->input('status'),
             'fasilitas' => $request->input('fasilitas'),
         ]);

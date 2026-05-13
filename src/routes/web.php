@@ -354,9 +354,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
 
+Route::get('/test-s3', function () {
+    try {
+        Storage::disk('s3')->files();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'S3 connected',
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => false,
+            'message' => $e->getMessage(),
+        ], 500);
+    }
+});
+
 // routes/web.php
 Route::get(
-    '/{pathFromFileDB}',
+    '/files/{pathFromFileDB}',
 
     function ($path = null) {
         abort_if(!$path || !Storage::disk('s3')->exists($path), 404);
