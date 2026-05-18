@@ -42,8 +42,6 @@ export default function AdminDashboard({
     const { permissions }: any = usePage().props.auth;
     const { hasExecutiveDashboard }: any = usePage().props.auth;
 
-    console.log(hasExecutiveDashboard);
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />

@@ -86,7 +86,7 @@ const mainNavItems: NavItem[] = [
         title: 'Permintaan Kendaraan',
         href: '#', // Ganti nanti dengan route('permintaankendaraan.index') jika aktif
         icon: CarFront,
-        permission: 'view_vehicles',
+        permission: 'view_vehiclesX',
     },
 ];
 
