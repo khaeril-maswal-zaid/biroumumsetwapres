@@ -14,62 +14,62 @@ class RolePermissionSeeder extends Seeder
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
         $permissions = [
-            // Daftar Ruangan (master)
-            ['name' => 'create_rooms', 'label' => 'Tambah ruangan', 'category' => 'Daftar Ruangan', 'klasifikasi' => 'master'],
-            ['name' => 'view_rooms', 'label' => 'Lihat data ruangan', 'category' => 'Daftar Ruangan', 'klasifikasi' => 'master'],
-            ['name' => 'manage_rooms', 'label' => 'Kelola ruangan', 'category' => 'Daftar Ruangan', 'klasifikasi' => 'master'],
+            // Daftar Ruangan (Master)
+            ['name' => 'create_rooms', 'label' => 'Tambah ruangan', 'category' => 'Daftar Ruangan', 'klasifikasi' => 'Master'],
+            ['name' => 'view_rooms', 'label' => 'Lihat data ruangan', 'category' => 'Daftar Ruangan', 'klasifikasi' => 'Master'],
+            ['name' => 'manage_rooms', 'label' => 'Kelola ruangan', 'category' => 'Daftar Ruangan', 'klasifikasi' => 'Master'],
 
-            // Daftar ATK (master)
-            ['name' => 'create_atk', 'label' => 'Tambah daftar ATK', 'category' => 'Daftar ATK', 'klasifikasi' => 'master'],
-            ['name' => 'view_atk', 'label' => 'Lihat daftar ATK', 'category' => 'Daftar ATK', 'klasifikasi' => 'master'],
-            ['name' => 'manage_atk', 'label' => 'Kelola daftar ATK', 'category' => 'Daftar ATK', 'klasifikasi' => 'master'],
+            // Daftar ATK (Master)
+            ['name' => 'create_atk', 'label' => 'Tambah daftar ATK', 'category' => 'Daftar ATK', 'klasifikasi' => 'Master'],
+            ['name' => 'view_atk', 'label' => 'Lihat daftar ATK', 'category' => 'Daftar ATK', 'klasifikasi' => 'Master'],
+            ['name' => 'manage_atk', 'label' => 'Kelola daftar ATK', 'category' => 'Daftar ATK', 'klasifikasi' => 'Master'],
 
-            // Kategori kerusakan (master)
-            ['name' => 'create_category_damages', 'label' => 'Tambah kategori kerusakan', 'category' => 'Kategory Kerusakan', 'klasifikasi' => 'master'],
-            ['name' => 'view_category_damages', 'label' => 'Lihat kategori kerusakan', 'category' => 'Kategory Kerusakan', 'klasifikasi' => 'master'],
-            ['name' => 'manage_category_damages', 'label' => 'Kelola kategori kerusakan', 'category' => 'Kategory Kerusakan', 'klasifikasi' => 'master'],
+            // Kategori kerusakan (Master)
+            ['name' => 'create_category_damages', 'label' => 'Tambah kategori kerusakan', 'category' => 'Kategory Kerusakan', 'klasifikasi' => 'Master'],
+            ['name' => 'view_category_damages', 'label' => 'Lihat kategori kerusakan', 'category' => 'Kategory Kerusakan', 'klasifikasi' => 'Master'],
+            ['name' => 'manage_category_damages', 'label' => 'Kelola kategori kerusakan', 'category' => 'Kategory Kerusakan', 'klasifikasi' => 'Master'],
 
-            // Pengemudi (master)
-            ['name' => 'create_drivers', 'label' => 'Tambah data pengemudi', 'category' => 'Kendaraan', 'klasifikasi' => 'master'],
-            ['name' => 'view_drivers', 'label' => 'Lihat data pengemudi', 'category' => 'Kendaraan', 'klasifikasi' => 'master'],
-            ['name' => 'manage_drivers', 'label' => 'Kelola data pengemudi', 'category' => 'Kendaraan', 'klasifikasi' => 'master'],
+            // Pengemudi (Master)
+            ['name' => 'create_drivers', 'label' => 'Tambah data pengemudi', 'category' => 'Kendaraan', 'klasifikasi' => 'Master'],
+            ['name' => 'view_drivers', 'label' => 'Lihat data pengemudi', 'category' => 'Kendaraan', 'klasifikasi' => 'Master'],
+            ['name' => 'manage_drivers', 'label' => 'Kelola data pengemudi', 'category' => 'Kendaraan', 'klasifikasi' => 'Master'],
 
-            // Kendaraan (master)
-            ['name' => 'create_vehicles_master', 'label' => 'Tambah daftar kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'master'],
-            ['name' => 'view_vehicles_master', 'label' => 'Lihat daftar kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'master'],
-            ['name' => 'manage_vehicles_master', 'label' => 'Kelola daftar kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'master'],
+            // Kendaraan (Master)
+            ['name' => 'create_vehicles_Master', 'label' => 'Tambah daftar kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'Master'],
+            ['name' => 'view_vehicles_Master', 'label' => 'Lihat daftar kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'Master'],
+            ['name' => 'manage_vehicles_Master', 'label' => 'Kelola daftar kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'Master'],
 
-            // Perbaikan sarpras (layanan: lihat, ajukan, tindak lanjuti; filter bangunan / perlengkapan)
-            ['name' => 'create_damage', 'label' => 'Ajukan permintaan perbaikan sarpras', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'layanan'],
-            ['name' => 'view_damages', 'label' => 'Lihat seluruh permintaan perbaikan sarpras', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'layanan'],
-            ['name' => 'view_bangunan_damages', 'label' => 'Lihat permintaan perbaikan (Bangunan)', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'layanan'],
-            ['name' => 'view_perlengkapan_damages', 'label' => 'Lihat permintaan perbaikan (Perlengkapan)', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'layanan'],
-            ['name' => 'tindak_lanjuti_bangunan_damages', 'label' => 'Tindak lanjuti permintaan perbaikan (Bangunan)', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'layanan'],
-            ['name' => 'tindak_lanjuti_perlengkapan_damages', 'label' => 'Tindak lanjuti permintaan perbaikan (Perlengkapan)', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'layanan'],
+            // Perbaikan sarpras (Layanan: lihat, ajukan, tindak lanjuti; filter bangunan / perlengkapan)
+            ['name' => 'create_damage', 'label' => 'Ajukan permintaan perbaikan sarpras', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'Layanan'],
+            ['name' => 'view_damages', 'label' => 'Lihat seluruh permintaan perbaikan sarpras', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'Layanan'],
+            ['name' => 'view_bangunan_damages', 'label' => 'Lihat permintaan perbaikan (Bangunan)', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'Layanan'],
+            ['name' => 'view_perlengkapan_damages', 'label' => 'Lihat permintaan perbaikan (Perlengkapan)', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'Layanan'],
+            ['name' => 'tindak_lanjuti_bangunan_damages', 'label' => 'Tindak lanjuti permintaan perbaikan (Bangunan)', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'Layanan'],
+            ['name' => 'tindak_lanjuti_perlengkapan_damages', 'label' => 'Tindak lanjuti permintaan perbaikan (Perlengkapan)', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'Layanan'],
 
-            // Pemesanan ruang rapat (layanan)
-            ['name' => 'create_booking', 'label' => 'Ajukan pemesanan ruang rapat', 'category' => 'Pemesanan Ruang Rapat', 'klasifikasi' => 'layanan'],
-            ['name' => 'view_bookings', 'label' => 'Lihat pemesanan & laporan ruang rapat', 'category' => 'Pemesanan Ruang Rapat', 'klasifikasi' => 'layanan'],
-            ['name' => 'tindak_lanjuti_bookings', 'label' => 'Tindak lanjuti pemesanan ruang rapat', 'category' => 'Pemesanan Ruang Rapat', 'klasifikasi' => 'layanan'],
+            // Pemesanan ruang rapat (Layanan)
+            ['name' => 'create_booking', 'label' => 'Ajukan pemesanan ruang rapat', 'category' => 'Pemesanan Ruang Rapat', 'klasifikasi' => 'Layanan'],
+            ['name' => 'view_bookings', 'label' => 'Lihat pemesanan & laporan ruang rapat', 'category' => 'Pemesanan Ruang Rapat', 'klasifikasi' => 'Layanan'],
+            ['name' => 'tindak_lanjuti_bookings', 'label' => 'Tindak lanjuti pemesanan ruang rapat', 'category' => 'Pemesanan Ruang Rapat', 'klasifikasi' => 'Layanan'],
 
-            // Permintaan ATK (layanan)
-            ['name' => 'view_supplies', 'label' => 'Lihat permintaan & laporan ATK', 'category' => 'Permintaan ATK', 'klasifikasi' => 'layanan'],
-            ['name' => 'create_supplies', 'label' => 'Ajukan permintaan ATK', 'category' => 'Permintaan ATK', 'klasifikasi' => 'layanan'],
-            ['name' => 'tindak_lanjuti_supplies', 'label' => 'Tindak lanjuti permintaan ATK', 'category' => 'Permintaan ATK', 'klasifikasi' => 'layanan'],
+            // Permintaan ATK (Layanan)
+            ['name' => 'view_supplies', 'label' => 'Lihat permintaan & laporan ATK', 'category' => 'Permintaan ATK', 'klasifikasi' => 'Layanan'],
+            ['name' => 'create_supplies', 'label' => 'Ajukan permintaan ATK', 'category' => 'Permintaan ATK', 'klasifikasi' => 'Layanan'],
+            ['name' => 'tindak_lanjuti_supplies', 'label' => 'Tindak lanjuti permintaan ATK', 'category' => 'Permintaan ATK', 'klasifikasi' => 'Layanan'],
 
-            // Kendaraan (layanan + master pengemudi / kendaraan)
-            ['name' => 'create_vehicle', 'label' => 'Ajukan permintaan kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'layanan'],
-            ['name' => 'view_vehicles', 'label' => 'Lihat permintaan kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'layanan'],
-            ['name' => 'tindak_lanjuti_vehicles', 'label' => 'Tindak lanjuti permintaan kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'layanan'],
+            // Kendaraan (Layanan + Master pengemudi / kendaraan)
+            ['name' => 'create_vehicle', 'label' => 'Ajukan permintaan kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'Layanan'],
+            ['name' => 'view_vehicles', 'label' => 'Lihat permintaan kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'Layanan'],
+            ['name' => 'tindak_lanjuti_vehicles', 'label' => 'Tindak lanjuti permintaan kendaraan', 'category' => 'Kendaraan', 'klasifikasi' => 'Layanan'],
 
             // Umum
-            ['name' => 'view_admin_dashboard', 'label' => 'Lihat dashboard', 'category' => 'Umum'],
-            ['name' => 'view_history', 'label' => 'Lihat riwayat', 'category' => 'Umum'],
-            ['name' => 'view_homepage', 'label' => 'Lihat beranda', 'category' => 'Umum'],
+            ['name' => 'view_admin_dashboard', 'label' => 'Lihat dashboard', 'category' => 'Umum', 'klasifikasi' => 'Lainnya'],
+            ['name' => 'view_history', 'label' => 'Lihat riwayat', 'category' => 'Umum', 'klasifikasi' => 'Lainnya'],
+            ['name' => 'view_homepage', 'label' => 'Lihat beranda', 'category' => 'Umum', 'klasifikasi' => 'Lainnya'],
 
             // Khusus
-            ['name' => 'management_access', 'label' => 'Akses manajemen role & izin', 'category' => 'Khusus'],
-            ['name' => 'delete_all_requests', 'label' => 'Hapus permintaan pengguna', 'category' => 'Khusus'],
+            ['name' => 'management_access', 'label' => 'Akses manajemen role & izin', 'category' => 'Khusus', 'klasifikasi' => 'Lainnya'],
+            ['name' => 'delete_all_requests', 'label' => 'Hapus Data Layanan & Master', 'category' => 'Khusus', 'klasifikasi' => 'Lainnya'],
         ];
 
         foreach ($permissions as $perm) {
@@ -211,7 +211,7 @@ class RolePermissionSeeder extends Seeder
         $syncRole(
             'rumga_admin_1',
             'Admin ruang rapat',
-            'Kelola master ruangan & pemesanan.',
+            'Kelola Master ruangan & pemesanan.',
             $adminRuangRapat
         );
 
@@ -226,7 +226,7 @@ class RolePermissionSeeder extends Seeder
         $syncRole(
             'bangunan_admin_1',
             'Admin perbaikan bangunan (utama)',
-            'Koordinasi penuh perbaikan & layanan terkait.',
+            'Koordinasi penuh perbaikan & Layanan terkait.',
             array_merge($adminRuangRapat, $adminBangunan, $adminPerlengkapan)
         );
 
@@ -258,7 +258,7 @@ class RolePermissionSeeder extends Seeder
         $syncRole(
             'developer_swp',
             'Developer Setwapres',
-            'Akses penuh termasuk master kendaraan & pengemudi.',
+            'Akses penuh termasuk Master kendaraan & pengemudi.',
             $developerPerms
         );
     }

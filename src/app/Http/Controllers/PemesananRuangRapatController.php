@@ -23,7 +23,20 @@ class PemesananRuangRapatController extends Controller
     public function index()
     {
         $data = [
-            'bookingRooms' => PemesananRuangRapat::with('ruangans')->with('pemesan.pegawai')->latest()->paginate(150)
+            'bookingRooms' => PemesananRuangRapat::select([
+                'id',
+                'kode_booking',
+                'tanggal_penggunaan',
+                'jam_mulai',
+                'jam_selesai',
+                'status',
+                'daftar_ruangan_id',
+                'user_id',
+            ])
+                ->with('ruangans')
+                ->with('pemesan.pegawai')
+                ->latest()
+                ->paginate(150)
         ];
 
         return Inertia::render('admin/bookings/page', $data);

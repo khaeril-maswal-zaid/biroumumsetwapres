@@ -36,7 +36,6 @@ export default function BookingsAdmin({ bookingRooms }: any) {
     const filteredBookings = bookingRooms.data.filter((booking: any) => {
         const matchesSearch =
             booking?.pemesan?.pegawai?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            booking.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()) ||
             booking.kode_booking.toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
@@ -90,7 +89,8 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                         <TableHead>No</TableHead>
                                         <TableHead>Kode Pemesanan</TableHead>
                                         <TableHead>Nama Pemesan</TableHead>
-                                        <TableHead>Ruangan</TableHead>
+                                        <TableHead>Nama Ruangan</TableHead>
+                                        <TableHead>Lokasi Ruangan</TableHead>
                                         <TableHead className="hidden md:table-cell">Tanggal</TableHead>
                                         <TableHead className="hidden md:table-cell">Waktu</TableHead>
                                         <TableHead>Status</TableHead>
@@ -116,6 +116,7 @@ export default function BookingsAdmin({ bookingRooms }: any) {
                                                     <div className="text-sm text-gray-500">{booking.unit_kerja}</div>
                                                 </TableCell>
                                                 <TableCell>{booking?.ruangans.nama_ruangan}</TableCell>
+                                                <TableCell>{booking?.ruangans.lokasi}</TableCell>
                                                 <TableCell className="hidden md:table-cell">{formatTanggalIna(booking.tanggal_penggunaan)}</TableCell>
                                                 <TableCell className="hidden md:table-cell">
                                                     {booking.jam_mulai.slice(0, 5)} - {booking.jam_selesai.slice(0, 5)}
