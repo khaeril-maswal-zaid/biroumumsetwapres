@@ -42,6 +42,20 @@ const mainNavItems: NavItem[] = [
         permission: 'view_bookings',
     },
     {
+        title: 'Perm. Perbaikan Sarpras',
+        href: route('kerusakangedung.index'),
+        icon: AlertTriangle,
+        permission: 'view_damages',
+    },
+    {
+        title: 'Permintaan ATK',
+        href: route('permintaanatk.index'),
+        icon: ClipboardList,
+        permission: 'view_supplies',
+    },
+
+    //Master Data ------------------
+    {
         title: 'Manajemen Ruangan',
         href: route('rooms.index'),
         icon: Building2,
@@ -49,23 +63,11 @@ const mainNavItems: NavItem[] = [
         excludePermission: 'management_access',
     },
     {
-        title: 'Perbaikan Sarpras',
-        href: route('kerusakangedung.index'),
-        icon: AlertTriangle,
-        permission: 'view_damages',
-    },
-    {
         title: 'Kategori Kerusakan',
         href: route('daftarkerusakan.index'),
         icon: Hammer,
         permission: 'view_category_damages',
         excludePermission: 'management_access',
-    },
-    {
-        title: 'Permintaan ATK',
-        href: route('permintaanatk.index'),
-        icon: ClipboardList,
-        permission: 'view_supplies',
     },
     {
         title: 'Manajemen ATK',
@@ -96,7 +98,7 @@ const reportsNavItems: NavItem[] = [
         permission: 'view_bookings',
     },
     {
-        title: 'Perbaikan Sarpras',
+        title: 'Perm. Perbaikan Sarpras',
         href: route('kerusakangedung.reports'),
         icon: FileWarning,
         permissionAny: ['view_damages', 'view_bangunan_damages', 'view_perlengkapan_damages'],
