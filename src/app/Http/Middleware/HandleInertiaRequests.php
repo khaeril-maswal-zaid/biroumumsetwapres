@@ -47,7 +47,7 @@ class HandleInertiaRequests extends Middleware
         if (Auth::check()) {
             $user = Auth::user()->load('pegawai.biro');
             $permissions = $user->getAllPermissions()->pluck('name')->toArray();
-            $executiveRoles = ['pimpinan', 'karo_protokol', 'karo_umum', 'karo_tusdm', 'pic'];
+            $executiveRoles = ['pimpinan', 'karo_protokol', 'karo_umum', 'karo_tusdm'];
             $hasExecutiveDashboard = $user->can('management_access')
                 || $user->hasAnyRole($executiveRoles);
         } else {

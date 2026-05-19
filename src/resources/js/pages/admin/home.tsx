@@ -57,18 +57,6 @@ export default function AdminDashboard({
                     summaryData={summaryData}
                     itemComparison={itemComparison}
                 />
-            ) : permissions &&
-              (permissions.includes('tindak_lanjuti_bangunan_damages') || permissions.includes('tindak_lanjuti_perlengkapan_damages')) ? (
-                <DamageReports
-                    monthlyTrend={monthlyTrend}
-                    locationData={locationData}
-                    divisionReports={divisionReports}
-                    topReportersData={topReportersData}
-                    summaryData={summaryData}
-                    statusDistribution={statusDistribution}
-                    damageTypeData={damageTypeData}
-                    urgencyData={urgencyData}
-                />
             ) : permissions && permissions.includes('tindak_lanjuti_bookings') ? (
                 <BookingReports
                     penggunaanRuangan={penggunaanRuangan}
@@ -82,6 +70,18 @@ export default function AdminDashboard({
                     weeklySchedule={weeklySchedule}
                     roomSchedules={roomSchedules}
                     rooms={rooms}
+                />
+            ) : permissions &&
+              (permissions.includes('tindak_lanjuti_bangunan_damages') || permissions.includes('tindak_lanjuti_perlengkapan_damages')) ? (
+                <DamageReports
+                    monthlyTrend={monthlyTrend}
+                    locationData={locationData}
+                    divisionReports={divisionReports}
+                    topReportersData={topReportersData}
+                    summaryData={summaryData}
+                    statusDistribution={statusDistribution}
+                    damageTypeData={damageTypeData}
+                    urgencyData={urgencyData}
                 />
             ) : null}
         </AppLayout>
