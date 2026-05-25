@@ -46,12 +46,15 @@ class DaftarRuanganController extends Controller
         return to_route('rooms.index');
     }
 
-    public function update(Request $request, DaftarRuangan $daftarRuangan) //kalau sama ji
+    public function update(Request $request, DaftarRuangan $daftarRuangan)
     {
         if ($request->hasFile('photo')) {
-            // Hapus file lama
-            if ($daftarRuangan->image && Storage::exists($daftarRuangan->image)) {
-                Storage::delete($daftarRuangan->image);
+
+            // hapus file lama jika path lokal
+            if ($daftarRuangan->image && !filter_var($daftarRuangan->image, FILTER_VALIDATE_URL)) {
+                if (Storage::exists($daftarRuangan->image)) {
+                    Storage::delete($daftarRuangan->image);
+                }
             }
 
             $daftarRuangan->update([
