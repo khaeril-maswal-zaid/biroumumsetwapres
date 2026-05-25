@@ -65,7 +65,7 @@ RUN composer install --optimize-autoloader --no-dev
 RUN php artisan storage:link
 
 RUN npm install --legacy-peer-deps
-RUN npm run build
+RUN npm run build && rm -f public/hot
 
 RUN addgroup -g 1945 -S pplsi && adduser -u 1945 -S pplsi -G pplsi
 RUN chown -R pplsi:pplsi /var/www /run /var/lib/nginx /var/log/nginx
