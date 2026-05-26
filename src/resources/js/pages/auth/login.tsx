@@ -35,7 +35,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
     };
 
     return (
-        <AuthLayout title="layanan Biro Umum" description="Silakan login untuk mengakses layanan">
+        <AuthLayout title="MANDALA" description="Manajemen Administrasi dan Layanan Dalam Satu Aplikasi">
             <Head title="Log in" />
 
             <form className="flex flex-col gap-6" onSubmit={submit}>
