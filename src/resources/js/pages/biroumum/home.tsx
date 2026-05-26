@@ -14,8 +14,6 @@ export default function Dashboard({ requestHistory, mainServices }: any) {
     const { auth } = usePage<SharedData>().props;
     const permissions = auth?.permissions || [];
 
-    console.log(permissions);
-
     return (
         <>
             <Head title="Home" />

@@ -350,7 +350,6 @@ export default function BookingDetailsPage({ selectedDamage, kategoriKerusakan }
                                     <p className="mb-3 font-medium text-gray-900">Foto / Video ({selectedDamage.picture.length})</p>
                                     <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
                                         {selectedDamage.picture.map((media: string, index: number) => {
-                                            console.log('Media path:', media);
                                             const isVideo = media.includes('videos/');
                                             return (
                                                 <div

@@ -95,7 +95,6 @@ export default function VehiclesAdmin() {
         setIsProcessing(true);
         // Simulasi API call
         setTimeout(() => {
-            console.log(`Vehicle request ${vehicleId} approved`);
             setIsProcessing(false);
             setIsDetailsOpen(false);
             // Di aplikasi nyata, ini akan update data dari server
@@ -106,7 +105,6 @@ export default function VehiclesAdmin() {
         setIsProcessing(true);
         // Simulasi API call
         setTimeout(() => {
-            console.log(`Vehicle request ${vehicleId} rejected`);
             setIsProcessing(false);
             setIsDetailsOpen(false);
             // Di aplikasi nyata, ini akan update data dari server
