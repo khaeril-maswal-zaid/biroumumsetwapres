@@ -240,6 +240,8 @@ class DaftarAtkSeeder extends Seeder
             ['name' => 'Dispenser Lakban TD-2 Joyco', 'satuan' => 'Buah', 'kategori_atk_id' => '11'],
         ];
 
+        DaftarAtk::truncate();
+
         foreach ($atks as $key => $value) {
             DaftarAtk::create([
                 'kode_unit' => '02',
