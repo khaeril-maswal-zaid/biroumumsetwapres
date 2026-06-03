@@ -227,26 +227,25 @@ class DaftarAtkSeeder extends Seeder
             ['name' => 'CDR-R Verbatim 52 X 700 MB', 'satuan' => 'Buah', 'kategori_atk_id' => '20'],
             ['name' => 'Tali Benang Rami', 'satuan' => 'Rol', 'kategori_atk_id' => '21'],
             ['name' => 'Clear Holder Ukuran A4', 'satuan' => 'Buah', 'kategori_atk_id' => '11'],
-            ['name' => 'Baterai Besar', 'satuan' => 'Buah', 'kategori_atk_id' => '23'],
-            ['name' => 'Baterai Energizer 9 Volt', 'satuan' => 'Buah', 'kategori_atk_id' => '23'],
-            ['name' => 'Baterai Sedang/Tanggung R14C, 1,5 Volt', 'satuan' => 'Buah', 'kategori_atk_id' => '23'],
-            ['name' => 'Baterai Energizer MAX,  AA/AAA Isi 2 Buah', 'satuan' => 'Set', 'kategori_atk_id' => '23'],
-            ['name' => 'Baterai Laser Pointer Maxell Lr41', 'satuan' => 'Buah', 'kategori_atk_id' => '23'],
-            ['name' => 'Baterai  A23A 12 Volt', 'satuan' => 'Buah', 'kategori_atk_id' => '23'],
-            ['name' => 'Baterai Energizer/CMOS 2032 (Di Sakti Panasonic 2025)', 'satuan' => 'Buah', 'kategori_atk_id' => '23'],
+            ['name' => 'Baterai Besar', 'satuan' => 'Buah', 'kategori_atk_id' => '22'],
+            ['name' => 'Baterai Energizer 9 Volt', 'satuan' => 'Buah', 'kategori_atk_id' => '22'],
+            ['name' => 'Baterai Sedang/Tanggung R14C, 1,5 Volt', 'satuan' => 'Buah', 'kategori_atk_id' => '22'],
+            ['name' => 'Baterai Energizer MAX,  AA/AAA Isi 2 Buah', 'satuan' => 'Set', 'kategori_atk_id' => '22'],
+            ['name' => 'Baterai Laser Pointer Maxell Lr41', 'satuan' => 'Buah', 'kategori_atk_id' => '22'],
+            ['name' => 'Baterai  A23A 12 Volt', 'satuan' => 'Buah', 'kategori_atk_id' => '22'],
+            ['name' => 'Baterai Energizer/CMOS 2032 (Di Sakti Panasonic 2025)', 'satuan' => 'Buah', 'kategori_atk_id' => '22'],
             ['name' => 'Max Stapler HD.10 ', 'satuan' => 'Buah', 'kategori_atk_id' => '11'],
             ['name' => 'Isi Staples No. 10 Max ', 'satuan' => 'Dus kecil', 'kategori_atk_id' => '11'],
             ['name' => 'Paper Bag Batik Jumbo Kiky Uk. 450x328x130mm ', 'satuan' => 'Pack', 'kategori_atk_id' => '11'],
             ['name' => 'Dispenser Lakban TD-2 Joyco', 'satuan' => 'Buah', 'kategori_atk_id' => '11'],
         ];
 
-        DaftarAtk::truncate();
+        DaftarAtk::query()->delete();
 
         foreach ($atks as $key => $value) {
             DaftarAtk::create([
                 'kode_unit' => '02',
                 'name' => $value['name'],
-                'kode_atk' => $value['kode_atk'],
                 'kategori_atk_id' => $value['kategori_atk_id'],
                 'satuan' => $value['satuan'],
             ]);
