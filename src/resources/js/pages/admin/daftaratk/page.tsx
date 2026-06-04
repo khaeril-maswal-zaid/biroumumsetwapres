@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Edit, Package, Search, Sheet, X } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Edit, Package, Search, X } from 'lucide-react';
 
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
@@ -218,20 +218,6 @@ export default function ATKItemsManagement({ daftarAtk, categories }: any) {
                                 </CardTitle>
                                 <CardDescription className="text-blue-50">Semua alat tulis kantor yang tersedia dalam sistem.</CardDescription>
                             </div>
-
-                            {/* BELUM DIGUNAKAN, TAPI SEMENTARA DISIMPAN UNTUK MEMPERMUDAH PENGEMBANGAN */}
-                            <div className="flex items-center gap-2">
-                                <Button
-                                    onClick={() => setIsImportOpen(true)}
-                                    className="gap-2 bg-white text-emerald-600 shadow-lg hover:bg-emerald-50"
-                                >
-                                    <Sheet className="h-4 w-4" />
-                                    Import Jenis Barang
-                                </Button>
-
-                                <ButtonAtk />
-                            </div>
-
                             <ButtonAtk />
                         </div>
                     </CardHeader>

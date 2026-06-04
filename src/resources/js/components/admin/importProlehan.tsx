@@ -13,8 +13,8 @@ type ImportPreviewRow = {
     id: string;
     kode_atk: string;
     name: string;
+    satuan: string;
     quantity: number;
-    unit: string;
     price: number;
 };
 
@@ -66,8 +66,8 @@ export default function ImportPerolehanAtkDialog({ open, onOpenChange }: { open:
                     id: String(index),
                     kode_atk: row[1] || '', // Kode ATK
                     name: row[2] || '', // Nama ATK
+                    satuan: row[4] || '', // Satuan
                     quantity: Number(row[5]) || 0, // Perolehan
-                    unit: row[4] || '', // Satuan
                     price: Number(row[6]) || 0, // Harga Satuan
                 }));
 
@@ -254,8 +254,8 @@ export default function ImportPerolehanAtkDialog({ open, onOpenChange }: { open:
                                                     <TableHead className="py-2 text-sm">No</TableHead>
                                                     <TableHead className="py-2 text-sm">Kode ATK</TableHead>
                                                     <TableHead className="py-2 text-sm">Nama Item ATK</TableHead>
-                                                    <TableHead className="py-2 text-sm">Jumlah</TableHead>
                                                     <TableHead className="py-2 text-sm">Satuan</TableHead>
+                                                    <TableHead className="py-2 text-sm">Jumlah</TableHead>
                                                     <TableHead className="py-2 text-sm">Harga</TableHead>
                                                 </TableRow>
                                             </TableHeader>
@@ -265,8 +265,8 @@ export default function ImportPerolehanAtkDialog({ open, onOpenChange }: { open:
                                                         <TableCell className="py-2 text-xs">{index + 1}</TableCell>
                                                         <TableCell className="py-2 text-xs">{row.kode_atk}</TableCell>
                                                         <TableCell className="py-2 text-xs">{row.name}</TableCell>
+                                                        <TableCell className="py-2 text-xs">{row.satuan}</TableCell>
                                                         <TableCell className="py-2 text-xs">{row.quantity}</TableCell>
-                                                        <TableCell className="py-2 text-xs">{row.unit}</TableCell>
                                                         <TableCell className="py-2 text-xs">Rp {row.price.toLocaleString('id-ID')}</TableCell>
                                                     </TableRow>
                                                 ))}
