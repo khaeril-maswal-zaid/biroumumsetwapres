@@ -16,6 +16,7 @@ interface ServiceItem {
 export function ServiceMenu() {
     const { services } = usePage<SharedData>().props;
     const { permissions }: any = usePage<SharedData>().props.auth;
+    const { name }: any = usePage().props;
 
     const hasPermission = (permission?: string) => !permission || permissions?.includes(permission);
 
@@ -23,7 +24,7 @@ export function ServiceMenu() {
 
     return (
         <div>
-            <h2 className="mb-4 text-lg font-semibold text-gray-800">Layanan Biro Umum</h2>
+            <h2 className="mb-4 text-lg font-semibold text-gray-800">{name}</h2>
 
             <div className="grid grid-cols-2 gap-4">
                 {services.map((item: ServiceItem, index: number) => {
@@ -55,7 +56,7 @@ export function ServiceMenu() {
                             <Card className="h-full min-h-42.5 cursor-not-allowed border border-gray-200 opacity-50 transition-opacity duration-200">
                                 <CardContent className="flex h-full flex-col items-center justify-center p-4 text-center">
                                     <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-                                        <Icon className="h-6 w-6 text-gray-400" />
+                                        <Icons.HelpCircle className="h-6 w-6 text-gray-400" />
                                     </div>
 
                                     <p className="text-sm leading-tight font-medium text-gray-400">{item.name}</p>
