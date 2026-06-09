@@ -41,7 +41,6 @@ class RolePermissionSeeder extends Seeder
 
             // Perbaikan sarpras (Layanan: lihat, ajukan, tindak lanjuti; filter bangunan / perlengkapan)
             ['name' => 'create_damage', 'label' => 'Ajukan permintaan perbaikan sarpras', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'Layanan'],
-            ['name' => 'view_damages', 'label' => 'Lihat seluruh permintaan perbaikan sarpras', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'Layanan'],
             ['name' => 'view_bangunan_damages', 'label' => 'Lihat permintaan perbaikan (Bangunan)', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'Layanan'],
             ['name' => 'view_perlengkapan_damages', 'label' => 'Lihat permintaan perbaikan (Perlengkapan)', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'Layanan'],
             ['name' => 'tindak_lanjuti_bangunan_damages', 'label' => 'Tindak lanjuti permintaan perbaikan (Bangunan)', 'category' => 'Perbaikan Sarpras', 'klasifikasi' => 'Layanan'],
@@ -114,13 +113,14 @@ class RolePermissionSeeder extends Seeder
 
         //----------------------------------  Ruang Rapat ----------------------------------
         $operatorRuangRapat = array_merge($dashboard, $createServicies, [
+            'create_booking',
             'view_bookings',
             'tindak_lanjuti_bookings',
         ]);
 
         $adminRuangRapat = array_merge($operatorRuangRapat, [
-            'create_booking',
-            'view_bookings',
+            'create_rooms',
+            'view_rooms',
             'manage_rooms',
         ]);
 
@@ -168,7 +168,7 @@ class RolePermissionSeeder extends Seeder
             'karo_protokol',
             'Karo Protokol',
             'Monitoring terbatas protokol.',
-            $adminBangunan
+            $adminRuangRapat
         );
 
         $syncRole(
@@ -212,7 +212,7 @@ class RolePermissionSeeder extends Seeder
 
         $syncRole(
             'admin_rumga',
-            'Admin ruang rapat',
+            'Admin Ruang Rapat',
             'Kelola Master ruangan & Tindak lanjuti pemesanan ruang rapat.',
             $adminRuangRapat
         );
@@ -242,7 +242,7 @@ class RolePermissionSeeder extends Seeder
 
         $syncRole(
             'operator_bangunan',
-            'Operator perbaikan bangunan',
+            'Operator Perbaikan Bangunan',
             'Tindak lanjuti laporan kerusakan bangunan.',
             $operatorBangunan
         );

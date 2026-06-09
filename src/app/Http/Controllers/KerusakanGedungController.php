@@ -19,37 +19,55 @@ class KerusakanGedungController extends Controller
      */
     public function index()
     {
-        $permission = Auth::user()->getAllPermissions()->pluck('name');
+        $permissions = Auth::user()->getAllPermissions()->pluck('name');
 
-        if ($permission->contains('view_damages')) {
-            $kerusakan = KerusakanGedung::query();
-            $typeTitle = '';
-        } elseif ($permission->contains('view_bangunan_damages')) {
-            $kerusakan = KerusakanGedung::whereHas('kategori', function ($query) {
-                $query->where('bagian_kategori', 'Bangunan');
-            });
-            $typeTitle = '- Bangunan';
-        } elseif ($permission->contains('view_perlengkapan_damages')) {
-            $kerusakan = KerusakanGedung::whereHas('kategori', function ($query) {
-                $query->where('bagian_kategori', 'Perlengkapan');
-            });
-            $typeTitle = '- Perlengkapan';
-        } else {
-            $kerusakan = KerusakanGedung::query();
-            $typeTitle = '';
+        $canViewBangunan = $permissions->contains('view_bangunan_damages');
+        $canViewPerlengkapan = $permissions->contains('view_perlengkapan_damages');
+
+        if (!$canViewBangunan && !$canViewPerlengkapan) {
+            abort(403);
         }
 
-        $data = [
+        $kerusakan = KerusakanGedung::query();
+        $typeTitle = '';
+
+        // Hanya Bangunan
+        if ($canViewBangunan && !$canViewPerlengkapan) {
+            $kerusakan->whereHas('kategori', function ($query) {
+                $query->where('bagian_kategori', 'Bangunan');
+            });
+
+            $typeTitle = '- Bangunan';
+        }
+
+        // Hanya Perlengkapan
+        if ($canViewPerlengkapan && !$canViewBangunan) {
+            $kerusakan->whereHas('kategori', function ($query) {
+                $query->where('bagian_kategori', 'Perlengkapan');
+            });
+
+            $typeTitle = '- Perlengkapan';
+        }
+
+        return Inertia::render('admin/damages/page', [
             'kerusakan' => $kerusakan
-                ->select('id', 'kode_pelaporan', 'user_id', 'kategori_kerusakan_id', 'lokasi', 'item', 'urgensi', 'status')
+                ->select(
+                    'id',
+                    'kode_pelaporan',
+                    'user_id',
+                    'kategori_kerusakan_id',
+                    'lokasi',
+                    'item',
+                    'urgensi',
+                    'status'
+                )
                 ->with('pelapor.pegawai:name,nip')
                 ->with('kategori:id,name,bagian_kategori')
                 ->latest()
                 ->paginate(150),
-            'typeTitle' => $typeTitle,
-        ];
 
-        return Inertia::render('admin/damages/page', $data);
+            'typeTitle' => $typeTitle,
+        ]);
     }
 
     /**

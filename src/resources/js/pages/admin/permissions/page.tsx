@@ -54,7 +54,10 @@ interface User {
     name: string;
     email: string;
     nip: string;
-    role: string;
+    role: {
+        name: string;
+        label: string;
+    };
     status: 'aktif' | 'nonaktif';
     last_login: string;
 }
@@ -159,8 +162,9 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
         (u) =>
             u?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             u?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            u.nip.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            u.role.toLowerCase().includes(searchTerm.toLowerCase()),
+            u?.nip?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            u?.role?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            u?.role?.label?.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
     // ── permission grouping ──────────────────────────────────────────────────
@@ -287,7 +291,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
 
     const handleEditUserRole = (user: User) => {
         setSelectedUser(user);
-        setSelectedUserRole(user.role);
+        setSelectedUserRole(user.role.name);
         setIsEditUserRoleDialogOpen(true);
     };
 
@@ -797,7 +801,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                                                 <TableCell className="font-mono text-sm text-slate-600 dark:text-slate-400">{user.nip}</TableCell>
                                                 <TableCell>
                                                     <Badge className="border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-50 dark:border-violet-800 dark:bg-violet-950/40 dark:text-violet-300">
-                                                        {user.role.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+                                                        {user.role.label ?? user.role}
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell>

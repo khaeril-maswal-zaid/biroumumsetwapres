@@ -11,8 +11,23 @@ class KategoriKerusakanController extends Controller
 {
     public function index()
     {
+        $myPermissions = Auth::user()->getAllPermissions()->pluck('name');
+
+        $canViewBangunan = $myPermissions->contains('view_bangunan_damages');
+        $canViewPerlengkapan = $myPermissions->contains('view_perlengkapan_damages');
+
+        $kategoriKerusakan = KategoriKerusakan::query()
+            ->when($canViewBangunan && !$canViewPerlengkapan, function ($q) {
+                $q->where('bagian_kategori', 'bangunan');
+            })
+            ->when($canViewPerlengkapan && !$canViewBangunan, function ($q) {
+                $q->where('bagian_kategori', 'perlengkapan');
+            })
+            ->latest()
+            ->get();
+
         return Inertia::render('admin/kategorikerusakan/page', [
-            'kategoriKerusakan' => KategoriKerusakan::latest()->get(),
+            'kategoriKerusakan' => $kategoriKerusakan,
         ]);
     }
 

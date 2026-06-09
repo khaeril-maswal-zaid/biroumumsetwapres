@@ -34,7 +34,10 @@ class RoleController extends Controller
                     'name'  => $user?->pegawai?->name,
                     'nip'   => $nip,
                     'email' => $user->email ?? $user->nip_sso,
-                    'role'  => $user->roles->pluck('name')->first() ?? '-',
+                    'role'  => $user->roles->map(fn($role) => [
+                        'name'  => $role->name,
+                        'label' => $role->label,
+                    ])->first() ?? '-',
                 ];
             });
 
