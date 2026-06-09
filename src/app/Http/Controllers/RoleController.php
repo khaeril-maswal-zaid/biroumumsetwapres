@@ -40,6 +40,7 @@ class RoleController extends Controller
 
         $roles =  Role::with(['permissions'])
             ->whereNot('name', 'developer_swp')
+            ->orderBy('label')
             ->withCount('users')
             ->get()
             ->map(function ($role) {

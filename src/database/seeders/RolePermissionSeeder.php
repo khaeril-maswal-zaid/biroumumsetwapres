@@ -126,24 +126,26 @@ class RolePermissionSeeder extends Seeder
 
         //----------------------------------  Perbaikan Sarpras _ Bangunan ----------------------------------
         $operatorBangunan = array_merge($dashboard, $createServicies, [
-            'view_damages',
             'view_bangunan_damages',
             'tindak_lanjuti_bangunan_damages',
         ]);
 
         $adminBangunan = array_merge($operatorBangunan, [
             'manage_category_damages',
+            'view_category_damages',
+            'create_category_damages',
         ]);
 
         //----------------------------------  Perbaikan Sarpras _ Perlengkapan ----------------------------------
         $operatorPerlengkapan = array_merge($dashboard, $createServicies, [
-            'view_damages',
             'view_perlengkapan_damages',
             'tindak_lanjuti_perlengkapan_damages',
         ]);
 
         $adminPerlengkapan = array_merge($operatorPerlengkapan, [
             'manage_category_damages',
+            'view_category_damages',
+            'create_category_damages',
         ]);
 
         $syncRole = function (string $name, string $label, ?string $description, array $perms): void {
@@ -185,61 +187,61 @@ class RolePermissionSeeder extends Seeder
 
 
         $syncRole(
-            'perlengkapan_admin_1',
-            'Admin perlengkapan (utama)',
-            'Penuh ATK, ruangan, perbaikan, dan kategori.',
+            'admin_atk_perlengkapan',
+            'Admin ATK & Perlengkapan',
+            'Kelola Master ATK & Kategori Kerusakan Perlengkapan; Tindak lanjuti permintaan ATK & perbaikan perlengkapan.',
             array_merge($adminAtk,  $adminPerlengkapan)
         );
 
 
         $syncRole(
-            'perlengkapan_admin_2',
-            'Admin perlengkapan',
-            'Setara admin utama; penyesuaian organisasi.',
+            'admin_atk_operator_perlengkapan',
+            'Admin ATK & Operator Perlengkapan',
+            'Kelola Master ATK; Tindak lanjuti permintaan ATK & perbaikan perlengkapan.',
             array_merge($adminAtk,  $operatorPerlengkapan)
         );
 
 
         $syncRole(
-            'perlengkapan_operator',
-            'Operator perlengkapan',
-            'Tindak lanjuti permintaan ATK & perbaikan perlengkapan.',
-            $operatorPerlengkapan
+            'atk_operator',
+            'Operator ATK',
+            'Tindak lanjuti permintaan ATK',
+            $operatorAtk
         );
 
 
         $syncRole(
-            'rumga_admin_1',
+            'admin_rumga',
             'Admin ruang rapat',
-            'Kelola Master ruangan & pemesanan.',
+            'Kelola Master ruangan & Tindak lanjuti pemesanan ruang rapat.',
             $adminRuangRapat
         );
 
 
         $syncRole(
-            'rumga_operator',
+            'operator_rumga',
             'Operator ruang rapat',
             'Tindak lanjuti pemesanan ruang rapat.',
             $operatorRuangRapat
         );
 
         $syncRole(
-            'bangunan_admin_1',
-            'Admin perbaikan bangunan (utama)',
-            'Koordinasi penuh perbaikan & Layanan terkait.',
+            'admin_rumga_bangunan_perlengkapan',
+            'Admin Ruang Rapat, Bangunan & Perlengkapan',
+            'Kelola Master ruangan, kategori kerusakan bangunan & perlengkapan; Tindak lanjuti pemesanan ruang rapat, perbaikan bangunan & perlengkapan.',
             array_merge($adminRuangRapat, $adminBangunan, $adminPerlengkapan)
         );
 
 
         $syncRole(
-            'bangunan_admin_2',
-            'Admin perbaikan bangunan',
-            'Setara admin utama; penyesuaian organisasi.',
+            'admin_bangunan_operator_perlengkapan',
+            'Admin Bangunan & Operator Perlengkapan',
+            'Kelola kategori kerusakan bangunan & perlengkapan; Tindak lanjuti perbaikan bangunan & perlengkapan.',
             array_merge($adminBangunan, $operatorPerlengkapan)
         );
 
         $syncRole(
-            'bangunan_operator',
+            'operator_bangunan',
             'Operator perbaikan bangunan',
             'Tindak lanjuti laporan kerusakan bangunan.',
             $operatorBangunan

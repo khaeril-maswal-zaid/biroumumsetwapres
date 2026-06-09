@@ -521,7 +521,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
 
                         {/* ── Edit Role Dialog ── */}
                         <Dialog open={isEditRoleDialogOpen} onOpenChange={setIsEditRoleDialogOpen}>
-                            <DialogContent className="max-h-[90vh] min-w-[72rem] overflow-y-auto p-0">
+                            <DialogContent className="max-h-[90vh] min-w-6xl overflow-y-auto p-0">
                                 {/* Sticky header */}
                                 <DialogHeader className="sticky top-0 z-10 flex flex-row items-center gap-3 border-b bg-white px-6 py-4 dark:border-slate-700 dark:bg-slate-900">
                                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/50">
@@ -983,7 +983,7 @@ export default function PermissionsPage({ mockRoles, availablePermissions, mockU
                                     <SelectContent>
                                         {roles.map((role) => (
                                             <SelectItem key={role.id} value={role.name}>
-                                                {role.name}
+                                                {role.label}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>

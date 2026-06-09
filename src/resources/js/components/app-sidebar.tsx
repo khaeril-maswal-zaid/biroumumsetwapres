@@ -45,7 +45,7 @@ const mainNavItems: NavItem[] = [
         title: 'Perm. Perbaikan Sarpras',
         href: route('kerusakangedung.index'),
         icon: AlertTriangle,
-        permission: 'view_damages',
+        permissionAny: ['view_damages', 'view_bangunan_damages', 'view_perlengkapan_damages'],
     },
     {
         title: 'Permintaan ATK',

@@ -26,66 +26,66 @@ class UserSeeder extends Seeder
             ],
 
 
-            [
-                'name' => 'Admin Perbaikan Sarpras',
-                'email' => 'perbaikansarpras@set.wapresri.go.id',
-                'nip' => 'Adm1n945#',
-                'role' => 'bangunan_admin_1',
-                'biro' => '0238',
-                'jabatan' => 'Admin',
-            ],
-            [
-                'name' => 'Operator Bangunan',
-                'email' => 'operatorbangunan@set.wapresri.go.id',
-                'nip' => 'Adm1n771#',
-                'role' => 'bangunan_operator',
-                'biro' => '0238',
-                'jabatan' => 'Operator',
-            ],
-            [
-                'name' => 'Operator Perlengkapan',
-                'email' => 'operatorperlengkapan@set.wapresri.go.id',
-                'nip' => 'Adm1n772#',
-                'role' => 'perlengkapan_operator',
-                'biro' => '0238',
-                'jabatan' => 'Operator',
-            ],
+            // [
+            //     'name' => 'Admin Perbaikan Sarpras',
+            //     'email' => 'perbaikansarpras@set.wapresri.go.id',
+            //     'nip' => 'Adm1n945#',
+            //     'role' => 'bangunan_admin_1',
+            //     'biro' => '0238',
+            //     'jabatan' => 'Admin',
+            // ],
+            // [
+            //     'name' => 'Operator Bangunan',
+            //     'email' => 'operatorbangunan@set.wapresri.go.id',
+            //     'nip' => 'Adm1n771#',
+            //     'role' => 'bangunan_operator',
+            //     'biro' => '0238',
+            //     'jabatan' => 'Operator',
+            // ],
+            // [
+            //     'name' => 'Operator Perlengkapan',
+            //     'email' => 'operatorperlengkapan@set.wapresri.go.id',
+            //     'nip' => 'Adm1n772#',
+            //     'role' => 'perlengkapan_operator',
+            //     'biro' => '0238',
+            //     'jabatan' => 'Operator',
+            // ],
 
 
-            [
-                'name' => 'Admin Ruang Rapat',
-                'email' => 'adminruangan.umum@set.wapresri.go.id',
-                'nip' => 'Adm1n882#',
-                'role' => 'rumga_admin_1',
-                'biro' => '0238',
-                'jabatan' => 'Admin',
-            ],
-            [
-                'name' => 'Operator Ruang Rapat',
-                'email' => 'operatorruangan.umum@set.wapresri.go.id',
-                'nip' => 'Adm1n334#',
-                'role' => 'rumga_operator',
-                'biro' => '0238',
-                'jabatan' => 'Operator',
-            ],
+            // [
+            //     'name' => 'Admin Ruang Rapat',
+            //     'email' => 'adminruangan.umum@set.wapresri.go.id',
+            //     'nip' => 'Adm1n882#',
+            //     'role' => 'rumga_admin_1',
+            //     'biro' => '0238',
+            //     'jabatan' => 'Admin',
+            // ],
+            // [
+            //     'name' => 'Operator Ruang Rapat',
+            //     'email' => 'operatorruangan.umum@set.wapresri.go.id',
+            //     'nip' => 'Adm1n334#',
+            //     'role' => 'rumga_operator',
+            //     'biro' => '0238',
+            //     'jabatan' => 'Operator',
+            // ],
 
 
-            [
-                'name' => 'Admin ATK',
-                'email' => 'adminatk.umum@set.wapresri.go.id',
-                'nip' => 'Adm1n955#',
-                'role' => 'perlengkapan_admin_1',
-                'biro' => '0238',
-                'jabatan' => 'Admin',
-            ],
-            [
-                'name' => 'Operator ATK',
-                'email' => 'operatoratk.umum@set.wapresri.go.id',
-                'nip' => 'Adm1n110#',
-                'role' => 'perlengkapan_operator',
-                'biro' => '0238',
-                'jabatan' => 'Operator',
-            ],
+            // [
+            //     'name' => 'Admin ATK',
+            //     'email' => 'adminatk.umum@set.wapresri.go.id',
+            //     'nip' => 'Adm1n955#',
+            //     'role' => 'perlengkapan_admin_1',
+            //     'biro' => '0238',
+            //     'jabatan' => 'Admin',
+            // ],
+            // [
+            //     'name' => 'Operator ATK',
+            //     'email' => 'operatoratk.umum@set.wapresri.go.id',
+            //     'nip' => 'Adm1n110#',
+            //     'role' => 'perlengkapan_operator',
+            //     'biro' => '0238',
+            //     'jabatan' => 'Operator',
+            // ],
 
 
             // [
