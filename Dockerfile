@@ -40,6 +40,8 @@ RUN apk add --no-cache \
   tzdata \
   postgresql-client
 
+RUN ln -sf /usr/bin/php84 /usr/bin/php
+
 COPY --from=composer/composer:latest-bin /composer /usr/bin/composer
 
 ENV TZ Asia/Jakarta
