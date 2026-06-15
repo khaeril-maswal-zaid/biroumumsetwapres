@@ -282,8 +282,8 @@ class KerusakanGedung extends Model
         static::deleting(function ($kerusakanGedung) {
             if (is_array($kerusakanGedung->picture)) {
                 foreach ($kerusakanGedung->picture as $path) {
-                    if ($path && Storage::disk('public')->exists($path)) {
-                        Storage::disk('public')->delete($path);
+                    if ($path && Storage::disk('s3')->exists($path)) {
+                        Storage::disk('s3')->delete($path);
                     }
                 }
             }
