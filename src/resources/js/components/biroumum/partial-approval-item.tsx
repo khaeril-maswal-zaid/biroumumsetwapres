@@ -15,7 +15,9 @@ interface PartialApprovalListProps {
 export function PartialApprovalList({ item, onAdditionalChange, currentApproved, currentAdditional }: PartialApprovalListProps) {
     const approvedValue = typeof currentApproved === 'number' ? currentApproved : (item.approved ?? 0);
     const additionalValue = typeof currentAdditional === 'number' ? currentAdditional : 0;
-    const remaining = Math.max(0, (item.requested ?? 0) - approvedValue);
+    const requested = item.requested ?? 0;
+    const stock = item.quantity ?? 0;
+    const remaining = Math.min(requested, stock, Math.max(0, requested - approvedValue));
     const percentage = item.requested > 0 ? ((approvedValue + additionalValue) / item.requested) * 100 : 0;
 
     return (
@@ -30,7 +32,7 @@ export function PartialApprovalList({ item, onAdditionalChange, currentApproved,
                                 <h5 className="font-medium text-gray-900">{item.name}</h5>
                             </div>
                             <div className="text-sm text-gray-600">
-                                Diminta: {item.requested} {item.satuan}
+                                Diminta: {item.requested} {item.satuan} {' • '} Stok Tersedia: {item.quantity} {item.satuan}
                             </div>
                         </div>
                     </div>
