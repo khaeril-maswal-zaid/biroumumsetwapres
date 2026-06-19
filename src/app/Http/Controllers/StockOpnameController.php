@@ -390,6 +390,8 @@ class StockOpnameController extends Controller
 
     public function kartuBukuPersediaan(Request $request, DaftarAtk $daftarAtk)
     {
+        $type = $request->route('type');
+
         $bulan = $request->bulan;
         $tahun = $request->tahun;
 
@@ -476,6 +478,13 @@ class StockOpnameController extends Controller
             'filters' => $request->only(['bulan', 'tahun']),
             'dataStok' => $rows,
         ];
+
+        if ($type === 'pdf') {
+            $pdf = Pdf::loadView('pdf.kartu-buku-persediaan', $data)
+                ->setPaper('A4', 'landscape');
+
+            return $pdf->stream("kartu-buku-persediaan-{$bulan}-{$tahun}.pdf");
+        }
 
         return Inertia::render('admin/daftaratk/kartu-buku-persediaan', $data);
     }

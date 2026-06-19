@@ -76,7 +76,11 @@ export default function rincianBukuPersediaan({ filters, atk, dataStok = [] }: a
                                 <Button
                                     className="inline-flex items-center gap-2 bg-red-600 text-white hover:bg-red-700"
                                     onClick={() => {
-                                        window.open(route('stockopname.rincian_buku_persediaan_pdf', atk?.kode_atk));
+                                        window.open(
+                                            route('stockopname.kartu_buku_persediaan_pdf', atk?.kode_atk ?? atk?.id) +
+                                                `?bulan=${filters?.bulan ?? ''}&tahun=${filters?.tahun ?? ''}`,
+                                            '_blank',
+                                        );
                                     }}
                                 >
                                     <FileDown className="h-4 w-4" />

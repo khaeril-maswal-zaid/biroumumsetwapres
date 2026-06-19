@@ -254,6 +254,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('stockopname.kartu_buku_persediaan')
         ->middleware('permission:manage_atk');
 
+    Route::get('/dashboard/stock-opname-atk/kartu-buku-persediaan-pdf/{daftarAtk:kode_atk}', [StockOpnameController::class, 'kartuBukuPersediaan'])
+        ->name('stockopname.kartu_buku_persediaan_pdf')
+        ->defaults('type', 'pdf')
+        ->middleware('permission:manage_atk');
+
     Route::post('/dashboard/stock-opname-atk/import', [StockOpnameController::class, 'importPerolehan'])
         ->name('stockopname.import')
         ->middleware('permission:manage_atk');
