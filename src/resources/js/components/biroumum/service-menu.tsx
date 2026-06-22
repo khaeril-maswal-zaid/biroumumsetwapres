@@ -24,7 +24,7 @@ export function ServiceMenu() {
 
     return (
         <div>
-            <h2 className="mb-4 text-lg font-semibold text-gray-800">Layanan Mandala</h2>
+            <h2 className="mb-4 text-lg font-semibold text-gray-800">{name}</h2>
 
             <div className="grid grid-cols-2 gap-4">
                 {services.map((item: ServiceItem, index: number) => {

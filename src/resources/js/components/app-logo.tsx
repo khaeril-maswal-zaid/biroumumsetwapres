@@ -10,7 +10,7 @@ export default function AppLogo() {
                 <AppLogoIcon className="size-5 fill-current text-white dark:text-black" />
             </div>
             <div className="ml-1 grid flex-1 text-left text-sm">
-                <span className="mb-0.5 truncate leading-tight font-semibold uppercase">Mandala Setwapres</span>
+                <span className="mb-0.5 truncate leading-tight font-semibold uppercase">{name}</span>
             </div>
         </>
     );
